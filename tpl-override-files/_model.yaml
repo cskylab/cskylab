@@ -1,0 +1,41 @@
+#
+#   cskygen configuration values file
+#
+#   Copyright © 2021 cSkyLab.com
+#
+
+#
+#   Steps to prepare the overrides:
+#
+#     - Go to `tpl-override-files` directory in your installation, and create 
+#       the `service_name.yaml` overrides file by copying contents 
+#       from `_model.yaml` file. 
+#       
+#       It is highly recommended to name the `service_name.yaml` overrides file, 
+#       according to the service and destination directory names
+#       (Ex. `k8s-mod-n1.yaml`, `k8s-mod-metallb.yaml`...).
+#
+#     - Go to the directory of the template you're working with, and open 
+#       the values file `_values-tpl`
+#
+#     - Copy the `values to override` section from the file `_values-tpl` into 
+#       the same section in your `service_name.yaml` overrides file.
+#
+#     - Override the desired values
+#
+#     - Modify the code commented command `cskygen create` with the appropriate flags:
+#       - Destination directory `-d`
+#       - Template directory `-t`
+#       - Overrides file `-f` (.yaml extension required on filename but not in flag)
+#
+#     - Save the file
+
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl/template_name -d ../cs-mod/service_name -f service_name
+#
+
+#
+# Values to override
+#
