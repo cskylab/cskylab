@@ -1,12 +1,17 @@
 #
-#   _values-tpl.yaml
+#   srvtest (Server test machine)
 #
-#   cskygen template default values file
+#   NOTE: You must delete previous ../cs-mod/srvtest
+#         directory if exist before creating a new one.
+#
+#   Copyright © 2021 cSkyLab.com
 #
 
-_tplname: ubt2004srv-ca
-_tpldescription: Ubuntu server 20.04 certification authority
-_tplversion: 21.11.04
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl/ubt2004srv-ca -d ../cs-mod/srvtest -f cs-mod-srvtest-ubt2004srv-ca
+#
 
 #
 # Values to override
@@ -14,7 +19,7 @@ _tplversion: 21.11.04
 
 ## Machine related configuration values
 machine:
-  hostname: ubt2004srv-ca
+  hostname: srvtest
   domainname: cskylab.net
   localadminusername: kos
   localadminpassword: "NoFear21"
