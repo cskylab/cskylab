@@ -1,0 +1,50 @@
+//
+//  named.conf.local for dns authoritative slave
+//
+//  Copyright © 2021 cSkyLab.com
+//
+
+//
+// Reverse Zones INTERNAL
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization:
+// include "/etc/bind/zones.rfc1918";
+
+//
+// Reverse internal zones are defined in the same groups as in dnsmaster:
+//
+
+// zone "10.in-addr.arpa"      { type slave; file "dbs.10.in-addr.arpa"; masters { "authNS"; }; };
+ 
+// zone "16.172.in-addr.arpa"  { type slave; file "dbs.16.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "17.172.in-addr.arpa"  { type slave; file "dbs.17.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "18.172.in-addr.arpa"  { type slave; file "dbs.18.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "19.172.in-addr.arpa"  { type slave; file "dbs.19.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "20.172.in-addr.arpa"  { type slave; file "dbs.20.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "21.172.in-addr.arpa"  { type slave; file "dbs.21.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "22.172.in-addr.arpa"  { type slave; file "dbs.22.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "23.172.in-addr.arpa"  { type slave; file "dbs.23.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "24.172.in-addr.arpa"  { type slave; file "dbs.24.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "25.172.in-addr.arpa"  { type slave; file "dbs.25.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "26.172.in-addr.arpa"  { type slave; file "dbs.26.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "27.172.in-addr.arpa"  { type slave; file "dbs.27.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "28.172.in-addr.arpa"  { type slave; file "dbs.28.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "29.172.in-addr.arpa"  { type slave; file "dbs.29.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "30.172.in-addr.arpa"  { type slave; file "dbs.30.172.in-addr.arpa"; masters { "authNS"; }; };
+// zone "31.172.in-addr.arpa"  { type slave; file "dbs.31.172.in-addr.arpa"; masters { "authNS"; }; };
+
+// zone "168.192.in-addr.arpa" { type slave; file "dbs.168.192.in-addr.arpa"; masters { "authNS"; }; };
+
+//
+// Reverse Zones EXTERNAL
+//
+// zone "xxx.xxx.xxx.in-addr.arpa"  { type slave; file "dbs.xxx.xxx.xxx.in-addr.arpa"; masters { "authNS"; }; };
+
+//
+// Direct Zones
+//
+zone "cskylab.net"  { type slave; file "dbs.cskylab.net"; masters { "authNS"; }; };
+
+// EOF (This line is required)
