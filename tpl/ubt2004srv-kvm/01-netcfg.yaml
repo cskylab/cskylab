@@ -1,0 +1,165 @@
+#
+#   /etc/netplan/01-netcfg.yaml
+#   
+#     This file describes the network interfaces available on your system
+#     For more information, see https://netplan.io/
+#               
+#   Copyright © 2021 cSkyLab.com authors
+#
+
+## No bridge - Setup config
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    {{ .machine.networkinterface }}:
+      dhcp4: no
+      dhcp6: no
+      addresses: [{{ .machine.ipaddress }}/{{ .machine.netmask }}]
+      gateway4: {{ .machine.gateway4 }}
+      nameservers:
+        search:
+          {{- range .machine.searchdomainnames }}
+          - {{ . }}
+          {{- end }}
+        addresses:
+          {{- range .machine.nameservers }}
+          - {{ . }}
+          {{- end }}
+
+## cSkyLab Bridges - kvm-main config
+# network:
+#   version: 2
+#   renderer: networkd
+#   ethernets:
+#     # LAN1 1Gb Rear I/O item 5
+#     eno1:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+#     # LAN2 1Gb Rear I/O item 4
+#     eno2:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+#     # LAN3 1Gb Rear I/O item 7
+#     eno3:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+#     # LAN4 1Gb Rear I/O item 6
+#     eno4:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+#     # LAN5 10Gb Rear I/O item 9
+#     eno5:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+#     # LAN6 10Gb Rear I/O item 8
+#     eno6:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+#     # LAN7 10Gb SFP Rear I/O item 11
+#     eno7:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+
+#     # # LAN8 10Gb SFP Rear I/O item 10
+#     eno8:
+#       optional: true
+#       dhcp4: no
+#       dhcp6: no
+
+#   bonds:
+#     bond_csky:
+#       optional: true
+#       interfaces: [eno5, eno6, eno7, eno8]
+#       parameters:
+#         mode: 802.3ad
+#         mii-monitor-interval: 1
+
+#   bridges:
+#     br_wan:
+#       # wan - external
+#       optional: true
+#       interfaces: [vlan.909, eno4]
+#     br_sys:
+#       # sys - System services
+#       optional: true
+#       interfaces: [vlan.910, eno2]
+#       addresses: [192.168.80.10/24]
+#       gateway4: 192.168.80.1
+#       nameservers:
+#         search:
+#           - cskylab.net
+#         addresses:
+#           - 192.168.80.1
+#     br_sys_pfsync:
+#       # base_pfsync - Opnsense cluster synchronization
+#       optional: true
+#       interfaces: [vlan.911]
+#     br_mod_srv:
+#       # mod_srv - Model services
+#       optional: true
+#       interfaces: [vlan.912]
+#     br_pro_srv:
+#       # pro_srv - Prod services
+#       optional: true
+#       interfaces: [vlan.913]
+#     br_usr:
+#       # usr - Users local access
+#       optional: true
+#       interfaces: [vlan.914, eno3]
+#     br_setup:
+#       # setup - External LAN
+#       optional: true
+#       interfaces: [vlan.915, eno1]
+#       dhcp4: true
+
+#   vlans:
+#     vlan.909:
+#       # wan - external
+#       optional: true
+#       accept-ra: no
+#       id: 909
+#       link: bond_csky
+#     vlan.910:
+#       # base - Base services & local management
+#       optional: true
+#       accept-ra: no
+#       id: 910
+#       link: bond_csky
+#     vlan.911:
+#       # base_pfsync - Opnsense cluster synchronization
+#       optional: true
+#       accept-ra: no
+#       id: 911
+#       link: bond_csky
+#     vlan.912:
+#       # mod_srv - Model services
+#       optional: true
+#       accept-ra: no
+#       id: 912
+#       link: bond_csky
+#     vlan.913:
+#       # pub_srv - Publishing services
+#       optional: true
+#       accept-ra: no
+#       id: 913
+#       link: bond_csky
+#     vlan.914:
+#       # usr - Users local access
+#       optional: true
+#       accept-ra: no
+#       id: 914
+#       link: bond_csky
+#     vlan.915:
+#       # setup - External LAN setup
+#       optional: true
+#       accept-ra: no
+#       id: 915
+#       link: bond_csky

@@ -1,0 +1,10 @@
+#
+# Systemd network file to bring up interface
+#               
+
+[Match]
+Name=brvlan.0000
+
+[Network]
+LinkLocalAddressing=no
+IPv6AcceptRA=no
