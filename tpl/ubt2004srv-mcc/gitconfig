@@ -1,0 +1,7 @@
+[user]
+        name = {{ .machine.localadminusername }}
+        email = {{ .machine.localadminusername }}@{{ .machine.hostname }}
+[color]
+	ui = true
+[credential]
+        helper = store
