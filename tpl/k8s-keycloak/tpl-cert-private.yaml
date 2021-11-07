@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: private-certificate
+  namespace: {{ .namespace.name }}
+spec:
+  secretName: private-certificate-secret
+  dnsNames:
+  - {{ .namespace.name }}
+  - {{ .namespace.name }}.{{ .namespace.domain }}
+  issuerRef:
+    name: ca-test-internal
+    # We can reference ClusterIssuers by changing the kind here.
+    # The default value is Issuer (i.e. a locally namespaced Issuer)
+    kind: ClusterIssuer
+    group: cert-manager.io
