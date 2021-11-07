@@ -1,0 +1,27 @@
+#
+#   cskygen configuration values file
+#
+#   Copyright © 2021 cSkyLab.com
+#
+
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl/k8s-cert-manager -d ../cs-pro/k8s-pro/cert-manager -f k8s-pro-cert-manager
+#
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-pro
+
+namespace:
+  ## k8s namespace name
+  name: cert-manager
+
+letsencrypt:
+  # Let's Encrypt will use this to contact you about expiring
+  # certificates, and issues related to your account.
+  email: certadmin@cskylab.net
