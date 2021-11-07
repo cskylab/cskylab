@@ -1,0 +1,25 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: cs-ingress-nginx
+_tpldescription: Ingress nginx controller for Kubernetes.
+_tplversion: 21.11.07
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: ingress-nginx
+
+ingressnginx:
+  ## LoadBanancer IP static address
+  ## Must be previously configured in MetalLB
+  loadbalancerip: 192.168.82.20

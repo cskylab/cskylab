@@ -1,0 +1,18 @@
+controller:
+  ## Name of the ingress class to route through this controller
+  ##
+  ingressClass: nginx
+  ## DaemonSet or Deployment
+  ##
+  kind: DaemonSet
+  service:
+    type: LoadBalancer
+    # IPAddress assigned in metallb config
+    loadBalancerIP: {{ .ingressnginx.loadbalancerip }}
+    externalTrafficPolicy: Local
+
+## Gitlab-shell
+## If gitlab is installed, you can redirect a tcp port
+## to gitlab 
+# tcp:
+#   22: "<gitlab_namespace_name>/<gitlab_shell_service_name>:22"
