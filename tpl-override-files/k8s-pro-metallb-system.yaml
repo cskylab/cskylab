@@ -1,0 +1,30 @@
+#
+#   cskygen configuration values file
+#
+#   Copyright © 2021 cSkyLab.com
+#
+
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl/k8s-metallb-system -d ../cs-mod/k8s-pro/metallb-system -f k8s-pro-metallb-system
+#
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-pro
+
+namespace:
+  ## k8s namespace name
+  name: metallb-system
+
+## MetalLB static and dynamc ip addresses pools
+metallb:
+  staticpooladdr: 
+    - 192.168.83.20/32  # k8s-ingress
+  dynamicpooladdr: 
+    - 192.168.83.75-192.168.83.90   # Auto assigned
+  
