@@ -7,7 +7,7 @@
 # 
 #   Command:
 #
-#   cskygen create -t ../tpl/k8s-metallb-system -d ../cs-mod/k8s-pro/metallb-system -f k8s-pro-metallb-system
+#   cskygen create -t ../tpl/k8s-metallb-system -d ../cs-pro/k8s-pro/metallb-system -f k8s-pro-metallb-system
 #
 
 #
