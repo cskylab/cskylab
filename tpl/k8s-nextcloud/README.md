@@ -1,4 +1,4 @@
-# [Nextcloud](https://nextcloud.com/) file sharing server v20.0.8 <!-- omit in toc -->
+# [Nextcloud](https://nextcloud.com/) file sharing server <!-- omit in toc -->
 
 ## `nextcloud/nextcloud` v2.9.1 <!-- omit in toc -->
 
