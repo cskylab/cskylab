@@ -8,6 +8,8 @@
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
+  ![ ](./images/nextcloud-2021-11-08_22-57-13.png)
+
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
   - [Persistent Volumes](#persistent-volumes)
