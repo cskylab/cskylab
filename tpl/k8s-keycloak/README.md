@@ -527,23 +527,27 @@ Examples:
 
 The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
 
-| Parameter                   | Description                | Values                             |
-| --------------------------- | -------------------------- | ---------------------------------- |
-| `_tplname`                  | template name              | `{{ ._tplname }}`                  |
-| `_tpldescription`           | template description       | `{{ ._tpldescription }}`           |
-| `_tplversion`               | template version           | `{{ ._tplversion }}`               |
-| `kubeconfig`                | kubeconfig file            | `{{ .kubeconfig }}`                |
-| `namespace.name`            | namespace name             | `{{ .namespace.name }}`            |
-| `namespace.domain`          | domain name                | `{{ .namespace.domain }}`          |
-| `publishing.url`            | external URL               | `{{ .publishing.url }}`            |
-| `publishing.password`       | password                   | `{{ .publishing.password }}`       |
-| `certificate.clusterissuer` | cert-manager clusterissuer | `{{ .certificate.clusterissuer }}` |
-| `registry.private`          | private registry URL       | `{{ .registry.private }}`          |
-| `registry.proxy`            | docker private proxy URL   | `{{ .registry.proxy }}`            |
-| `registry.username`         | private registry username  | `{{ .registry.username }}`         |
-| `registry.password`         | private registry password  | `{{ .registry.password }}`         |
-| `localpvnodes.all_pv`       | dataservice node           | `{{ .localpvnodes.all_pv }}`       |
-| `localrsyncnodes.all_pv`    | rsync node                 | `{{ .localrsyncnodes.all_pv }}`    |
+| Parameter                   | Description                                      | Values                             |
+| --------------------------- | ------------------------------------------------ | ---------------------------------- |
+| `_tplname`                  | template name                                    | `{{ ._tplname }}`                  |
+| `_tpldescription`           | template description                             | `{{ ._tpldescription }}`           |
+| `_tplversion`               | template version                                 | `{{ ._tplversion }}`               |
+| `kubeconfig`                | kubeconfig file                                  | `{{ .kubeconfig }}`                |
+| `namespace.name`            | namespace name                                   | `{{ .namespace.name }}`            |
+| `namespace.domain`          | domain name                                      | `{{ .namespace.domain }}`          |
+| `publishing.url`            | external URL                                     | `{{ .publishing.url }}`            |
+| `publishing.password`       | password                                         | `{{ .publishing.password }}`       |
+| `certificate.clusterissuer` | cert-manager clusterissuer                       | `{{ .certificate.clusterissuer }}` |
+| `registry.private`          | private registry URL                             | `{{ .registry.private }}`          |
+| `registry.proxy`            | docker private proxy URL                         | `{{ .registry.proxy }}`            |
+| `registry.username`         | private registry username                        | `{{ .registry.username }}`         |
+| `registry.password`         | private registry password                        | `{{ .registry.password }}`         |
+| `restic.password`           | password to access restic repository (mandatory) | `{{ .restic.password }}`           |
+| `restic.repo`               | restic repository (mandatory)                    | `{{ .restic.repo }}`               |
+| `restic.aws_access`         | S3 bucket access key (if used)                   | `{{ .restic.aws_access }}`         |
+| `restic.aws_secret`         | S3 bucket secret key (if used)                   | `{{ .restic.aws_secret }}`         |
+| `localpvnodes.all_pv`       | dataservice node                                 | `{{ .localpvnodes.all_pv }}`       |
+| `localrsyncnodes.all_pv`    | rsync node                                       | `{{ .localrsyncnodes.all_pv }}`    |
 
 ## License
 

@@ -1,12 +1,12 @@
-# Gitlab open DevOps platform <!-- omit in toc -->
+# [Nextcloud](https://nextcloud.com/) file sharing server v20.0.8 <!-- omit in toc -->
 
-## `gitlab/gitlab` v5.4.1 `bitnami/postgresql` v10.13.5<!-- omit in toc -->
+## `nextcloud/nextcloud` v2.9.1 <!-- omit in toc -->
 
-[Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.
+## `bitnami/mariadb` v9.7.1 <!-- omit in toc -->
+
+[Nextcloud](https://nextcloud.com/) is a file sharing server that puts the control and security of your own data back into your hands.
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
-
-  ![ ](./images/gitlab-2021-11-08_15-24-36.png)
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -14,25 +14,18 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [LVM Data Services](#lvm-data-services)
     - [Backup & data protection](#backup--data-protection)
 - [How-to guides](#how-to-guides)
+- [Usage](#usage)
   - [Pull Charts](#pull-charts)
   - [Install](#install)
   - [Update](#update)
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Gitlab Application Backup & Restore](#gitlab-application-backup--restore)
-    - [Rails-Secret Backup](#rails-secret-backup)
-    - [Cron based backups](#cron-based-backups)
-    - [Manual Backup](#manual-backup)
-    - [Access to backup tar files](#access-to-backup-tar-files)
-    - [Restore from GitLab rails-secret and backup tar files](#restore-from-gitlab-rails-secret-and-backup-tar-files)
-      - [Restore the rail secrets](#restore-the-rail-secrets)
-  - [GitLab - Keycloak OpenID Connect OmniAuth provider](#gitlab---keycloak-openid-connect-omniauth-provider)
-    - [Step 1 - Create an OIDC Client in Keycloak](#step-1---create-an-oidc-client-in-keycloak)
-    - [Step 2 - Configure OIDC Client in Keycloak](#step-2---configure-oidc-client-in-keycloak)
-    - [Step 3 - Verify Configuration Endpoint](#step-3---verify-configuration-endpoint)
-    - [Step 4 - Configure Gitlab](#step-4---configure-gitlab)
-    - [Step 5 - Deploy and Login to Gitlab](#step-5---deploy-and-login-to-gitlab)
+  - [Keycloak Client Configuration](#keycloak-client-configuration)
+  - [Nextcloud OIDC Configuration](#nextcloud-oidc-configuration)
+  - [Nextcloud occ commands](#nextcloud-occ-commands)
+    - [Add missing indexes](#add-missing-indexes)
+    - [List custom certificates](#list-custom-certificates)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
 - [Reference](#reference)
@@ -50,23 +43,22 @@ Prepare LVM Data services for PV's:
 
 - [LVM Data Services](#lvm-data-services)
 
-Install namespace and charts:
+Install:
 
 ```bash
 # Pull charts to './charts/' directory
 ./csdeploy.sh -m pull-charts
-# Install  
+# Install
 ./csdeploy.sh -m install
 # Check status
 ./csdeploy.sh -l
-# Save rail secrets to rail-secrets.yaml
-kubectl -n={{ .namespace.name }} get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
+
 ```
 
 Run:
 
 - Published at: `{{ .publishing.url }}`
-- Username: `root`
+- Username: `admin`
 - Password: `{{ .publishing.password }}`
 
 ## Prerequisites
@@ -76,15 +68,16 @@ Run:
 
 ### Persistent Volumes
 
+Review values in all Persistent volume manifests with the name format `./pv-*.yaml`.
+
 The following PersistentVolume & StorageClass manifests are applied:
 
 ```bash
 # PV manifests
-pv-gitaly.yaml
-pv-minio.yaml
-pv-postgresql.yaml
+pv-ncdata.yaml
+pv-mariadb.yaml
 pv-redis-master.yaml
-pv-task-runner.yaml
+pv-redis-slave.yaml
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.
@@ -102,11 +95,10 @@ To **create** the corresponding LVM data services, execute inside the appropriat
 ```bash
 # Create LVM data service (Execute inside the node(s) that holds the local storage)
 sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
-&& mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
-&& mkdir "/srv/{{ .namespace.name }}/data/minio" \
+&& mkdir "/srv/{{ .namespace.name }}/data/ncdata" \
+&& mkdir "/srv/{{ .namespace.name }}/data/mariadb" \
 && mkdir "/srv/{{ .namespace.name }}/data/redis-master" \
-&& mkdir "/srv/{{ .namespace.name }}/data/gitaly" \
-&& mkdir "/srv/{{ .namespace.name }}/data/task-runner"
+&& mkdir "/srv/{{ .namespace.name }}/data/redis-slave"
 ```
 
 To **delete** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
@@ -191,6 +183,8 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 
 ## How-to guides
 
+## Usage
+
 ### Pull Charts
 
 To pull charts, change the repositories and charts needed in variable `source_charts` inside the script `csdeploy.sh`  and run:
@@ -214,8 +208,6 @@ To create namespace, persistent volumes and install charts:
 ```
 
 Notice that PV's are not namespaced. They are deployed at cluster scope.
-
-After installation you must save a copy of the rail secrets.
 
 ### Update
 
@@ -257,211 +249,133 @@ To display namespace, persistence and chart status run:
     ./csdeploy.sh -l
 ```
 
-### Gitlab Application Backup & Restore
+### Keycloak Client Configuration
 
-#### Rails-Secret Backup
+Login to Keycloak console with an administrator for the realm.
 
-After installation you must save a copy of the rail secrets:
+Under Clients, Create a new client:
 
-```bash
-# Save rail secrets to rail-secrets.yaml
-kubectl -n={{ .namespace.name }} get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
-```
-
-> IMPORTANT: The file `rail-secrets.yaml` must to be stored in a secure location. It is needed to fully restore your backups into another GitLab namespace.
-
-#### Cron based backups
-
-GitLab provides a pod from the Task Runner sub-chart that is equipped with a backup-utility executable which interacts with other necessary pods for this task.
-
-The chart has enabled the backup-utility by default, and it can be configured and cron scheduled from file `values-gitlab.yaml` in the following section:
-
-```yaml
-## Settings for individual sub-charts under GitLab
-## Note: Many of these settings are configurable via globals
-gitlab:
-  ## doc/charts/gitlab/task-runner
-  task-runner:
-    replicas: 1
-    antiAffinityLabels:
-      matchLabels:
-        app: 'gitaly'
-    backups:
-      cron:
-        enabled: true
-        concurrencyPolicy: Replace
-        failedJobsHistoryLimit: 1
-        # Backup every day at 23:55
-        schedule: "55 23 * * *"
-        successfulJobsHistoryLimit: 3
-        extraArgs: "-t daily"
-        persistence:
-          enabled: true
-          storageClass: {{ .namespace.name }}-task-runner
-          accessMode: ReadWriteOnce
-          size: 8Gi
-```
-
-#### Manual Backup
-
-Ensure the task runner pod is running, by executing the following command:
-
-```bash
-# Get task-runner running pods
-kubectl -n={{ .namespace.name }} get pods --field-selector=status.phase=Running -lapp=task-runner -o=json | jq -r .items[0].metadata.name
-```
-
-To run GitLab backup utility and create a backup named `manual-backup`:
-
-```bash
-# GitLab manual-backup
-kubectl -n={{ .namespace.name }} exec $(kubectl -n={{ .namespace.name }} get pods --field-selector=status.phase=Running -lapp=task-runner -o=json | jq -r .items[0].metadata.name) -it -- backup-utility -t manual-backup
-```
-
-#### Access to backup tar files
-
-To access the backup `*.tar` files, log in to the minio service in <https://minio-{{ .publishing.url }}> and navigate to `gitlab-backups` bucket.
-
-You can obtain `Access Key` and `Secret Key` by running:
-
-```bash
-## Get secret for Access Key:
-kubectl -n={{ .namespace.name }} get secret gitlab-minio-secret -ojsonpath='{.data.accesskey}' | base64 --decode ; echo
-
-## Get secret for Access Key:
-kubectl -n={{ .namespace.name }} get secret gitlab-minio-secret -ojsonpath='{.data.secretkey}' | base64 --decode ; echo
-```
-
-#### Restore from GitLab rails-secret and backup tar files
-
-To restore a GitLab installation from rails-secrets and backup tar files, follow instructions in: <https://docs.gitlab.com/charts/backup-restore/restore.html>
-
-##### Restore the rail secrets
-
-To restore rail secrets from a previous backup file `rail-secrets.yaml`:
-
-```bash
-# Find the object name for the rails secrets (gitlab-rails-secret)
-kubectl -n={{ .namespace.name }} get secrets | grep rails-secret
-
-# Delete the existing secret
-kubectl -n={{ .namespace.name }} delete secret gitlab-rails-secret
-
-# Create the new secret with the same name from backup file
-kubectl -n={{ .namespace.name }} create secret generic gitlab-rails-secret --from-file=secrets.yml=rail-secrets.yaml
-
-# Restart the pods
-kubectl -n={{ .namespace.name }} delete pods -lapp=sidekiq \
-&& kubectl -n={{ .namespace.name }} delete pods -lapp=webservice \
-&& kubectl -n={{ .namespace.name }} delete pods -lapp=task-runner
-```
-
-### GitLab - Keycloak OpenID Connect OmniAuth provider
-
-This procedure creates an OpenID connection that allows SSO to GitLab from Keycloak. You can find documentation about OmniAuth provider in:
-
-- Ref. omniauth: <https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/doc/charts/globals.md#omniauth>
-
-- Ref. provider: <https://docs.gitlab.com/ee/administration/auth/oidc.html>
-
-#### Step 1 - Create an OIDC Client in Keycloak
-
-Log in to Keycloak with a realm administrator.
-
-Go to **Clients page** and **Create** a new client with the following settings:
-
-- Client ID: {{ .namespace.name }}
+- Client ID: nextcloud
 - Client Protocol: openid-connect
-- Root URL: https://{{ .publishing.url }}
+- Root URL: <https://{{ .publishing.url }}>
 - Save
-  
-#### Step 2 - Configure OIDC Client in Keycloak
 
-Configure the new client with the following settings (use the appropriate url and domain name):
+On the client settings page:
 
-- Login Theme: bootstrap-csky-gitlab
-- Client Protocol: openid-connect
-- Access Type: confidential
-- Standard Flow Enabled: ON
-- Implicit Flow Enabled: OFF
-- Direct Access Grants Enabled: ON
-- Service Accounts Enabled: OFF
-- Authorization Enabled: OFF
-- Root URL: https://{{ .publishing.url }}
+- Login Theme: bootstrap-csky-nextcloud
+- Access type: confidential
+- Root URL: <https://{{ .publishing.url }}>
 - Valid Redirect URIs: *
-- Web Origins: https://{{ .publishing.url }}/*
+- Web Origins: <http://{{ .publishing.url }}/*>
 - Save
 
-Save and go to **Credentials** tab. Copy the **Secret** field to use later.
+On the client roles tab, add roles correspongding to Nextcloud groups:
 
-#### Step 3 - Verify Configuration Endpoint
+- admin (mandatory)
 
-From GitLab application point of view, Keycloak is the OIDC provider and the realm is the issuer of the authorization.
+On the client Mappers tab, create a new Mapper for mapping roles:
 
-Before proceding to GitLab configuration, ensure that the autentication Endpoint is working as expected. (Check the appropiate host and realm)
+- Name: nextcloud-roles-mapping
+- Mapper Type: User Client Role
+- Client Id: nextcloud
+- Token Claim Name: resource_access.${client_id}.roles
+- Claim JSON Type: String
+- Add to ID token: ON
+- Add to access token: ON
+- Add to userinfo: ON
+- Save
 
-- {{ .keycloak.issuer }}/.well-known/openid-configuration
+On the client Mappers tab, create a second Mapper for the 'sub' property. (RECOMENDED)
 
-Verify and keep the issuer url, to later use on GitLab configuration.
+- Name: nextcloud-sub-mapping
+- Mapper Type: User Property
+- Property: username
+- Token Claim Name: sub
+- Claim JSON Type: String
+- Add to ID token: ON
+- Add to access token: ON
+- Add to userinfo: ON
+- Save
 
-#### Step 4 - Configure Gitlab
+Go to Manage > Users. Select a user and go to Role Mappings tab. On Client Roles, select the nextcloud client and assign the admin role. (Recommended for Nexcloud Administration if value `social_login_auto_redirect=true`)
 
-Verify the file `keycloak-provider.yaml` with the obtained values in previous steps:
+Verify it was accepted by going back to clients > nextcloud > Client Scopes >  Evaluate, selecting the user, then viewing the Generated Access Token.
+
+Verify it was accepted by going back to clients > nextcloud > Client Scopes >  Evaluate, selecting the user, then viewing the Generated Access Token.
+
+Go to the Installation tab in nextcloud client. In Format Option select Keycloak OIDC JSON format to get the client secret which will be needed to configure Nextcloud for logins.
+
+Go to Realm Settings - General tab. In Endpoints, click **OpenID Endpoint Configuration** and prepare the values to provide later in Nextcloud Custom OpenID Connect:
+
+- <authorization_endpoint>
+- <token_endpoint>
+- <userinfo_endpoint>
+- <end_session_endpoint>
+
+### Nextcloud OIDC Configuration
+
+You must download and enable the **Social Login** app.
+
+In **Administration - Social login** check the following settings:
+
+- Prevent create an account if the email address exists in another account - checked
+- Update user profile on every login - check (user changes in Keycloak propogate on next login)
+- Automatically create groups if they do not exists - checked
+- Save (Be sure to save. There is no warning if you don't)
+
+Add a new Custom OpenID Connect:
+
+- Internal name: keycloak
+- Title: Keycloak SSO
+- Authorize url: <authorization_endpoint> from the realm OpenID Endpoint Configuration page
+- Token URL: <token_endpoint> from the realm OpenID Endpoint Configuration page
+- User info URL: <userinfo_endpoint>  from the realm OpenID Endpoint Configuration page
+- Logout URL: <end_session_endpoint> from the realm OpenID Endpoint Configuration page
+- Client Id: nextcloud
+- Client Secret: From the client Credentials page from the Keycloak client Installation tab (Keycloak OIDC JSON)
+- Scope: openid
+- Groups claim: resource_access.nextcloud.roles
+
+Roles assigned to users in Keycloak are maped to groups in Nextcloud. At least you must manually map the admin role. Other roles should be mapped as needed:
+
+- admin - admin
+
+Save (Be sure to save. There is no warning if you don't)
+
+Automatic login redirection is disabled by default on `values-nextcloud.yaml` file. To enable modify the `social_login_auto_redirect` value as follows:
 
 ```yaml
-# File keycloak-provider.yaml
-name: 'openid_connect'
-label: 'Keycloak'
-icon: 'https://external-content.duckduckgo.com/ip3/www.keycloak.org.ico'
-args:
-  name: 'openid_connect'
-  uid_field: sub
-  scope: ['openid']
-  response_type: 'code'
-  issuer: {{ .keycloak.issuer }}
-  discovery: true
-  client_auth_method: 'query'
-  send_scope_to_token_endpoint: true
-  client_options: {
-    identifier: '{{ .namespace.name }}',
-    secret: {{ .keycloak.secret }},
-    redirect_uri: 'https://{{ .publishing.url }}/users/auth/openid_connect/callback'
-  }
+    cskylab.social-login.config.php: |-
+      <?php
+      $CONFIG = array (
+        'social_login_auto_redirect' => true
+      ); 
 ```
 
-Activate **OmniAuth Provider** in file `values-gitlab.yaml` updating the following section:
+### Nextcloud occ commands
 
-```yaml
-  appConfig:
-    ## doc/charts/globals.md#omniauth
-    omniauth:
-      ## OIDC
-      enabled: true
-      allowSingleSignOn: ['openid_connect']
-      autoSignInWithProvider: 
-      syncProfileFromProvider: ['openid_connect']
-      syncProfileAttributes: ['email']
-      blockAutoCreatedUsers: false
-      autoLinkLdapUser: false
-      autoLinkSamlUser: false
-      autoLinkUser: ['openid_connect']
-      externalProviders: []
-      allowBypassTwoFactor: true
-      providers:
-      - secret: gitlab-keycloak-secret
-        key: provider
+Nextcloud’s `occ` command (origins from “ownCloud Console”) is Nextcloud’s command-line interface.
+
+To run occ commands, open a terminal into nextcloud pod and run commands with the following wrapper:
+
+```bash
+## Wrapper for occ commands
+runuser --user www-data -- php occ <command>
 ```
 
-#### Step 5 - Deploy and Login to Gitlab
+#### Add missing indexes
 
-When login via Keycloak works, you can automatically redirect to your login provider.
+```bash
+# Add missing indexes
+runuser --user www-data -- php occ db:add-missing-indices
+```
 
-Before activate automatic redirection, verify you have an administrator user in GitLab mapped to a Keycloak user to be able to administer GitLab after redirection.
+#### List custom certificates
 
-To do so, set `autoSignInWithProvider: openid_connect` in file `values-gitlab.yaml` and update
-the configuration by running `./csdeploy.sh -m update`.
-
-Now when login into GitLab, you should automatically get redirected to Keycloak.
+```bash
+# List custom certificates
+runuser --user www-data -- php occ security:certificates
+```
 
 ### Utilities
 
@@ -483,15 +397,16 @@ Change the parameter `head -c 16` according with the desired length of the secre
 
 To learn more see:
 
-- <https://docs.gitlab.com/charts/>
-- <https://docs.gitlab.com/ee/administration/package_information/postgresql_versions.html>
+- <https://docs.nextcloud.com/server/latest/admin_manual/>
+- <https://docs.nextcloud.com/server/latest/user_manual/en/>
+- <https://github.com/nextcloud/helm/tree/master/charts/nextcloud>
 
 ### Helm charts and values
 
-| Chart              | Values                   |
-| ------------------ | ------------------------ |
-| gitlab/gitlab      | `values-gitlab.yaml`     |
-| bitnami/postgresql | `values-postgresql.yaml` |
+| Chart               | Values                  |
+| ------------------- | ----------------------- |
+| nextcloud/nextcloud | `values-nextcloud.yaml` |
+| bitnami/mariadb     | `values-mariadb.yaml`   |
 
 ### Scripts
 
@@ -499,7 +414,7 @@ To learn more see:
 
 ```console
 Purpose:
-  GitLab {{ .namespace.name }}.
+  Kubernetes Nextcloud file sharing server.
 
 Usage:
   sudo csdeploy.sh [-l] [-m <execution_mode>] [-h] [-q]
@@ -548,8 +463,6 @@ Examples:
 |                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
 | [install]                        |                            | **Create namespace, certificate, secrets and PV's**                         |
 |                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-|                                  | Create certificates        | Apply all certificate manifests in the form `cert-*.yaml`.                  |
-|                                  | Create secrets             | Create secrets containing usernames, passwords... etc.                      |
 |                                  | Create PV's                | Apply all persistent volume manifests in the form `pv-*.yaml`.              |
 | [update] [install]               |                            | **Deploy charts**                                                           |
 |                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
@@ -581,8 +494,6 @@ The following table lists template configuration parameters and their specified 
 | `publishing.url`            | external URL                                     | `{{ .publishing.url }}`            |
 | `publishing.password`       | password                                         | `{{ .publishing.password }}`       |
 | `certificate.clusterissuer` | cert-manager clusterissuer                       | `{{ .certificate.clusterissuer }}` |
-| `keycloak.issuer`           | keycloak issuer url                              | `{{ .keycloak.issuer }}`           |
-| `keycloak.secret`           | keycloak secret                                  | `{{ .keycloak.secret }}`           |
 | `registry.proxy`            | docker private proxy URL                         | `{{ .registry.proxy }}`            |
 | `restic.password`           | password to access restic repository (mandatory) | `{{ .restic.password }}`           |
 | `restic.repo`               | restic repository (mandatory)                    | `{{ .restic.repo }}`               |

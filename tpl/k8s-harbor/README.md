@@ -411,8 +411,13 @@ The following table lists template configuration parameters and their specified 
 | `publishing.url`            | external URL               | `{{ .publishing.url }}`            |
 | `publishing.password`       | password                   | `{{ .publishing.password }}`       |
 | `certificate.clusterissuer` | cert-manager clusterissuer | `{{ .certificate.clusterissuer }}` |
-| `localpvnodes.all_pv`       | dataservice node           | `{{ .localpvnodes.all_pv }}`       |
-| `localrsyncnodes.all_pv`    | rsync node                 | `{{ .localrsyncnodes.all_pv }}`    |
+| `registry.proxy`            | docker private proxy URL                         | `{{ .registry.proxy }}`            |
+| `restic.password`           | password to access restic repository (mandatory) | `{{ .restic.password }}`           |
+| `restic.repo`               | restic repository (mandatory)                    | `{{ .restic.repo }}`               |
+| `restic.aws_access`         | S3 bucket access key (if used)                   | `{{ .restic.aws_access }}`         |
+| `restic.aws_secret`         | S3 bucket secret key (if used)                   | `{{ .restic.aws_secret }}`         |
+| `localpvnodes.all_pv`       | dataservice node                                 | `{{ .localpvnodes.all_pv }}`       |
+| `localrsyncnodes.all_pv`    | rsync node                                       | `{{ .localrsyncnodes.all_pv }}`    |
 
 ## License
 
