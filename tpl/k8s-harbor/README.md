@@ -91,7 +91,7 @@ Data services are supported by the following nodes:
 To **create** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
 
 ```bash
-# Commands to execute inside the node(s) that holds the local storage
+# Create LVM data service (Execute inside the node(s) that holds the local storage)
 sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
 && mkdir "/srv/{{ .namespace.name }}/data/chartmuseum" \
 && mkdir "/srv/{{ .namespace.name }}/data/jobservice" \
@@ -104,7 +104,7 @@ sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
 To **delete** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
 
 ```bash
-# Commands to execute inside the node(s) that holds the local storage
+# Delete LVM data service (Execute inside the node(s) that holds the local storage)
 sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}"
 ```
 
