@@ -39,7 +39,7 @@ restic:
   ## Local path example:
   # repo: '/srv/restic/harbor'
   ## S3 example:
-  # repo: 's3:https://miniostalone.cskylab.net/restic/harbor'
+  # repo: 's3:https://backup.cskylab.net/restic/harbor'
   ## sftp example:
   repo: 'sftp:kos@kvm-main.cskylab.net:/media/data/restic/harbor'
   

@@ -47,7 +47,7 @@ restic:
   ## Local path example:
   # repo: '/srv/restic/keycloak'
   ## S3 example:
-  # repo: 's3:https://miniostalone.cskylab.net/restic/keycloak'
+  # repo: 's3:https://backup.cskylab.net/restic/keycloak'
   ## sftp example:
   repo: 'sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak'
   

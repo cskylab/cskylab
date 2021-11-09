@@ -40,7 +40,7 @@ restic:
   ## Local path example:
   # repo: '/srv/restic/mydir'
   ## S3 example:
-  # repo: 's3:https://miniostalone.cskylab.net/restic/mydir'
+  # repo: 's3:https://backup.cskylab.net/restic/mydir'
   ## sftp example:
   repo: 'sftp:kos@hostname.cskylab.net:/media/data/restic/mydir'
   

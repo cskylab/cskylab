@@ -43,7 +43,7 @@ restic:
   ## Local path example:
   # repo: '/srv/restic/nextcloud'
   ## S3 example:
-  # repo: 's3:https://miniostalone.cskylab.net/restic/nextcloud'
+  # repo: 's3:https://backup.cskylab.net/restic/nextcloud'
   ## sftp example:
   repo: 'sftp:kos@kvm-main.cskylab.net:/media/data/restic/nextcloud'
   
