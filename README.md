@@ -19,8 +19,6 @@ It brings "out of the box" many popular technologies up and running, ready to be
 - [Keycloak](https://www.keycloak.org/) Identity management
 - [GitLab](https://gitlab.com/) Private DevOps platform
 - [Nextcloud](https://nextcloud.com/) Colaboration and file sharing
-- [Jitsi](https://jitsi.org/) Meetings and conference
-- K8s installation models for databases (MariaDB, PostgreSQL, Redis, MSSQL...) and custom applications
 
 And many more to come ...
 
