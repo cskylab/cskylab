@@ -24,11 +24,6 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
     - [Create bucket, users and policies](#create-bucket-users-and-policies)
     - [Delete bucket, users and policies](#delete-bucket-users-and-policies)
     - [Display bucket, users and policies](#display-bucket-users-and-policies)
-    - [Restic bucket backup jobs](#restic-bucket-backup-jobs)
-      - [Prepare the bucket source environment file](#prepare-the-bucket-source-environment-file)
-      - [Launch restic cronjobs](#launch-restic-cronjobs)
-      - [Delete restic cronjobs](#delete-restic-cronjobs)
-      - [Launch an interactive restic-forge environment in a pod](#launch-an-interactive-restic-forge-environment-in-a-pod)
   - [MinIO Client](#minio-client)
     - [Web utility](#web-utility)
     - [Command line utility](#command-line-utility)
@@ -39,7 +34,6 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Scripts](#scripts)
     - [csdeploy](#csdeploy)
     - [csbucket](#csbucket)
-    - [csrestic-minio](#csrestic-minio)
   - [Template values](#template-values)
 - [License](#license)
 
@@ -258,7 +252,7 @@ Buckets can be created together with users and policies for ReadWrite, ReadOnly 
 
 A record file in configuration management `./buckets` folder will be created for each bucket in the form `bucket_name.config`.
 
-Additionally, a source environment file for MinIO bucket access and restic operations will be created in the form `source-bucket_name.sh`. This file can be used for restic backups operations with the script `csrestic-minio.sh`. It can be sourced also from a management console to initialize the variables needed to access bucket through MinIO client `mc` and restic repository through restic commands.
+Additionally, a source environment file for MinIO bucket access and restic operations will be created in the form `source-bucket_name.sh`. This file can be used from a management console to initialize the variables needed to access bucket through MinIO client `mc` and restic repository through restic commands.
 
 #### Create bucket, users and policies
 
@@ -297,83 +291,6 @@ To list current bucket, users and policies:
   ./csbucket.sh -l
 ```
 
-#### Restic bucket backup jobs
-
-You can make restic backups for MinIO buckets with cskylab/csrestic image scheduled through crontab jobs. 
-
-##### Prepare the bucket source environment file
-
-To schedule automatic restic backups for a bucket, you must prepare the bucket source environment file. This file will trigger a cronjob when applying manifests with `csrestic-minio.sh` script. You can copy from `./buckets/` directory and customize the restic environment with the appropriate options for repository, passwords, schedule... etc.
-
-The following is an example of source environment file for a bucket called beatles:
-
-```bash
-#
-#   Source environment file for MinIO bucket beatles
-#
-
-# This script is designed to be sourced
-# No shebang intentionally
-# shellcheck disable=SC2148
-
-## minio bucket environment
-export MINIO_ACCESS_KEY="beatles_rw"
-export MINIO_SECRET_KEY="eeMlviN2Lp653PPgv5M9Bc691nqmbvoP"
-export MINIO_URL="minio-standalone.cskylab.com"
-export MINIO_BUCKET="beatles"
-export MC_HOST_minio="https://beatles_rw:eeMlviN2Lp653PPgv5M9Bc691nqmbvoP@minio-standalone.cskylab.com"
-
-## restic-environment
-export AWS_ACCESS_KEY_ID="restic-test_rw"
-export AWS_SECRET_ACCESS_KEY="iZ6Qpx1WlmXXoXKxBmiCMKWCsYOrgZKr"
-export RESTIC_REPOSITORY="s3:https://minio-standalone.cskylab.com/restic-test/"
-export RESTIC_PASSWORD="sGKvPNSRzQ1YlAxv"
-
-## Restic backup job schedule (UTC)
-## At every 15th minute.
-export RESTIC_BACKUP_JOB_SCHEDULE="*/15 * * * *"
-export RESTIC_FORGET_POLICY="--keep-last 6 --keep-hourly 12 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10"
-
-## Restic repo maintenance job schedule (UTC)
-## At 02:00.
-export RESTIC_REPO_MAINTENANCE_JOB_SCHEDULE="0 2 * * *"
-# Percentage of pack files to check in repo maintenance
-export RESTIC_REPO_MAINTENANCE_CHECK_DATA_SUBSET="10%"
-```
-
-##### Launch restic cronjobs
-
-To launch or reconfigure backup jobs for all `source-*.sh` environment files in the configuration directory, run:
-
-```bash
-  # Apply and reconfigure all restic cronjobs from 'source-*.sh' environment files.
-    csrestic-jobs.sh -m apply
-```
-
-Restic backup jobs and restic repository maintenance jobs are scheduled acording to crontab policies specified in variables `RESTIC_BACKUP_JOB_SCHEDULE` and `RESTIC_REPO_MAINTENANCE_JOB_SCHEDULE`. If any of these variables are empty, the corresponding job will not be scheduled.
-
-Restic repository maintenance jobs should not interfere with regular backup runs.
-
-##### Delete restic cronjobs
-
-To remove all restic cronjobs in the namespace:
-
-```bash
-  # Delete all restic cronjobs.
-    csrestic-jobs.sh -m remove
-```
-
-##### Launch an interactive restic-forge environment in a pod
-
-A restic forge environment is a pod with access to a MinIO bucket and a restic repository mounted with all the snapshots available for restore operations.
-
-To launch a restic forge environment, use the specific MinIO bucket source environment file:
-
-```bash
-  # Launch a restic forge environment for bucket "beatles"
-    csrestic-jobs.sh -f source-beatles.sh
-```
-
 ### MinIO Client
 
 #### Web utility
@@ -388,14 +305,11 @@ To access MinIO throug web utility:
 
 If you have minio client installed, you can access `mc` command line utiliy from the command line.
 
-File `.envrc` export automatically through "direnv" the environment variable needed to operate `mc` with `minio` as hostname from its directory in git repository:
+File `.envrc` export automatically through "direnv" the environment variable needed to operate `mc` with `minio` as hostname from its directory in git repository.
 
-```bash
-# minio-studio environment variable
-export MC_HOST_minio="https://$(kubectl -n={{ .namespace.name }} get secrets minio -o jsonpath={.data.access-key} | base64 --decode):$(kubectl -n={{ .namespace.name }} get secrets minio -o jsonpath={.data.secret-key} | base64 --decode)@{{ .publishing.url }}"
-```
+>**NOTE:** After creating the namespace at first installation with `./csdeploy.sh -m install` you must reload the environment by running `direnv allow`
 
-You can run `mc` commands to operate from console with buckets and files: Ex `mc tree minio`. 
+You can run `mc` commands to operate from console with buckets and files: Ex `mc ls minio` `mc tree minio`.
 
 For more information: <https://docs.min.io/docs/minio-client-complete-guide.html>
 
@@ -549,62 +463,6 @@ Examples:
 |                                               | Display users                         | List users from MinIO client.                                               |
 |                                               | Display policies                      | List policies from MinIO client.                                            |
 |                                               |                                       |                                                                             |
-
-#### csrestic-minio
-
-```console
-Purpose:
-  k8s restic backup jobs for MinIO buckets.
-
-Usage:
-  csrestic-minio.sh [-l] [-m <execution_mode>] [-f <source-env.sh] [-h] [-q]
-
-Execution modes:
-  -l  [list-status]         - List current namespace status.
-  
-  -m  <execution_mode>      - Valid modes are:
-      [apply]               - Apply and reconfigure all restic cronjobs from 'source-*.sh' environment files.
-      [remove]              - Delete all restic cronjobs.
-  
-  -f  <source-env.sh>       - Launch a restic forge environment 
-                              for interactive restore operations.
-
-Options and arguments:
-  -h  Help
-  -q  Quiet (Nonstop) execution
-
-Examples:
-  # Apply and reconfigure all restic cronjobs from 'source-*.sh' environment files.
-    csrestic-minio.sh -m apply
-
-  # Delete all restic cronjobs.
-    csrestic-minio.sh -m remove
-
-  # Launch a restic forge environment for bucket "beatles"
-    csrestic-minio.sh -f source-beatles.sh
-
-  # Display job status
-    csrestic-minio.sh -l
-```
-
-**Tasks performed:**
-
-| ${execution_mode}              | Tasks                                        | Block / Description                                                             |
-| ------------------------------ | -------------------------------------------- | ------------------------------------------------------------------------------- |
-| [forge]                        |                                              | **Launch restic forge environment**                                             |
-|                                | Source env variables from `source-bucket.sh` | Define environment variables from source file.                                  |
-|                                | Generate unique restic forge pod name        | Generate unique restic forge pod name from bucket name and random text.         |
-|                                | Deploy pod                                   | Deploy pod using environment variables.                                         |
-|                                | Conect to pod                                | Open console for interactive restore operations.                                |
-|                                | Delete pod                                   | Delete pod after interactive console session.                                   |
-| [apply]                        |                                              | **Deploy jobs**                                                                 |
-|                                | Apply restic backup cronjobs                 | Apply backup cronjobs scheduled in source environment files `source-*.sh`.      |
-|                                | Apply restic repo maintenance cronjobs       | Apply maintenance cronjobs scheduled in source environment files `source-*.sh`. |
-| [remove]                       |                                              | **Deploy jobs**                                                                 |
-|                                | Delete cronjobs                              | Delete all cronjobs in namespace with label `resticjob`.                        |
-| [list-status] [apply] [remove] |                                              | **Display status information**                                                  |
-|                                | Display namespace                            | Namespace and object status.                                                    |
-|                                |                                              |                                                                                 |
 
 ### Template values
 
