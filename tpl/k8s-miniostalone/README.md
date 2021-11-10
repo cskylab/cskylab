@@ -5,6 +5,8 @@
 [MinIO](https://min.io) is an object storage server, compatible with Amazon S3 cloud storage service, mainly used for storing unstructured data (such as photos, videos, log files, etc.)
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
+  ![ ](./images/minio-2021-11-10_09-45-07.png)
+
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
   - [Persistent Volumes](#persistent-volumes)
