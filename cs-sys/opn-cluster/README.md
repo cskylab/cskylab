@@ -17,7 +17,20 @@ Firewall cluster **opn-cluster** gives routing, firewall, DHCP, DNS and VPN serv
       - [Cloud-init files](#cloud-init-files)
       - [Create virtual machines](#create-virtual-machines)
       - [Restore genesis configuration](#restore-genesis-configuration)
-      - [Customize specific configuration](#customize-specific-configuration)
+    - [Set secure specific configuration](#set-secure-specific-configuration)
+      - [Set root password](#set-root-password)
+      - [Update synchronization password](#update-synchronization-password)
+      - [Set General Settings](#set-general-settings)
+      - [Virtual IP Settings](#virtual-ip-settings)
+      - [Port Forwarding Settings](#port-forwarding-settings)
+      - [WAN Rules](#wan-rules)
+      - [Import private CA](#import-private-ca)
+      - [Generate VPN server certificate](#generate-vpn-server-certificate)
+      - [Generate GUI server certificate (optional)](#generate-gui-server-certificate-optional)
+      - [OpenVPN Servers](#openvpn-servers)
+      - [OpenVPN Users and certificates](#openvpn-users-and-certificates)
+      - [Export OpenVPN client profiles](#export-openvpn-client-profiles)
+      - [Backup configurations and reboot](#backup-configurations-and-reboot)
     - [Usage procedures](#usage-procedures)
       - [Backup and restore configuration](#backup-and-restore-configuration)
       - [Update cluster](#update-cluster)
@@ -170,8 +183,15 @@ sudo cs-kvmserv.sh -m vm-create -i NONE -n opn-tpl \
   ![ ](./images/iso-2021-10-11_19-59-14.png)
   - Configure IPv4 address LAN interface via DHCP
   ![ ](./images/iso-2021-10-11_20-02-04.png)
-  - Check the assigned address for browser access
+  - Reboot the system and check the assigned address for browser access
   ![ ](./images/iso-2021-10-11_20-05-53.png)
+
+- Update software to latest version:
+  - Connect to GUI management interface: `https://<IPAddress>`
+  - From the Dashboard click `Click to check for updates`
+  - Wait for the package to be proposed and click `Update now`
+  - Read the package update messages click `Update now`
+  - Accept reboot if required
 
 - Shutdown the machine from kvm host.
 
@@ -240,6 +260,10 @@ ux
 
 #### Restore genesis configuration
 
+Full OPNSense configuration is stored in a model called **config genesis** for both machines in the cluster.
+
+To restore configuration model:
+
 - Find the assigned dhcp ip addresses for `opn-main` and `opn-aux` machines and connect to both GUI consoles with <https://IPAddress>
 - Login with user `root` and password `opnsense`
 - Go to **System -> Configuration -> Backups**
@@ -247,20 +271,41 @@ ux
   - In `opn-aux` machine restore configuration from file `config-opn-aux.genesis-xxxxxxxx.xml`
 - Wait for reboot and check reconnect at <https://IPAddress:10443>
 
-#### Customize specific configuration
+### Set secure specific configuration
+
+This step updates initial configuration settings with specific security for your installation.
+
+>**SECURITY WARNING:** This step is mandatory to set a secured environment for your firewall and VPN access.
+
+**Prerequisites**:
+
+You must prepare the folder `secrets` in your repository with the specific information for your installation. (Private CA, passwords...)
+
+#### Set root password
 
 - Connect to `opn-main` and `opn-aux` machines GUI consoles with <https://IPAddress:10443>
 - Login with user `root` and password `NoFear21`
+- Go to **System -> Access -> Users**. Edit `root` user and change password.
+- **Save** configuration
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
-**General Settings**:
+#### Update synchronization password
+
+- Go to **System -> High Availability -> Settings** and update `Remote System password` with the new password given.
+- **Save** configuration
+- Go to **System -> High Availability -> Status** and check synchronization again by clicking button on `Synchronize` service.
+
+#### Set General Settings
 
 In both machines `opn-main` and `opn-aux` configure general settings:
 
 - Go to **System -> Settings -> General**
-- Set **Domain**: <Your DataCenter name> Ex.: `mpb-1100`
+- Set **Domain**: Your installation name Ex.: `mpb-1100`
 - **Save** configuration
   
-**Virtual IP Settings**:
+#### Virtual IP Settings
+
+>**Note:** You must have previously created in your internet uplink router the static IP Address for your OPNSense with a port forwarding rule for all protocols.
 
 In `opn-main` configure virtual IP settings:
 
@@ -268,7 +313,8 @@ In `opn-main` configure virtual IP settings:
 - Edit interface `WAN`
 - Set **Address** to your WAN VIP address
 - Set **VHID Group** to your assigned VHID group
-- **Save** configuration
+- **Apply changes** to save configuration
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
 >**WARNING**: Both VIP address and VHID group must be unique among other OPNSense firewalls operating in the same WAN. The virtual MAC address of a CARP interface is `00:00:5e:00:01:XX`, where the last two digits will be populated by its vhid.
 
@@ -278,47 +324,188 @@ In `opn-main` configure virtual IP settings:
 - **Apply changes** to save configuration
 - Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
-**Port Forwarding Settings**:
+#### Port Forwarding Settings
 
 In `opn-main` configure port forwarding settings:
 
 - Go to **Firewall -> NAT -> Port Forward**
 - Edit rule in `Forward SSH to mcc` in `WAN` interface
-- Set **Destination port range** to your assigned port
+- Set **Destination port range** to your assigned port (Ex. 22-22 or another specific for your installation)
 - **Save** configuration
-
 - Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
-**WAN Rules**:
+#### WAN Rules
 
 In `opn-main` configure WAN rules settings:
 
 - Go to **Firewall -> Rules -> WAN**
 - Edit rule in `Allow OpenVPN traffic from WAN`
-- Set **Destination port range** to your assigned port range
+- Set **Destination port range** to your assigned port range (Default is 49152-49156 for 5 VLAN's)
 - **Apply changes** to save configuration
-
 - Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
-**OpenVPN Servers**:
+#### Import private CA
 
-In `opn-main` configure OpenVPN settings:
+- Go to **System -> Trust -> Authorities** and add a Certificate Authority
+- In **Descriptive name** set the name of your CA
+- In **Method** select `Import an existing Certificate Authority`
+- Paste **Certificate data** and **Certificate Private Key** from your keys
+- **Save** configuration
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
+
+#### Generate VPN server certificate
+
+You must create a certificate signed by your private CA
+
+To create and sign a VPN server certificate go to **System -> Trust -> Certificates** and add a new certificate with the following settings:
+
+- Method: `Create an internal Certificate`
+- Descriptive name: `opn-cluster-VPN`
+- Certificate authority: `Your private CA`
+- Type: `Combined Client/Server Certificate`
+- Key Type: `RSA`
+- Key length (bits): `2048`
+- Digest Algorithm: `SHA256`
+- Lifetime (days): `3650`
+- Private key location: `Save on this firewall`
+- Country Code: Your country code Ex.: `ES (Spain)`
+- State or Province: Your State or Province Ex.: `Madrid`
+- City: Your city Ex.: `Madrid`
+- Organization: Your organization Ex.:`cSkyLab`
+- Email Address: Your email address Ex.: `admin@cskylab.net`
+- Common Name: `opn-cluster-VPN`
+- Alternative names: Create wildcard SAN's for your domain (Or specific FQDN for the registered cluster DNS CNAME or address)
+  - Type: `DNS` Value: `opn-cluster-VPN`
+  - Type: `DNS` Value: `*.cskylab.net`
+  - Type: `DNS` Value: `*.cskylab.com` (Used in FastStart hosted services)
+- **Save** configuration
+
+#### Generate GUI server certificate (optional)
+
+You can create a certificate signed by your private CA
+
+To create and sign a VPN server certificate go to **System -> Trust -> Certificates** and add a new certificate with the following settings:
+
+- Method: `Create an internal Certificate`
+- Descriptive name: `opn-cluster-GUI`
+- Certificate authority: `Your private CA`
+- Type: `Server Certificate`
+- Key Type: `RSA`
+- Key length (bits): `2048`
+- Digest Algorithm: `SHA256`
+- Lifetime (days): `397`
+- Private key location: `Save on this firewall`
+- Country Code: Your country code Ex.: `ES (Spain)`
+- State or Province: Your State or Province Ex.: `Madrid`
+- City: Your city Ex.: `Madrid`
+- Organization: Your organization Ex.:`cSkyLab`
+- Email Address: Your email address Ex.: `admin@cskylab.net`
+- Common Name: `opn-cluster-GUI`
+- Alternative names:
+  - Type: `DNS` Value: `opn-cluster-GUI`
+  - Type: `DNS` Value: `opn-main.cskylab.net`
+  - Type: `DNS` Value: `opn-aux.cskylab.net`
+- **Save** configuration
+
+**Configure GUI certificate:**
+
+- Configure GUI Certificate from **System -> Settings -> Administration**
+  - Select **SSL Certificate** and choose `opn-cluster-GUI`
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
+
+#### OpenVPN Servers
+
+Initial configuration comes with two preconfigured VPN servers:
+
+- `mpb-genesis-mgt` for management access
+- `mpb-genesis-usr` for general user access
+
+To modify and secure VPN servers, connect to `opn-main` and configure the following settings:
 
 - Go to **VPN -> OpenVPN -> SERVERS**
-- Edit `mgt` server:
-  - Set **Description** to <Your DataCenter name>-mgt Ex.: `mpb-1100-mgt`
-  - Set **Local Port** to to your assigned port for management vpn Ex.: `49152`
-- Edit `usr` server:
-  - Set **Description** to <Your DataCenter name>-usr Ex.: `mpb-1100-usr`
-  - Set **Local Port** to to your assigned port for users vpn Ex.: `49153`
+- Edit `mpb-genesis-mgt` server:
+  - Set **Description** to Your installation name-mgt Ex.: `mpb-1100-mgt`
+  - Set **Local Port** to your assigned port for management vpn Ex.: `49152`
+  - Set **TLS Authentication** to `Disabled` to delete existing TLS Shared Key
+  - Set **Peer Certificate Authority** to `Your private CA`
+  - **Save** configuration
+  - Edit the configuration again and set  **TLS Authentication** to `Enabled - Authentication only`
+  - Leave checked **Automatically generate a shared TLS authentication key** to generate a new TLS Shared Key.
+  - **Save** configuration
+
+- Edit `mpb-genesis-usr` server:
+  - Set **Description** to Your installation name-mgt Ex.: `mpb-1100-usr`
+  - Set **Local Port** to your assigned port for management vpn Ex.: `49153`
+  - Set **TLS Authentication** to `Disabled` to delete existing TLS Shared Key
+  - Set **Peer Certificate Authority** to `Your private CA`
+  - **Save** configuration
+  - Edit the configuration again and set  **TLS Authentication** to `Enabled - Authentication only`
+  - Leave checked **Automatically generate a shared TLS authentication key** to generate a new TLS Shared Key.
+  - **Save** configuration
 
 - Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
-**Finish configurations**:
+#### OpenVPN Users and certificates
 
+Initial configuration comes with two preconfigured VPN users:
+
+- `vpnmgt`: Access to "management VPN"
+- `vpnusr`: Access to "users VPN"
+
+You can use directly these two generic users, or you can add personal users (and their specific access configuration files) if you want.
+
+- Set passwords for users `vpnmgt` and `vpnusr` (Repeate these steps for each one):
+  - Go to **System -> Access -> Users**
+  - Edit user
+  - Set **Password** and confirmation to your desired new password
+  - **Save** user configuration
+  - Go to **System -> Access -> Tester**
+  - Test **Username** and **Password**
+
+- Set User Certificate for users `vpnmgt` and `vpnusr` (Repeate these steps for each one):
+  - Go to **System -> Access -> Users**
+  - Edit user
+  - Delete previous User Certificate
+  - Add User Certificate with the following values (Leave the other values by default):
+    - Method: `Create an internal Certificate`
+    - Certificate authority: `Your private CA`
+    - Lifetime (days): `3650`
+    - Private key location: `Save on this firewall`
+    - Country Code: Your country code Ex.: `ES (Spain)`
+    - State or Province: Your State or Province Ex.: `Madrid`
+    - City: Your city Ex.: `Madrid`
+    - Organization: Your organization Ex.:`cSkyLab`
+    - Email Address: Your email address Ex.: `admin@cskylab.net`
+    - **Save** certificate configuration
+  - **Save** user configuration
+
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
+
+#### Export OpenVPN client profiles
+
+You must export a profile for each user and server combination. Repeat the following steps for `mgt` and `usr` servers:
+
+- Go to **VPN -> OpenVPN -> Client Export**
+- In **Remote Access Server** Select your server (`mgt` or `usr`)
+- Set **Export type** Choose `File Only` for OpenVPN Connect client or `Viscosity (visz)` for Viscosity client.
+- Change **Hostname** to FQDN registered DNS CNAME or address (Ex.: Duck DNS registered name)
+- Change **Port** to the apropriate server port (Ex.:`49152`)
+- Check **Use random local port**
+- Check **Validate server subject**
+- Click the **download button** for the user profile to download.
+- Save the downloaded profiles into your `opn-cluster` configuration folder in your installation repository.
+  
+>**Note:** You can send the downloaded profile file as an attachment, in an email message to the user. The user must import the profile with the client application (OpenVPN Connect or Viscosity) and test the connection from mobile and desktop environments.
+
+
+#### Backup configurations and reboot
+
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 - Go to **System -> Configuration -> Backups** and backup configurations of both `opn-main` and `opn-aux`
+- Save the downloaded backup xml files into your `opn-cluster` configuration folder in your installation repository.
 - Go to **Power -> Reboot** and reboot both `opn-main` and `opn-aux`
-
+- Check access for `mgt` and `usr` VPN profiles
+  
 ### Usage procedures
 
 #### Backup and restore configuration

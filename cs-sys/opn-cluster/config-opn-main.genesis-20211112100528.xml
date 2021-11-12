@@ -1729,9 +1729,9 @@
     <column_count>2</column_count>
   </widgets>
   <revision>
-    <username>root@192.168.253.13</username>
-    <time>1636570009.1704</time>
-    <description>/api/routes/routes/delroute/15a16d97-40f5-412e-85ea-bbe565c793c7 made changes</description>
+    <username>(system)</username>
+    <time>1636711358.1275</time>
+    <description>/usr/local/opnsense/mvc/script/run_migrations.php made changes</description>
   </revision>
   <OPNsense>
     <Firewall>
@@ -1935,8 +1935,8 @@
       <inactiveTimeout>15</inactiveTimeout>
     </Netflow>
     <Interfaces>
-      <vxlans/>
-      <loopbacks/>
+      <vxlans version="1.0.1"/>
+      <loopbacks version="1.0.0"/>
     </Interfaces>
     <IPsec version="1.0.0">
       <general>
@@ -2085,7 +2085,7 @@
         <privatedomain/>
       </miscellaneous>
     </unboundplus>
-    <monit version="1.0.10">
+    <monit version="1.0.11">
       <general>
         <enabled>0</enabled>
         <interval>120</interval>
@@ -2134,6 +2134,7 @@
         <stop/>
         <tests>5840c6c2-412d-4c87-948e-ed2022afc47f,53b966b9-0590-4af6-a6e0-48beb3e2a55b,c8737eed-fb3d-4aa5-ae74-73b8ba3ba645,c3b75f61-962e-4449-845c-f5192e90077e</tests>
         <depends/>
+        <polltime/>
       </service>
       <service uuid="fcf72fde-5c47-4976-ac20-83bc311cc403">
         <enabled>1</enabled>
@@ -2150,6 +2151,7 @@
         <stop/>
         <tests>4469b982-6724-49ed-b161-c5c2462dfc46</tests>
         <depends/>
+        <polltime/>
       </service>
       <service uuid="0541efdd-8daa-4450-be69-8ddf7bf5267f">
         <enabled>0</enabled>
@@ -2166,6 +2168,7 @@
         <stop/>
         <tests>e6ee75bd-aa8e-4c9a-86f0-b6cd7cbb5f1b</tests>
         <depends/>
+        <polltime/>
       </service>
       <service uuid="ee9cdcd4-7e23-440f-96b5-10af2f3208b1">
         <enabled>0</enabled>
@@ -2182,6 +2185,7 @@
         <stop/>
         <tests>4062bd39-12cd-4911-bcee-93851c1b46c5</tests>
         <depends/>
+        <polltime/>
       </service>
       <test uuid="44e15d7d-81a1-45b4-bbe2-b76fa42187d6">
         <name>Ping</name>
@@ -3638,17 +3642,6 @@
       <descr>Interface WAN_DHCP Gateway</descr>
       <monitor_disable>1</monitor_disable>
       <defaultgw>1</defaultgw>
-    </gateway_item>
-    <gateway_item>
-      <interface>opt5</interface>
-      <gateway>192.168.253.254</gateway>
-      <name>RTR_MPB</name>
-      <priority>255</priority>
-      <weight>1</weight>
-      <ipprotocol>inet</ipprotocol>
-      <interval/>
-      <descr>Router TR-MPB</descr>
-      <monitor_disable>1</monitor_disable>
     </gateway_item>
   </gateways>
   <cert>

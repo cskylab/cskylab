@@ -76,7 +76,7 @@ Review values and modify `email` if needed in both files.
 
 Private CA's clusterissuers manifests must include a TLS Secret manifest with public and private keys. Be sure to keep the private key safe and secret. Note that, like all secrets, data must be base64 encoded.
 
-You can obtain the base64 values `tls.crt` and `tls.key` from the private and public CA keys wit the command:
+You can obtain the base64 values `tls.crt` and `tls.key` from the private and public CA keys with the command:
 
 ```bash
 # Base64 encoding with single line format
