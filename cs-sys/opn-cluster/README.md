@@ -4,6 +4,8 @@
 
 Firewall cluster **opn-cluster** gives routing, firewall, DHCP, DNS and VPN services inside cSkyLab.
 
+  ![ ](./images/opnsense-2021-11-13_00-50-21.png)
+
 ---
 
 - [OPNsense® Firewall & Routing](#opnsense-firewall--routing)
