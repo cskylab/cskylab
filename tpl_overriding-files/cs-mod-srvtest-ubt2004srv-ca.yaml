@@ -10,18 +10,12 @@
 # 
 #   Command:
 #
-#   cskygen create -t ../tpl/ubt2004srv-mcc -d ../cs-mod/srvtest -f cs-mod-srvtest-ubt2004srv-mcc
+#   cskygen create -t ../tpl-cskylab/ubt2004srv-ca -d ../cs-mod/srvtest -f cs-mod-srvtest-ubt2004srv-ca
 #
 
 #
 # Values to override
 #
-
-## Kubernetes version for kubectl
-k8s_version: "1.22.3-00"
-
-## Go version
-go_version: "go1.17.3.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:
@@ -42,4 +36,7 @@ machine:
   setupdir: "/etc/csky-setup"
   systemlocale: "C.UTF-8"
   systemkeyboard: "us"
-  
+## ca name and subject
+ca:
+  caname: ca-test-internal
+  basesubject: /C=ES/ST=Spain/L=Madrid/O=Organization/OU=OrganizationalUnit/CN=ca-test-internal

@@ -10,7 +10,7 @@
 # 
 #   Command:
 #
-#   cskygen create -t ../tpl/ubt2004srv-k8s -d ../cs-mod/srvtest -f cs-mod-srvtest-ubt2004srv-k8s
+#   cskygen create -t ../tpl-cskylab/ubt2004srv-k8s -d ../cs-mod/srvtest -f cs-mod-srvtest-ubt2004srv-k8s
 #
 
 #

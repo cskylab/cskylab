@@ -1,10 +1,20 @@
-# cSkyLab Templates
+# cSkyLab Templates Library
 
 This directory contains templates for generating configuration files for machines, applications and services using the `cskygen` utility.
 
+You can create your own library forking another or creating new templates.
+
+Your library directory should be created at the same level and by named following the convention:
+
+***tpl-yourlibraryname***
+
+Example:
+
+- **tpl-cskylab**: cSkyLab templates library
+
 ## Name conventions
 
-Directories should be named according to the following convention:
+Template directories should be named according to the following convention:
 
 `env-app`
 

@@ -1,4 +1,4 @@
-# Secrets <!-- omit in toc -->
+# Secrets
 
 This folder contains private CA keys, passwords and other files related to specific installation security.
 

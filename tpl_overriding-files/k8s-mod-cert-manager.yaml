@@ -1,5 +1,5 @@
 #
-#   cskygen configuration values file
+#   k8s-mod/cert-manager
 #
 #   Copyright © 2021 cSkyLab.com
 #
@@ -7,7 +7,7 @@
 # 
 #   Command:
 #
-#   cskygen create -t ../tpl/k8s-cert-manager -d ../cs-mod/k8s-mod/cert-manager -f k8s-mod-cert-manager
+#   cskygen create -t ../tpl-cskylab/k8s-cert-manager -d ../cs-mod/k8s-mod/cert-manager -f k8s-mod-cert-manager
 #
 
 #

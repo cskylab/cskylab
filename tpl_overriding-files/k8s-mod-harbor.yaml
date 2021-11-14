@@ -7,7 +7,7 @@
 # 
 #   Command:
 #
-#   cskygen create -t ../tpl/k8s-harbor -d ../cs-mod/k8s-mod/harbor -f k8s-mod-harbor
+#   cskygen create -t ../tpl-cskylab/k8s-harbor -d ../cs-mod/k8s-mod/harbor -f k8s-mod-harbor
 #
 
 #
