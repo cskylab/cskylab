@@ -11,7 +11,7 @@ cskygen is developed to be used with templates using [Go templates](https://godo
 It is compatible and integrates the use of [Helm Charts](https://helm.sh/) in kubernetes services deployment.
 
 - [Background](#background)
-  - [Template Libraries](#template-libraries)
+  - [Templates Libraries](#templates-libraries)
     - [Template development](#template-development)
 - [How-to guides](#how-to-guides)
   - [Build & install cskygen](#build--install-cskygen)
@@ -41,13 +41,13 @@ cskygen uses [Viper](https://github.com/spf13/viper) to read and merge `.yaml` c
 
 > **NOTE**: To avoid parsing images and [Helm Charts](https://helm.sh/), files below directories named `images` or `charts` will not be considered by cskygen.
 
-### Template Libraries
+### Templates Libraries
 
-Template libraries contains templates to generate configuration files for machines, applications and services using the `cskygen` utility.
+Templates libraries contains templates to generate configuration files for machines, applications and services using the `cskygen` utility.
 
 You can create your own library either by forking cSkyLab templates library or by creating it from scratch.
 
-To learn more about cSkylab template library see documentation at [cSkyLab Template Library](../tpl-cskylab/README.md)
+To learn more about cSkylab template library see documentation at [cSkyLab Templates Library](../tpl-cskylab/README.md)
 
 #### Template development
 
