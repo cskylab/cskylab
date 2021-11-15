@@ -12,14 +12,13 @@ It is compatible and integrates the use of [Helm Charts](https://helm.sh/) in ku
 
 - [Background](#background)
   - [Template Libraries](#template-libraries)
-    - [Template name conventions](#template-name-conventions)
     - [Template development](#template-development)
 - [How-to guides](#how-to-guides)
   - [Build & install cskygen](#build--install-cskygen)
     - [Build binary file](#build-binary-file)
-  - [Create configuration files for a new deployment](#create-configuration-files-for-a-new-deployment)
-    - [Prepare the overriding file](#prepare-the-overriding-file)
-    - [Create your service configuration directory from the template](#create-your-service-configuration-directory-from-the-template)
+  - [Creating service and application configuration files from a template](#creating-service-and-application-configuration-files-from-a-template)
+    - [1.- Prepare the overriding file](#1--prepare-the-overriding-file)
+    - [2.- Execute cskygen](#2--execute-cskygen)
 - [License](#license)
 
 ---
@@ -44,47 +43,17 @@ cskygen uses [Viper](https://github.com/spf13/viper) to read and merge `.yaml` c
 
 ### Template Libraries
 
-Template libraries directories (Ex.: `tpl-cskylab`) contains templates for generating configuration files for machines, applications and services using the `cskygen` utility.
+Template libraries contains templates to generate configuration files for machines, applications and services using the `cskygen` utility.
 
-You can create your own library forking another or creating new templates.
+You can create your own library either by forking cSkyLab templates library or by creating it from scratch.
 
-Your library directory should be created at the same level and by named following the convention:
-
-***tpl-yourlibraryname***
-
-Example:
-
-- **tpl-cskylab**: cSkyLab templates library
-
-#### Template name conventions
-
-Template directories should be named according to the following convention:
-
-`env-app`
-
-- ***-env-***: Running environment prefix.
-- ***-app-***: Application or service.
-
-Examples:
-
-- **ubt2004srv-naked**
-  - `ubt2004srv`: Ubuntu Server 20.04
-  - `naked`: Operating system basic installation
-- **ubt2004srv-kvm**
-  - `ubt2004srv`: Ubuntu Server 20.04
-  - `kvm`: KVM Host installation
-- **k8s-metallb**
-  - `k8s`: Kubernetes
-  - `metallb`: Metallb bare metal load-balancer
-- **k8s-harbor**
-  - `k8s`: Kubernetes
-  - `harbor`: Harbor registry
+To learn more about cSkylab template library see documentation at [cSkyLab Template Library](../tpl-cskylab/README.md)
 
 #### Template development
 
 Template resource files must be developed according to [Go templates](https://godoc.org/text/template) specifications.
 
-> **NOTE**: All keys in override and template values files must be in lowercase. Files cannot have empty keys configured.
+> **NOTE**: All keys in overriding and template values files must be in lowercase. Files cannot have empty keys configured.
 
 ## How-to guides
 
@@ -105,16 +74,21 @@ To build and install cskygen binary file in $GOPATH/bin, open a terminal in the 
 go install .
 ```
 
-### Create configuration files for a new deployment
+### Creating service and application configuration files from a template
 
-#### Prepare the overriding file
+To create service and application configuration files from a template you must follow two steps:
+
+1. Prepare the overriding file
+2. Execute cskygen
+
+#### 1.- Prepare the overriding file
 
 - In `tpl_overriding-files` directory create your overriding file (Ex.: `service_name.yaml`) copying contents from `_overriding-model.yaml` file.
 
 It is highly recommended to name the overriding file, according to the service and destination directory names (Ex. `k8s-mod-n1.yaml`, `k8s-mod-metallb.yaml`...).
 
-- Go to the directory of the template you want to use, and open the values file `_values-tpl`
-- Copy the `values to override` section from the file `_values-tpl` into the same section in your overriding file.
+- Go to the directory of the template you want to use, and open the values file `_values-tpl.yaml`
+- Copy the `values to override` section from the file `_values-tpl.yaml` into the same section in your overriding file.
 - Change the desired values for your installation.
 - Modify the code commented command `cskygen create` with the appropriate flags:
 
@@ -162,10 +136,10 @@ metallb:
     - 192.168.82.75-192.168.82.90   # Auto assigned
   ```
 
-#### Create your service configuration directory from the template
+#### 2.- Execute cskygen
 
 - Open a terminal in `tpl_overriding-files` directory
-- Copy and execute the code commented `cskygen create` command in the overriding file
+- Copy and execute the `cskygen create` command in the overriding file
 - Check the created configuration directory.
 
 If you need to repeat the process with different overriding values, simply delete the configuration directory, change the overriding values, and execute again the `cskygen create` command to generate the new configuration directory.
