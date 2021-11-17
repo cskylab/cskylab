@@ -146,7 +146,7 @@ To perform on-demand restic backups:
 ```bash
 ## Data service:  /srv/{{ .namespace.name }}
 ## Restic repo:   {{ .restic.repo }}
-sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }} -r {{ .restic.repo }} -p {{ .restic.password }} -t {{ .namespace.name }}
+sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }} -r {{ .restic.repo }}  -t {{ .namespace.name }}
 ```
 
 To view available backups:
@@ -155,11 +155,11 @@ To view available backups:
 ## Specific tag
 ## Data service: /srv/{{ .namespace.name }}
 ## Restic repo:   {{ .restic.repo }}
-sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} -p {{ .restic.password }} -t {{ .namespace.name }}
+sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }}  -t {{ .namespace.name }}
 
 ## All snapshots
 ## Remote restic repo
-sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} -p {{ .restic.password }}
+sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} 
 ```
 
 **Restic cronjobs:**
@@ -175,7 +175,7 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 ## Data service:  /srv/{{ .namespace.name }}
 ## At minute 30 past every hour from 8 through 23.
 ## Restic repo:   {{ .restic.repo }}
-# 30 8-23 * * *   root run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }} -r {{ .restic.repo }} -p {{ .restic.password }} -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -p {{ .restic.password }} -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }} -r {{ .restic.repo }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ## How-to guides
