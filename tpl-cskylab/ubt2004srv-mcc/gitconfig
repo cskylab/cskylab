@@ -5,3 +5,5 @@
 	ui = true
 [credential]
         helper = store
+[core]
+	editor = code --wait
