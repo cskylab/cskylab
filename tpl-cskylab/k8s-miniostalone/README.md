@@ -129,8 +129,7 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 ################################################################################
 # {{ .namespace.name }} - RSync LVM data services
 ################################################################################
-
-
+##
 ## RSync path:  /srv/{{ .namespace.name }}
 ## To Node:     {{ .localrsyncnodes.all_pv }}
 ## At minute 0 past every hour from 8 through 23.
@@ -170,7 +169,6 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 ################################################################################
 # {{ .namespace.name }} - Restic backups
 ################################################################################
-
 ##
 ## Data service:  /srv/{{ .namespace.name }}
 ## At minute 30 past every hour from 8 through 23.
