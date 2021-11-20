@@ -440,6 +440,7 @@ EOF
   apt-mark unhold kubectl
   set -e
   apt-get install -y kubectl="${k8s_version}"
+  kubectl completion bash |sudo tee /etc/bash_completion.d/kubectl
   apt-mark hold kubectl
 
   # Install helm
