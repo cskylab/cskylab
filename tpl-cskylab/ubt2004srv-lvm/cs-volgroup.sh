@@ -89,8 +89,11 @@ sudo_username="{{ .machine.localadminusername }}"
 # shellcheck disable=SC2034
 setup_dir="{{ .machine.setupdir }}"
 
-# Block device names in volume group (String array space separated)
-declare -a block_dev_names=(/dev/sdb)
+## Block device names in volume group (String array space separated)
+## Physical device
+# declare -a block_dev_names=(/dev/sdb) 
+## Virtual device
+declare -a block_dev_names=(/dev/vdb)
 
 # Volume Group Name
 vg_name="vgdata"
@@ -103,8 +106,8 @@ data_alignment=
 # Volume group physicalextentsize (Optional)
 # physical_extent_size="32M"
 physical_extent_size=
-# Thin Pool Metadata Size (Mandatory. Recommended 16G)
-pool_metadata_size="16G"
+# Thin Pool Metadata Size (Mandatory. Recommended maximum 16G)
+pool_metadata_size="2G"
 # Thin Pool chunk size (Optional)
 # chunk_size="256K"
 chunk_size=
