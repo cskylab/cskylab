@@ -91,11 +91,8 @@ source_charts="$(
 ## Pull helm charts from repositories
 
 ## Repositories
-# helm repo add bitnami https://charts.bitnami.com/bitnami
-# helm repo update
 
 ## Charts
-# helm pull bitnami/postgresql --version 10.7.0 --untar
 
 EOF
 )"
