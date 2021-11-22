@@ -1,0 +1,34 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: k8s-hello
+_tpldescription: Kubernetes hellow world app
+_tplversion: 21.11.22
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: hello
+    ## Service domain name
+  domain: cskylab.com
+
+publishing:
+  ## External url
+  url: hello.cskylab.net
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub
