@@ -19,7 +19,7 @@ namespace:
   ## k8s namespace name
   name: hello
     ## Service domain name
-  domain: cskylab.com
+  domain: cskylab.net
 
 publishing:
   ## External url
