@@ -96,7 +96,7 @@ Note: Workhorse only uses the primary Redis (global.redis)
 {{- end -}}
 
 {{- define "gitlab.redis.secrets" -}}
-{{- range $redis := list "cache" "sharedState" "queues" "actioncable" "traceChunks" "rateLimiting" -}}
+{{- range $redis := list "cache" "sharedState" "queues" "actioncable" "traceChunks" "rateLimiting" "sessions" -}}
 {{-   if index $.Values.global.redis $redis -}}
 {{-     $_ := set $ "redisConfigName" $redis }}
 {{      include "gitlab.redis.secret" $ }}

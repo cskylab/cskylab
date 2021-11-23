@@ -8,7 +8,7 @@ metadata:
     {{- include "gitlab.commonLabels" . | nindent 4 }}
   annotations:
 data:
-  config.erb: |
+  config.tpl: |
     {{- with .Values.gitlabCache }}
     {{- if .cleanup }}
     gitlab-cache-cleanup={{ .cleanup }}
@@ -73,6 +73,9 @@ data:
     {{- if .Values.maxConnections }}
     max-conns={{ .Values.maxConnections }}
     {{- end }}
+    {{- if .Values.maxURILength }}
+    max-uri-length={{ .Values.maxURILength }}
+    {{- end }}
     {{- if .Values.gitlabClientHttpTimeout }}
     gitlab-client-http-timeout={{ .Values.gitlabClientHttpTimeout }}
     {{- end }}
@@ -98,9 +101,9 @@ data:
     {{- end }}
     {{- if eq $.Values.global.pages.accessControl true }}
     auth-redirect-uri={{ template "oauth.gitlab-pages.authRedirectUri" . }}
-    auth-client-id=<%= File.read('/etc/gitlab-secrets/pages/gitlab_appid').strip.dump[1..-2] %>
-    auth-client-secret=<%= File.read('/etc/gitlab-secrets/pages/gitlab_appsecret').strip.dump[1..-2] %>
-    auth-secret=<%= File.read('/etc/gitlab-secrets/pages/auth_secret').strip.dump[1..-2] %>
+    auth-client-id={% file.Read "/etc/gitlab-secrets/pages/gitlab_appid" %}
+    auth-client-secret={% file.Read "/etc/gitlab-secrets/pages/gitlab_appsecret" %}
+    auth-secret={% file.Read "/etc/gitlab-secrets/pages/auth_secret" %} 
     {{- end }}
     {{- with .Values.zipCache }}
     {{- if .cleanup }}
@@ -115,6 +118,12 @@ data:
     {{- end }}
     {{- if .Values.zipOpenTimeout }}
     zip-open-timeout={{ .Values.zipOpenTimeout }}
+    {{- end }}
+    {{- if .Values.rateLimitSourceIP }}
+    rate-limit-source-ip={{ .Values.rateLimitSourceIP }}
+    {{- end }}
+    {{- if .Values.rateLimitSourceIPBurst }}
+    rate-limit-source-ip-burst={{ .Values.rateLimitSourceIPBurst }}
     {{- end }}
   configure: |
     {{- include "gitlab.scripts.configure.secrets" (dict "required" "pages" "optional" "pages") | nindent 4 -}}

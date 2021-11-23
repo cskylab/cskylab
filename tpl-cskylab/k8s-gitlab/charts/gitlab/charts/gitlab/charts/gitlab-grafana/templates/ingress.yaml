@@ -4,7 +4,8 @@
 {{-   $gitlabHostname = .Values.global.hosts.gitlab.hostnameOverride -}}
 {{- end -}}
 {{- $tlsSecret := include "webservice.tlsSecret" . -}}
-apiVersion: {{ template "ingress.apiVersion" $}}
+{{- $ingressCfg := dict "global" .Values.global.ingress "local" .Values.ingress "capabilities" .Capabilities -}}
+apiVersion: {{ template "gitlab.ingress.apiVersion" $ingressCfg }}
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-grafana-app
@@ -14,9 +15,7 @@ metadata:
     {{- include "gitlab.commonLabels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: "{{ template "gitlab.ingressclass" . }}"
-    {{- if .Values.global.ingress.provider }}
-    kubernetes.io/ingress.provider: {{ .Values.global.ingress.provider }}
-    {{- end }}
+    kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
     {{- if eq "nginx" .Values.global.ingress.provider }}
     nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.ingress.proxyBodySize | quote }}
     nginx.ingress.kubernetes.io/proxy-read-timeout: {{ .Values.ingress.proxyReadTimeout | quote }}

@@ -60,6 +60,7 @@ deployment:
     failureThreshold: 3
 
 ingress:
+  apiVersion:
   annotations: {}
   configureCertmanager: false
   tls: {}

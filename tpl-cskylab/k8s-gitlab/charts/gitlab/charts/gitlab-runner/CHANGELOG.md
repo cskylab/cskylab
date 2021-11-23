@@ -1,8 +1,12 @@
-## v0.33.1 (2021-10-01)
+## v0.34.0 (2021-10-25)
 
 ### New features
 
-- Update GitLab Runner version to 14.3.2
+- Update GitLab Runner version to 14.4.0
+
+### Maintenance
+
+- Disallow setting both replicas and runnerToken !289
 
 ## v0.33.0 (2021-09-29)
 

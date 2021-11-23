@@ -28,13 +28,7 @@ data:
   {{- end }}
   smtp_settings.rb: |
     {{- include "gitlab.smtp_settings" . | nindent 4 }}
-  {{- include "gitlab.rails.redis.resque" . | nindent 2 }}
-  {{- include "gitlab.rails.redis.cache" . | nindent 2 }}
-  {{- include "gitlab.rails.redis.sharedState" . | nindent 2 }}
-  {{- include "gitlab.rails.redis.queues" . | nindent 2 }}
-  {{- include "gitlab.rails.redis.cable" . | nindent 2 }}
-  {{- include "gitlab.rails.redis.traceChunks" . | nindent 2 }}
-  {{- include "gitlab.rails.redis.rateLimiting" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.all" . | nindent 2 }}
   gitlab.yml.erb: |
     production: &base
       gitlab:
@@ -169,7 +163,7 @@ metadata:
 data:
   installation_type: |
     gitlab-helm-chart
-  workhorse-config.toml.erb: |
+  workhorse-config.toml.tpl: |
     shutdown_timeout = "{{ template "gitlab.workhorse.shutdownTimeout" $ }}"
     {{- if $.Values.workhorse.trustedCIDRsForPropagation }}
     trusted_cidrs_for_propagation = {{ $.Values.workhorse.trustedCIDRsForPropagation | toStrings | toJson }}
@@ -187,7 +181,7 @@ data:
     Sentinel = [ {{ template "gitlab.redis.workhorse.sentinel-list" $ }} ]
     {{- end }}
     {{- if $.Values.global.redis.password.enabled }}
-    Password = "<%= File.read("/etc/gitlab/redis/redis-password").strip.dump[1..-2] %>"
+    Password = "{% file.Read "/etc/gitlab/redis/redis-password" | strings.TrimSpace %}"
     {{- end }}
     {{- end }}
     {{- include "workhorse.object_storage.config" $ | nindent 4 }}

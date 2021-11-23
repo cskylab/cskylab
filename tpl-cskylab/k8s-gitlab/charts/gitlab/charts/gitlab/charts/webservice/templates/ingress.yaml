@@ -14,8 +14,9 @@ From here on:
 - `.` is `.deployments.xyz` value
 - `.name` is the key (xyz)
 */}}
+{{- $ingressCfg := dict "global" $.Values.global.ingress "local" .ingress "capabilities" $.Capabilities -}}
 ---
-apiVersion: {{ template "ingress.apiVersion" $}}
+apiVersion: {{ template "gitlab.ingress.apiVersion" $ingressCfg }}
 kind: Ingress
 metadata:
   name: {{ template "webservice.fullname.withSuffix" . }}
@@ -26,10 +27,8 @@ metadata:
     {{- include "webservice.commonLabels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: "{{ template "gitlab.ingressclass" $ }}"
-    {{- if default .ingress.provider $.Values.global.ingress.provider }}
-    kubernetes.io/ingress.provider: {{ default .ingress.provider $.Values.global.ingress.provider }}
-    {{- end }}
-    {{- if eq "nginx" (default .ingress.provider $.Values.global.ingress.provider) }}
+    kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
+    {{- if eq "nginx" (default $.Values.global.ingress.provider .ingress.provider) }}
     nginx.ingress.kubernetes.io/proxy-body-size: {{ .ingress.proxyBodySize | quote }}
     nginx.ingress.kubernetes.io/proxy-read-timeout: {{ .ingress.proxyReadTimeout | quote }}
     nginx.ingress.kubernetes.io/proxy-connect-timeout: {{ .ingress.proxyConnectTimeout | quote }}

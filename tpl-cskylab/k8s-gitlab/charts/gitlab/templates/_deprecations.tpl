@@ -53,6 +53,7 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $deprecated = append $deprecated (include "gitlab.deprecate.global.geo.registry.syncEnabled" .) -}}
 {{- $deprecated = append $deprecated (include "certmanager.createCustomResource" .) -}}
 {{- $deprecated = append $deprecated (include "gitlab.deprecate.global.imagePullPolicy" .) -}}
+{{- $deprecated = append $deprecated (include "gitlab.deprecate.task-runner" .) -}}
 
 {{- /* prepare output */}}
 {{- $deprecated = without $deprecated "" -}}
@@ -66,7 +67,7 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 
 {{/* Migration of rails shared lfs/artifacts/uploads blocks to globals */}}
 {{- define "gitlab.deprecate.rails.appConfig" -}}
-{{- range $chart := list "webservice" "sidekiq" "task-runner" -}}
+{{- range $chart := list "webservice" "sidekiq" "toolbox" -}}
 {{-   if index $.Values.gitlab $chart -}}
 {{-     range $i, $block := list "lfs" "artifacts" "uploads" -}}
 {{-       if hasKey (index $.Values.gitlab $chart) $block }}
@@ -114,10 +115,10 @@ gitlab.sidekiq:
     Chart-local configuration of Minio features has been moved to global. Please remove `gitlab.sidekiq.minio.enabled` from your properties, and set `global.minio.enabled` instead.
 {{-   end -}}
 {{- end -}}
-{{- if index .Values.gitlab "task-runner" "minio" -}}
-{{-   if ( hasKey ( index .Values.gitlab "task-runner" "minio" ) "enabled" ) }}
-gitlab.task-runner:
-    Chart-local configuration of Minio features has been moved to global. Please remove `gitlab.task-runner.minio.enabled` from your properties, and set `global.minio.enabled` instead.
+{{- if index .Values.gitlab "toolbox" "minio" -}}
+{{-   if ( hasKey ( index .Values.gitlab "toolbox" "minio" ) "enabled" ) }}
+gitlab.toolbox:
+    Chart-local configuration of Minio features has been moved to global. Please remove `gitlab.toolbox.minio.enabled` from your properties, and set `global.minio.enabled` instead.
 {{-   end -}}
 {{- end -}}
 {{- end -}}
@@ -219,7 +220,7 @@ gitlab:
 
 {{/* Deprecation behavious for configuration of initContainer images of gitlab sub-charts */}}
 {{- define "gitlab.deprecate.initContainerImage" -}}
-{{- range $chart:= list "geo-logcursor" "gitaly" "gitlab-exporter" "gitlab-shell" "mailroom" "migrations" "sidekiq" "task-runner" "webservice" }}
+{{- range $chart:= list "geo-logcursor" "gitaly" "gitlab-exporter" "gitlab-shell" "mailroom" "migrations" "sidekiq" "toolbox" "webservice" }}
 {{-     if hasKey (index $.Values.gitlab $chart) "init" -}}
 {{-         with $config := index $.Values.gitlab $chart "init" -}}
 {{-             if or (and (hasKey $config "image") (kindIs "string" $config.image)) (hasKey $config "tag") }}
@@ -309,7 +310,7 @@ global.psql.pool:
 {{-     end -}}
 {{-   end -}}
 
-{{-   range $chart := list "webservice" "sidekiq" "task-runner" -}}
+{{-   range $chart := list "webservice" "sidekiq" "toolbox" -}}
 {{-     if index $.Values.gitlab $chart -}}
 {{-       if hasKey (index $.Values.gitlab $chart) "psql" -}}
 {{-         with $localConfig := index $.Values.gitlab $chart "psql" -}}
@@ -413,4 +414,13 @@ global.imagePullPolicy:
 {{- end -}}
 
 {{- end -}}
+
+{{/* Deprecation behaviors for task-runner rename to toolbox */}}
+{{- define "gitlab.deprecate.task-runner" -}}
+{{-   if index .Values.gitlab "task-runner" }}
+gitlab.task-runner:
+    The configuration of `gitlab.task-runner` has been renamed. Please use `gitlab.toolbox` instead.
+{{-   end -}}
+{{- end -}}
+
 {{/* END gitlab.deprecate.local.kubectl */}}

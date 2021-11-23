@@ -57,13 +57,13 @@ spec:
           {{- include "gitlab.extraVolumeMounts" . | nindent 10 }}
           {{- include "gitlab.psql.ssl.volumeMount" . | nindent 10 }}
           {{- include "gitlab.geo.psql.ssl.volumeMount" . | nindent 10 }}
-          - name: task-runner-config
+          - name: toolbox-config
             mountPath: /config
             readOnly: true
-          - name: init-task-runner-secrets
+          - name: init-toolbox-secrets
             mountPath: /init-config
             readOnly: true
-          - name: task-runner-secrets
+          - name: toolbox-secrets
             mountPath: /init-secrets
             readOnly: false
           resources:
@@ -145,18 +145,18 @@ spec:
             {{- include "gitlab.extraEnv" . | nindent 12 }}
           volumeMounts:
             {{- include "gitlab.extraVolumeMounts" . | nindent 12 }}
-            - name: task-runner-config
+            - name: toolbox-config
               mountPath: '/var/opt/gitlab/templates'
-            - name: task-runner-config
+            - name: toolbox-config
               mountPath: '/srv/gitlab/config/initializers/smtp_settings.rb'
               subPath: smtp_settings.rb
-            - name: task-runner-secrets
+            - name: toolbox-secrets
               mountPath: '/etc/gitlab'
               readOnly: true
-            - name: task-runner-secrets
+            - name: toolbox-secrets
               mountPath: /srv/gitlab/config/secrets.yml
               subPath: rails-secrets/secrets.yml
-            - name: task-runner-tmp
+            - name: toolbox-tmp
               mountPath: '/srv/gitlab/tmp'
               {{- if and .Values.persistence.enabled .Values.persistence.subPath }}
               subPath: "{{ .Values.persistence.subPath }}"
@@ -174,7 +174,7 @@ spec:
       {{- include "gitlab.extraVolumes" . | nindent 6 }}
       {{- include "gitlab.psql.ssl.volume" . | nindent 6 }}
       {{- include "gitlab.geo.psql.ssl.volume" . | nindent 6 }}
-      - name: task-runner-config
+      - name: toolbox-config
         projected:
           sources:
             - configMap:
@@ -183,14 +183,14 @@ spec:
             - configMap:
                 name: {{ .Values.global.appConfig.pseudonymizer.configMap }}
             {{- end }}
-      - name: task-runner-tmp
+      - name: toolbox-tmp
         {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
           claimName: {{ template "fullname" . }}-tmp
         {{- else }}
         emptyDir: {}
         {{- end }}
-      - name: init-task-runner-secrets
+      - name: init-toolbox-secrets
         projected:
           defaultMode: 0400
           sources:
@@ -271,7 +271,7 @@ spec:
                   - key: {{ .Values.global.email.smime.certName }}
                     path: .gitlab_smime_cert
 {{- end }}
-      - name: task-runner-secrets
+      - name: toolbox-secrets
         emptyDir:
           medium: "Memory"
       {{- include "gitlab.certificates.volumes" . | nindent 6 }}

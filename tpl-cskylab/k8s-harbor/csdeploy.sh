@@ -94,7 +94,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/harbor --version 11.0.8 --untar
+helm pull bitnami/harbor --version 11.1.0 --untar
 
 EOF
 )"

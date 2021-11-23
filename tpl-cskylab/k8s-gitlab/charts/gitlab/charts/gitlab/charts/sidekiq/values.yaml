@@ -250,7 +250,7 @@ deployment:
 
 hpa:
   targetAverageValue: 350m
-timeout: 5
+timeout: 25
 resources:
   # limits:
   #  memory: 5G

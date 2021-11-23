@@ -94,7 +94,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/metallb --version 2.5.10 --untar
+helm pull bitnami/metallb --version 2.5.11 --untar
 
 EOF
 )"

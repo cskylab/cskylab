@@ -50,7 +50,6 @@ This is output as YAML, it can be read back in as a dict via `toYaml`.
 ingress:
   path: # intentionally not setting a value. User must set.
   pathType: Prefix
-  provider: nginx
   annotations:
     {{- .Values.ingress.annotations | toYaml | nindent 4 }}
   proxyConnectTimeout: {{ .Values.ingress.proxyConnectTimeout }}

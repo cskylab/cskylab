@@ -95,54 +95,44 @@ If consolidated object storage is in use, read the connection YAML
   If provider is AWS, render enabled as true.
 */}}
 {{- define "workhorse.object_storage.config" -}}
-<%
-  require 'yaml'
-
-  supported_providers = %w(AWS AzureRM)
-  provider = ''
-  aws_access_key_id = ''
-  aws_secret_access_key = ''
-
-  azure_storage_account_name = ''
-  azure_storage_access_key = ''
-
-  if File.exists? '/etc/gitlab/minio/accesskey'
-    provider = 'AWS'
-    aws_access_key_id = File.read('/etc/gitlab/minio/accesskey').strip.dump[1..-2]
-    aws_secret_access_key = File.read('/etc/gitlab/minio/secretkey').strip.dump[1..-2]
-  end
-
-  if File.exists? '/etc/gitlab/objectstorage/object_store'
-    connection = YAML.safe_load(File.read('/etc/gitlab/objectstorage/object_store'))
-    provider = connection['provider']
-    if connection.has_key? 'aws_access_key_id'
-      aws_access_key_id = connection['aws_access_key_id']
-      aws_secret_access_key = connection['aws_secret_access_key']
-    elsif connection.has_key? 'azure_storage_account_name'
-      azure_storage_account_name = connection['azure_storage_account_name']
-      azure_storage_access_key = connection['azure_storage_access_key']
-    end
-  end
-
-  if supported_providers.include? provider
-%>
+{%- $supported_providers := slice "AWS" "AzureRM" -%}
+{%- $provider := "" -%}
+{%- $aws_access_key_id := "" -%}
+{%- $aws_secret_access_key := "" -%}
+{%- $azure_storage_account_name := "" -%}
+{%- $azure_storage_access_key := "" -%}
+{%- if file.Exists "/etc/gitlab/minio/accesskey" %}
+  {%- $provider = "AWS" -%}
+  {%- $aws_access_key_id = file.Read "/etc/gitlab/minio/accesskey" | strings.TrimSpace -%}
+  {%- $aws_secret_access_key = file.Read "/etc/gitlab/minio/secretkey" | strings.TrimSpace -%}
+{%- end %}
+{%- if file.Exists "/etc/gitlab/objectstorage/object_store" %}
+  {%- $connection := file.Read "/etc/gitlab/objectstorage/object_store" | strings.TrimSpace | data.YAML -%}
+  {%- $provider = $connection.provider -%}
+  {%- if has $connection "aws_access_key_id" -%}
+    {%- $aws_access_key_id = $connection.aws_access_key_id -%}
+    {%- $aws_secret_access_key = $connection.aws_secret_access_key -%}
+  {%- else if has $connection "azure_storage_account_name" -%}
+    {%- $azure_storage_account_name = $connection.azure_storage_account_name -%}
+    {%- $azure_storage_access_key = $connection.azure_storage_access_key -%}
+  {%- end -%}
+{%- end %}
+{%- if has $supported_providers $provider %}
 [object_storage]
-provider = "<%= provider %>"
-<%   if provider.eql? 'AWS' %>
+provider = "{% $provider %}"
+{%-   if eq $provider "AWS" %}
 # AWS / S3 object storage configuration.
 [object_storage.s3]
 # access/secret can be blank!
-aws_access_key_id = "<%= aws_access_key_id %>"
-aws_secret_access_key = "<%= aws_secret_access_key %>"
-<%   elsif provider.eql? 'AzureRM' %>
+aws_access_key_id = "{% $aws_access_key_id %}"
+aws_secret_access_key = "{% $aws_secret_access_key %}"
+{%-   else if eq $provider "AzureRM" %}
 # Azure Blob storage configuration.
 [object_storage.azurerm]
-azure_storage_account_name = "<%= azure_storage_account_name %>"
-azure_storage_access_key = "<%= azure_storage_access_key %>"
-<%
-    end
-  end
-%>
+azure_storage_account_name = "{% $azure_storage_account_name %}"
+azure_storage_access_key = "{% $azure_storage_access_key %}"
+{%-   end %}
+{%- end %}
 {{- end -}}
 
 {{/*

@@ -63,6 +63,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `fullnameOverride`  | String to fully override metallb.fullname template                                     | `""`  |
 | `commonLabels`      | Add labels to all the deployed resources                                               | `{}`  |
 | `commonAnnotations` | Add annotations to all the deployed resources                                          | `{}`  |
+| `extraDeploy`       | Array of extra objects to deploy with the release                                      | `[]`  |
 
 
 ### MetalLB parameters
@@ -85,7 +86,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
 | `controller.image.registry`                              | MetalLB Controller image registry                                                                                                           | `docker.io`                  |
 | `controller.image.repository`                            | MetalLB Controller image repository                                                                                                         | `bitnami/metallb-controller` |
-| `controller.image.tag`                                   | MetalLB Controller  image tag (immutable tags are recommended)                                                                              | `0.10.3-debian-10-r18`       |
+| `controller.image.tag`                                   | MetalLB Controller  image tag (immutable tags are recommended)                                                                              | `0.11.0-debian-10-r0`        |
 | `controller.image.pullPolicy`                            | MetalLB Controller image pull policy                                                                                                        | `IfNotPresent`               |
 | `controller.image.pullSecrets`                           | Specify docker-registry secret names as an array                                                                                            | `[]`                         |
 | `controller.hostAliases`                                 | Deployment pod host aliases                                                                                                                 | `[]`                         |
@@ -141,7 +142,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
 | `speaker.image.registry`                              | MetalLB Speaker image registry                                                                                                              | `docker.io`               |
 | `speaker.image.repository`                            | MetalLB Speaker image repository                                                                                                            | `bitnami/metallb-speaker` |
-| `speaker.image.tag`                                   | MetalLB Speaker  image tag (immutable tags are recommended)                                                                                 | `0.10.3-debian-10-r18`    |
+| `speaker.image.tag`                                   | MetalLB Speaker  image tag (immutable tags are recommended)                                                                                 | `0.11.0-debian-10-r0`     |
 | `speaker.image.pullPolicy`                            | MetalLB Speaker image pull policy                                                                                                           | `IfNotPresent`            |
 | `speaker.image.pullSecrets`                           | Specify docker-registry secret names as an array                                                                                            | `[]`                      |
 | `speaker.rbac.create`                                 | create specifies whether to install and use RBAC rules.                                                                                     | `true`                    |

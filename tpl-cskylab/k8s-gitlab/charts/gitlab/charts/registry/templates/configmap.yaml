@@ -49,6 +49,19 @@ data:
     {{- end }}
     validation:
       disabled: {{ eq true .Values.validation.disabled }}
+      {{- with .Values.validation.manifests }}
+      manifests:
+        referencelimit: {{ .referencelimit }}
+        urls:
+          allow:
+        {{- range .urls.allow }}
+          - {{ . }}
+        {{- end }}
+          deny:
+        {{- range .urls.deny }}
+          - {{ . }}
+        {{- end }}
+      {{- end }}
     {{- include "registry.notifications.config" $ | nindent 4 }}
     reporting:
       {{- if .Values.reporting.sentry.enabled }}
