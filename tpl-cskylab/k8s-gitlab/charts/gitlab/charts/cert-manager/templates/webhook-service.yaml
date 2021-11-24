@@ -7,20 +7,14 @@ metadata:
     app: {{ include "webhook.name" . }}
     app.kubernetes.io/name: {{ include "webhook.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/component: "webhook"
-    {{- include "labels" . | nindent 4 }}
-{{- if .Values.webhook.serviceLabels }}
-{{ toYaml .Values.webhook.serviceLabels | indent 4 }}
-{{- end }}
+    helm.sh/chart: {{ include "webhook.chart" . }}
 spec:
-  type: {{ .Values.webhook.serviceType }}
-  {{- if .Values.webhook.loadBalancerIP }}
-  loadBalancerIP: {{ .Values.webhook.loadBalancerIP }}
-  {{- end }}
+  type: ClusterIP
   ports:
   - name: https
     port: 443
-    protocol: TCP
     targetPort: {{ .Values.webhook.securePort }}
   selector:
     app.kubernetes.io/name: {{ include "webhook.name" . }}

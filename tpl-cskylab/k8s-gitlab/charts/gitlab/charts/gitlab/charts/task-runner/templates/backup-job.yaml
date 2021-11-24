@@ -52,13 +52,13 @@ spec:
               volumeMounts:
                 {{- include "gitlab.extraVolumeMounts" . | nindent 16 }}
                 {{- include "gitlab.psql.ssl.volumeMount" . | nindent 16 }}
-                - name: toolbox-config
+                - name: task-runner-config
                   mountPath: /config
                   readOnly: true
-                - name: init-toolbox-secrets
+                - name: init-task-runner-secrets
                   mountPath: /init-config
                   readOnly: true
-                - name: toolbox-secrets
+                - name: task-runner-secrets
                   mountPath: /init-secrets
                   readOnly: false
               resources:
@@ -113,15 +113,15 @@ spec:
                 {{- end }}
               volumeMounts:
                 {{- include "gitlab.extraVolumeMounts" . | nindent 16 }}
-                - name: toolbox-config
+                - name: task-runner-config
                   mountPath: '/var/opt/gitlab/templates'
-                - name: toolbox-secrets
+                - name: task-runner-secrets
                   mountPath: '/etc/gitlab'
                   readOnly: true
-                - name: toolbox-secrets
+                - name: task-runner-secrets
                   mountPath: /srv/gitlab/config/secrets.yml
                   subPath: rails-secrets/secrets.yml
-                - name: toolbox-tmp
+                - name: task-runner-tmp
                   mountPath: '/srv/gitlab/tmp'
                   {{- if and .Values.backups.cron.persistence.enabled .Values.backups.cron.persistence.subPath }}
                   subPath: "{{ .Values.backups.cron.persistence.subPath }}"
@@ -133,7 +133,7 @@ spec:
           volumes:
             {{- include "gitlab.extraVolumes" . | nindent 12 }}
             {{- include "gitlab.psql.ssl.volume" . | nindent 12 }}
-            - name: toolbox-config
+            - name: task-runner-config
               projected:
                 sources:
                   - configMap:
@@ -142,14 +142,14 @@ spec:
                   - configMap:
                       name: {{ .Values.global.appConfig.pseudonymizer.configMap }}
                   {{- end }}
-            - name: toolbox-tmp
+            - name: task-runner-tmp
               {{- if .Values.backups.cron.persistence.enabled }}
               persistentVolumeClaim:
                 claimName: {{ template "fullname" . }}-backup-tmp
               {{- else }}
               emptyDir: {}
               {{- end }}
-            - name: init-toolbox-secrets
+            - name: init-task-runner-secrets
               projected:
                 defaultMode: 0400
                 sources:
@@ -203,7 +203,7 @@ spec:
                 {{- include "gitlab.appConfig.pseudonymizer.mountSecrets" $ | nindent 16 }}
                 {{- include "gitlab.appConfig.ldap.servers.mountSecrets" $ | nindent 16 }}
                 {{- include "gitlab.appConfig.omniauth.mountSecrets" $ | nindent 16 }}
-            - name: toolbox-secrets
+            - name: task-runner-secrets
               emptyDir:
                 medium: "Memory"
             {{- include "gitlab.certificates.volumes" . | nindent 12 }}

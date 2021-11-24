@@ -8,8 +8,9 @@ metadata:
     app: {{ include "cainjector.name" . }}
     app.kubernetes.io/name: {{ include "cainjector.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/component: "cainjector"
-    {{- include "labels" . | nindent 4 }}
+    helm.sh/chart: {{ include "cainjector.chart" . }}
   {{- if .Values.cainjector.deploymentAnnotations }}
   annotations:
 {{ toYaml .Values.cainjector.deploymentAnnotations | indent 4 }}
@@ -31,8 +32,9 @@ spec:
         app: {{ include "cainjector.name" . }}
         app.kubernetes.io/name: {{ include "cainjector.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/component: "cainjector"
-        {{- include "labels" . | nindent 8 }}
+        helm.sh/chart: {{ include "cainjector.chart" . }}
 {{- if .Values.cainjector.podLabels }}
 {{ toYaml .Values.cainjector.podLabels | indent 8 }}
 {{- end }}

@@ -27,7 +27,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ printf "%s-v2" ($queueName | trunc 60) }}
+  name: {{ printf "%s-v1" ($queueName | trunc 60) }}
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "gitlab.standardLabels" $ | nindent 4 }}
@@ -81,7 +81,6 @@ spec:
               labelSelector:
                 matchLabels:
                   {{- include "gitlab.selectorLabels" $ | nindent 18 }}
-                  queue-pod-name: {{ .name }}
       {{- else if eq (default $.Values.global.antiAffinity .antiAffinity) "soft" }}
       affinity:
         podAntiAffinity:

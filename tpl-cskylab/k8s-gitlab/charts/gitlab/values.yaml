@@ -69,7 +69,6 @@ global:
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-ingress-settings
   ingress:
-    apiVersion:
     configureCertmanager: true
     provider: nginx
     annotations: {}
@@ -260,8 +259,6 @@ global:
       ### Snapshot active user statistics
       # historical_data_worker:
       #   cron: "0 12 * * *"
-      # loose_foreign_keys_cleanup_worker_cron:
-      #   cron: "*/5 * * * *"
 
     ## https://docs.gitlab.com/charts/charts/globals#content-security-policy
     contentSecurityPolicy:
@@ -280,7 +277,6 @@ global:
       matomoUrl:
       matomoSiteId:
       matomoDisableCookies:
-      oneTrustId:
 
     ## https://docs.gitlab.com/charts/charts/globals#lfs-artifacts-uploads-packages-external-mr-diffs-and-dependency-proxy
     object_store:
@@ -1059,8 +1055,8 @@ grafana:
 ## Settings for individual sub-charts under GitLab
 ## Note: Many of these settings are configurable via globals
 gitlab:
-  ## https://docs.gitlab.com/charts/charts/gitlab/toolbox
-  toolbox:
+  ## https://docs.gitlab.com/charts/charts/gitlab/task-runner
+  task-runner:
     replicas: 1
     antiAffinityLabels:
       matchLabels:

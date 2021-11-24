@@ -7,8 +7,9 @@ metadata:
     app: {{ template "cert-manager.name" . }}
     app.kubernetes.io/name: {{ template "cert-manager.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/component: "controller"
-    {{- include "labels" . | nindent 4 }}
+    helm.sh/chart: {{ template "cert-manager.chart" . }}
   {{- if .Values.deploymentAnnotations }}
   annotations:
 {{ toYaml .Values.deploymentAnnotations | indent 4 }}
@@ -31,7 +32,8 @@ spec:
         app.kubernetes.io/name: {{ template "cert-manager.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         app.kubernetes.io/component: "controller"
-        {{- include "labels" . | nindent 8 }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        helm.sh/chart: {{ template "cert-manager.chart" . }}
 {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
 {{- end }}

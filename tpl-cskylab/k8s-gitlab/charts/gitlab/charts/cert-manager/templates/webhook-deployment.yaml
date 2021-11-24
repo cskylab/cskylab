@@ -7,8 +7,9 @@ metadata:
     app: {{ include "webhook.name" . }}
     app.kubernetes.io/name: {{ include "webhook.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/component: "webhook"
-    {{- include "labels" . | nindent 4 }}
+    helm.sh/chart: {{ include "webhook.chart" . }}
   {{- if .Values.webhook.deploymentAnnotations }}
   annotations:
 {{ toYaml .Values.webhook.deploymentAnnotations | indent 4 }}
@@ -30,8 +31,9 @@ spec:
         app: {{ include "webhook.name" . }}
         app.kubernetes.io/name: {{ include "webhook.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/component: "webhook"
-        {{- include "labels" . | nindent 8 }}
+        helm.sh/chart: {{ include "webhook.chart" . }}
 {{- if .Values.webhook.podLabels }}
 {{ toYaml .Values.webhook.podLabels | indent 8 }}
 {{- end }}
@@ -64,13 +66,12 @@ spec:
           - --secure-port={{ .Values.webhook.securePort }}
           - --dynamic-serving-ca-secret-namespace=$(POD_NAMESPACE)
           - --dynamic-serving-ca-secret-name={{ template "webhook.fullname" . }}-ca
-          - --dynamic-serving-dns-names={{ template "webhook.fullname" . }},{{ template "webhook.fullname" . }}.{{ .Release.Namespace }},{{ template "webhook.fullname" . }}.{{ .Release.Namespace }}.svc{{ if .Values.webhook.url.host }},{{ .Values.webhook.url.host }}{{ end }}
+          - --dynamic-serving-dns-names={{ template "webhook.fullname" . }},{{ template "webhook.fullname" . }}.{{ .Release.Namespace }},{{ template "webhook.fullname" . }}.{{ .Release.Namespace }}.svc
         {{- if .Values.webhook.extraArgs }}
 {{ toYaml .Values.webhook.extraArgs | indent 10 }}
         {{- end }}
           ports:
           - name: https
-            protocol: TCP
             containerPort: {{ .Values.webhook.securePort }}
           livenessProbe:
             httpGet:

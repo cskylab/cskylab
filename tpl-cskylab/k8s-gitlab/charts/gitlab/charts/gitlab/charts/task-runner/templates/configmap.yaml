@@ -17,7 +17,13 @@ data:
   {{- end }}
   smtp_settings.rb: |
     {{- include "gitlab.smtp_settings" . | nindent 4 }}
-  {{- include "gitlab.rails.redis.all" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.resque" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.cache" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.sharedState" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.queues" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.cable" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.traceChunks" . | nindent 2 }}
+  {{- include "gitlab.rails.redis.rateLimiting" . | nindent 2 }}
   gitlab.yml.erb: |
     production: &base
       gitlab:

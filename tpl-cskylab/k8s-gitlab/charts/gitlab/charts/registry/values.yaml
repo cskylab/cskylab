@@ -1,6 +1,6 @@
 image:
   repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry
-  tag: 'v3.15.0-gitlab'
+  tag: 'v3.12.0-gitlab'
   # pullPolicy: IfNotPresent
   # pullSecrets: []
 
@@ -77,7 +77,6 @@ networkpolicy:
   annotations: {}
 
 ingress:
-  apiVersion:
   enabled:
   proxyReadTimeout: 900
   proxyBodySize: "0"
@@ -232,11 +231,6 @@ compatibility:
 # See https://github.com/docker/distribution/issues/2795
 validation:
   disabled: true
-  manifests:
-    referencelimit: 0
-    urls:
-      allow: []
-      deny: []
 
 # Configure the logging mechanism for the Container Registry as desired
 # See https://docs.docker.com/registry/configuration/#log

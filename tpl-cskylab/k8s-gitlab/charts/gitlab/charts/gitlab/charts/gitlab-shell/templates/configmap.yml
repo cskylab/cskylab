@@ -13,7 +13,7 @@ data:
     mkdir -p /${secret_dir}/ssh
     cp -v -r -L /${config_dir}/ssh_host_* /${secret_dir}/ssh/
     chmod 0400 /${secret_dir}/ssh/ssh_host_*
-  config.yml.tpl: |
+  config.yml.erb: |
     # GitLab user. git by default
     user: git
 
@@ -58,11 +58,9 @@ data:
       concurrent_sessions_limit: {{ .Values.config.maxStartups.full }}
       # SSH host key files.
       host_key_files:
-      {%- range file.Walk "/etc/ssh" %}
-        {%- if filepath.Match "/etc/ssh/ssh_host_*_key" . %}
-        - {%.%}
-        {%- end %}
-      {%- end %}
+      <% Dir["/etc/ssh/ssh_host_*_key"].each do |file| %>
+      <%= "- #{file}" %>
+      <% end %>
     {{- end }}
 # Leave this here - This line denotes end of block to the parser.
 {{- end }}

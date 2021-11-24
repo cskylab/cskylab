@@ -31,7 +31,6 @@ image:
   # pullPolicy: IfNotPresent
   # pullSecrets: []
 ingress:
-  apiVersion:
   annotations: {}
   tls: {}
   agentPath: /
