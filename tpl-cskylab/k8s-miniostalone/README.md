@@ -59,7 +59,7 @@ Install namespace and charts:
 
 Run:
 
-- Published at: `{{ .publishing.url }}`
+- Published at: `{{ .publishing.console_url }}`
 - Access Key: `{{ .credentials.minio_accesskey }}`
 - Secret Key: `{{ .credentials.minio_secretkey }}`
 
@@ -295,7 +295,7 @@ To list current bucket, users and policies:
 
 To access MinIO throug web utility:
 
-- Published at: `{{ .publishing.url }}`
+- Published at: `{{ .publishing.console_url }}`
 - Access Key: `{{ .minio.accesskey }}`
 - Secret Key: `{{ .minio.secretkey }}`
 
