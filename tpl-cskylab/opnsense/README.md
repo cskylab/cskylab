@@ -32,7 +32,9 @@ Firewall cluster **opn-cluster** gives routing, firewall, DHCP, DNS and VPN serv
       - [OpenVPN Servers](#openvpn-servers)
       - [OpenVPN Users and certificates](#openvpn-users-and-certificates)
       - [Export OpenVPN client profiles](#export-openvpn-client-profiles)
+      - [Remove example certificates and ca-test-internal](#remove-example-certificates-and-ca-test-internal)
       - [Backup configurations and reboot](#backup-configurations-and-reboot)
+      - [Test VPN's with vpnmgt and vpnusr profiles](#test-vpns-with-vpnmgt-and-vpnusr-profiles)
     - [Usage procedures](#usage-procedures)
       - [Backup and restore configuration](#backup-and-restore-configuration)
       - [Update cluster](#update-cluster)
@@ -430,6 +432,7 @@ To modify and secure VPN servers, connect to `opn-main` and configure the follow
   - Set **Local Port** to your assigned port for management vpn Ex.: `49152`
   - Set **TLS Authentication** to `Disabled` to delete existing TLS Shared Key
   - Set **Peer Certificate Authority** to `Your private CA`
+  - Set **Server Certificate** to `opn-cluster-VPN`
   - **Save** configuration
   - Edit the configuration again and set  **TLS Authentication** to `Enabled - Authentication only`
   - Leave checked **Automatically generate a shared TLS authentication key** to generate a new TLS Shared Key.
@@ -440,6 +443,7 @@ To modify and secure VPN servers, connect to `opn-main` and configure the follow
   - Set **Local Port** to your assigned port for management vpn Ex.: `49153`
   - Set **TLS Authentication** to `Disabled` to delete existing TLS Shared Key
   - Set **Peer Certificate Authority** to `Your private CA`
+  - Set **Server Certificate** to `opn-cluster-VPN`
   - **Save** configuration
   - Edit the configuration again and set  **TLS Authentication** to `Enabled - Authentication only`
   - Leave checked **Automatically generate a shared TLS authentication key** to generate a new TLS Shared Key.
@@ -499,6 +503,18 @@ You must export a profile for each user and server combination. Repeat the follo
   
 >**Note:** You can send the downloaded profile file as an attachment, in an email message to the user. The user must import the profile with the client application (OpenVPN Connect or Viscosity) and test the connection from mobile and desktop environments.
 
+#### Remove example certificates and ca-test-internal
+
+- Go to **System -> Trust -> Certificates** and delete the following unused certificates:
+
+| Certificate | Issuer           |
+| ----------- | ---------------- |
+| vpnmgt      | ca-test-internal |
+| vpnusr      | ca-test-internal |
+| OpenVPN     | ca-test-internal |
+
+- Go to **System -> Trust -> Authorities** and delete `ca-test-internal` not secure CA.
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
 #### Backup configurations and reboot
 
@@ -506,7 +522,11 @@ You must export a profile for each user and server combination. Repeat the follo
 - Go to **System -> Configuration -> Backups** and backup configurations of both `opn-main` and `opn-aux`
 - Save the downloaded backup xml files into your `opn-cluster` configuration folder in your installation repository.
 - Go to **Power -> Reboot** and reboot both `opn-main` and `opn-aux`
-- Check access for `mgt` and `usr` VPN profiles
+
+#### Test VPN's with vpnmgt and vpnusr profiles
+
+- Import profiles to `OpenVPN Connect` client in your computer
+- Test connection to both VPN's
   
 ### Usage procedures
 
