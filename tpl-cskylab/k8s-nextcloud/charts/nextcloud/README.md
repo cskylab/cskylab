@@ -19,6 +19,7 @@ It also packages the [Bitnami MariaDB chart](https://github.com/kubernetes/chart
 
 - Kubernetes 1.9+ with Beta APIs enabled
 - PV provisioner support in the underlying infrastructure
+- Helm >=3.7.0 ([for subchart scope exposing](nextcloud/helm#152))
 
 ## Installing the Chart
 
@@ -184,7 +185,7 @@ The following table lists the configurable parameters of the nextcloud chart and
 | `metrics.https`                                              | Defines if https is used to connect to nextcloud        | `false` (uses http)                         |
 | `metrics.timeout`                                            | When the scrape times out                               | `5s`                                        |
 | `metrics.image.repository`                                   | Nextcloud metrics exporter image name                   | `xperimental/nextcloud-exporter`            |
-| `metrics.image.tag`                                          | Nextcloud metrics exporter image tag                    | `v0.3.0`                                    |
+| `metrics.image.tag`                                          | Nextcloud metrics exporter image tag                    | `v0.4.0`                                    |
 | `metrics.image.pullPolicy`                                   | Nextcloud metrics exporter image pull policy            | `IfNotPresent`                              |
 | `metrics.podAnnotations`                                     | Additional annotations for metrics exporter             | not set                                     |
 | `metrics.podLabels`                                          | Additional labels for metrics exporter                  | not set                                     |

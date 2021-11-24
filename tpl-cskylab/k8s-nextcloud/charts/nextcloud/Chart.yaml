@@ -1,10 +1,10 @@
 apiVersion: v2
-appVersion: 21.0.4
+appVersion: 22.2.3
 dependencies:
 - condition: postgresql.enabled
   name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 10.9.*
+  version: 10.13.*
 - condition: mariadb.enabled
   name: mariadb
   repository: https://charts.bitnami.com/bitnami
@@ -34,4 +34,4 @@ name: nextcloud
 sources:
 - https://github.com/nextcloud/helm
 - https://github.com/nextcloud/docker
-version: 2.9.2
+version: 2.10.0

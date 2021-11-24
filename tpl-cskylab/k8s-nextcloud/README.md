@@ -1,6 +1,6 @@
 # [Nextcloud](https://nextcloud.com/) file sharing server <!-- omit in toc -->
 
-## Helm charts: nextcloud/nextcloud v2.9.2 bitnami/mariadb v10.0.1 <!-- omit in toc -->
+## Helm charts: nextcloud/nextcloud v2.10.0 bitnami/mariadb v10.0.1 <!-- omit in toc -->
 
 [Nextcloud](https://nextcloud.com/) is a file sharing server that puts the control and security of your own data back into your hands.
 
