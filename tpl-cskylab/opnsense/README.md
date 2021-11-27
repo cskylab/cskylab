@@ -336,6 +336,7 @@ In `opn-main` configure port forwarding settings:
 - Edit rule in `Forward SSH to mcc` in `WAN` interface
 - Set **Destination port range** to your assigned port (Ex. 22-22 or another specific for your installation)
 - **Save** configuration
+- **Apply changes** to save configuration
 - Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
 #### WAN Rules
@@ -345,6 +346,7 @@ In `opn-main` configure WAN rules settings:
 - Go to **Firewall -> Rules -> WAN**
 - Edit rule in `Allow OpenVPN traffic from WAN`
 - Set **Destination port range** to your assigned port range (Default is 49152-49156 for 5 VLAN's)
+- **Save** configuration
 - **Apply changes** to save configuration
 - Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
@@ -410,11 +412,13 @@ To create and sign a VPN server certificate go to **System -> Trust -> Certifica
   - Type: `DNS` Value: `opn-main.cskylab.net`
   - Type: `DNS` Value: `opn-aux.cskylab.net`
 - **Save** configuration
+- Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
 **Configure GUI certificate:**
 
 - Configure GUI Certificate from **System -> Settings -> Administration**
   - Select **SSL Certificate** and choose `opn-cluster-GUI`
+  - **Save** configuration
 - Go to **System -> High Availability -> Status** and click button on `Synchronize` service to synchronize config to backup.
 
 #### OpenVPN Servers
