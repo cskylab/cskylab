@@ -1,0 +1,43 @@
+
+#
+#   Step 1: Customize cron-job-snapshots patch
+#
+#       Change: <s3:https://minio-promise.csky.cloud/mpb-xxxx/restic>
+#       To:     <Your restic repository name>
+#
+#   Step 2: In your cs-mod directory, change strings as indicated for every application
+#
+
+rsync:
+  gitlab:
+    from: run-one cs-rsync.sh -q -m rsync-to -d /srv/gitlab  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/gitlab  >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -qm rsync-to -d /srv/gitlab  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+  harbor:
+    from: run-one cs-rsync.sh -q -m rsync-to -d /srv/harbor  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/harbor  >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -qm rsync-to -d /srv/harbor  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+  keycloak:
+    from: run-one cs-rsync.sh -q -m rsync-to -d /srv/keycloak  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloak  >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -qm rsync-to -d /srv/keycloak  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+  miniostalone:
+    from: run-one cs-rsync.sh -q -m rsync-to -d /srv/miniostalone  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/miniostalone  >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -qm rsync-to -d /srv/miniostalone  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+  nextcloud:
+    from: run-one cs-rsync.sh -q -m rsync-to -d /srv/nextcloud  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/nextcloud  >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -qm rsync-to -d /srv/nextcloud  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+
+restic:
+  gitlab:
+    from: run-one cs-restic.sh -q -m restic-bck -d  /srv/gitlab -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t gitlab  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t gitlab  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/gitlab  >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -qm restic-bck -d  /srv/gitlab -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t gitlab  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t gitlab  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+  harbor:
+    from: run-one cs-restic.sh -q -m restic-bck -d  /srv/harbor -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t harbor  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t harbor  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/harbor  >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -qm restic-bck -d  /srv/harbor -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t harbor  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t harbor  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+  keycloak:
+    from: run-one cs-restic.sh -q -m restic-bck -d  /srv/keycloak -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t keycloak  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t keycloak  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloak  >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -qm restic-bck -d  /srv/keycloak -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t keycloak  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t keycloak  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+  miniostalone:
+    from: run-one cs-restic.sh -q -m restic-bck -d  /srv/miniostalone -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t miniostalone  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t miniostalone  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/miniostalone  >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -qm restic-bck -d  /srv/miniostalone -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t miniostalone  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t miniostalone  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+  nextcloud:
+    from: run-one cs-restic.sh -q -m restic-bck -d  /srv/nextcloud -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t nextcloud  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t nextcloud  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+    to: run-one cs-lvmserv.sh -q -m snap-remove -d /srv/nextcloud  >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -qm restic-bck -d  /srv/nextcloud -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t nextcloud  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://minio-promise.csky.cloud/mpb-xxxx/restic  -t nextcloud  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
