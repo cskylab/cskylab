@@ -45,7 +45,7 @@ gitlab:
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` folder repository.
 
 - Edit `csdeploy.sh` file
-- Change `souce_charts` variable to the following values:
+- Change `source_charts` variable to the following values:
 
 ```bash
 # Source script to pull charts
@@ -77,6 +77,8 @@ EOF
 - Save file
 
 ### Pull charts & upgrade
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` folder repository.
 
 Execute the following commands to pull charts and upgrade gitlab:
 

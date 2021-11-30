@@ -21,6 +21,10 @@ This patch schedule a previous removal of snapshots in cron-jobs to make sure th
 
 It will update also the commands proposed in README.md files in deployed applications for further use.
 
+Prior to this cron-job modification, the scripts `cs-lvmserv.sh`, `cs-rsync.sh`, and `cs-restic.sh` must be modified to allow snapshot removals without confirmation.
+
+This procedure provides how-to guides to perform all these modifications.
+
 ## How-to guides
 
 ### Install & deploy the patch
