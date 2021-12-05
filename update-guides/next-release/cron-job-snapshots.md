@@ -3,6 +3,7 @@
 - [Background](#background)
 - [How-to guides](#how-to-guides)
   - [Snapshot removal without confirmation update](#snapshot-removal-without-confirmation-update)
+    - [Update scripts in repository](#update-scripts-in-repository)
     - [Inject & deploy modifications in k8s-mod & k8s-pro nodes](#inject--deploy-modifications-in-k8s-mod--k8s-pro-nodes)
   - [Install & deploy cron-job snapshots patch](#install--deploy-cron-job-snapshots-patch)
     - [Customize cron-job-snapshots.yaml file](#customize-cron-job-snapshotsyaml-file)
@@ -30,6 +31,8 @@ This procedure provides how-to guides to perform all these modifications.
 ## How-to guides
 
 ### Snapshot removal without confirmation update
+
+#### Update scripts in repository
 
 - In your VS Code side bar, righ-click your `cs-mod` folder in your repository and select **Find in folder...**
 
