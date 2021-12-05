@@ -2,11 +2,11 @@
 
 - [Background](#background)
 - [How-to guides](#how-to-guides)
-  - [Install & deploy the patch](#install--deploy-the-patch)
-  - [Customize cron-job-snapshots.yaml file](#customize-cron-job-snapshotsyaml-file)
-  - [Change commands for every application](#change-commands-for-every-application)
-  - [Inject and deploy files in k8s-mod-n1 node](#inject-and-deploy-files-in-k8s-mod-n1-node)
-  - [Review cron-job execution in k8s-mod-n1](#review-cron-job-execution-in-k8s-mod-n1)
+  - [Install & deploy cron-job snapshots patch](#install--deploy-cron-job-snapshots-patch)
+    - [Customize cron-job-snapshots.yaml file](#customize-cron-job-snapshotsyaml-file)
+    - [Change commands for every application](#change-commands-for-every-application)
+    - [Inject and deploy files in k8s-mod-n1 node](#inject-and-deploy-files-in-k8s-mod-n1-node)
+    - [Review cron-job execution in k8s-mod-n1](#review-cron-job-execution-in-k8s-mod-n1)
 - [Reference](#reference)
 
 ---
@@ -17,9 +17,9 @@ RSync and Restic cron-jobs are used throughout cSkyLab to achieve high availabil
 
 When a previous job is not properly finished, the snapshot is not removed and future rsync and restic jobs will fail.
 
-This patch schedule a previous removal of snapshots in cron-jobs to make sure that **rsync and restic jobs will always be executed**. (Note that the removal job will fail if the snapshot was appropriately deleted before, but the concatenated cs-rsync or cs-restic jobs will always be executed).
+This patch schedules a previous removal of snapshots in cron-jobs to make sure that **rsync and restic jobs will always be executed**. (Note that the removal job will fail if the snapshot was appropriately deleted before, but the concatenated cs-rsync or cs-restic jobs will always be executed).
 
-It will update also the commands proposed in README.md files in deployed applications for further use.
+This patch will also update the commands proposed in README.md files for further use.
 
 Prior to this cron-job modification, the scripts `cs-lvmserv.sh`, `cs-rsync.sh`, and `cs-restic.sh` must be modified to allow snapshot removals without confirmation.
 
@@ -27,9 +27,9 @@ This procedure provides how-to guides to perform all these modifications.
 
 ## How-to guides
 
-### Install & deploy the patch
+### Install & deploy cron-job snapshots patch
 
-### Customize cron-job-snapshots.yaml file
+#### Customize cron-job-snapshots.yaml file
 
 The file `cron-job-snapshots.yaml` file contains a template for the changes to be made. It must be customized with the restic repository name for your installation.
 
@@ -37,7 +37,7 @@ The file `cron-job-snapshots.yaml` file contains a template for the changes to b
 - Change `s3:https://minio-promise.csky.cloud/mpb-xxxx/restic` with your restic repository name.
 - Save the file.
 
-### Change commands for every application
+#### Change commands for every application
 
 This will make changes in **cron-job** and **README.md** files in your `cs-mod` scope:
 
@@ -47,7 +47,7 @@ This will make changes in **cron-job** and **README.md** files in your `cs-mod` 
 
 >**Note:** Every change should update 2 files: `cs-cron_scripts` in node k8s-mod-n1 and `README.md` in every k8s-mod application folder
 
-### Inject and deploy files in k8s-mod-n1 node
+#### Inject and deploy files in k8s-mod-n1 node
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod-n1` folder repository. Inject and deploy configuration by executing:
 
@@ -56,7 +56,7 @@ From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod-n1` fo
 ./csinject.sh -qdm config
 ```
 
-### Review cron-job execution in k8s-mod-n1
+#### Review cron-job execution in k8s-mod-n1
 
 - From VS Code Remote in mcc, open terminal at `cs-mod/k8s-mod-n1` and connect to the machine with `./csconnect.sh`
 
