@@ -1,4 +1,4 @@
-# gitlab 5.5.0 Upgrade <!-- omit in toc -->
+# gitlab 5.5.1 Upgrade <!-- omit in toc -->
 
 - [Background](#background)
 - [How-to guides](#how-to-guides)
@@ -11,7 +11,7 @@
 
 ## Background
 
-GitLab chart 5.5.0 implements appVersion 14.5.0. In this version `gitlab-task-runner` pod must be renamed to `gitlab-toolbox`.
+GitLab chart 5.5.1 implements appVersion 14.5.1. In this version `gitlab-task-runner` pod must be renamed to `gitlab-toolbox`.
 
 This procedure updates gitlab installation in k8s-mod cluster.
 
@@ -60,8 +60,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull gitlab/gitlab --version 5.5.0 --untar
-helm pull bitnami/postgresql --version 10.13.8 --untar
+helm pull gitlab/gitlab --version 5.5.1 --untar
+helm pull bitnami/postgresql --version 10.13.11 --untar
 
 EOF
 )"
@@ -71,7 +71,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## Helm charts: gitlab/gitlab v5.5.0 bitnami/postgresql v10.13.8<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v5.5.1 bitnami/postgresql v10.13.11<!-- omit in toc -->
 ```
 
 - Save file

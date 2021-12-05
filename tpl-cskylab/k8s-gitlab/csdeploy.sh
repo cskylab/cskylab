@@ -95,8 +95,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull gitlab/gitlab --version 5.4.2 --untar
-helm pull bitnami/postgresql --version 10.13.8 --untar
+helm pull gitlab/gitlab --version 5.5.1 --untar
+helm pull bitnami/postgresql --version 10.13.11 --untar
 
 EOF
 )"
