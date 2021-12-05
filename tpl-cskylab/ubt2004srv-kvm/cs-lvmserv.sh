@@ -603,7 +603,7 @@ if [[ "${execution_mode}" == "snap-remove" ]]; then
   echo
   echo "${msg_info} Remove snapshot"
   echo
-  lvremove "${vg_name}/${snap_name}"
+  lvremove --yes "${vg_name}/${snap_name}"
   lvs
 
   # Delete snapshot directory if empty

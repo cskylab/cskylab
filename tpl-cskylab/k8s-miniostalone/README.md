@@ -133,7 +133,7 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 ## RSync path:  /srv/{{ .namespace.name }}
 ## To Node:     {{ .localrsyncnodes.all_pv }}
 ## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }} >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
 ```
 
 **Restic:**
@@ -173,7 +173,7 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 ## Data service:  /srv/{{ .namespace.name }}
 ## At minute 30 past every hour from 8 through 23.
 ## Restic repo:   {{ .restic.repo }}
-# 30 8-23 * * *   root run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }} -r {{ .restic.repo }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }} >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }} -r {{ .restic.repo }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ## How-to guides

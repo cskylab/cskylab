@@ -2,6 +2,8 @@
 
 - [Background](#background)
 - [How-to guides](#how-to-guides)
+  - [Snapshot removal without confirmation update](#snapshot-removal-without-confirmation-update)
+    - [Inject & deploy modifications in k8s-mod & k8s-pro nodes](#inject--deploy-modifications-in-k8s-mod--k8s-pro-nodes)
   - [Install & deploy cron-job snapshots patch](#install--deploy-cron-job-snapshots-patch)
     - [Customize cron-job-snapshots.yaml file](#customize-cron-job-snapshotsyaml-file)
     - [Change commands for every application](#change-commands-for-every-application)
@@ -26,6 +28,54 @@ Prior to this cron-job modification, the scripts `cs-lvmserv.sh`, `cs-rsync.sh`,
 This procedure provides how-to guides to perform all these modifications.
 
 ## How-to guides
+
+### Snapshot removal without confirmation update
+
+- In your VS Code side bar, righ-click your `cs-mod` folder in your repository and select **Find in folder...**
+
+- Search for: `lvremove "${vg_name}/${snap_name}" --force`
+- Replace for: `lvremove "${vg_name}/${snap_name}"`
+
+- Search for: `lvremove "${vg_name}/${snap_name}"`
+- Replace for: `lvremove --yes "${vg_name}/${snap_name}"`
+
+- Repeat the same procedure in your `cs-pro`, folder.
+- Repeat the same procedure in your `cs-sys`, folder. (Not in FastStart installations)
+
+#### Inject & deploy modifications in k8s-mod & k8s-pro nodes
+
+- From VS Code Remote connected to `mcc`, open 2 terminals at root folder repository
+- Customize & execute in parallel the following commands to inject and execute install in k8s nodes:
+
+```bash
+# Set environment variables
+export REPO_DIR="$HOME/mpb-1100"
+
+# Inject and deploy new configuration in k8s-mod nodes
+echo && echo "******** SOE - START of execution ********" && echo \
+; cd ${REPO_DIR}/cs-mod/k8s-mod-master \
+; ./csinject.sh -qdm config \
+; cd ${REPO_DIR}/cs-mod/k8s-mod-n1 \
+; ./csinject.sh -qdm config \
+; cd ${REPO_DIR}/cs-mod/k8s-mod-n2 \
+; ./csinject.sh -qdm config \
+; echo && echo "******** EOE - END of execution ********" && echo
+```
+
+```bash
+# Set environment variables
+export REPO_DIR="$HOME/mpb-1100"
+
+# Inject and deploy new configuration in k8s-pro nodes
+echo && echo "******** SOE - START of execution ********" && echo \
+; cd ${REPO_DIR}/cs-pro/k8s-pro-master \
+; ./csinject.sh -qdm config \
+; cd ${REPO_DIR}/cs-pro/k8s-pro-n1 \
+; ./csinject.sh -qdm config \
+; cd ${REPO_DIR}/cs-pro/k8s-pro-n2 \
+; ./csinject.sh -qdm config \
+; echo && echo "******** EOE - END of execution ********" && echo
+```
 
 ### Install & deploy cron-job snapshots patch
 

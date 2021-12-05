@@ -394,7 +394,7 @@ if [[ "${execution_mode}" == "rsync-to" ]]; then
   echo
   echo "${msg_info} Remove snapshot"
   echo
-  lvremove "${vg_name}/${snap_name}" --force
+  lvremove --yes "${vg_name}/${snap_name}"
 
   # Delete snapshot directory if empty
   if [[ -d "${snap_path_name}" ]]; then
