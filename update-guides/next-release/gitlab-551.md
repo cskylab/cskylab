@@ -1,4 +1,4 @@
-# gitlab 5.5.1 Upgrade <!-- omit in toc -->
+# gitlab chart 5.5.1 Upgrade <!-- omit in toc -->
 
 - [Background](#background)
 - [How-to guides](#how-to-guides)
