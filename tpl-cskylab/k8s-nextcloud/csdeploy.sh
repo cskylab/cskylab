@@ -96,7 +96,7 @@ helm repo update
 
 # Charts
 helm pull nextcloud/nextcloud --version 2.10.2 --untar
-helm pull bitnami/mariadb --version 10.0.1 --untar
+helm pull bitnami/mariadb --version 10.1.0 --untar
 
 EOF
 )"

@@ -37,7 +37,7 @@ helm repo update
 
 # Charts
 helm pull nextcloud/nextcloud --version 2.10.2 --untar
-helm pull bitnami/mariadb --version 10.0.1 --untar
+helm pull bitnami/mariadb --version 10.1.0 --untar
 
 EOF
 )"
@@ -47,7 +47,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## Helm charts: bitnami/minio v9.2.3<!-- omit in toc -->
+## Helm charts: nextcloud/nextcloud v2.10.2 bitnami/mariadb v10.1.0 <!-- omit in toc -->
 ```
 
 - Save file
