@@ -8,6 +8,7 @@ global:
 # We supply an Ingress resource that locates Grafana under /-/grafana
 # NOTE: these values are placeholders for template functionality.
 ingress:
+  apiVersion:
   tls: {}
   annotations: {}
   path: # /

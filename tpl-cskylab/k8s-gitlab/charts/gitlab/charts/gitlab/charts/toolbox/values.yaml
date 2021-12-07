@@ -146,7 +146,7 @@ backups:
         memory: 350M
     persistence:
       enabled: false
-      ## task-runner temporarily Persistent Volume Storage Class
+      ## toolbox temporarily Persistent Volume Storage Class
       ## If defined, storageClassName: <storageClass>
       ## If set to "-", storageClassName: "", which disables dynamic provisioning
       ## If undefined (the default) or set to null, no storageClassName spec is
@@ -215,7 +215,7 @@ resources:
 persistence:
   enabled: false
 
-  ## task-runner temporarily Persistent Volume Storage Class
+  ## toolbox temporarily Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
   ## If undefined (the default) or set to null, no storageClassName spec is

@@ -29,6 +29,9 @@ imagePullPolicy: IfNotPresent
 #   - name: "image-pull-secret"
 
 ## How many runner pods to launch.
+##
+## Note: Using more than one replica is not supported with a runnerToken. Use a runnerRegistrationToken
+## to create multiple runner replicas.
 # replicas: 1
 
 ## How many old ReplicaSets for this Deployment you want to retain

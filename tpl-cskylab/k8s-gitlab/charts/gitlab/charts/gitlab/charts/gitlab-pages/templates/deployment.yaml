@@ -74,6 +74,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ coalesce .Values.image.tag (include "gitlab.parseAppVersion" (dict "appVersion" .Chart.AppVersion "prepend" "true")) }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           env:
+          {{- include "gitlab.extraEnv" $ | nindent 12 }}
             - name: CONFIG_TEMPLATE_DIRECTORY
               value: '/etc/gitlab-pages/templates'
             - name: CONFIG_DIRECTORY

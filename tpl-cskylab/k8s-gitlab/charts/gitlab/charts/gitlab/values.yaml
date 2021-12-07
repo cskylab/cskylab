@@ -13,7 +13,7 @@ global:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ee
     sidekiq:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-sidekiq-ee
-    task-runner:
+    toolbox:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ee
     webservice:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-webservice-ee
@@ -28,7 +28,7 @@ global:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ce
     sidekiq:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-sidekiq-ce
-    task-runner:
+    toolbox:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ce
     webservice:
       repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-webservice-ce

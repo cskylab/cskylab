@@ -85,6 +85,7 @@ service:
   # loadBalancerSourceRanges:
 enabled: true
 ingress:
+  apiVersion:
   enabled:
   proxyConnectTimeout: 15
   proxyReadTimeout: 600
@@ -326,6 +327,7 @@ extra: {}
   # matomo_url: '_your_matomo_url'
   # matomo_site_id: '_your_matomo_site_id'
   # matomo_disable_cookies: false
+  # one_trust_id: '_your_one_trust_id'
 rack_attack:
   git_basic_auth:
     enabled: false

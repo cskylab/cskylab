@@ -59,6 +59,13 @@ Input: dict "context" $ "name" string
 {{- end -}}
 {{- end -}}
 
+{{- define "gitlab.rails.redis.sessions" -}}
+{{- if .Values.global.redis.sessions -}}
+{{- $_ := set $ "redisConfigName" "sessions" }}
+{{- include "gitlab.rails.redis.yaml" (dict "context" $ "name" "redis.sessions") -}}
+{{- end -}}
+{{- end -}}
+
 {{/*
 cable.yml configuration
 If no `global.redis.actioncable`, use `global.redis`
@@ -68,4 +75,16 @@ If no `global.redis.actioncable`, use `global.redis`
 {{-   $_ := set $ "redisConfigName" "actioncable" }}
 {{- end -}}
 {{- include "gitlab.rails.redis.yaml" (dict "context" $ "name" "cable") -}}
+{{- end -}}
+
+
+{{- define "gitlab.rails.redis.all" -}}
+{{ include "gitlab.rails.redis.resque" . }}
+{{ include "gitlab.rails.redis.cache" . }}
+{{ include "gitlab.rails.redis.sharedState" . }}
+{{ include "gitlab.rails.redis.queues" . }}
+{{ include "gitlab.rails.redis.cable" . }}
+{{ include "gitlab.rails.redis.traceChunks" . }}
+{{ include "gitlab.rails.redis.rateLimiting" . }}
+{{ include "gitlab.rails.redis.sessions" . }}
 {{- end -}}

@@ -327,10 +327,42 @@ Defaults to nil
 {{/* ######### ingress templates */}}
 
 {{/*
+Return the appropriate apiVersion for Ingress.
+
+Example usage:
+{{- $ingressCfg := dict "global" .Values.global.ingress "local" .Values.ingress "capabilities" .Capabilities -}}
+kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
+*/}}
+{{- define "gitlab.ingress.apiVersion" -}}
+{{-   if .local.apiVersion -}}
+{{-     .local.apiVersion -}}
+{{-   else if .global.apiVersion -}}
+{{-     .global.apiVersion -}}
+{{-   else if .capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+{{-     print "networking.k8s.io/v1" -}}
+{{-   else if .capabilities.APIVersions.Has "networking.k8s.io/v1beta1/Ingress" -}}
+{{-     print "networking.k8s.io/v1beta1" -}}
+{{-   else -}}
+{{-     print "extensions/v1beta1" -}}
+{{-   end -}}
+{{- end -}}
+
+{{/*
 Returns the nginx ingress class
 */}}
 {{- define "gitlab.ingressclass" -}}
 {{- pluck "class" .Values.global.ingress (dict "class" (printf "%s-nginx" .Release.Name)) | first -}}
+{{- end -}}
+
+{{/*
+Returns the ingress provider
+
+It expects a dictionary with two entries:
+  - `global` which contains global ingress settings, e.g. .Values.global.ingress
+  - `local` which contains local ingress settings, e.g. .Values.ingress
+*/}}
+{{- define "gitlab.ingress.provider" -}}
+{{- default .global.provider .local.provider -}}
 {{- end -}}
 
 {{/*
@@ -510,19 +542,6 @@ Override upstream redis secret key name
 */}}
 {{- define "redis.secretPasswordKey" -}}
 {{ template "gitlab.redis.password.key" . }}
-{{- end -}}
-
-{{/*
-Return the appropriate apiVersion for Ingress.
-*/}}
-{{- define "ingress.apiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
-{{- print "networking.k8s.io/v1" -}}
-{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1/Ingress" -}}
-{{- print "networking.k8s.io/v1beta1" -}}
-{{- else -}}
-{{- print "extensions/v1beta1" -}}
-{{- end -}}
 {{- end -}}
 
 {{/*

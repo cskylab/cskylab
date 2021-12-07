@@ -66,6 +66,9 @@ extra:
   {{- if .extra.matomoDisableCookies }}
   matomo_disable_cookies: {{ eq true .extra.matomoDisableCookies }}
   {{- end }}
+  {{ if .extra.oneTrustId }}
+  one_trust_id: {{ .extra.oneTrustId | quote }}
+  {{- end }}
 {{- end -}}
 
 {{- define "gitlab.appConfig.rackAttack" -}}

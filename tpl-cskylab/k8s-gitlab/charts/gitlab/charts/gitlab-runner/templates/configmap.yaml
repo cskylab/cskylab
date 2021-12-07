@@ -45,6 +45,16 @@ data:
       export CI_SERVER_TOKEN=$(cat /secrets/runner-token)
     fi
 
+    {{- if and (not (empty .Values.runnerToken)) (ne "1" ((default "1" .Values.replicas) | toString)) }}
+    {{- fail "Using a runner token with more than 1 replica is not supported." }}
+    {{- end }}
+
+    # Validate this also at runtime in case the user has set a custom secret
+    if [[ ! -z "$CI_SERVER_TOKEN" && "{{ default 1 .Values.replicas }}" -ne "1" ]]; then
+      echo "Using a runner token with more than 1 replica is not supported."
+      exit 1
+    fi
+
     # Register the runner
     if ! sh /configmaps/register-the-runner; then
       exit 1

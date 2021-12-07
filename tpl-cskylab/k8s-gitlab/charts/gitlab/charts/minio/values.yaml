@@ -11,6 +11,7 @@ minioMc:
   tag: "RELEASE.2018-07-13T00-53-22Z"
 
 ingress:
+  apiVersion:
   enabled:
   proxyReadTimeout: 900
   proxyBodySize: "0"

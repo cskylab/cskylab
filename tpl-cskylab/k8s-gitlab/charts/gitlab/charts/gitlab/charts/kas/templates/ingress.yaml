@@ -2,7 +2,8 @@
 {{- if eq (include "gitlab.ingress.enabled" $) "true" -}}
 {{- $hostname := include "gitlab.kas.hostname" . -}}
 {{- $tlsSecret := include "kas.tlsSecret" . -}}
-apiVersion: {{ template "ingress.apiVersion" $}}
+{{- $ingressCfg := dict "global" .Values.global.ingress "local" .Values.ingress "capabilities" .Capabilities -}}
+apiVersion: {{ template "gitlab.ingress.apiVersion" $ingressCfg }}
 kind: Ingress
 metadata:
   name: {{ template "fullname" . }}
@@ -12,9 +13,7 @@ metadata:
     {{- include "gitlab.commonLabels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: "{{ template "gitlab.ingressclass" . }}"
-    {{- if .Values.global.ingress.provider }}
-    kubernetes.io/ingress.provider: {{ .Values.global.ingress.provider }}
-    {{- end }}
+    kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
     {{ include "gitlab.certmanager_annotations" . }}
   {{- range $key, $value := merge .Values.ingress.annotations .Values.global.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}

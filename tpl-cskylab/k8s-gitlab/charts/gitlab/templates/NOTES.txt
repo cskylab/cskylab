@@ -69,12 +69,12 @@ The GitLab Runner chart (gitlab/gitlab-runner) is deployed without the `privileg
 chose not to enable this by default. See https://docs.gitlab.com/runner/install/kubernetes.html#running-docker-in-docker-containers-with-gitlab-runners
 {{- end }}
 
-{{/* task-runner replicas */}}
-{{ if eq (index $.Values.gitlab "task-runner" "replicas" | int) 0 }}
-NOTICE: The GitLab task-runner is scaled to 0.
-    The `task-runner` Pod is very useful for administration and debugging of this application suite. You may configure `gitlab.task-runner.replicas=1` if you wish to leave a Pod running at all times, or you can scale the deployment up when needed:
+{{/* toolbox replicas */}}
+{{ if eq (index $.Values.gitlab "toolbox" "replicas" | int) 0 }}
+NOTICE: The GitLab toolbox is scaled to 0.
+    The `toolbox` Pod is very useful for administration and debugging of this application suite. You may configure `gitlab.toolbox.replicas=1` if you wish to leave a Pod running at all times, or you can scale the deployment up when needed:
 
-    `kubectl scale --replicas=1 deployment/{{ .Release.Name }}-task-runner`
+    `kubectl scale --replicas=1 deployment/{{ .Release.Name }}-toolbox`
 
 {{ end }}
 
@@ -104,8 +104,8 @@ Help us improve the installation experience, let us know how we did with a 1 min
 {{-   $_ := set $envValues "gitlab.webservice" (default false .Values.gitlab.webservice.extraEnv.PAGES_UPDATE_LEGACY_STORAGE) }}
 {{-   $_ := set $envValues "gitlab.sidekiq" (default false .Values.gitlab.sidekiq.extraEnv.PAGES_UPDATE_LEGACY_STORAGE) }}
 {{-   $_ := set $envValues "global" (default false .Values.global.extraEnv.PAGES_UPDATE_LEGACY_STORAGE) }}
-{{-   $taskrunnerExtraEnv := index .Values.gitlab "task-runner" "extraEnv" }}
-{{-   $_ := set $envValues "gitlab.task-runner" (default false $taskrunnerExtraEnv.PAGES_UPDATE_LEGACY_STORAGE) }}
+{{-   $toolboxExtraEnv := index .Values.gitlab "toolbox" "extraEnv" }}
+{{-   $_ := set $envValues "gitlab.toolbox" (default false $toolboxExtraEnv.PAGES_UPDATE_LEGACY_STORAGE) }}
 {{-   range $component, $value := $envValues }}
 {{-     if eq $value true }}
 WARNING: GitLab Pages configured to use disk storage via `{{ $component }}.extraEnv.PAGES_UPDATE_LEGACY_STORAGE`.
