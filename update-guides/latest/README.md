@@ -18,6 +18,6 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 ## Applications upgrades
 
-| Update | Procedure |
-| ------ | --------- |
-|        |           |
+| Update             | Procedure                        |
+| ------------------ | -------------------------------- |
+| GitLab chart 5.5.2 | [gitlab-551.md](./gitlab-552.md) |
