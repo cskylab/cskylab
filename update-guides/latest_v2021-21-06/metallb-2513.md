@@ -12,7 +12,7 @@
 
 MetalLB chart 2.5.13 updates chart components versions in metallb appVersion 0.11.0.
 
-This procedure updates Harbor installation in k8s-mod cluster.
+This procedure updates MetalLB installation in k8s-mod cluster.
 
 ## How-to guides
 
