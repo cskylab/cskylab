@@ -52,7 +52,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
 
 ## Prerequisites
 
-- Physical or virtual machine with two or more disks:
+- Physical machine with two or more disks:
   - Disk 1: Ubuntu server 20.04 installed up and running.
   - Additional disks: Free and ready to be managed by LVM.
 - Package `openssh-server` must be installed to allow remote ssh connections.
