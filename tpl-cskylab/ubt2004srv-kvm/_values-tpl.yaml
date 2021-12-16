@@ -6,7 +6,7 @@
 
 _tplname: ubt2004srv-kvm
 _tpldescription: Ubuntu server 20.04 kvm base installation
-_tplversion: 21.11.06
+_tplversion: 21.12.08
 
 #
 # Values to override
@@ -19,14 +19,14 @@ machine:
   localadminusername: kos
   localadminpassword: "NoFear21"
   timezone: "UTC"
-  networkinterface: enp1s0
-  ipaddress: 192.168.82.9
+  # networkinterface: enp1s0
+  ipaddress: 192.168.80.9
   netmask: 24
-  gateway4: 192.168.82.1
+  gateway4: 192.168.80.1
   searchdomainnames:
     - cskylab.net
   nameservers:
-    - 192.168.82.1
+    - 192.168.80.1
   ## Setup directory where configuration files will be injected
   setupdir: "/etc/csky-setup"
   systemlocale: "C.UTF-8"

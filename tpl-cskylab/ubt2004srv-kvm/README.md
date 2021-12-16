@@ -5,15 +5,26 @@
 Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
 - [Prerequisites](#prerequisites)
-  - [LVM data services](#lvm-data-services)
-  - [Backup & data protection](#backup--data-protection)
+  - [Hardware requirements](#hardware-requirements)
+  - [Network assignements](#network-assignements)
 - [How-to guides](#how-to-guides)
-  - [Inject & Deploy configuration](#inject--deploy-configuration)
-    - [1. SSH Authentication and sudoers file](#1-ssh-authentication-and-sudoers-file)
-    - [2. Network configuration](#2-network-configuration)
+  - [Setup from bare metal (SuperMicro example)](#setup-from-bare-metal-supermicro-example)
+    - [IPMI Initial settings](#ipmi-initial-settings)
+    - [Bios configuration](#bios-configuration)
+    - [Ubuntu 20.04 clean installation](#ubuntu-2004-clean-installation)
+  - [Configure kvm hosts](#configure-kvm-hosts)
+    - [Inject SSH keys and sudoers file](#inject-ssh-keys-and-sudoers-file)
+    - [Network configuration](#network-configuration)
     - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
     - [4. Configuration tasks](#4-configuration-tasks)
     - [5. Connect and operate](#5-connect-and-operate)
+    - [Inject kvm hosts ssh keys](#inject-kvm-hosts-ssh-keys)
+    - [Create volgroup](#create-volgroup)
+    - [Create LVM data services](#create-lvm-data-services)
+    - [Backup & data protection](#backup--data-protection)
+    - [Initialize USB Restic backup repository (Optional)](#initialize-usb-restic-backup-repository-optional)
+    - [Create virtual bridges](#create-virtual-bridges)
+    - [Create virtual storage pools](#create-virtual-storage-pools)
   - [Storage services](#storage-services)
     - [Manage disk volume groups](#manage-disk-volume-groups)
     - [Manage Thin Provisioning LVM data services](#manage-thin-provisioning-lvm-data-services)
@@ -52,82 +63,220 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
 
 ## Prerequisites
 
-- Physical or virtual machine with two or more disks:
-  - Disk 1: Ubuntu server 20.04 installed up and running.
-  - Additional disks: Free and ready to be managed by LVM.
-- Package `openssh-server` must be installed to allow remote ssh connections.
+### Hardware requirements
 
-### LVM data services
+| Configuration   | Minimum    | Recommended   |
+| --------------- | ---------- | ------------- |
+| Processor       | 2 core cpu | 4+ core cpu   |
+| Memory          | 16 GB      | 128+ GB       |
+| Network         | 4x1Gb      | 4x10Gb+ 4x1Gb |
+| Disk 1 (System) | 80 GB      | 80-120 GB     |
+| Disk 2 (LVM)    | 250 GB     | 1+ TB         |
 
-When 2 kvm servers are used in mirrored configuration, at least 4 LVM data services are created with the following purposes:
+>**Note:** Additional disks can be added and managed by LVM.
 
-| Data Service     | Purpose                                                                                              |
-| ---------------- | ---------------------------------------------------------------------------------------------------- |
-| `/srv/setup`     | Cloud images, .iso files and other setup resources exported from `kvm-main` to `kvm-aux`             |
-| `/srv/vm-main`   | Resources of mirrored virtual machines, running on `kvm-main` and exported to `kvm-aux` (if present) |
-| `/srv/vm-aux`    | Resources of mirrored virtual machines, running on `kvm-aux` (if present) and exported to `kvm-main` |
-| `/srv/vmachines` | Local virtual machine resources not exported                                                         |
+### Network assignements
 
->**Note**: Hostnames `kvm-main` and `kvm-aux` are mentioned as examples of mirrored kvm configurations.
+cSkyLab virtual networking model is defined in `01-netcfg.yaml` NetPlan configuration file in kvm machines. It includes the following networks:
 
-### Backup & data protection
+| Network    | VLAN Id | Purpose                     | External NIC |
+| ---------- | ------- | --------------------------- | ------------ |
+| WAN        | 909     | OPNsense WAN Uplink         | yes          |
+| sys        | 910     | System services             | yes          |
+| sys_pfsync | 911     | OPNsense HA cluster         |              |
+| mod_srv    | 912     | Model services              |              |
+| pro_srv    | 913     | Production services         |              |
+| usr        | 914     | Users local access          | optional     |
+| SETUP      | 915     | OPNsense & kvm setup access | yes          |
 
-Backup & data protection must be configured in file `cs-cron_scripts` and must be injected and deployed into the machine by running `cs-inject.sh -d` script to redeploy all configuration files (See **Inject & Deploy configuration** section in this document).
+All VLAN's are defined inside a unique uplink bond:
 
-When kvm-main & kvm-aux machines are present, rsync cronjobs are used to achieve service HA for machines running in mirrored pools in the following way:
+| Bond      | VLAN Id          | Purpose | External NIC |
+| --------- | ---------------- | ------- | ------------ |
+| bond_csky | All (Trunk mode) | Uplink  | yes          |
 
-| Running mode          | Data service   | Defined in | Replicated to         |
-| --------------------- | -------------- | ---------- | --------------------- |
-| [kvm-main standalone] |                |            |                       |
-|                       | `/srv/vm-main` | kvm-main   | kvm-aux (if present)  |
-|                       | `/srv/vm-aux`  | kvm-main   | kvm-aux (if present)  |
-| [kvm-main + kvm-aux]  |                |            |                       |
-|                       | `/srv/vm-main` | kvm-main   | kvm-aux               |
-|                       | `/srv/vm-aux`  | kvm-aux    | kvm-main              |
-| [kvm-aux standalone]  |                |            |                       |
-|                       | `/srv/vm-main` | kvm-aux    | kvm-main (if present) |
-|                       | `/srv/vm-aux`  | kvm-aux    | kvm-main (if present) |
+If external managed switches are used, it is recommended to bond 2 or 4 NIC's for the uplink, as defined in NetPlan configuration file `01-netcfg.yaml`.
 
->**NOTE**: Resources of mirrored virtual machines will be regulary copied to its mirror host, accordingly to the schedule programmed on `cs-cron-scripts`.
+If only two physical machines are used (`kvm-main` and `kvm-aux`), there is no need to deploy the networking model to external switches. You must then connect the bond between both machines in order to get the networking model up and running.
+
+The physical machine hosting kvm services must have at least 4 NIC's (5 if users local access is needed) in order to provide external connections to the following networks:
+
+- NIC 1: WAN
+- NIC 2: sys
+- NIC 3: SETUP
+- NIC 4: bond_csky
+- Optional NIC 5: usr
+
+The recommended configuration is 4 10Gb NIC + 4 1Gb NIC connected as in the SuperMicro example provided.
+
+>**Note:** Before deploying kvm, you should perform in your machine a basic installation of Ubuntu 20.04 server and get the interfaces names with `networkctl status --all`. Plan and modify your NetPlan configuration file `01-netcfg.yaml` according to your interfaces names.
 
 ## How-to guides
 
-### Inject & Deploy configuration
+### Setup from bare metal (SuperMicro example)
 
-To install and configure the machine, open a terminal from the machine configuration directory in the management repository, and perform the following configuration steps:
+These procedures are examples made for SuperMicro IPMI & BIOS setup. With other hardware, you should apply analog procedures according with the software provided by your manufacturer.
 
-#### 1. SSH Authentication and sudoers file
+>**NOTE**: **Connect only IPMI network port**. To perform IPMI & Bios configuration connect only to IPMI service until OS installation is made to the physical machine.
+
+![Supermicro-port-locations](./images/kvm-main-E302-9D-port-locations0.png)
+
+**Supermicro network ports assignment**:
+
+| Port | Type     | Network   | Interface |
+| ---- | -------- | --------- | --------- |
+| 1    |          | **IPMI**  |           |
+| 2    |          |           |           |
+| 3    |          |           |           |
+| 4    | 1Gb      | sys       | eno2      |
+| 5    | 1Gb      | setup     | eno1      |
+| 6    | 1Gb      | wan       | eno4      |
+| 7    | 1Gb      | usr       | eno3      |
+| 8    | 10Gb     | bond_csky | eno6      |
+| 9    | 10Gb     | bond_csky | eno5      |
+| 10   | 10Gb SPF | bond_csky | eno8      |
+| 11   | 10Gb SPF | bond_csky | eno7      |
+| 12   |          |           |           |
+|      |          |           |           |
+
+#### IPMI Initial settings
+
+- **Login**
+  - Connect the IPMI port to your LAN. Take note of the IP address by your DHCP service.
+  - Using **Firefox browser** navigate to "https://IPMI_IP_address". Accept the warning messages about self-signed certificate.
+  - Login with `ADMIN` user and the unique password supplied in "PWD" label in the sticker located at the bottom of your machine. For more information about Supermicro IPMI see:
+    - <https://www.supermicro.com/en/support/BMC_Unique_Password>
+    - <https://www.supermicro.com/manuals/other/IPMI_Users_Guide.pdf>
+- **Set hostname**
+  - In **Configuration -> Network** configure the following settings:
+    - Hostname: `ipmi-kvm-main` or `ipmi-kvm-aux`
+    - Introduce a fixed IP Address (optional).
+    - `Save`
+
+#### Bios configuration
+
+- Login to IPMI
+- Start a remote console: In **Remote Control -> iKVM/HTML5** start a remote console
+- Open virtual keyboard: If necessary, open a virtual keyboard pressing the button down left
+- Start the machine: Execute **Power Control -> Set Power On** to start the machine
+- Enter in BIOS Setup: Press **`<del>` to run Setup** when prompted.
+
+![invoke Boot Menu](./images/kvm-main_boot-menu.png)
+
+- Load Optimized Defaults: Execute **Save & Exit -> Restore Optimized Defaults** and confirm selection.
+- Set sSATA Configuration: Execute **Advanced -> PCH sSATA Configuration -> sSATA Device Type -> Solid State Drive** for detected SATA drives.
+- Finish setup and restart the machine:
+  - Execute **Save & Exit -> Save as User Defaults** and confirm selection.
+  - Execute **Save & Exit -> Save Changes and Reset** and confirm selection.
+
+#### Ubuntu 20.04 clean installation
+
+>**NOTE**: **Connect IPMI & SETUP network ports**. To perform OS installation you must connect both network ports.
+
+![Supermicro-port-locations](./images/kvm-main-E302-9D-port-locations0.png)
+
+**Supermicro network ports assignment**:
+
+| Port | Type     | Network   | Interface |
+| ---- | -------- | --------- | --------- |
+| 1    |          | **IPMI**  |           |
+| 2    |          |           |           |
+| 3    |          |           |           |
+| 4    | 1Gb      | sys       | eno2      |
+| 5    | 1Gb      | **SETUP** | eno1      |
+| 6    | 1Gb      | wan       | eno4      |
+| 7    | 1Gb      | usr       | eno3      |
+| 8    | 10Gb     | bond_csky | eno6      |
+| 9    | 10Gb     | bond_csky | eno5      |
+| 10   | 10Gb SPF | bond_csky | eno8      |
+| 11   | 10Gb SPF | bond_csky | eno7      |
+| 12   |          |           |           |
+|      |          |           |           |
+
+>**Note:** In some machine models and BIOS versions it may be required to unplug all additional disks, except system disk(s), until first OS installation is completed.
+
+- Prepare Ubuntu Server Setup USB flash disk
+  - Download Ubuntu Server iso file from <https://ubuntu.com/download/server> using `Manual server installation`
+  - Generate usb boot disk from iso file (Use balenaEtcher software in MacOS)
+- Plug USB flash disk with .iso installation into the machine
+- Login to IPMI
+- Start a remote console: In **Remote Control -> iKVM/HTML5** start a remote console
+- Open virtual keyboard: If necessary, open a virtual keyboard pressing the button down left
+- Start the machine: Execute **Power Control -> Set Power On** to start the machine
+- Enter in Boot Menu: Press **`<F11>` to invoke Boot Menu** when prompted
+
+- Select Flash disk boot device and boot the machine
+  
+  ![Boot Menu](./images/kvm-main_boot-menu2.png)
+
+- Follow the procedure in [Ubuntu 20.04 server setup](./cs-ubt2004srv-setup-ubuntu-server.md) to perform a clean installation of Ubuntu server 20.04.
+
+### Configure kvm hosts
+
+- Clone your cSkyLab installation repository in your local machine if you haven't done before.
+- Open terminal window in `kvm-main` or `kvm-aux` folder, depending on what machine you're configuring.
+- Connect **only** the following NIC's
+  - IPMI
+  - SETUP
+
+>**NOTE**: **Connect IPMI & SETUP network ports**. To perform kvm initial configuration you must connect **only** these network ports.
+
+![Supermicro-port-locations](./images/kvm-main-E302-9D-port-locations0.png)
+
+**Supermicro network ports assignment**:
+
+| Port | Type     | Network   | Interface |
+| ---- | -------- | --------- | --------- |
+| 1    |          | **IPMI**  |           |
+| 2    |          |           |           |
+| 3    |          |           |           |
+| 4    | 1Gb      | sys       | eno2      |
+| 5    | 1Gb      | **SETUP** | eno1      |
+| 6    | 1Gb      | wan       | eno4      |
+| 7    | 1Gb      | usr       | eno3      |
+| 8    | 10Gb     | bond_csky | eno6      |
+| 9    | 10Gb     | bond_csky | eno5      |
+| 10   | 10Gb SPF | bond_csky | eno8      |
+| 11   | 10Gb SPF | bond_csky | eno7      |
+| 12   |          |           |           |
+|      |          |           |           |
+
+- Boot the machine
+- Get the IP Address assigned by your DHCP (You can get it by connecting to machine console through IPMI, or looking at your DHCP server leases).
+
+> **NOTE:** kvm machines must be accessed by IP address when connecting from setup network. You must use always the option `-r IPaddress` in csinject.sh configuration scripts.
+
+#### Inject SSH keys and sudoers file
+
+- Inject SSH keys and sudoers files by executing:
 
 ```bash
 # Run csinject.sh in [ssh-sudoers] execution mode
-./csinject.sh -k
+./csinject.sh -k -r IPaddress
 ```
 
-> **NOTE:** If IP address has not been previously set in cloud-init or net-config, use `-r IPaddress`
-until network configuration files are deployed.
-
 This step injects ssh key and sudoers file into the machine.
-
-Required before other configuration options. Its purpose is to allow automated and passwordless logins by using ssh protocol.
 
 If ssh key has not been injected before, you must provide the password for username `{{ .machine.localadminusername }}@{{ .machine.hostname }}` twice:
 
 - First one to install ssh key (ssh-copy-id).
 - Second one to deploy the sudoers file.
 
-#### 2. Network configuration
+#### Network configuration
+
+- Review NetPlan configuration file `01-netcfg.yaml`.
+- Execute machine network configuration by running:
 
 ```bash
 # Run csinject.sh to inject & deploy configuration in [net-config] deploy mode
-./csinject.sh -d -m net-config
+./csinject.sh -qdm net-config
 ```
 
-> **NOTE:** If IP address has not been previously set in cloud-init or net-config, use `-r IPaddress`
-until network configuration files are deployed.
+> **NOTE:** If configuration is wrong, you can loose network connection to your kvm machine. In this case, your must login via console and use the previous NetPlan yaml configuration file in directory `/etc/netplan`
 
-This step deploys network configuration files that allow the machine to operate with specific IP address and hostname. Cloud-init configuration will be disabled from the next start.
+This step deploys cSkyLab virtual network configuration. Cloud-init configuration will be disabled from the next start.
 
-Reboot is recommended when finished.
+Reboot is automatically performed when finished.
 
 #### 3. Install packages, updates and configuration tasks
 
@@ -162,6 +311,265 @@ When configuration needs to be changed, this mode redeploys all configuration fi
 ```
 
 To run scripts and operate from inside the machine, establish an ssh connection with administrator (sudoer) user name `{{ .machine.localadminusername }}@{{ .machine.hostname }}`.
+
+#### Inject kvm hosts ssh keys
+
+From every kvm host, inject ssh keys to allow scp operations:
+
+```bash
+# Connect to the machine
+./csconnect.sh
+
+# From kvm-main
+sudo ssh-copy-id kos@kvm-aux.cskylab.net
+# From kvm-aux
+sudo ssh-copy-id kos@kvm-main.cskylab.net
+```
+
+#### Create volgroup
+
+To **create** Volgroup to support LVM data services, execute inside the host the following command:
+
+```bash
+# Connect to the machine
+./csconnect.sh
+
+# Create volgroup
+sudo cs-volgroup.sh -m create -qd "/dev/sdb" -v "vgdata"
+```
+
+#### Create LVM data services
+
+Four LVM data services are created with the following purposes:
+
+| Data Service     | Purpose                                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
+| `/srv/setup`     | Cloud images, .iso files and other setup resources exported from `kvm-main` to `kvm-aux`             |
+| `/srv/vm-main`   | Resources of mirrored virtual machines, running on `kvm-main` and exported to `kvm-aux` (if present) |
+| `/srv/vm-aux`    | Resources of mirrored virtual machines, running on `kvm-aux` (if present) and exported to `kvm-main` |
+| `/srv/vmachines` | Local virtual machine resources not exported                                                         |
+
+>**NOTE**: Resources of mirrored virtual machines will be regulary copied to its mirror host, accordingly to the schedule programmed on `cs-cron-scripts`.
+
+To **create** the corresponding LVM data services, execute inside the host the following commands:
+
+```bash
+# Connect to the machine
+./csconnect.sh
+
+# Create data services
+sudo cs-lvmserv.sh -m create -qd "/srv/setup" \
+&& sudo cs-lvmserv.sh -m create -qd "/srv/vm-aux" \
+&& sudo cs-lvmserv.sh -m create -qd "/srv/vm-main" \
+&& sudo cs-lvmserv.sh -m create -qd "/srv/vmachines"
+```
+
+#### Backup & data protection
+
+Backup & data protection must be configured in file `cs-cron_scripts` and must be injected and deployed into the machine by running `cs-inject.sh -d` script to redeploy all configuration files (See **Inject & Deploy configuration** section in this document).
+
+**RSync:**
+
+When kvm-main & kvm-aux machines are present, rsync cronjobs are used to achieve service HA for machines running in mirrored pools in the following way:
+
+| Running mode          | Data service   | Defined in | Replicated to         |
+| --------------------- | -------------- | ---------- | --------------------- |
+| [kvm-main standalone] |                |            |                       |
+|                       | `/srv/vm-main` | kvm-main   | kvm-aux (if present)  |
+|                       | `/srv/vm-aux`  | kvm-main   | kvm-aux (if present)  |
+| [kvm-main + kvm-aux]  |                |            |                       |
+|                       | `/srv/vm-main` | kvm-main   | kvm-aux               |
+|                       | `/srv/vm-aux`  | kvm-aux    | kvm-main              |
+| [kvm-aux standalone]  |                |            |                       |
+|                       | `/srv/vm-main` | kvm-aux    | kvm-main (if present) |
+|                       | `/srv/vm-aux`  | kvm-aux    | kvm-main (if present) |
+
+To dump virtual machines xml configurations and perform RSync manual copies on demand:
+
+```bash
+## RSync path:  /srv/vm-main/
+## TO HOST:     kvm-aux.cskylab.com
+sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-main/ \
+  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-main/ -t kvm-aux.cskylab.com
+
+## RSync path:  /srv/vm-aux/
+## TO HOST:     kvm-main.cskylab.com
+sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-aux/ \
+  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/ -t kvm-main.cskylab.com
+```
+
+**RSync cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` (Uncomment jobs and change time schedule as needed):
+
+```bash
+################################################################################
+# (kvm-main) - RSync virtual machines
+################################################################################
+##
+## Dump virtual machines xml configurations in path /srv/vm-main
+## RSync path:  /srv/vm-main/
+## TO HOST:     kvm-aux.cskylab.com
+## At 03:00.
+# 0 3 * * *      root     run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-main/ >> /var/log/cs-rsync.log 2>&1 ; run-one cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-main/   >> /var/log/cs-rsync.log 2>&1 && run-one cs-rsync.sh -q -m rsync-to -d /srv/vm-main/  -t kvm-aux.cskylab.com  >> /var/log/cs-rsync.log 2>&1
+
+## Running mode [kvm-main standalone]
+##
+## Dump virtual machines xml configurations in path /srv/vm-aux
+## RSync path:  /srv/vm-aux/
+## TO HOST:     kvm-main.cskylab.com
+
+## At 03:00.
+# 0 3 * * *      root     run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-rsync.log 2>&1 ; run-one cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-aux/   >> /var/log/cs-rsync.log 2>&1 && run-one cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/  -t kvm-main.cskylab.com  >> /var/log/cs-rsync.log 2>&1
+```
+
+**Restic:**
+
+Restic is configured to perform data backups to local USB disks, remote disk via sftp or remote S3 storage.
+
+Virtual machines running in storage pool `/srv/vmachines` (Kubernetes nodes) are not considered to perform restic backup of its storage disk files. Restic jobs must be scheduled for local storage services inside these virtual machines instead.
+
+When kvm-main & kvm-aux machines are present, restic backups corresponding to mirrored pools are configured in the following way:
+
+| Running mode          | Data service   | Backup performed by host | To restic repository in |
+| --------------------- | -------------- | ------------------------ | ----------------------- |
+| [kvm-main standalone] |                |                          |                         |
+|                       | `/srv/vm-main` | kvm-main                 | local USB / S3          |
+|                       | `/srv/vm-aux`  | kvm-main                 | local USB / S3          |
+| [kvm-main + kvm-aux]  |                |                          |                         |
+|                       | `/srv/vm-main` | kvm-main                 | local USB / S3          |
+|                       | `/srv/vm-aux`  | kvm-aux                  | remote USB / S3         |
+| [kvm-aux standalone]  |                |                          |                         |
+|                       | `/srv/vm-main` | kvm-aux                  | local USB / S3          |
+|                       | `/srv/vm-aux`  | kvm-aux                  | local USB / S3          |
+
+To perform on-demand restic backups:
+
+```bash
+## Running mode [kvm-main standalone] or [kvm-main + kvm-aux]
+## Data service:      /srv/vm-main/
+sudo cs-restic.sh -q -m restic-bck -d /srv/vm-main/ -r {{ .restic.repo }} -t vm-main 
+
+## Data service:      /srv/setup/
+sudo cs-restic.sh -q -m restic-bck -d /srv/setup/ -r {{ .restic.repo }} -t kvm-setup
+
+## Data service:      /srv/vm-aux/
+sudo cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux
+```
+
+To view available backups:
+
+```bash
+## All snapshots
+sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }}
+
+## Specific tag
+## Data service:      /srv/setup/
+sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} -t kvm-setup
+```
+
+**Restic cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` ((Uncomment jobs and change time schedule as needed)):
+
+```bash
+################################################################################
+# (kvm-main) Restic backups
+################################################################################
+##
+## Data service:      /srv/vm-main/
+## At 03:30.
+## Local restic repo
+# 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-main/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-main/ -r {{ .restic.repo }} -t vm-main  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-main  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
+
+##
+## Data service:      /srv/setup/
+## At 03:30.
+# 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/setup/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/setup/ -r {{ .restic.repo }} -t kvm-setup  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t kvm-setup  -f "--keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+
+##
+## Data service:      /srv/vm-aux/
+## At 03:30.
+# 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-aux  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
+```
+
+#### Initialize USB Restic backup repository (Optional)
+
+If you want to perform Restic backups in SFTP mode into USB removable disks, you must plug and mount a USB disk following the procedures in section **Utilities > USB disk operations** in this document.
+
+>**Note**: It is recommended to use at least 3 different backup USB disks and rotate them daily before backup time (Typically scheduled at night, between 0:00 and 6:00 hours). Every disk will contain the same backup retention and forget policy.
+
+- Create a directory for restic repository under /mnt/data:
+
+```bash
+  # Create directory for restic repository
+  # (Don't use sudo option here)
+  mkdir /media/data/restic
+```
+
+- Initialize local Restic repository running:
+
+```bash
+  # Initialize /srv/restic repository 
+  # (Change password in cs-restic.sh if needed and keep it safe)
+  sudo cs-restic.sh -m repo-init -r /media/data/restic
+```
+
+#### Create virtual bridges
+
+Update the file `brvlan_list.txt` with virtual bridges list and inject configuration into the machine:
+
+```txt
+br_wan
+br_sys
+br_sys_pfsync
+br_mod_srv
+br_pro_srv
+br_usr
+br_setup
+```
+
+```bash
+# Inject and deploy machine configuration files
+./csinject.sh -qd
+```
+
+To **create** virtual briges, execute inside the host the following command:
+
+```bash
+# Connect to the machine
+./csconnect.sh
+
+# Apply virtual bridges:
+  sudo cs-kvmserv.sh -m set-bridges
+```
+
+#### Create virtual storage pools
+
+Update the file `dirpool_list.txt` with virtual storage pools and inject configuration into the machine:
+
+```txt
+setup
+vm-main
+vm-aux
+vmachines
+```
+
+```bash
+# Inject and deploy machine configuration files
+./csinject.sh -qd
+```
+
+To **create** virtual storage pools, execute inside the host the following command:
+
+```bash
+# Connect to the machine
+./csconnect.sh
+
+# Apply storage pools:
+  sudo cs-kvmserv.sh -m set-stpools
+```
+
 
 ### Storage services
 

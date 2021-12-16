@@ -93,7 +93,7 @@ setup_dir="{{ .machine.setupdir }}"
 ## Physical device
 # declare -a block_dev_names=(/dev/sdb) 
 ## Virtual device
-declare -a block_dev_names=(/dev/vdb)
+declare -a block_dev_names=(/dev/sdb)
 
 # Volume Group Name
 vg_name="vgdata"
@@ -107,7 +107,7 @@ data_alignment=
 # physical_extent_size="32M"
 physical_extent_size=
 # Thin Pool Metadata Size (Mandatory. Recommended maximum 16G)
-pool_metadata_size="2G"
+pool_metadata_size="16G"
 # Thin Pool chunk size (Optional)
 # chunk_size="256K"
 chunk_size=
