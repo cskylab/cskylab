@@ -18,6 +18,7 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 ## Applications upgrades
 
-| Update             | Procedure                        |
-| ------------------ | -------------------------------- |
-| GitLab chart 5.5.2 | [gitlab-551.md](./gitlab-552.md) |
+| Update                     | Procedure                                        |
+| -------------------------- | ------------------------------------------------ |
+| GitLab chart 5.5.2         | [gitlab-551.md](./gitlab-552.md)                 |
+| Ingress-nginx chart 4.0.13 | [ingress-nginx-4013.md](./ingress-nginx-4013.md) |
