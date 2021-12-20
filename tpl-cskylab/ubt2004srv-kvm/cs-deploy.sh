@@ -347,6 +347,17 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   apt -y install restic && restic self-update
 
+  # Install MinIO client
+  echo
+  echo "${msg_info} Install MinIO client"
+  echo
+
+  wget https://dl.min.io/client/mc/release/linux-amd64/mc
+  cp -v ./mc /usr/local/sbin/
+  rm ./mc
+  chown root:root /usr/local/sbin/mc
+  chmod 755 /usr/local/sbin/mc
+
   # Install kvm
   echo
   echo "${msg_info} Install kvm"

@@ -7,24 +7,35 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
 - [Prerequisites](#prerequisites)
   - [Hardware requirements](#hardware-requirements)
   - [Network assignements](#network-assignements)
-- [How-to guides](#how-to-guides)
-  - [Setup from bare metal (SuperMicro example)](#setup-from-bare-metal-supermicro-example)
+- [How-to build kvm-main & kvm-aux](#how-to-build-kvm-main--kvm-aux)
+  - [Setup OS from bare metal (SuperMicro example)](#setup-os-from-bare-metal-supermicro-example)
     - [IPMI Initial settings](#ipmi-initial-settings)
     - [Bios configuration](#bios-configuration)
     - [Ubuntu 20.04 clean installation](#ubuntu-2004-clean-installation)
-  - [Configure kvm hosts](#configure-kvm-hosts)
+  - [Install kvm hosts](#install-kvm-hosts)
     - [Inject SSH keys and sudoers file](#inject-ssh-keys-and-sudoers-file)
     - [Network configuration](#network-configuration)
-    - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
-    - [4. Configuration tasks](#4-configuration-tasks)
-    - [5. Connect and operate](#5-connect-and-operate)
-    - [Inject kvm hosts ssh keys](#inject-kvm-hosts-ssh-keys)
+    - [Install packages, updates and perform configuration tasks](#install-packages-updates-and-perform-configuration-tasks)
+    - [Update Configuration](#update-configuration)
+    - [Connect and operate](#connect-and-operate)
+    - [Inject kvm hosts ssh keys into eachother](#inject-kvm-hosts-ssh-keys-into-eachother)
+  - [Configure storage & data protection](#configure-storage--data-protection)
     - [Create volgroup](#create-volgroup)
     - [Create LVM data services](#create-lvm-data-services)
     - [Backup & data protection](#backup--data-protection)
-    - [Initialize USB Restic backup repository (Optional)](#initialize-usb-restic-backup-repository-optional)
+  - [Configure bridges and storage pools](#configure-bridges-and-storage-pools)
     - [Create virtual bridges](#create-virtual-bridges)
     - [Create virtual storage pools](#create-virtual-storage-pools)
+  - [Create virtual machines](#create-virtual-machines)
+    - [Check CPU, RAM & Data Disks Defaults](#check-cpu-ram--data-disks-defaults)
+    - [Create virtual machines in kvm hosts](#create-virtual-machines-in-kvm-hosts)
+- [General How-to guides](#general-how-to-guides)
+  - [Inject & Deploy configuration](#inject--deploy-configuration)
+    - [1. SSH Authentication and sudoers file](#1-ssh-authentication-and-sudoers-file)
+    - [2. Network configuration](#2-network-configuration)
+    - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
+    - [4. Configuration tasks](#4-configuration-tasks)
+    - [5. Connect and operate](#5-connect-and-operate)
   - [Storage services](#storage-services)
     - [Manage disk volume groups](#manage-disk-volume-groups)
     - [Manage Thin Provisioning LVM data services](#manage-thin-provisioning-lvm-data-services)
@@ -33,7 +44,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [Virtualization services](#virtualization-services)
     - [Create virtual bridges from list](#create-virtual-bridges-from-list)
     - [Create directory services and storage pools](#create-directory-services-and-storage-pools)
-    - [Create virtual machines](#create-virtual-machines)
+    - [Create virtual machines](#create-virtual-machines-1)
     - [List all virtual machines](#list-all-virtual-machines)
     - [Start virtual machines](#start-virtual-machines)
     - [Stop virtual machines](#stop-virtual-machines)
@@ -45,6 +56,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
     - [Passwords and secrets](#passwords-and-secrets)
     - [Abridged ‘find’ command examples](#abridged-find-command-examples)
     - [USB disk operations](#usb-disk-operations)
+    - [USB Restic backup repository initialization](#usb-restic-backup-repository-initialization)
 - [Reference](#reference)
   - [Scripts](#scripts)
     - [cs-kvmserv](#cs-kvmserv)
@@ -79,15 +91,15 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
 
 cSkyLab virtual networking model is defined in `01-netcfg.yaml` NetPlan configuration file in kvm machines. It includes the following networks:
 
-| Network    | VLAN Id | Purpose                     | External NIC |
-| ---------- | ------- | --------------------------- | ------------ |
-| WAN        | 909     | OPNsense WAN Uplink         | yes          |
-| sys        | 910     | System services             | yes          |
-| sys_pfsync | 911     | OPNsense HA cluster         |              |
-| mod_srv    | 912     | Model services              |              |
-| pro_srv    | 913     | Production services         |              |
-| usr        | 914     | Users local access          | optional     |
-| SETUP      | 915     | OPNsense & kvm setup access | yes          |
+| Network    | VLAN Id | Purpose                           | External NIC |
+| ---------- | ------- | --------------------------------- | ------------ |
+| WAN        | 909     | OPNsense WAN Uplink               | yes          |
+| sys        | 910     | System services                   | yes          |
+| sys_pfsync | 911     | OPNsense HA cluster               |              |
+| mod_srv    | 912     | Model services                    |              |
+| pro_srv    | 913     | Production services               |              |
+| usr        | 914     | Users local access                | optional     |
+| SETUP      | 915     | OPNsense & KVM hosts setup access | yes          |
 
 All VLAN's are defined inside a unique uplink bond:
 
@@ -111,11 +123,11 @@ The recommended configuration is 4 10Gb NIC + 4 1Gb NIC connected as in the Supe
 
 >**Note:** Before deploying kvm, you should perform in your machine a basic installation of Ubuntu 20.04 server and get the interfaces names with `networkctl status --all`. Plan and modify your NetPlan configuration file `01-netcfg.yaml` according to your interfaces names.
 
-## How-to guides
+## How-to build kvm-main & kvm-aux
 
-### Setup from bare metal (SuperMicro example)
+### Setup OS from bare metal (SuperMicro example)
 
-These procedures are examples made for SuperMicro IPMI & BIOS setup. With other hardware, you should apply analog procedures according with the software provided by your manufacturer.
+These procedures are examples made for SuperMicro IPMI & BIOS setup. With other hardware, you should apply analog procedures according to the software provided by your manufacturer.
 
 >**NOTE**: **Connect only IPMI network port**. To perform IPMI & Bios configuration connect only to IPMI service until OS installation is made to the physical machine.
 
@@ -211,9 +223,9 @@ These procedures are examples made for SuperMicro IPMI & BIOS setup. With other 
 
 - Follow the procedure in [Ubuntu 20.04 server setup](./cs-ubt2004srv-setup-ubuntu-server.md) to perform a clean installation of Ubuntu server 20.04.
 
-### Configure kvm hosts
+### Install kvm hosts
 
-- Clone your cSkyLab installation repository in your local machine if you haven't done before.
+- Clone your cSkyLab installation repository in your local machine if you haven't done it before.
 - Open terminal window in `kvm-main` or `kvm-aux` folder, depending on what machine you're configuring.
 - Connect **only** the following NIC's
   - IPMI
@@ -269,20 +281,20 @@ If ssh key has not been injected before, you must provide the password for usern
 
 ```bash
 # Run csinject.sh to inject & deploy configuration in [net-config] deploy mode
-./csinject.sh -qdm net-config
+./csinject.sh -qdm net-config -r IPaddress
 ```
 
-> **NOTE:** If configuration is wrong, you can loose network connection to your kvm machine. In this case, your must login via console and use the previous NetPlan yaml configuration file in directory `/etc/netplan`
+> **NOTE:** If configuration is wrong, you can loose network connection to your kvm machine. In this case, your must login via console and use the previous NetPlan yaml configuration file in directory `/etc/netplan`. After network configuration, the default gateway will be statically assigned to an internal network. To keep contact with the kvm machine, you must be connected to the same **SETUP** network without any router in the middle.
 
 This step deploys cSkyLab virtual network configuration. Cloud-init configuration will be disabled from the next start.
 
 Reboot is automatically performed when finished.
 
-#### 3. Install packages, updates and configuration tasks
+#### Install packages, updates and perform configuration tasks
 
 ```bash
 # Run csinject.sh to inject & deploy configuration in [install] deploy mode
-./csinject.sh -d -m install
+./csinject.sh -qdm install -r IPaddress
 ```
 
 This step performs:
@@ -292,39 +304,43 @@ This step performs:
 - Configuration files deployment
 - Configuration tasks
 
-Required to run at least once in order to complete proper configuration. Reboot is recommended when finished.
+It is required to run at least once in order to complete proper configuration. Reboot is recommended when finished.
 
-#### 4. Configuration tasks
+#### Update Configuration
+
+When configuration needs to be changed, this mode redeploys all configuration files into the machine, executing again all configuration tasks.
 
 ```bash
 # Run csinject.sh to inject & deploy configuration in [config] deploy mode (default)
-./csinject.sh -d
+./csinject.sh -qd -r IPaddress
 ```
 
 When configuration needs to be changed, this mode redeploys all configuration files into the machine, executing again all configuration tasks.
 
-#### 5. Connect and operate
+#### Connect and operate
+
+To run scripts and operate from inside the machine, execute:
 
 ```bash
 # Run csconnect.sh to establish a ssh session with sudoer (admin) user
-./csconnect.sh
+./csconnect.sh -r IPaddress
 ```
 
-To run scripts and operate from inside the machine, establish an ssh connection with administrator (sudoer) user name `{{ .machine.localadminusername }}@{{ .machine.hostname }}`.
+Thist will establish an ssh connection with administrator (sudoer) user name `{{ .machine.localadminusername }}@{{ .machine.hostname }}`.
 
-#### Inject kvm hosts ssh keys
+#### Inject kvm hosts ssh keys into eachother
 
 From every kvm host, inject ssh keys to allow scp operations:
 
 ```bash
 # Connect to the machine
-./csconnect.sh
+./csconnect.sh -r IPaddress
 
-# From kvm-main
-sudo ssh-copy-id kos@kvm-aux.cskylab.net
-# From kvm-aux
-sudo ssh-copy-id kos@kvm-main.cskylab.net
+# From kvm-main & kvm-aux
+sudo ssh-copy-id kos@IPaddress
 ```
+
+### Configure storage & data protection
 
 #### Create volgroup
 
@@ -332,15 +348,15 @@ To **create** Volgroup to support LVM data services, execute inside the host the
 
 ```bash
 # Connect to the machine
-./csconnect.sh
+./csconnect.sh -r IPAddress
 
-# Create volgroup
+# Create volgroup and thin LVM in Data Disk (/dev/sdb)
 sudo cs-volgroup.sh -m create -qd "/dev/sdb" -v "vgdata"
 ```
 
 #### Create LVM data services
 
-Four LVM data services are created with the following purposes:
+Four thin LVM data services are created with the following purposes:
 
 | Data Service     | Purpose                                                                                              |
 | ---------------- | ---------------------------------------------------------------------------------------------------- |
@@ -355,7 +371,7 @@ To **create** the corresponding LVM data services, execute inside the host the f
 
 ```bash
 # Connect to the machine
-./csconnect.sh
+./csconnect.sh -r IPAddress
 
 # Create data services
 sudo cs-lvmserv.sh -m create -qd "/srv/setup" \
@@ -372,17 +388,17 @@ Backup & data protection must be configured in file `cs-cron_scripts` and must b
 
 When kvm-main & kvm-aux machines are present, rsync cronjobs are used to achieve service HA for machines running in mirrored pools in the following way:
 
-| Running mode          | Data service   | Defined in | Replicated to         |
-| --------------------- | -------------- | ---------- | --------------------- |
-| [kvm-main standalone] |                |            |                       |
-|                       | `/srv/vm-main` | kvm-main   | kvm-aux (if present)  |
-|                       | `/srv/vm-aux`  | kvm-main   | kvm-aux (if present)  |
-| [kvm-main + kvm-aux]  |                |            |                       |
-|                       | `/srv/vm-main` | kvm-main   | kvm-aux               |
-|                       | `/srv/vm-aux`  | kvm-aux    | kvm-main              |
-| [kvm-aux standalone]  |                |            |                       |
-|                       | `/srv/vm-main` | kvm-aux    | kvm-main (if present) |
-|                       | `/srv/vm-aux`  | kvm-aux    | kvm-main (if present) |
+| Running mode                      | Data service   | Defined in | Replicated to           |
+| --------------------------------- | -------------- | ---------- | ----------------------- |
+| Normal mode: [kvm-main + kvm-aux] |                |            |                         |
+|                                   | `/srv/vm-main` | kvm-main   | kvm-aux                 |
+|                                   | `/srv/vm-aux`  | kvm-aux    | kvm-main                |
+| [kvm-main standalone]             |                |            |                         |
+|                                   | `/srv/vm-main` | kvm-main   | kvm-aux (when present)  |
+|                                   | `/srv/vm-aux`  | kvm-main   | kvm-aux (when present)  |
+| [kvm-aux standalone]              |                |            |                         |
+|                                   | `/srv/vm-main` | kvm-aux    | kvm-main (when present) |
+|                                   | `/srv/vm-aux`  | kvm-aux    | kvm-main (when present) |
 
 To dump virtual machines xml configurations and perform RSync manual copies on demand:
 
@@ -429,24 +445,9 @@ Restic is configured to perform data backups to local USB disks, remote disk via
 
 Virtual machines running in storage pool `/srv/vmachines` (Kubernetes nodes) are not considered to perform restic backup of its storage disk files. Restic jobs must be scheduled for local storage services inside these virtual machines instead.
 
-When kvm-main & kvm-aux machines are present, restic backups corresponding to mirrored pools are configured in the following way:
-
-| Running mode          | Data service   | Backup performed by host | To restic repository in |
-| --------------------- | -------------- | ------------------------ | ----------------------- |
-| [kvm-main standalone] |                |                          |                         |
-|                       | `/srv/vm-main` | kvm-main                 | local USB / S3          |
-|                       | `/srv/vm-aux`  | kvm-main                 | local USB / S3          |
-| [kvm-main + kvm-aux]  |                |                          |                         |
-|                       | `/srv/vm-main` | kvm-main                 | local USB / S3          |
-|                       | `/srv/vm-aux`  | kvm-aux                  | remote USB / S3         |
-| [kvm-aux standalone]  |                |                          |                         |
-|                       | `/srv/vm-main` | kvm-aux                  | local USB / S3          |
-|                       | `/srv/vm-aux`  | kvm-aux                  | local USB / S3          |
-
-To perform on-demand restic backups:
+**To perform on-demand restic backups**:
 
 ```bash
-## Running mode [kvm-main standalone] or [kvm-main + kvm-aux]
 ## Data service:      /srv/vm-main/
 sudo cs-restic.sh -q -m restic-bck -d /srv/vm-main/ -r {{ .restic.repo }} -t vm-main 
 
@@ -457,7 +458,7 @@ sudo cs-restic.sh -q -m restic-bck -d /srv/setup/ -r {{ .restic.repo }} -t kvm-s
 sudo cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux
 ```
 
-To view available backups:
+**To view available backups**:
 
 ```bash
 ## All snapshots
@@ -493,31 +494,11 @@ The following cron jobs should be added to file `cs-cron-scripts` ((Uncomment jo
 # 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-aux  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
 ```
 
-#### Initialize USB Restic backup repository (Optional)
-
-If you want to perform Restic backups in SFTP mode into USB removable disks, you must plug and mount a USB disk following the procedures in section **Utilities > USB disk operations** in this document.
-
->**Note**: It is recommended to use at least 3 different backup USB disks and rotate them daily before backup time (Typically scheduled at night, between 0:00 and 6:00 hours). Every disk will contain the same backup retention and forget policy.
-
-- Create a directory for restic repository under /mnt/data:
-
-```bash
-  # Create directory for restic repository
-  # (Don't use sudo option here)
-  mkdir /media/data/restic
-```
-
-- Initialize local Restic repository running:
-
-```bash
-  # Initialize /srv/restic repository 
-  # (Change password in cs-restic.sh if needed and keep it safe)
-  sudo cs-restic.sh -m repo-init -r /media/data/restic
-```
+### Configure bridges and storage pools
 
 #### Create virtual bridges
 
-Update the file `brvlan_list.txt` with virtual bridges list and inject configuration into the machine:
+Review file `brvlan_list.txt` with virtual bridges list and inject configuration into the machine:
 
 ```txt
 br_wan
@@ -531,14 +512,16 @@ br_setup
 
 ```bash
 # Inject and deploy machine configuration files
-./csinject.sh -qd
+./csinject.sh -qd -r IPaddress
 ```
 
-To **create** virtual briges, execute inside the host the following command:
+Connect inside the machine:
 
 ```bash
 # Connect to the machine
-./csconnect.sh
+./csconnect.sh -r IPaddress
+
+To **create** virtual briges, execute inside the machine the following command:
 
 # Apply virtual bridges:
   sudo cs-kvmserv.sh -m set-bridges
@@ -546,7 +529,7 @@ To **create** virtual briges, execute inside the host the following command:
 
 #### Create virtual storage pools
 
-Update the file `dirpool_list.txt` with virtual storage pools and inject configuration into the machine:
+Review file `dirpool_list.txt` with virtual storage pools and inject configuration into the machine:
 
 ```txt
 setup
@@ -557,19 +540,208 @@ vmachines
 
 ```bash
 # Inject and deploy machine configuration files
-./csinject.sh -qd
+./csinject.sh -qd -r IPaddress
 ```
 
-To **create** virtual storage pools, execute inside the host the following command:
+Connect inside the machine:
 
 ```bash
 # Connect to the machine
-./csconnect.sh
+./csconnect.sh -r IPaddress
+
+To **create** virtual storage pools, execute inside the host the following command:
 
 # Apply storage pools:
   sudo cs-kvmserv.sh -m set-stpools
 ```
 
+### Create virtual machines
+
+cSkyLab virtual machines are distributed and pre-configured in the following way:
+
+**kvm-main**:
+
+| Virtual Machine | Data service     | Replicated to | Default CPU | Default RAM | Default Data Disk |
+| --------------- | ---------------- | ------------- | ----------- | ----------- | ----------------- |
+| opn-main        | `/srv/vm-main`   | kvm-aux       | 2           | 4096        |                   |
+| k8s-mod-master  | `/srv/vm-main`   | kvm-aux       | 2           | 4096        |                   |
+| k8s-mod-n1      | `/srv/vmachines` |               | 4           | 32768       | 256 GB            |
+| k8s-pro-master  | `/srv/vm-main`   | kvm-aux       | 2           | 4096        |                   |
+| k8s-pro-n1      | `/srv/vmachines` |               | 4           | 32768       | 256 GB            |
+
+**kvm-aux**:
+
+| Virtual Machine | Data service     | Replicated to | Default CPU | Default RAM | Default Data Disk |
+| --------------- | ---------------- | ------------- | ----------- | ----------- | ----------------- |
+| opn-aux         | `/srv/vm-aux`    | kvm-main      | 2           | 4096        |                   |
+| mcc             | `/srv/vm-aux`    | kvm-main      | 2           | 2048        |                   |
+| k8s-mod-n2      | `/srv/vmachines` |               | 4           | 32768       | 256 GB            |
+| k8s-pro-n2      | `/srv/vmachines` |               | 4           | 32768       | 256 GB            |
+
+To create virtual machines inside kvm-main & kvm-aux use the following procedure.
+
+#### Check CPU, RAM & Data Disks Defaults
+
+Each virtual machine has its own configuration directory files in both `kvm-main` & `kvm-hosts`. 
+
+You can change these configuration if needed by editing `cloud-virt-install.sh` files.
+
+**Example**: If you want to adjust configuration for virtual machine `k8s-mod-n1`:
+
+- Edit configuration file `cs-sys/kvm-main/k8s-mod-n1/cloud-virt-install.sh`:
+
+```bash
+# ...
+# ...
+# ...
+virt-install --name "${vmachine_name}" \
+    --virt-type kvm --memory 32768 --vcpus 4 \
+    --boot hd,cdrom,menu=on --autostart \
+    --disk path="${vmachines_path}/${vmachine_name}-setup.iso",device=cdrom \
+    --disk path="${vmachines_path}/${vmachine_name}-sysdisk.qcow2",device=disk \
+    --disk path="${vmachines_path}/${vmachine_name}-datadisk.qcow2",device=disk,size=256 \
+    --os-variant ubuntu20.04 \
+    --network network=br_mod_srv \
+    --console pty,target_type=serial \
+    --noautoconsole
+
+```
+
+- You can change values for:
+  - **--memory 32768** (RAM)
+  - **--vcpus 4** (CPU's)
+  - **size=256** (Data Disk)
+
+#### Create virtual machines in kvm hosts
+
+**Prepare cloud-init img files:**
+
+Before creating virtual machines it is required to have Ubuntu 20.04 server & OPNsense cloud-init image files in setup directories of both `kvm-main` and `kvm-aux` servers.
+
+>**Note**: Cloud-init image files are provided for Ubuntu server. You can generate your own cloud image file for OPNSense following the procedure **"Create cloud image from .iso file"** provided in `opn-main` & `opn-aux` machines documentation. An OPNSense cloud image file from cSkyLab is also provided in this procedure to accelerate virtual machine deployment.
+
+To download cloud-init files use the following procedure in each server:
+
+- Connect to kvm server:
+
+```bash
+# Connect to the machine
+./csconnect.sh -r IPAddress
+
+- Execute this command inside each kvm host:
+
+# Download cloud-init images
+echo && echo "******** SOE - START of execution ********" && echo \
+  && cd "/srv/setup" \
+  && curl --silent --remote-name https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img \
+  && export MINIO_ACCESS_KEY="cloud-init_ro" \
+  && export MINIO_SECRET_KEY="vDpw3F33Kj9Pthr650rob1Y8svBTCra6" \
+  && export MINIO_URL="minio-promise.csky.cloud" \
+  && export MINIO_BUCKET="cloud-init" \
+  && export MC_HOST_minio="https://cloud-init_rw:urHFuMWFda9cV0uqUGtYHShpDwP30aAf@minio-promise.csky.cloud" \
+  && mc cp minio/cloud-init/opn-tpl-sysdisk.qcow2  ./ \
+&& echo && echo "******** EOE - END of execution ********" && echo
+```
+
+**Create virtual machines:**
+
+Execute this command from inside `kvm-host` to create virtual machines:
+
+```bash
+# Create kvm-host virtual machines
+echo && echo "******** SOE - START of execution ********" && echo \
+  && sudo cs-kvmserv.sh -m vm-create -n opn-main        -i /srv/setup/opn-tpl-sysdisk.qcow2           -s NONE -p /srv/vm-main \
+  && sudo cs-kvmserv.sh -m vm-create -n k8s-mod-master  -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G  -p /srv/vm-main \
+  && sudo cs-kvmserv.sh -m vm-create -n k8s-mod-n1      -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G  -p /srv/vmachines \
+  && sudo cs-kvmserv.sh -m vm-create -n k8s-pro-master  -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G  -p /srv/vm-main \
+  && sudo cs-kvmserv.sh -m vm-create -n k8s-pro-n1      -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G  -p /srv/vmachines \
+  && echo && echo "******** EOE - END of execution ********" && echo
+```
+
+Execute this command from inside `kvm-aux` to create virtual machines:
+
+```bash
+# Create kvm-aux virtual machines
+echo && echo "******** SOE - START of execution ********" && echo \
+  && sudo cs-kvmserv.sh -m vm-create -n opn-aux         -i /srv/setup/opn-tpl-sysdisk.qcow2           -s NONE -p /srv/vm-aux \
+  && sudo cs-kvmserv.sh -m vm-create -n mcc             -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G  -p /srv/vm-aux \
+  && sudo cs-kvmserv.sh -m vm-create -n k8s-mod-n2      -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G  -p /srv/vmachines \
+  && sudo cs-kvmserv.sh -m vm-create -n k8s-pro-n2      -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G  -p /srv/vmachines \
+  && echo && echo "******** EOE - END of execution ********" && echo
+```
+
+## General How-to guides
+
+### Inject & Deploy configuration
+
+To install and configure the machine, open a terminal from the machine configuration directory in the management repository, and perform the following configuration steps:
+
+#### 1. SSH Authentication and sudoers file
+
+```bash
+# Run csinject.sh in [ssh-sudoers] execution mode
+./csinject.sh -k
+```
+
+> **NOTE:** If IP address has not been previously set in cloud-init or net-config, use `-r IPaddress`
+until network configuration files are deployed.
+
+This step injects ssh key and sudoers file into the machine.
+
+Required before other configuration options. Its purpose is to allow automated and passwordless logins by using ssh protocol.
+
+If ssh key has not been injected before, you must provide the password for username `{{ .machine.localadminusername }}@{{ .machine.hostname }}` twice:
+
+- First one to install ssh key (ssh-copy-id).
+- Second one to deploy the sudoers file.
+
+#### 2. Network configuration
+
+```bash
+# Run csinject.sh to inject & deploy configuration in [net-config] deploy mode
+./csinject.sh -d -m net-config
+```
+
+> **NOTE:** If IP address has not been previously set in cloud-init or net-config, use `-r IPaddress`
+until network configuration files are deployed.
+
+This step deploys network configuration files that allow the machine to operate with specific IP address and hostname. Cloud-init configuration will be disabled from the next start.
+
+Reboot is recommended when finished.
+
+#### 3. Install packages, updates and configuration tasks
+
+```bash
+# Run csinject.sh to inject & deploy configuration in [install] deploy mode
+./csinject.sh -d -m install
+```
+
+This step performs:
+
+- Package installation
+- Updates
+- Configuration files deployment
+- Configuration tasks
+
+Required to run at least once in order to complete proper configuration. Reboot is recommended when finished.
+
+#### 4. Configuration tasks
+
+```bash
+# Run csinject.sh to inject & deploy configuration in [config] deploy mode (default)
+./csinject.sh -d
+```
+
+When configuration needs to be changed, this mode redeploys all configuration files into the machine, executing again all configuration tasks.
+
+#### 5. Connect and operate
+
+```bash
+# Run csconnect.sh to establish a ssh session with sudoer (admin) user
+./csconnect.sh
+```
+
+To run scripts and operate from inside the machine, establish an ssh connection with administrator (sudoer) user name `{{ .machine.localadminusername }}@{{ .machine.hostname }}`.
 
 ### Storage services
 
@@ -1338,6 +1510,28 @@ To mount a USB disk in `/media` directory:
   sudo umount /media
 ```
 
+#### USB Restic backup repository initialization
+
+If you want to perform Restic backups in SFTP mode into USB removable disks, you must plug and mount a USB disk following the procedures in section **Utilities > USB disk operations** in this document.
+
+>**Note**: It is recommended to use at least 3 different backup USB disks and rotate them daily before backup time (Typically scheduled at night, between 0:00 and 6:00 hours). Every disk will contain the same backup retention and forget policy.
+
+- Create a directory for restic repository under /mnt/data:
+
+```bash
+  # Create directory for restic repository
+  # (Don't use sudo option here)
+  mkdir /media/data/restic
+```
+
+- Initialize local Restic repository by running:
+
+```bash
+  # Initialize /srv/restic repository 
+  # (Change password in cs-restic.sh if needed and keep it safe)
+  sudo cs-restic.sh -m repo-init -r /media/data/restic
+```
+
 ## Reference
 
 ### Scripts
@@ -1837,6 +2031,7 @@ Examples:
 |                    | Generate locales                   | Deploy file `locale.gen` if present in setup directory and execute `locale-gen`.                       |
 |                    | Install chrony time sync           | Chrony time synchronization (https://chrony.tuxfamily.org)                                             |
 |                    | Install restic backup              | Restic restic is a fast, efficient and secure backup program.(<https://restic.net/>)                   |
+|                    | Install MinIO Client               | Install MinIO client via wget                                                                          |
 |                    | Install kvm packages               | Install virtualization packages and utilities.                                                         |
 | [install] [config] |                                    | **Deploy config files and execute configuration tasks**                                                |
 |                    | Set timezone                       | Set time zone from `time_zone` variable.                                                               |
