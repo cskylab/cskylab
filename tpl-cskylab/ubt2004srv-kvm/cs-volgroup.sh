@@ -91,29 +91,31 @@ setup_dir="{{ .machine.setupdir }}"
 
 ## Block device names in volume group (String array space separated)
 ## Physical device
-# declare -a block_dev_names=(/dev/sdb) 
-## Virtual device
 declare -a block_dev_names=(/dev/sdb)
+## Virtual device
+# declare -a block_dev_names=(/dev/vdb)
 
 # Volume Group Name
 vg_name="vgdata"
 
 # LVM Parameters
 # https://access.redhat.com/documentation/en-us/red_hat_gluster_storage/3.4/html/administration_guide/brick_configuration
-# Physical volume data alignment (Optional)
-# data_alignment="256K"
-data_alignment=
+# https://serverfault.com/questions/783611/thin-lvm-reducing-the-metadata-size-and-performance/783623
+
 # Volume group physicalextentsize (Optional)
 # physical_extent_size="32M"
 physical_extent_size=
-# Thin Pool Metadata Size (Mandatory. Recommended maximum 16G)
-pool_metadata_size="16G"
+# Physical volume data alignment (Optional)
+# data_alignment="256K"
+data_alignment=
+# Thin Pool Metadata Size (Optional. Maximum 16G)
+pool_metadata_size=
 # Thin Pool chunk size (Optional)
 # chunk_size="256K"
 chunk_size=
-# ThinPool volume size. (Mandatory. Recommended 98%VG)
+# ThinPool volume size. (Mandatory)
 # Ex: "90%VG" - percetage of volume group,  "100%FREE" - all space free
-tpool_size="98%VG"
+tpool_size="100%FREE"
 
 # Color code for messages
 # https://robotmoon.com/256-colors/
@@ -380,10 +382,24 @@ if [[ "${execution_mode}" == "create" ]]; then
   echo
   if [[ -z "${chunk_size}" ]]; then
     # Default chunksize
-    lvcreate --type thin-pool --thinpool "${vg_name}"/tpool --extents "${tpool_size}" --poolmetadatasize "${pool_metadata_size}"
+    if [[ -z "${pool_metadata_size}" ]]; then
+      # Default pool metadata size
+      lvcreate --type thin-pool --thinpool "${vg_name}"/tpool --extents "${tpool_size}"
+
+    else
+      # Specific pool metadata size
+      lvcreate --type thin-pool --thinpool "${vg_name}"/tpool --extents "${tpool_size}" --poolmetadatasize "${pool_metadata_size}"
+    fi
   else
     # Specific chunksize
-    lvcreate --type thin-pool --thinpool "${vg_name}"/tpool --extents "${tpool_size}" --chunksize "${chunk_size}" --poolmetadatasize "${pool_metadata_size}"
+    if [[ -z "${pool_metadata_size}" ]]; then
+      # Default pool metadata size
+      lvcreate --type thin-pool --thinpool "${vg_name}"/tpool --extents "${tpool_size}" --chunksize "${chunk_size}"
+
+    else
+      # Specific pool metadata size
+      lvcreate --type thin-pool --thinpool "${vg_name}"/tpool --extents "${tpool_size}" --chunksize "${chunk_size}" --poolmetadatasize "${pool_metadata_size}"
+    fi
   fi
   lvs
 fi
