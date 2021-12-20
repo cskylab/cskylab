@@ -344,9 +344,7 @@ sudo cs-lvmserv.sh -m create -qd "/srv/setup" \
 
 #### Backup & data protection
 
-Backup & data protection must be configured in file `cs-cron_scripts` and must be injected and deployed into the machine by running `cs-inject.sh -d` script to redeploy all configuration files (See **Inject & Deploy configuration** section in this document).
-
-**RSync:**
+Pre-configured cron jobs for rsync and restic backups are available in files `tpl-kvm-main-cs-cron_scripts` and `tpl-kvm-aux-cs-cron_scripts`. You can review and modify time schedules as needed.
 
 When kvm-main & kvm-aux machines are present, rsync cronjobs are used to achieve service HA for machines running in mirrored pools in the following way:
 
@@ -362,98 +360,15 @@ When kvm-main & kvm-aux machines are present, rsync cronjobs are used to achieve
 |                                   | `/srv/vm-main` | kvm-aux    | kvm-main (when present) |
 |                                   | `/srv/vm-aux`  | kvm-aux    | kvm-main (when present) |
 
-To dump virtual machines xml configurations and perform RSync manual copies on demand:
+To **activate** backup & data protection:
+
+- In `kvm-main` configuration repository directory (cs-sys/kvm-main) rename file `tpl-kvm-main-cs-cron_scripts` to `cs-cron_scripts`
+- In `kvm-aux` configuration repository directory (cs-sys/kvm-aux) rename file `tpl-kvm-aux-cs-cron_scripts` to `cs-cron_scripts`
+- Inject & deploy configuration to both machines executing:
 
 ```bash
-## RSync path:  /srv/vm-main/
-## TO HOST:     kvm-aux.cskylab.com
-sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-main/ \
-  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-main/ -t kvm-aux.cskylab.net
-
-## RSync path:  /srv/vm-aux/
-## TO HOST:     kvm-main.cskylab.com
-sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-aux/ \
-  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/ -t kvm-main.cskylab.net
-```
-
-**RSync cronjobs:**
-
-The following cron jobs should be added to file `cs-cron-scripts` (Uncomment jobs and change time schedule as needed):
-
-```bash
-################################################################################
-# (kvm-main) - RSync virtual machines
-################################################################################
-##
-## Dump virtual machines xml configurations in path /srv/vm-main
-## RSync path:  /srv/vm-main/
-## TO HOST:     kvm-aux.cskylab.com
-## At 03:00.
-# 0 3 * * *      root     run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-main/ >> /var/log/cs-rsync.log 2>&1 ; run-one cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-main/   >> /var/log/cs-rsync.log 2>&1 && run-one cs-rsync.sh -q -m rsync-to -d /srv/vm-main/  -t kvm-aux.cskylab.com  >> /var/log/cs-rsync.log 2>&1
-
-## Running mode [kvm-main standalone]
-##
-## Dump virtual machines xml configurations in path /srv/vm-aux
-## RSync path:  /srv/vm-aux/
-## TO HOST:     kvm-main.cskylab.com
-
-## At 03:00.
-# 0 3 * * *      root     run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-rsync.log 2>&1 ; run-one cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-aux/   >> /var/log/cs-rsync.log 2>&1 && run-one cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/  -t kvm-main.cskylab.com  >> /var/log/cs-rsync.log 2>&1
-```
-
-**Restic:**
-
-Restic is configured to perform data backups to local USB disks, remote disk via sftp or remote S3 storage.
-
-Virtual machines running in storage pool `/srv/vmachines` (Kubernetes nodes) are not considered to perform restic backup of its storage disk files. Restic jobs must be scheduled for local storage services inside these virtual machines instead.
-
-**To perform on-demand restic backups**:
-
-```bash
-## Data service:      /srv/vm-main/
-sudo cs-restic.sh -q -m restic-bck -d /srv/vm-main/ -r {{ .restic.repo }} -t vm-main 
-
-## Data service:      /srv/setup/
-sudo cs-restic.sh -q -m restic-bck -d /srv/setup/ -r {{ .restic.repo }} -t kvm-setup
-
-## Data service:      /srv/vm-aux/
-sudo cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux
-```
-
-**To view available backups**:
-
-```bash
-## All snapshots
-sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }}
-
-## Specific tag
-## Data service:      /srv/setup/
-sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} -t kvm-setup
-```
-
-**Restic cronjobs:**
-
-The following cron jobs should be added to file `cs-cron-scripts` ((Uncomment jobs and change time schedule as needed)):
-
-```bash
-################################################################################
-# (kvm-main) Restic backups
-################################################################################
-##
-## Data service:      /srv/vm-main/
-## At 03:30.
-## Local restic repo
-# 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-main/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-main/ -r {{ .restic.repo }} -t vm-main  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-main  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
-
-##
-## Data service:      /srv/setup/
-## At 03:30.
-# 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/setup/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/setup/ -r {{ .restic.repo }} -t kvm-setup  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t kvm-setup  -f "--keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
-
-##
-## Data service:      /srv/vm-aux/
-## At 03:30.
-# 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-aux  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
+# Inject & deploy configuration files
+./csinject.sh -qd -r IPAddress
 ```
 
 ### Network configuration
@@ -861,6 +776,52 @@ RSync data FROM remote directory to local directory:
   -t hostname.cskylab.net
 ```
 
+**KVM RSync:**
+
+Pre-configured cron jobs for rsync are available in files `tpl-kvm-main-cs-cron_scripts` and `tpl-kvm-aux-cs-cron_scripts`
+
+When kvm-main & kvm-aux machines are present, rsync cronjobs are used to achieve service HA for machines running in mirrored pools in the following way:
+
+| Running mode                      | Data service   | Defined in | Replicated to           |
+| --------------------------------- | -------------- | ---------- | ----------------------- |
+| Normal mode: [kvm-main + kvm-aux] |                |            |                         |
+|                                   | `/srv/vm-main` | kvm-main   | kvm-aux                 |
+|                                   | `/srv/vm-aux`  | kvm-aux    | kvm-main                |
+| [kvm-main standalone]             |                |            |                         |
+|                                   | `/srv/vm-main` | kvm-main   | kvm-aux (when present)  |
+|                                   | `/srv/vm-aux`  | kvm-main   | kvm-aux (when present)  |
+| [kvm-aux standalone]              |                |            |                         |
+|                                   | `/srv/vm-main` | kvm-aux    | kvm-main (when present) |
+|                                   | `/srv/vm-aux`  | kvm-aux    | kvm-main (when present) |
+
+- To **activate** backup & data protection:
+  - In `kvm-main` configuration repository directory (cs-sys/kvm-main) rename file `tpl-kvm-main-cs-cron_scripts` to `cs-cron_scripts`
+  - In `kvm-aux` configuration repository directory (cs-sys/kvm-aux) rename file `tpl-kvm-aux-cs-cron_scripts` to `cs-cron_scripts`
+
+- To **deactivate** backup & data protection:
+  - In machine configuration repository directory rename file `cs-cron_scripts` to `tpl-cs-cron_scripts`
+
+- Inject & deploy the desired configuration (activated or deactivated) to the machines by executing:
+
+```bash
+# Inject & deploy configuration files
+./csinject.sh -qd
+```
+
+To dump virtual machines xml configurations and perform RSync manual copies on demand:
+
+```bash
+## RSync path:  /srv/vm-main/
+## TO HOST:     kvm-aux.cskylab.com
+sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-main/ \
+  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-main/ -t kvm-aux.cskylab.net
+
+## RSync path:  /srv/vm-aux/
+## TO HOST:     kvm-main.cskylab.com
+sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-aux/ \
+  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/ -t kvm-main.cskylab.net
+```
+
 #### Restic data backup and restore
 
 The script `cs-restic.sh` is designed as a wrapper to execute restic in LVM data services with snapshot operations.
@@ -967,6 +928,39 @@ It's not recommended to run restic prune with regular backups, since it can be a
   # Forget snapshots in repository with default forget option and tag mydir
     sudo cs-restic.sh -m restic-forget -t "mydir" -r "{{ .restic.repo }}"
 ```
+
+**KVM Restic:**
+
+Restic is configured to perform data backups to local USB disks, remote disk via sftp or remote S3 storage.
+
+Virtual machines running in storage pool `/srv/vmachines` (Kubernetes nodes) are not considered to perform restic backup of its storage disk files. Restic jobs must be scheduled for local storage services inside these virtual machines instead.
+
+Pre-configured cron jobs for restic backups are available in files `tpl-kvm-main-cs-cron_scripts` and `tpl-kvm-aux-cs-cron_scripts`
+
+**To perform on-demand restic backups**:
+
+```bash
+## Data service:      /srv/vm-main/
+sudo cs-restic.sh -q -m restic-bck -d /srv/vm-main/ -r {{ .restic.repo }} -t vm-main 
+
+## Data service:      /srv/setup/
+sudo cs-restic.sh -q -m restic-bck -d /srv/setup/ -r {{ .restic.repo }} -t kvm-setup
+
+## Data service:      /srv/vm-aux/
+sudo cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux
+```
+
+**To view available backups**:
+
+```bash
+## All snapshots
+sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }}
+
+## Specific tag
+## Data service:      /srv/setup/
+sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} -t kvm-setup
+```
+
 
 ### Virtualization services
 
