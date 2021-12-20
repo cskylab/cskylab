@@ -20,7 +20,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
     - [Create volgroup](#create-volgroup)
     - [Create LVM data services](#create-lvm-data-services)
     - [Backup & data protection](#backup--data-protection)
-    - [Network configuration](#network-configuration)
+  - [Network configuration](#network-configuration)
   - [Configure bridges and storage pools](#configure-bridges-and-storage-pools)
     - [Create virtual bridges](#create-virtual-bridges)
     - [Create virtual storage pools](#create-virtual-storage-pools)
@@ -456,7 +456,7 @@ The following cron jobs should be added to file `cs-cron-scripts` ((Uncomment jo
 # 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-aux  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
 ```
 
-#### Network configuration
+### Network configuration
 
 - Review NetPlan configuration file `01-netcfg.yaml`.
 
