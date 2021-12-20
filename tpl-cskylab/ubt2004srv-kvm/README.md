@@ -14,15 +14,13 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
     - [Ubuntu 20.04 clean installation](#ubuntu-2004-clean-installation)
   - [Install kvm hosts](#install-kvm-hosts)
     - [Inject SSH keys and sudoers file](#inject-ssh-keys-and-sudoers-file)
-    - [Network configuration](#network-configuration)
     - [Install packages, updates and perform configuration tasks](#install-packages-updates-and-perform-configuration-tasks)
-    - [Update Configuration](#update-configuration)
-    - [Connect and operate](#connect-and-operate)
-    - [Inject kvm hosts ssh keys into eachother](#inject-kvm-hosts-ssh-keys-into-eachother)
+    - [Inject kvm hosts ssh keys into each other](#inject-kvm-hosts-ssh-keys-into-each-other)
   - [Configure storage & data protection](#configure-storage--data-protection)
     - [Create volgroup](#create-volgroup)
     - [Create LVM data services](#create-lvm-data-services)
     - [Backup & data protection](#backup--data-protection)
+    - [Network configuration](#network-configuration)
   - [Configure bridges and storage pools](#configure-bridges-and-storage-pools)
     - [Create virtual bridges](#create-virtual-bridges)
     - [Create virtual storage pools](#create-virtual-storage-pools)
@@ -274,28 +272,7 @@ If ssh key has not been injected before, you must provide the password for usern
 - First one to install ssh key (ssh-copy-id).
 - Second one to deploy the sudoers file.
 
-#### Network configuration
-
-- Review NetPlan configuration file `01-netcfg.yaml`.
-- Execute machine network configuration by running:
-
-```bash
-# Run csinject.sh to inject & deploy configuration in [net-config] deploy mode
-./csinject.sh -qdm net-config -r IPaddress
-```
-
-> **NOTE:** If configuration is wrong, you can loose network connection to your kvm machine. In this case, your must login via console and use the previous NetPlan yaml configuration file in directory `/etc/netplan`. After network configuration, the default gateway will be statically assigned to an internal network. To keep contact with the kvm machine, you must be connected to the same **SETUP** network without any router in the middle.
-
-This step deploys cSkyLab virtual network configuration. Cloud-init configuration will be disabled from the next start.
-
-Reboot is automatically performed when finished.
-
 #### Install packages, updates and perform configuration tasks
-
-```bash
-# Run csinject.sh to inject & deploy configuration in [install] deploy mode
-./csinject.sh -qdm install -r IPaddress
-```
 
 This step performs:
 
@@ -304,31 +281,16 @@ This step performs:
 - Configuration files deployment
 - Configuration tasks
 
-It is required to run at least once in order to complete proper configuration. Reboot is recommended when finished.
+It is required to run at least once in order to complete proper configuration. Automatic reboot is performed when finished.
 
-#### Update Configuration
-
-When configuration needs to be changed, this mode redeploys all configuration files into the machine, executing again all configuration tasks.
+To perform installation, execute from your machine repository directory:
 
 ```bash
-# Run csinject.sh to inject & deploy configuration in [config] deploy mode (default)
-./csinject.sh -qd -r IPaddress
+# Run csinject.sh to inject & deploy configuration in [install] deploy mode
+./csinject.sh -qdm install -r IPaddress
 ```
 
-When configuration needs to be changed, this mode redeploys all configuration files into the machine, executing again all configuration tasks.
-
-#### Connect and operate
-
-To run scripts and operate from inside the machine, execute:
-
-```bash
-# Run csconnect.sh to establish a ssh session with sudoer (admin) user
-./csconnect.sh -r IPaddress
-```
-
-Thist will establish an ssh connection with administrator (sudoer) user name `{{ .machine.localadminusername }}@{{ .machine.hostname }}`.
-
-#### Inject kvm hosts ssh keys into eachother
+#### Inject kvm hosts ssh keys into each other
 
 From every kvm host, inject ssh keys to allow scp operations:
 
@@ -406,12 +368,12 @@ To dump virtual machines xml configurations and perform RSync manual copies on d
 ## RSync path:  /srv/vm-main/
 ## TO HOST:     kvm-aux.cskylab.com
 sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-main/ \
-  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-main/ -t kvm-aux.cskylab.com
+  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-main/ -t kvm-aux.cskylab.net
 
 ## RSync path:  /srv/vm-aux/
 ## TO HOST:     kvm-main.cskylab.com
 sudo cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-aux/ \
-  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/ -t kvm-main.cskylab.com
+  && sudo cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/ -t kvm-main.cskylab.net
 ```
 
 **RSync cronjobs:**
@@ -493,6 +455,25 @@ The following cron jobs should be added to file `cs-cron-scripts` ((Uncomment jo
 ## At 03:30.
 # 30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-aux  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
 ```
+
+#### Network configuration
+
+- Review NetPlan configuration file `01-netcfg.yaml`.
+
+This step deploys cSkyLab virtual network configuration. Cloud-init configuration will be disabled from the next start.
+
+Reboot is automatically performed when finished.
+
+- Execute machine network configuration by running:
+
+```bash
+# Run csinject.sh to inject & deploy configuration in [net-config] deploy mode
+./csinject.sh -qdm net-config -r IPaddress
+```
+
+- To get the IP Address assigned by your DHCP, connect to console through IPMI and execute `networkctl status --all`. The new address in `setup` network will be assigned to interface `br_setup`.
+
+> **NOTE:** If configuration is wrong, you can loose network connection to your kvm machine. In this case, your must login via console and use the previous NetPlan yaml configuration file in directory `/etc/netplan`. After network configuration, the default gateway will be statically assigned to `sys` internal network. To keep contact with the kvm machine, you must be connected to the same **SETUP** network without any router in the middle.
 
 ### Configure bridges and storage pools
 
