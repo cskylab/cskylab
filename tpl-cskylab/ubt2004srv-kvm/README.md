@@ -19,6 +19,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [Configure storage & data protection](#configure-storage--data-protection)
     - [Create volgroup](#create-volgroup)
     - [Create LVM data services](#create-lvm-data-services)
+    - [Download cloud-init img files](#download-cloud-init-img-files)
     - [Backup & data protection](#backup--data-protection)
   - [Network configuration](#network-configuration)
   - [Configure bridges and storage pools](#configure-bridges-and-storage-pools)
@@ -340,6 +341,31 @@ sudo cs-lvmserv.sh -m create -qd "/srv/setup" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/vm-aux" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/vm-main" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/vmachines"
+```
+
+#### Download cloud-init img files
+
+Before creating virtual machines it is required to have Ubuntu 20.04 server & OPNsense cloud-init image files in setup directories of both `kvm-main` and `kvm-aux` servers.
+
+>**Note**: Cloud-init image files are provided for Ubuntu server. You can generate your own cloud image file for OPNSense following the procedure **"Create cloud image from .iso file"** provided in `opn-main` & `opn-aux` machines documentation. An OPNSense cloud image file from cSkyLab is also provided in this procedure to accelerate virtual machine deployment.
+
+To download cloud-init files use the following procedure in each server:
+
+- Connect to kvm server:
+
+```bash
+# Connect to the machine
+./csconnect.sh -r IPAddress
+
+- Execute this command inside each kvm host:
+
+# Download cloud-init images
+echo && echo "******** SOE - START of execution ********" && echo \
+  && cd "/srv/setup" \
+  && curl --remote-name https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img \
+  && export MC_HOST_minio="https://cloud-init_ro:vDpw3F33Kj9Pthr650rob1Y8svBTCra6@minio-promise.csky.cloud" \
+  && mc cp -r minio/cloud-init/opn-tpl-sysdisk.qcow2  ./ \
+&& echo && echo "******** EOE - END of execution ********" && echo
 ```
 
 #### Backup & data protection
