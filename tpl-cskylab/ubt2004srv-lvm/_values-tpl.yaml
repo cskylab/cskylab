@@ -6,7 +6,7 @@
 
 _tplname: ubt2004srv-lvm
 _tpldescription: Ubuntu server 20.04 LVM base installation
-_tplversion: 21.11.05
+_tplversion: 21.12.20
 
 #
 # Values to override
