@@ -13,7 +13,6 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [LVM Data Services](#lvm-data-services)
     - [Backup & data protection](#backup--data-protection)
 - [How-to guides](#how-to-guides)
-- [Usage](#usage)
   - [Pull Charts](#pull-charts)
   - [Install](#install)
   - [Update](#update)
@@ -177,8 +176,6 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 ```
 
 ## How-to guides
-
-## Usage
 
 ### Pull Charts
 
