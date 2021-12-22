@@ -332,8 +332,8 @@ gitlab-runner:
 ## Settings for individual sub-charts under GitLab
 ## Note: Many of these settings are configurable via globals
 gitlab:
-  ## doc/charts/gitlab/task-runner
-  task-runner:
+  ## doc/charts/gitlab/toolbox
+  toolbox:
     replicas: 1
     antiAffinityLabels:
       matchLabels:
