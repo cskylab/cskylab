@@ -1,0 +1,4 @@
+setup
+vm-main
+vm-aux
+vmachines

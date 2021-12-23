@@ -1,0 +1,18 @@
+name: 'openid_connect'
+label: 'Keycloak'
+icon: 'https://external-content.duckduckgo.com/ip3/www.keycloak.org.ico'
+args:
+  name: 'openid_connect'
+  uid_field: sub
+  scope: ['openid']
+  response_type: 'code'
+  issuer: https://keycloak.cskylab.net/auth/realms/cskylab
+  discovery: true
+  client_auth_method: 'query'
+  send_scope_to_token_endpoint: true
+  client_options: {
+    identifier: 'gitlab',
+    secret: 5edffd1e-c3ab-47d3-a32e-b38a4977d6d3,
+    redirect_uri: 'https://gitlab.cskylab.net/users/auth/openid_connect/callback',
+  }
+  

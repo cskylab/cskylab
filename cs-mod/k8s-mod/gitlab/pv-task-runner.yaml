@@ -1,0 +1,48 @@
+#
+#   Kubernetes Local Persistent Volume
+#
+#   Verify the following values:
+#
+#     StorageClass:
+#     Capacity:
+#     AccessMode:
+#
+#   Command to execute inside the node that holds the local storage:
+#
+#     sudo cs-lvmserv.sh -m create -d /srv/gitlab-task-runner
+#
+
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gitlab-task-runner
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gitlab-task-runner
+spec:
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: gitlab-task-runner
+  local:
+    path: /srv/gitlab/data/task-runner
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n1

@@ -1,0 +1,26 @@
+_tpldescription: Gitlab DevOps platform
+_tplname: cs-gitlab
+_tplversion: 21.11.08
+certificate:
+  clusterissuer: ca-test-internal
+keycloak:
+  issuer: https://keycloak.cskylab.net/auth/realms/cskylab
+  secret: 5edffd1e-c3ab-47d3-a32e-b38a4977d6d3
+kubeconfig: config-k8s-mod
+localpvnodes:
+  all_pv: k8s-mod-n1
+localrsyncnodes:
+  all_pv: k8s-mod-n2
+namespace:
+  domain: cskylab.net
+  name: gitlab
+publishing:
+  password: NoFear21
+  url: gitlab.cskylab.net
+registry:
+  proxy: harbor.cskylab.net/dockerhub
+restic:
+  aws_access: bucketname_rw
+  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
+  password: NoFear21
+  repo: s3:https://backup.cskylab.net/bucketname/restic

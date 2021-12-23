@@ -1,0 +1,26 @@
+## Default values for metallb.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+##
+
+## Global Docker image parameters
+## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+## Current available global Docker image parameters: imageRegistry, imagePullSecrets
+##
+# global:
+#   imageRegistry: harbor.cskylab.com/dockerhub
+
+## Refer to https://metallb.universe.tf/configuration/ for
+## available options.
+#
+configInline:
+  address-pools:
+    - name: static-pool
+      auto-assign: false
+      protocol: layer2
+      addresses:
+       - 192.168.82.20/32
+    - name: dynamic-pool
+      protocol: layer2
+      addresses:
+       - 192.168.82.75-192.168.82.90

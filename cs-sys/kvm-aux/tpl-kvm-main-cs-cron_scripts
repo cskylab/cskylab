@@ -1,0 +1,76 @@
+#
+#   crontab file
+#   
+#       These file contains jobs for every cs_* script suitable for crontab
+#       Modify or comment jobs as needed
+#
+#       To set the appropriate schedule see: https://crontab.guru
+#
+#       Independent files can also be created with the name pattern cron-cs_*
+#       to be deployed in /etc/cron.d directory
+#               
+#   Copyright © 2021 cSkyLab.com
+#
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+#
+# Warning: Do not break lines in cron files
+#
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name   command to be executed >> log file redirection for stderr and stdout
+
+################################################################################
+# Thin-Pool Maintenance
+################################################################################
+
+## Free space inside thinpools
+## At 00:00.
+0 0 * * *       root        run-one cs-lvmserv.sh -q -m trim-space >> /var/log/cs-lvmserv.log 2>&1
+## At 06:00.
+0 6 * * *       root        run-one cs-lvmserv.sh -q -m trim-space >> /var/log/cs-lvmserv.log 2>&1
+
+################################################################################
+# Download updated cloud images
+################################################################################
+
+## Download cloud images
+## “At 02:00.”
+## Ubuntu focal server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
+## Ubuntu bionic server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
+
+################################################################################
+# (kvm-main) - RSync virtual machines
+################################################################################
+## Running mode normal [kvm-main + kvm-aux]
+##
+## Dump virtual machines xml configurations in path /srv/vm-main
+## RSync path:  /srv/vm-main/
+## TO HOST:     kvm-aux.cskylab.net
+## At 03:00.
+0 3 * * *      root     run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-main/ >> /var/log/cs-rsync.log 2>&1 ; run-one cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-main/   >> /var/log/cs-rsync.log 2>&1 && run-one cs-rsync.sh -q -m rsync-to -d /srv/vm-main/  -t kvm-aux.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+
+################################################################################
+# (kvm-main) Restic backups
+################################################################################
+##
+## Data service:      /srv/vm-main/
+## At 03:30.
+## Local restic repo
+30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-main/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-main/ -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t vm-main  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t vm-main  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
+
+##
+## Data service:      /srv/setup/
+## At 03:30.
+30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/setup/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/setup/ -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t kvm-setup  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t kvm-setup  -f "--keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+

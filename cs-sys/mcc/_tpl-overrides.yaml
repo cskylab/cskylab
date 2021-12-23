@@ -1,0 +1,22 @@
+_tpldescription: Ubuntu server 20.04 Mission Control Center
+_tplname: ubt2004srv-mcc
+_tplversion: 21.11.20
+go_version: go1.17.3.linux-amd64.tar.gz
+k8s_version: 1.22.4-00
+machine:
+  domainname: cskylab.net
+  gateway4: 192.168.80.1
+  hostname: mcc
+  ipaddress: 192.168.80.5
+  localadminpassword: NoFear21
+  localadminusername: kos
+  nameservers:
+  - 192.168.80.1
+  netmask: 24
+  networkinterface: enp1s0
+  searchdomainnames:
+  - cskylab.net
+  setupdir: /etc/csky-setup
+  systemkeyboard: us
+  systemlocale: C.UTF-8
+  timezone: UTC

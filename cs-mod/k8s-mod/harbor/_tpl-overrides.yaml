@@ -1,0 +1,21 @@
+_tpldescription: Harbor opensource registry
+_tplname: Harbor
+_tplversion: 21.11.07
+certificate:
+  clusterissuer: ca-test-internal
+kubeconfig: config-k8s-mod
+localpvnodes:
+  all_pv: k8s-mod-n1
+localrsyncnodes:
+  all_pv: k8s-mod-n2
+namespace:
+  domain: cskylab.net
+  name: harbor
+publishing:
+  password: NoFear21
+  url: harbor.cskylab.net
+restic:
+  aws_access: bucketname_rw
+  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
+  password: NoFear21
+  repo: s3:https://backup.cskylab.net/bucketname/restic
