@@ -1,0 +1,39 @@
+#
+#   srvtest (Server test machine)
+#
+#   NOTE: You must delete previous ../cs-mod/srvtest
+#         directory if exist before creating a new one.
+#
+#   Copyright © 2021 cSkyLab.com
+#
+
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl-cskylab/ubt2004srv-dns -d ../cs-mod/srvtest -f cs-mod-srvtest-ubt2004srv-dns
+#
+
+#
+# Values to override
+#
+
+## Machine related configuration values
+machine:
+  hostname: srvtest
+  domainname: cskylab.net
+  localadminusername: kos
+  localadminpassword: "NoFear21"
+  timezone: "UTC"
+  networkinterface: enp1s0
+  ipaddress: 192.168.82.9
+  netmask: 24
+  gateway4: 192.168.82.1
+  searchdomainnames:
+    - cskylab.net
+  nameservers:
+    - 192.168.82.1
+  ## Setup directory where configuration files will be injected
+  setupdir: "/etc/csky-setup"
+  systemlocale: "C.UTF-8"
+  systemkeyboard: "us"
+  
