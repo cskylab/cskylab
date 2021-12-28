@@ -1,0 +1,73 @@
+# Keycloak chart 16.0.5 Upgrade <!-- omit in toc -->
+
+- [Background](#background)
+- [How-to guides](#how-to-guides)
+  - [Update configuration files](#update-configuration-files)
+  - [Pull charts & upgrade](#pull-charts--upgrade)
+- [Reference](#reference)
+
+---
+
+## Background
+
+Keycloak chart 16.0.5 updates chart components in keycloak appVersion 15.0.2.
+
+This procedure updates Keycloak installation in k8s-mod cluster.
+
+## How-to guides
+
+### Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add codecentric https://codecentric.github.io/helm-charts
+helm repo update
+
+# Charts
+helm pull codecentric/keycloak --version 16.0.5 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## Helm charts: `codecentric/keycloak` v16.0.5 <!-- omit in toc -->
+```
+
+- Save file
+
+### Pull charts & upgrade
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` folder repository.
+
+Execute the following commands to pull charts and upgrade:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+```
+
+## Reference
+
+- <https://github.com/codecentric/helm-charts/tree/master/charts/keycloak>
+- <https://www.keycloak.org/>
