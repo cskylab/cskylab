@@ -22,3 +22,4 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 | -------------------------- | ------------------------------------------------ |
 | GitLab chart 5.5.2         | [gitlab-551.md](./gitlab-552.md)                 |
 | Ingress-nginx chart 4.0.13 | [ingress-nginx-4013.md](./ingress-nginx-4013.md) |
+| MetalLB chart 2.5.16       | [metallb-2513.md](./metallb-2516.md)             |
