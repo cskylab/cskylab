@@ -17,6 +17,7 @@
 {{- $railsSecretName := include "gitlab.rails-secrets.secret" . -}}
 {{- $metricsEnabled := .Values.metrics.enabled -}}
 {{- $metricsPort := .Values.metrics.port -}}
+{{- $healthChecksPort := .Values.health_checks.port | default $metricsPort -}}
 {{- $metricsAnnotations := .Values.metrics.annotations -}}
 {{- $configMapChecksum := include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
 {{- range .Values.pods -}}
@@ -249,7 +250,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /liveness
-              port: {{ $.Values.metrics.port }}
+              port: {{ $healthChecksPort }}
             initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ $.Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
@@ -258,7 +259,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /readiness
-              port: {{ $.Values.metrics.port }}
+              port: {{ $healthChecksPort }}
             initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}

@@ -2,6 +2,17 @@
 documentation](doc/development/changelog.md) for instructions on adding your own
 entry.
 
+## 5.6.0 (2021-12-21)
+
+### Changed (6 changes)
+
+- [Update gitlab-org/container-registry from 3.18.1-gitlab to 3.19.0-gitlab](gitlab-org/charts/gitlab@8c76c6594e07be584709112bd0ad6322bbe2b411) ([merge request](gitlab-org/charts/gitlab!2312))
+- [Update gitlab-org/charts/gitlab-runner from 0.35.3 to 0.36.0](gitlab-org/charts/gitlab@504aebed4b7ee63c73436d081392c531b29d7f6f) ([merge request](gitlab-org/charts/gitlab!2313))
+- [Update gitlab-org/charts/gitlab-runner from 0.35.0 to 0.35.3](gitlab-org/charts/gitlab@7017fda23b1a3788c9e6fb7a5e8f11027775c842) ([merge request](gitlab-org/charts/gitlab!2301))
+- [Update gitlab-org/container-registry from 3.16.0-gitlab to 3.17.0-gitlab](gitlab-org/charts/gitlab@e1b12db5cb630926ee76ce7684fba64263dc79af) ([merge request](gitlab-org/charts/gitlab!2285))
+- [Update gitlab-org/charts/gitlab-runner from 0.34.0 to 0.35.0](gitlab-org/charts/gitlab@12c4740147c25f788061176f124e5749eb9a7726) ([merge request](gitlab-org/charts/gitlab!2275))
+- [Update gitlab-org/container-registry from 3.15.0-gitlab to 3.16.0-gitlab](gitlab-org/charts/gitlab@3d2e013c2c37ee987fa064dacb8ae3f2f645aa4b) ([merge request](gitlab-org/charts/gitlab!2276))
+
 ## 5.5.2 (2021-12-03)
 
 No changes.
@@ -35,6 +46,14 @@ No changes.
 ### Other (1 change)
 
 - [[Docs] Operator: clarify available chart versions](gitlab-org/charts/gitlab@afcb3d95d2f997cc1d77087bb85a73b918a38101) ([merge request](gitlab-org/charts/gitlab!2268))
+
+## 5.4.4 (2021-12-03)
+
+No changes.
+
+## 5.4.3 (2021-12-01)
+
+No changes.
 
 ## 5.4.2 (2021-11-08)
 
@@ -70,6 +89,14 @@ No changes.
 
 - [Remove reference to deprecated operator](gitlab-org/charts/gitlab@d03e3293fdfe698eb3b5defe0b919351ef9485eb) ([merge request](gitlab-org/charts/gitlab!2197))
 - [Add $PLATFORM to installation commands](gitlab-org/charts/gitlab@8e72a88fb391cb98f64e712b07e65d65db4ab8fd) ([merge request](gitlab-org/charts/gitlab!2190))
+
+## 5.3.6 (2021-12-03)
+
+No changes.
+
+## 5.3.5 (2021-11-26)
+
+No changes.
 
 ## 5.3.4 (2021-10-28)
 
@@ -108,6 +135,10 @@ No changes.
 - [Change default configuration for HSTS](gitlab-org/charts/gitlab@14936c95c921770b67c28642dc950fa186252bdd) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/2118))
 - [Update gitlab-org/charts/gitlab-runner from 0.31.0 to 0.32.0](gitlab-org/charts/gitlab@0665982645d842994a54bddb1269fbb694a743cb) ([merge request](gitlab-org/charts/gitlab!2149))
 - [Adds pages local_store configuration](gitlab-org/charts/gitlab@426c34858876fe0d52cd4fe880f44771af17e19b) ([merge request](gitlab-org/charts/gitlab!2141))
+
+## 5.2.7 (2021-11-26)
+
+No changes.
 
 ## 5.2.6 (2021-10-28)
 

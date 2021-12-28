@@ -16,7 +16,8 @@ data:
     listen_addr = "0.0.0.0:{{ coalesce .Values.service.internalPort .Values.global.gitaly.service.internalPort }}"
 
     # Directory where internal sockets reside
-    internal_socket_dir = "/home/git"
+    # note: no value will result in a `/tmp/gitlab-internal-*` path
+    # internal_socket_dir = "/home/git"
 
     {{- if $.Values.global.gitaly.tls.enabled }}
     tls_listen_addr = "0.0.0.0:{{ coalesce .Values.service.tls.internalPort .Values.global.gitaly.service.tls.internalPort }}"
@@ -99,7 +100,7 @@ data:
     {{- end }}
 
     [auth]
-    token = "<%= File.read('/etc/gitlab-secrets/gitaly/gitaly_token').strip.dump[1..-2] %>"
+    token = <%= File.read('/etc/gitlab-secrets/gitaly/gitaly_token').strip.to_json %>
 
     [git]
     {{- with .Values.git }}

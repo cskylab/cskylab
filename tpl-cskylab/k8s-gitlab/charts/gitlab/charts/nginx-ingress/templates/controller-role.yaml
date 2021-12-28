@@ -9,6 +9,7 @@ metadata:
     {{- include "ingress-nginx.labels" . | nindent 4 }}
     app.kubernetes.io/component: controller
   name: {{ include "ingress-nginx.fullname" . }}
+  namespace: {{ .Release.Namespace }}
 rules:
   - apiGroups:
       - ""
@@ -34,11 +35,9 @@ rules:
     verbs:
       - get
       - list
-      - update
       - watch
   - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
+      - networking.k8s.io
     resources:
       - ingresses
     verbs:
@@ -46,14 +45,13 @@ rules:
       - list
       - watch
   - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
+      - networking.k8s.io
     resources:
       - ingresses/status
     verbs:
       - update
   - apiGroups:
-      - "networking.k8s.io" # k8s 1.14+
+      - networking.k8s.io
     resources:
       - ingressclasses
     verbs:
@@ -65,7 +63,7 @@ rules:
     resources:
       - configmaps
     resourceNames:
-      - {{ .Values.controller.electionID }}-{{ template "ingress-nginx.controller.ingress-class" . }}
+      - {{ .Values.controller.electionID }}
     verbs:
       - get
       - update
@@ -78,14 +76,6 @@ rules:
   - apiGroups:
       - ""
     resources:
-      - endpoints
-    verbs:
-      - create
-      - get
-      - update
-  - apiGroups:
-      - ""
-    resources:
       - events
     verbs:
       - create
@@ -94,6 +84,10 @@ rules:
   - apiGroups:      [{{ template "podSecurityPolicy.apiGroup" . }}]
     resources:      ['podsecuritypolicies']
     verbs:          ['use']
+    {{- with .Values.controller.existingPsp }}
+    resourceNames:  [{{ . }}]
+    {{- else }}
     resourceNames:  [{{ include "ingress-nginx.fullname" . }}]
+    {{- end }}
 {{- end }}
 {{- end }}

@@ -41,9 +41,9 @@ data:
     listen-http=0.0.0.0:9090
     {{- else }}
       {{- if not (empty $.Values.global.pages.externalHttp) }}
-    listen-http=0.0.0.0:{{ .Values.service.internalPort }}
+    listen-{{ if .Values.useHTTPProxy }}proxy{{ else }}http{{ end }}=0.0.0.0:{{ .Values.service.internalPort | int }}
       {{-  else  }}
-    listen-http=0.0.0.0:9090
+    listen-{{ if .Values.useHTTPProxy }}proxy{{ else }}http{{ end }}=0.0.0.0:9090
       {{- end }}
       {{- if not (empty $.Values.global.pages.externalHttps) }}
     listen-https{{ if .Values.useProxyV2 }}-proxyv2{{ end }}=0.0.0.0:{{ .Values.service.customDomains.internalHttpsPort | int }}

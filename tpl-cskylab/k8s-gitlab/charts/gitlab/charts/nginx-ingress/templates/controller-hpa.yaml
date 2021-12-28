@@ -4,6 +4,10 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
+  annotations:
+  {{- with .Values.controller.autoscaling.annotations }}
+  {{- toYaml . | trimSuffix "\n" | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "gitlab.standardLabels" . | nindent 4 }}
     {{- include "gitlab.commonLabels" . | nindent 4 }}
@@ -11,6 +15,7 @@ metadata:
     {{- include "ingress-nginx.labels" . | nindent 4 }}
     app.kubernetes.io/component: controller
   name: {{ include "ingress-nginx.controller.fullname" . }}
+  namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -36,7 +41,12 @@ spec:
         averageUtilization: {{ . }}
   {{- end }}
   {{- with .Values.controller.autoscalingTemplate }}
-{{- toYaml . | nindent 2 }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with .Values.controller.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
 {{- end }}
+

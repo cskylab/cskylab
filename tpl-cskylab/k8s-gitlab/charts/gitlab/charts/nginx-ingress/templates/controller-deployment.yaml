@@ -1,4 +1,5 @@
 {{- if or (eq .Values.controller.kind "Deployment") (eq .Values.controller.kind "Both") -}}
+{{- include  "isControllerTagValid" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,11 +13,14 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
   name: {{ include "ingress-nginx.controller.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   annotations:
+  {{- if include "gitlab.deploymentAnnotations" . }}
     {{- include "gitlab.deploymentAnnotations" . | nindent 4 }}
-    {{- if .Values.controller.annotations }}
+  {{- end }}
+  {{- if .Values.controller.annotations }}
     {{ toYaml .Values.controller.annotations | nindent 4 }}
-    {{- end }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -42,12 +46,16 @@ spec:
       labels:
         {{- include "ingress-nginx.selectorLabels" . | nindent 8 }}
         component: "{{ .Values.controller.name }}"
+      {{- include "gitlab.podLabels" . | nindent 8 }}
       {{- if .Values.controller.podLabels }}
         {{- toYaml .Values.controller.podLabels | nindent 8 }}
       {{- end }}
     spec:
     {{- if .Values.controller.dnsConfig }}
       dnsConfig: {{ toYaml .Values.controller.dnsConfig | nindent 8 }}
+    {{- end }}
+    {{- if .Values.controller.hostname }}
+      hostname: {{ toYaml .Values.controller.hostname | nindent 8 }}
     {{- end }}
       dnsPolicy: {{ .Values.controller.dnsPolicy }}
     {{- if .Values.imagePullSecrets }}
@@ -70,9 +78,9 @@ spec:
     {{- end }}
     {{- end }}
       containers:
-        - name: controller
+        - name: {{ .Values.controller.containerName }}
           {{- with .Values.controller.image }}
-          image: "{{.repository}}:{{ .tag }}{{- if (.digest) -}} @{{.digest}} {{- end -}}"
+          image: "{{- if .repository -}}{{ .repository }}{{ else }}{{ .registry }}/{{ .image }}{{- end -}}:{{ .tag }}{{- if (.digest) -}} @{{.digest}} {{- end -}}"
           {{- end }}
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
         {{- if .Values.controller.lifecycle }}
@@ -87,13 +95,15 @@ spec:
             - --publish-service={{ template "ingress-nginx.controller.publishServicePath" . }}
           {{- end }}
             - --election-id={{ .Values.controller.electionID }}
-            - --ingress-class={{ template "ingress-nginx.controller.ingress-class" . }}
-            - --configmap=$(POD_NAMESPACE)/{{ include "ingress-nginx.controller.fullname" . }}
-          {{- if or .Values.tcp ( include "gitlab.shell.port" $ ) }}
+            - --controller-class={{ .Values.controller.ingressClassResource.controllerValue }}
+            - --configmap={{ default "$(POD_NAMESPACE)" .Values.controller.configMapNamespace }}/{{ include "ingress-nginx.controller.fullname" . }}
+          {{ if include "gitlab.shell.port" $ }}
             - --tcp-services-configmap={{ .Release.Namespace }}/{{ template "ingress-nginx.tcp-configmap" . }}
+          {{- else if .Values.tcp }}
+            - --tcp-services-configmap={{ default "$(POD_NAMESPACE)" .Values.controller.tcp.configMapNamespace }}/{{ include "ingress-nginx.fullname" . }}-tcp
           {{- end }}
           {{- if .Values.udp }}
-            - --udp-services-configmap=$(POD_NAMESPACE)/{{ include "ingress-nginx.fullname" . }}-udp
+            - --udp-services-configmap={{ default "$(POD_NAMESPACE)" .Values.controller.udp.configMapNamespace }}/{{ include "ingress-nginx.fullname" . }}-udp
           {{- end }}
           {{- if .Values.controller.scope.enabled }}
             - --watch-namespace={{ default "$(POD_NAMESPACE)" .Values.controller.scope.namespace }}
@@ -109,8 +119,17 @@ spec:
           {{- if .Values.controller.maxmindLicenseKey }}
             - --maxmind-license-key={{ .Values.controller.maxmindLicenseKey }}
           {{- end }}
+          {{- if .Values.controller.healthCheckHost }}
+            - --healthz-host={{ .Values.controller.healthCheckHost }}
+          {{- end }}
           {{- if not (eq .Values.controller.healthCheckPath "/healthz") }}
             - --health-check-path={{ .Values.controller.healthCheckPath }}
+          {{- end }}
+          {{- if .Values.controller.ingressClassByName }}
+            - --ingress-class-by-name=true
+          {{- end }}
+          {{- if .Values.controller.watchIngressWithoutClass }}
+            - --watch-ingress-without-class=true
           {{- end }}
           {{- range $key, $value := .Values.controller.extraArgs }}
             {{- /* Accept keys without values or with false as value */}}
@@ -144,26 +163,11 @@ spec:
           {{- if .Values.controller.extraEnvs }}
             {{- toYaml .Values.controller.extraEnvs | nindent 12 }}
           {{- end }}
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.controller.healthCheckPath }}
-              port: {{ .Values.controller.livenessProbe.port }}
-              scheme: HTTP
-            initialDelaySeconds: {{ .Values.controller.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.controller.livenessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.controller.livenessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.controller.livenessProbe.successThreshold }}
-            failureThreshold: {{ .Values.controller.livenessProbe.failureThreshold }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.controller.healthCheckPath }}
-              port: {{ .Values.controller.readinessProbe.port }}
-              scheme: HTTP
-            initialDelaySeconds: {{ .Values.controller.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.controller.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.controller.readinessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.controller.readinessProbe.successThreshold }}
-            failureThreshold: {{ .Values.controller.readinessProbe.failureThreshold }}
+          {{- if .Values.controller.startupProbe }}
+          startupProbe: {{ toYaml .Values.controller.startupProbe | nindent 12 }}
+          {{- end }}
+          livenessProbe: {{ toYaml .Values.controller.livenessProbe | nindent 12 }}
+          readinessProbe: {{ toYaml .Values.controller.readinessProbe | nindent 12 }}
           ports:
           {{- range $key, $value := .Values.controller.containerPort }}
             - name: {{ $key }}
@@ -183,9 +187,11 @@ spec:
               containerPort: {{ .Values.controller.admissionWebhooks.port }}
               protocol: TCP
           {{- end }}
+          {{- if include "gitlab.shell.port" $ }}
             - name: gitlab-shell
               containerPort: {{ include "gitlab.shell.port" $ | int }}
               protocol: TCP
+          {{- end }}
           {{- range $key, $value := .Values.tcp }}
             - name: {{ $key }}-tcp
               containerPort: {{ $key }}
@@ -230,10 +236,11 @@ spec:
     {{- if .Values.controller.hostNetwork }}
       hostNetwork: {{ .Values.controller.hostNetwork }}
     {{- end }}
+    {{/* GitLab change: disable ingress-nginx use of nodeSelector
     {{- if .Values.controller.nodeSelector }}
-      nodeSelector: {{ toYaml .Values.controller.nodeSelector | nindent 8 }}
-    {{- else }}
-    {{- include "gitlab.nodeSelector" . | nindent 6 }}
+      nodeSelector: {{ toYaml .Values.controller.nodeSelector | nindent 8 */}}
+    {{- if include "gitlab.nodeSelector" . }}
+      {{- include "gitlab.nodeSelector" . | nindent 6 }}
     {{- end }}
     {{- if .Values.controller.tolerations }}
       tolerations: {{ toYaml .Values.controller.tolerations | nindent 8 }}
