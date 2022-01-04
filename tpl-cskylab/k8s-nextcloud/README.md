@@ -76,7 +76,6 @@ The following PersistentVolume & StorageClass manifests are applied:
 pv-ncdata.yaml
 pv-mariadb.yaml
 pv-redis-master.yaml
-pv-redis-slave.yaml
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.
@@ -96,8 +95,7 @@ To **create** the corresponding LVM data services, execute inside the appropriat
 sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
 && mkdir "/srv/{{ .namespace.name }}/data/ncdata" \
 && mkdir "/srv/{{ .namespace.name }}/data/mariadb" \
-&& mkdir "/srv/{{ .namespace.name }}/data/redis-master" \
-&& mkdir "/srv/{{ .namespace.name }}/data/redis-slave"
+&& mkdir "/srv/{{ .namespace.name }}/data/redis-master"
 ```
 
 To **delete** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
