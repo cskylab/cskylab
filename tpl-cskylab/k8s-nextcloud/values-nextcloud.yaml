@@ -205,18 +205,26 @@ mariadb:
   ## Whether to deploy a mariadb server to satisfy the applications database requirements. To use an external database set this to false and configure the externalDatabase parameters
   enabled: false
 
+##
+## Redis chart configuration
+## for more options see https://github.com/bitnami/charts/tree/master/bitnami/redis
+##
+
 redis:
   enabled: true
-  usePassword: true
-  password: {{ .publishing.password }}
+  ## @param architecture Redis&trade; architecture. Allowed values: `standalone` or `replication`
+  ##
+  architecture: standalone
+  auth:
+    enabled: true
+    password: '{{ .publishing.password }}'
 
   global:
     imageRegistry: {{ .registry.proxy }}
 
   ## Cluster settings
   cluster:
-    enabled: true
-    slaveCount: 1
+    enabled: false
 
   ##
   ## Redis Master parameters
@@ -244,32 +252,6 @@ redis:
       accessModes:
       - ReadWriteOnce
       size: 8Gi
-  ##
-  ## Redis Slave properties
-  slave:
-    ## Enable persistence using Persistent Volume Claims
-    ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-    ##
-    persistence:
-      enabled: true
-      ## The path the volume will be mounted at, useful when using different
-      ## Redis images.
-      path: /data
-      ## The subdirectory of the volume to mount to, useful in dev environments
-      ## and one PV for multiple services.
-      subPath: ""
-      ## redis data Persistent Volume Storage Class
-      ## If defined, storageClassName: <storageClass>
-      ## If set to "-", storageClassName: "", which disables dynamic provisioning
-      ## If undefined (the default) or set to null, no storageClassName spec is
-      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-      ##   GKE, AWS & OpenStack)
-      ##
-      storageClass: {{ .namespace.name }}-redis-slave
-      accessModes:
-      - ReadWriteOnce
-      size: 8Gi
-
 
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/

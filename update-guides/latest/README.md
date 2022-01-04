@@ -25,3 +25,4 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 | Ingress-nginx chart 4.0.13 | [ingress-nginx-4013.md](./ingress-nginx-4013.md) |
 | MetalLB chart 2.5.16       | [metallb-2513.md](./metallb-2516.md)             |
 | Harbor chart 11.1.6        | [harbor-1116.md](./harbor-1116.md)               |
+| Nextcloud chart 2.11.3     | [nextcloud-2113.md](./nextcloud-2113.md)         |

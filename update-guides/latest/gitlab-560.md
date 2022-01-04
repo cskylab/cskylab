@@ -15,7 +15,7 @@ GitLab chart 5.6.0 implements appVersion 14.6.0.
 
 ## Prerequisites
 
-Before applying chart 5.6.0, the minimum chart version running must be chart 5.5.2
+Before applying chart 5.6.0, the minimum chart version running must be chart 5.5.2.
 
 ## How-to guides
 
