@@ -224,14 +224,14 @@ spec:
           {{- include "gitlab.registry.notificationSecret.mount" $ | nindent 10 -}}
           {{- if or .Values.backups.objectStorage.config (not (or .Values.global.minio.enabled .Values.global.appConfig.object_store.enabled)) }}
           - secret:
-              name: {{ required "A valid backups.objectStorage.config.secret is needed!" .Values.backups.objectStorage.config.secret }}
+              name: {{ .Values.backups.objectStorage.config.secret }}
               items:
                 - key: {{ default "config" .Values.backups.objectStorage.config.key }}
                   path: objectstorage/.s3cfg
           {{- end }}
           {{- if eq .Values.backups.objectStorage.backend "gcs" }}
           - secret:
-              name: {{ required "A valid backups.objectStorage.config.secret is needed!" .Values.backups.objectStorage.config.secret }}
+              name: {{ .Values.backups.objectStorage.config.secret }}
               items:
                 - key: {{ default "config" .Values.backups.objectStorage.config.key }}
                   path: objectstorage/{{ default "config" .Values.backups.objectStorage.config.key }}

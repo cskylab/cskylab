@@ -26,7 +26,7 @@ metadata:
     {{- include "webservice.labels" . | nindent 4 }}
     {{- include "webservice.commonLabels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: "{{ template "gitlab.ingressclass" $ }}"
+    {{ include "gitlab.ingress.classAnnotation" $ }}
     kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
     {{- if eq "nginx" (default $.Values.global.ingress.provider .ingress.provider) }}
     nginx.ingress.kubernetes.io/proxy-body-size: {{ .ingress.proxyBodySize | quote }}
@@ -38,12 +38,13 @@ metadata:
     {{ $key }}: {{ $value | quote }}
   {{- end }}
 spec:
+  {{ template "gitlab.ingress.classnameField" $ }}
   rules:
     - host: {{ $gitlabHostname }}
       http:
         paths:
           - path: {{ .ingress.path }}
-            {{ if $.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+            {{ if or ($.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress") (eq $.Values.global.ingress.apiVersion "networking.k8s.io/v1") -}}
             pathType: {{ default .ingress.pathType $.Values.global.ingress.pathType }}
             backend:
               service:

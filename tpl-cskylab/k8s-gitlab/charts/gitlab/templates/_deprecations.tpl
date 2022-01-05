@@ -420,6 +420,7 @@ global.imagePullPolicy:
 {{-   if index .Values.gitlab "task-runner" }}
 gitlab.task-runner:
     The configuration of `gitlab.task-runner` has been renamed. Please use `gitlab.toolbox` instead.
+    If you have enabled persistence for `task-runner` and/or its CronJob for backups, you may need to manually bind the new `toolbox` PVC to the previous `task-runner` PV.
 {{-   end -}}
 {{- end -}}
 

@@ -12,19 +12,20 @@ metadata:
     {{- include "gitlab.standardLabels" . | nindent 4 }}
     {{- include "gitlab.commonLabels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: "{{ template "gitlab.ingressclass" . }}"
+    {{ include "gitlab.ingress.classAnnotation" . }}
     kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
     {{ include "gitlab.certmanager_annotations" . }}
   {{- range $key, $value := merge .Values.ingress.annotations .Values.global.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}
 spec:
+  {{ template "gitlab.ingress.classnameField" $ }}
   rules:
     - host: {{ $hostname }}
       http:
         paths:
           - path: "{{ trimSuffix "/" $.Values.ingress.agentPath }}{{ $.Values.global.ingress.path }}"
-            {{ if $.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+            {{ if or ($.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress") (eq $.Values.global.ingress.apiVersion "networking.k8s.io/v1") -}}
             pathType: {{ default "Prefix" $.Values.global.ingress.pathType }}
             backend:
               service:
@@ -37,7 +38,7 @@ spec:
               servicePort: {{ .Values.service.externalPort }}
             {{- end }}
           - path: "{{ trimSuffix "/" $.Values.ingress.k8sApiPath }}{{ $.Values.global.ingress.path }}"
-            {{ if $.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+            {{ if or ($.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress") (eq $.Values.global.ingress.apiVersion "networking.k8s.io/v1") -}}
             pathType: {{ default "Prefix" $.Values.global.ingress.pathType }}
             backend:
               service:

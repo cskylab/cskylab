@@ -12,7 +12,7 @@ Return the default praefect storage line for gitlab.yml
 {{ .name }}:
   path: /var/opt/gitlab/repo
   gitaly_address: {{ printf "%s" $scheme }}://{{ template "gitlab.praefect.serviceName" $ }}.{{$.Release.Namespace}}.svc:{{ $port }}
-  gitaly_token: "<%= File.read('/etc/gitlab/gitaly/gitaly_token_praefect').strip.dump[1..-2] %>"
+  gitaly_token: <%= File.read('/etc/gitlab/gitaly/gitaly_token_praefect').strip.to_json %>
 {{- end }}
 {{- end -}}
 

@@ -144,6 +144,7 @@ statusUri: '/-/readiness'
 tls:
   minVersion:
   maxVersion:
+useHTTPProxy: false
 useProxyV2: false
 useHttp2: true
 

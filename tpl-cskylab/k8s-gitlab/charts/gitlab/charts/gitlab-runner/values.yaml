@@ -28,6 +28,9 @@ imagePullPolicy: IfNotPresent
 # imagePullSecrets:
 #   - name: "image-pull-secret"
 
+## Timeout, in seconds, for liveness and readiness probes of a runner pod.
+# probeTimeoutSeconds: 1
+
 ## How many runner pods to launch.
 ##
 ## Note: Using more than one replica is not supported with a runnerToken. Use a runnerRegistrationToken
@@ -158,9 +161,121 @@ rbac:
   # imagePullSecrets: []
 
 ## Configure integrated Prometheus metrics exporter
+##
 ## ref: https://docs.gitlab.com/runner/monitoring/#configuration-of-the-metrics-http-server
+##
 metrics:
   enabled: true
+
+  ## Define a name for the metrics port
+  ##
+  portName: metrics
+
+  ## Provide a port number for the integrated Prometheus metrics exporter
+  ##
+  port: 9252
+
+  ## Configure a prometheus-operator serviceMonitor to allow autodetection of
+  ## the scraping target. Requires enabling the service resource below.
+  ##
+  serviceMonitor:
+    enabled: false
+
+    ## Provide additional labels to the service monitor ressource
+    ##
+    ## labels: {}
+
+    ## Define a scrape interval (otherwise prometheus default is used)
+    ##
+    ## ref: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+    ##
+    # interval: ""
+
+    ## Specify the scrape protocol scheme e.g., https or http
+    ##
+    # scheme: "http"
+
+    ## Supply a tls configuration for the service monitor
+    ##
+    ## ref: https://github.com/helm/charts/blob/master/stable/prometheus-operator/crds/crd-servicemonitor.yaml
+    ##
+    # tlsConfig: {}
+
+    ## The URI path where prometheus metrics can be scraped from
+    ##
+    # path: "/metrics"
+
+    ## A list of MetricRelabelConfigs to apply to samples before ingestion
+    ##
+    ## ref: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs
+    ##
+    # metricRelabelings: []
+
+    ## A list of RelabelConfigs to apply to samples before scraping
+    ##
+    ## ref: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
+    ##
+    ## relabelings: []
+
+## Configure a service resource e.g., to allow scraping metrics via
+## prometheus-operator serviceMonitor
+service:
+  enabled: false
+
+  ## Provide additonal labels for the service
+  ##
+  # labels: {}
+
+  ## Provide additonal annotations for the service
+  ##
+  # annotations: {}
+
+  ## Define a specific ClusterIP if you do not want a dynamic one
+  ##
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#choosing-your-own-ip-address
+  ##
+  # clusterIP: ""
+
+  ## Define a list of one or more external IPs for this service
+  ##
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#external-ips
+  ##
+  # externalIPs: []
+
+  ## Provide a specific loadbalancerIP e.g., of an external Loadbalancer
+  ##
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
+  ##
+  # loadBalancerIP: ""
+
+  ## Provide a list of source IP ranges to have access to this service
+  ##
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#aws-nlb-support
+  ##
+  # loadBalancerSourceRanges: []
+
+  ## Specify the service type e.g., ClusterIP, NodePort, Loadbalancer or ExternalName
+  ##
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  ##
+  type: ClusterIP
+
+  ## Specify the services metrics nodeport if you use a service of type nodePort
+  ##
+  # metrics:
+
+    ## Specify the node port under which the prometheus metrics of the runner are made
+    ## available.
+    ##
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#nodeport
+    ##
+    # nodePort: ""
+
+  ## Provide a list of additional ports to be exposed by this service
+  ##
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#defining-a-service
+  ##
+  # additionalPorts: []
 
 ## Configuration for the Pods that the runner launches for each new job
 ##

@@ -33,7 +33,7 @@ production:
   encoding: unicode
   database: {{ template "gitlab.geo.psql.database" . }}
   username: {{ template "gitlab.geo.psql.username" . }}
-  password: "<%= File.read("/etc/gitlab/postgres/geo-psql-password").strip.dump[1..-2] %>"
+  password: <%= File.read("/etc/gitlab/postgres/geo-psql-password").strip.to_json %>
   host: {{ template "gitlab.geo.psql.host" . }}
   port: {{ template "gitlab.geo.psql.port" . }}
   # load_balancing:

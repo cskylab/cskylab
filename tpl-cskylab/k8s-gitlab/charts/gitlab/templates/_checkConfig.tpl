@@ -37,6 +37,7 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $messages = append $messages (include "gitlab.checkConfig.geo.database" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.geo.secondary.database" .) -}}
 {{- $messages = append $messages (include "gitlab.toolbox.replicas" .) -}}
+{{- $messages = append $messages (include "gitlab.toolbox.backups.objectStorage.config.secret" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.multipleRedis" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.hostWhenNoInstall" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.postgresql.deprecatedVersion" .) -}}
@@ -55,6 +56,7 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $messages = append $messages (include "gitlab.checkConfig.objectStorage.consolidatedConfig" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.objectStorage.typeSpecificConfig" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.nginx.controller.extraArgs" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.nginx.clusterrole.scope" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.webservice.loadBalancer" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.smtp.openssl_verify_mode" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.geo.registry.replication.primaryApiUrl" .) -}}
@@ -309,6 +311,20 @@ gitaly:
 {{-   end -}}
 {{- end -}}
 {{/* END gitlab.checkConfig.gitaly.extern.repos */}}
+
+{{/*
+Ensure that a valid object storage config secret is provided.
+*/}}
+{{- define "gitlab.toolbox.backups.objectStorage.config.secret" -}}
+{{-   if or .Values.gitlab.toolbox.backups.objectStorage.config (not (or .Values.global.minio.enabled .Values.global.appConfig.object_store.enabled)) (eq .Values.gitlab.toolbox.backups.objectStorage.backend "gcs") }}
+{{-     if not .Values.gitlab.toolbox.backups.objectStorage.config.secret -}}
+toolbox:
+    A valid object storage config secret is needed for backups.
+    Please configure it via `gitlab.toolbox.backups.objectStorage.config.secret`.
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+{{/* END gitlab.toolbox.backups.objectStorage.config.secret */}}
 
 {{/*
 Ensure that gitlab/toolbox is not configured with `replicas` > 1 if
@@ -649,6 +665,15 @@ nginx-ingress:
 {{-   end -}}
 {{- end -}}
 {{/* END "gitlab.checkConfig.nginx.controller" */}}
+
+{{- define "gitlab.checkConfig.nginx.clusterrole.scope" -}}
+{{-   if (index $.Values "nginx-ingress").rbac.scope -}}
+nginx-ingress:
+  'rbac.scope' should be false. Namespaced IngressClasses do not exist.
+  See https://github.com/kubernetes/ingress-nginx/issues/7519
+{{-   end -}}
+{{- end -}}
+{{/* END "gitlab.checkConfig.nginx.clusterrole" */}}
 
 {{/*
 Ensure that when type is set to LoadBalancer that loadBalancerSourceRanges are set

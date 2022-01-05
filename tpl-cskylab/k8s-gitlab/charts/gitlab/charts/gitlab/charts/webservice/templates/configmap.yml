@@ -181,7 +181,7 @@ data:
     Sentinel = [ {{ template "gitlab.redis.workhorse.sentinel-list" $ }} ]
     {{- end }}
     {{- if $.Values.global.redis.password.enabled }}
-    Password = "{% file.Read "/etc/gitlab/redis/redis-password" | strings.TrimSpace %}"
+    Password = {% file.Read "/etc/gitlab/redis/redis-password" | strings.TrimSpace | data.ToJSON %}
     {{- end }}
     {{- end }}
     {{- include "workhorse.object_storage.config" $ | nindent 4 }}

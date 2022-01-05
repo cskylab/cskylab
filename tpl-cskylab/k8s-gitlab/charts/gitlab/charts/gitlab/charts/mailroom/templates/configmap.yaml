@@ -29,14 +29,14 @@ data:
         :inbox_options:
           :tenant_id: "{{ .tenantId }}"
           :client_id: "{{ .clientId }}"
-          :client_secret: "<%= File.read("/etc/gitlab/mailroom/client_id_incoming_email").strip.dump[1..-2] %>"
+          :client_secret: <%= File.read("/etc/gitlab/mailroom/client_id_incoming_email").strip.to_json %>
           :poll_interval: {{ .pollInterval }}
         {{- else }}
         :host: {{ .host }}
         :port: {{ .port }}
         :ssl: {{ .ssl }}
         :start_tls: {{ .startTls }}
-        :password: "<%= File.read("/etc/gitlab/mailroom/password_incoming_email").strip.dump[1..-2] %>"
+        :password: <%= File.read("/etc/gitlab/mailroom/password_incoming_email").strip.to_json %>
         :idle_timeout: {{ .idleTimeout }}
         {{- end }}
         {{- end }}
@@ -68,14 +68,14 @@ data:
         :inbox_options:
           :tenant_id: "{{ .tenantId }}"
           :client_id: "{{ .clientId }}"
-          :client_secret: "<%= File.read("/etc/gitlab/mailroom/client_id_service_desk").strip.dump[1..-2] %>"
+          :client_secret: <%= File.read("/etc/gitlab/mailroom/client_id_service_desk").strip.to_json %>
           :poll_interval: {{ .pollInterval }}
         {{- else }}
         :host: {{ .host }}
         :port: {{ .port }}
         :ssl: {{ .ssl }}
         :start_tls: {{ .startTls }}
-        :password: "<%= File.read("/etc/gitlab/mailroom/password_service_desk").strip.dump[1..-2] %>"
+        :password: <%= File.read("/etc/gitlab/mailroom/password_service_desk").strip.to_json %>
         :idle_timeout: {{ .idleTimeout }}
         {{- end }}
         {{- end }}

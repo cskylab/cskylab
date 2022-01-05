@@ -114,6 +114,13 @@ WARNING: GitLab Pages configured to use disk storage via `{{ $component }}.extra
 {{-   end }}
 {{- end }}
 
+{{/* In-chart NGINX Ingress Controller notices */}}
+{{- if eq true (index $.Values "nginx-ingress").enabled -}}
+NOTICE: The in-chart NGINX Ingress Controller has the following requirements:
+    - Kubernetes version must be 1.19 or newer.
+    - Ingress objects must be in group/version `networking.k8s.io/v1`.
+{{ end }}
+
 {{/* run deprecations */}}
 {{ include "gitlab.deprecations" . }}
 {{/* run checkConfig */}}

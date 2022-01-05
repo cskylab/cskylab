@@ -1,7 +1,7 @@
 {{- define "gitlab.appConfig.gitaly" -}}
 gitaly:
   client_path: /home/git/gitaly/bin
-  token: "<%= File.read('/etc/gitlab/gitaly/gitaly_token').strip.dump[1..-2] %>"
+  token: <%= File.read('/etc/gitlab/gitaly/gitaly_token').strip.to_json %>
 {{- end -}}
 
 {{- define "gitlab.appConfig.repositories" -}}
@@ -68,6 +68,9 @@ extra:
   {{- end }}
   {{ if .extra.oneTrustId }}
   one_trust_id: {{ .extra.oneTrustId | quote }}
+  {{- end }}
+  {{ if .extra.googleTagManagerNonceId }}
+  google_tag_manager_nonce_id: {{ .extra.googleTagManagerNonceId | quote }}
   {{- end }}
 {{- end -}}
 
