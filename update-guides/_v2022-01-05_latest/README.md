@@ -2,7 +2,7 @@
 
 ## Release notes
 
-Welcome to cSkyLab release of Month day, year.
+Welcome to cSkyLab release of January 5, 2022.
 
 All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments from this release, will have all these updates applied.
 
