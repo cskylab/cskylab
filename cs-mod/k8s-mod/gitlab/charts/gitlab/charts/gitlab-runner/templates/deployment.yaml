@@ -28,7 +28,7 @@ spec:
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
         {{- if .Values.metrics.enabled }}
         prometheus.io/scrape: 'true'
-        prometheus.io/port: '9252'
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
         {{- end }}
         {{- range $key, $value := .Values.podAnnotations }}
         {{   $key }}: {{ $value | quote }}
@@ -93,7 +93,7 @@ spec:
           exec:
             command: ["/bin/bash", "/configmaps/check-live"]
           initialDelaySeconds: 60
-          timeoutSeconds: 1
+          timeoutSeconds: {{ default 1 .Values.probeTimeoutSeconds }}
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
@@ -101,13 +101,13 @@ spec:
           exec:
             command: ["/usr/bin/pgrep","gitlab.*runner"]
           initialDelaySeconds: 10
-          timeoutSeconds: 1
+          timeoutSeconds: {{ default 1 .Values.probeTimeoutSeconds }}
           periodSeconds: 10
           successThreshold: 1
           failureThreshold: 3
         ports:
-        - name: metrics
-          containerPort: 9252
+        - name: {{ .Values.metrics.portName | quote }}
+          containerPort: {{ .Values.metrics.port }}
         volumeMounts:
         - name: runner-secrets
           mountPath: /secrets

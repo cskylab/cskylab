@@ -1,3 +1,4 @@
+{{/* GitLab labels included below */}}
 {{- if and .Values.tcp (not .Values.tcpExternalConfig) -}}
 apiVersion: v1
 kind: ConfigMap
@@ -12,6 +13,6 @@ metadata:
   annotations: {{ toYaml .Values.controller.tcp.annotations | nindent 4 }}
 {{- end }}
   name: {{ template "ingress-nginx.tcp-configmap" . }}
-  namespace: {{ $.Release.Namespace }}
+  namespace: {{ .Release.Namespace }}
 data: {{ tpl (toYaml .Values.tcp) . | nindent 2 }}
 {{- end }}

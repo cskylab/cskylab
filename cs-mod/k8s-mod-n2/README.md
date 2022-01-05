@@ -1439,7 +1439,7 @@ The following table lists template configuration parameters and their specified 
 | `_tplname`                   | template name                                    | `ubt2004srv-k8s`                                          |
 | `_tpldescription`            | template description                             | `Ubuntu server 20.04 kubernetes node`                                   |
 | `_tplversion`                | template version                                 | `21.12.20`                                       |
-| `k8s_version`                | Kubernetes version to install                    | `1.22.4-00`                                       |
+| `k8s_version`                | Kubernetes version to install                    | `1.23.1-00`                                       |
 | `machine.hostname`           | hostname                                         | `k8s-mod-n2`                                  |
 | `machine.domainname`         | domain name                                      | `cskylab.net`                                |
 | `machine.localadminusername` | local admin username                             | `kos`                        |

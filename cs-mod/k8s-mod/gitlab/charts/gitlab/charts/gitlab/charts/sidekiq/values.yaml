@@ -50,6 +50,10 @@ metrics:
     gitlab.com/prometheus_port: "3807"
     prometheus.io/scrape: "true"
     prometheus.io/port: "3807"
+
+health_checks:
+  enabled: true
+
 redis:
   password: {}
 

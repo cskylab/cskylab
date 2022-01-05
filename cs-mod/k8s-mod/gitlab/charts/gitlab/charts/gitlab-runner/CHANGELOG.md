@@ -1,8 +1,53 @@
-## v0.34.0 (2021-10-25)
+## v0.36.0 (2021-12-18)
 
 ### New features
 
-- Update GitLab Runner version to 14.4.0
+- Update GitLab Runner version to 14.6.0
+
+### Bug fixes
+
+- Fix prometheus annotation unquoted value !323
+
+### GitLab Runner distribution
+
+- Fix the security release rule in .gitlab-ci.yml !324
+- Fail the stable release job on curl failures !322
+
+## v0.35.3 (2021-12-13)
+
+### Maintenance
+
+- Fix prometheus annotation unquoted value !323
+
+## v0.35.2 (2021-12-10)
+
+### Security
+
+- Update GitLab Runner version to 14.5.2
+
+## v0.35.1 (2021-12-01)
+
+### Security
+
+- Update GitLab Runner version to 14.5.1
+
+## v0.35.0 (2021-11-21)
+
+### New features
+
+- Update GitLab Runner version to 14.5.0
+
+### Maintenance
+
+- Don't run pipelines only for MRs !318
+- Update changelog generator configuration !317
+- Adds configurable value probeTimeoutSeconds !306 (Kyle Wetzler @kwetzler1)
+
+## v0.34.0-rc1 (2021-10-11)
+
+### New features
+
+- Update GitLab Runner version to 14.4.0-rc1
 
 ### Maintenance
 

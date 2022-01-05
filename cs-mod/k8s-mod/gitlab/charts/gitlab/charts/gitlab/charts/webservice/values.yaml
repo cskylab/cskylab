@@ -328,6 +328,7 @@ extra: {}
   # matomo_site_id: '_your_matomo_site_id'
   # matomo_disable_cookies: false
   # one_trust_id: '_your_one_trust_id'
+  # google_tag_manager_nonce_id: '_your_google_tag_manager_id'
 rack_attack:
   git_basic_auth:
     enabled: false

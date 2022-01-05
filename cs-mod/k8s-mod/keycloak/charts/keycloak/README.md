@@ -19,6 +19,9 @@ For more information on Keycloak and its capabilities, see its [documentation](h
 The chart has an optional dependency on the [PostgreSQL](https://github.com/bitnami/charts/tree/master/bitnami/postgresql) chart.
 By default, the PostgreSQL chart requires PV support on underlying infrastructure (may be disabled).
 
+**Important**
+Since Version `v16.0.0` the support for Helm v2 is dropped in favor of to support also the latest postgres Helm Chart Version which requires Helm v3 only.
+
 ## Installing the Chart
 
 To install the chart with the release name `keycloak`:
@@ -62,6 +65,7 @@ The following table lists the configurable parameters of the Keycloak chart and 
 | `podSecurityContext` | SecurityContext for the entire Pod. Every container running in the Pod will inherit this SecurityContext. This might be relevant when other components of the environment inject additional containers into running Pods (service meshes are the most prominent example for this) | `{"fsGroup":1000}` |
 | `securityContext` | SecurityContext for the Keycloak container | `{"runAsNonRoot":true,"runAsUser":1000}` |
 | `extraInitContainers` | Additional init containers, e. g. for providing custom themes | `[]` |
+| `skipInitContainers` | Skip all init containers (to avoid issues with service meshes which require sidecar proxies for connectivity) | `false`
 | `extraContainers` | Additional sidecar containers, e. g. for a database proxy, such as Google's cloudsql-proxy | `[]` |
 | `lifecycleHooks` | Lifecycle hooks for the Keycloak container | `{}` |
 | `terminationGracePeriodSeconds` | Termination grace period in seconds for Keycloak shutdown. Clusters with a large cache might need to extend this to give Infinispan more time to rebalance | `60` |
@@ -99,7 +103,7 @@ The following table lists the configurable parameters of the Keycloak chart and 
 | `service.httpNodePort` | The HTTP Service node port if type is NodePort | `""` |
 | `service.httpsPort` | The HTTPS Service port | `8443` |
 | `service.httpsNodePort` | The HTTPS Service node port if type is NodePort | `""` |
-| `service.httpManagementPort` | The WildFly management Service port | `8443` |
+| `service.httpManagementPort` | The WildFly management Service port | `9990` |
 | `service.httpManagementNodePort` | The WildFly management node port if type is NodePort | `""` |
 | `service.extraPorts` | Additional Service ports, e. g. for custom admin console | `[]` |
 | `service.sessionAffinity` | sessionAffinity for Service, e. g. "ClientIP" | `""` |
@@ -651,6 +655,16 @@ We would have to truncate the chart's fullname to six characters because pods ge
 Using a StatefulSet allows us to truncate to 20 characters leaving room for up to 99 replicas, which is much better.
 Additionally, we get stable values for `jboss.node.name` which can be advantageous for cluster discovery.
 The headless service that governs the StatefulSet is used for DNS discovery via DNS_PING.
+
+## Bad Gateway and Proxy Buffer Size in Nginx
+
+A common issue with Keycloak and nginx is that the proxy buffer may be too small for what Keycloak is trying to send. This will result in a Bad Gateway (502) error. There are [many](https://github.com/kubernetes/ingress-nginx/issues/4637) [issues](https://stackoverflow.com/questions/56126864/why-do-i-get-502-when-trying-to-authenticate) around the internet about this. The solution is to increase the buffer size of nginx. This can be done by creating an annotation in the ingress specification:
+
+```yaml
+ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+```
 
 ## Upgrading
 

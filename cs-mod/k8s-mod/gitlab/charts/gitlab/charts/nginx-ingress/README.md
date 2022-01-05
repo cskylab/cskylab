@@ -8,24 +8,21 @@ This chart bootstraps an ingress-nginx deployment on a [Kubernetes](http://kuber
 
 ## Prerequisites
 
-- Kubernetes v1.16+
+- Kubernetes v1.19+
 
 ## Get Repo Info
 
 ```console
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo add stable https://charts.helm.sh/stable
 helm repo update
 ```
 
 ## Install Chart
 
-```console
-# Helm 3
-$ helm install [RELEASE_NAME] ingress-nginx/ingress-nginx
+**Important:** only helm3 is supported
 
-# Helm 2
-$ helm install --name [RELEASE_NAME] ingress-nginx/ingress-nginx
+```console
+helm install [RELEASE_NAME] ingress-nginx/ingress-nginx
 ```
 
 The command deploys ingress-nginx on the Kubernetes cluster in the default configuration.
@@ -37,11 +34,7 @@ _See [helm install](https://helm.sh/docs/helm/helm_install/) for command documen
 ## Uninstall Chart
 
 ```console
-# Helm 3
-$ helm uninstall [RELEASE_NAME]
-
-# Helm 2
-# helm delete --purge [RELEASE_NAME]
+helm uninstall [RELEASE_NAME]
 ```
 
 This removes all the Kubernetes components associated with the chart and deletes the release.
@@ -51,8 +44,7 @@ _See [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) for command doc
 ## Upgrading Chart
 
 ```console
-# Helm 3 or 2
-$ helm upgrade [RELEASE_NAME] [CHART] --install
+helm upgrade [RELEASE_NAME] [CHART] --install
 ```
 
 _See [helm upgrade](https://helm.sh/docs/helm/helm_upgrade/) for command documentation._
@@ -80,11 +72,7 @@ Note that there are some different and upgraded configurations between the two c
 See [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing). To see all configurable options with detailed comments, visit the chart's [values.yaml](./values.yaml), or run these configuration commands:
 
 ```console
-# Helm 2
-$ helm inspect values ingress-nginx/ingress-nginx
-
-# Helm 3
-$ helm show values ingress-nginx/ingress-nginx
+helm show values ingress-nginx/ingress-nginx
 ```
 
 ### PodDisruptionBudget
@@ -96,15 +84,16 @@ else it would make it impossible to evacuate a node. See [gh issue #7127](https:
 
 The Nginx ingress controller can export Prometheus metrics, by setting `controller.metrics.enabled` to `true`.
 
-You can add Prometheus annotations to the metrics service using `controller.metrics.service.annotations`. Alternatively, if you use the Prometheus Operator, you can enable ServiceMonitor creation using `controller.metrics.serviceMonitor.enabled`.
+You can add Prometheus annotations to the metrics service using `controller.metrics.service.annotations`.
+Alternatively, if you use the Prometheus Operator, you can enable ServiceMonitor creation using `controller.metrics.serviceMonitor.enabled`. And set `controller.metrics.serviceMonitor.additionalLabels.release="prometheus"`. "release=prometheus" should match the label configured in the prometheus servicemonitor ( see `kubectl get servicemonitor prometheus-kube-prom-prometheus -oyaml -n prometheus`)
 
 ### ingress-nginx nginx\_status page/stats server
 
 Previous versions of this chart had a `controller.stats.*` configuration block, which is now obsolete due to the following changes in nginx ingress controller:
 
-- In [0.16.1](https://github.com/kubernetes/ingress-nginx/blob/master/Changelog.md#0161), the vts (virtual host traffic status) dashboard was removed
-- In [0.23.0](https://github.com/kubernetes/ingress-nginx/blob/master/Changelog.md#0230), the status page at port 18080 is now a unix socket webserver only available at localhost.
-  You can use `curl --unix-socket /tmp/nginx-status-server.sock http://localhost/nginx_status` inside the controller container to access it locally, or use the snippet from [nginx-ingress changelog](https://github.com/kubernetes/ingress-nginx/blob/master/Changelog.md#0230) to re-enable the http server
+- In [0.16.1](https://github.com/kubernetes/ingress-nginx/blob/main/Changelog.md#0161), the vts (virtual host traffic status) dashboard was removed
+- In [0.23.0](https://github.com/kubernetes/ingress-nginx/blob/main/Changelog.md#0230), the status page at port 18080 is now a unix socket webserver only available at localhost.
+  You can use `curl --unix-socket /tmp/nginx-status-server.sock http://localhost/nginx_status` inside the controller container to access it locally, or use the snippet from [nginx-ingress changelog](https://github.com/kubernetes/ingress-nginx/blob/main/Changelog.md#0230) to re-enable the http server
 
 ### ExternalDNS Service Configuration
 
@@ -119,7 +108,7 @@ controller:
 
 ### AWS L7 ELB with SSL Termination
 
-Annotate the controller as shown in the [nginx-ingress l7 patch](https://github.com/kubernetes/ingress-nginx/blob/master/deploy/aws/l7/service-l7.yaml):
+Annotate the controller as shown in the [nginx-ingress l7 patch](https://github.com/kubernetes/ingress-nginx/blob/main/deploy/aws/l7/service-l7.yaml):
 
 ```yaml
 controller:
@@ -171,7 +160,7 @@ controller:
       enabled: true
       annotations:
         # Create internal ELB
-        service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+        service.beta.kubernetes.io/aws-load-balancer-internal: "true"
         # Any other annotation can be declared here.
 ```
 
@@ -183,9 +172,13 @@ controller:
     internal:
       enabled: true
       annotations:
-        # Create internal LB
-        cloud.google.com/load-balancer-type: "Internal"
-        # Any other annotation can be declared here.
+        # Create internal LB. More informations: https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balancing
+        # For GKE versions 1.17 and later
+        networking.gke.io/load-balancer-type: "Internal"
+        # For earlier versions
+        # cloud.google.com/load-balancer-type: "Internal"
+        
+        # Any other annotation can be declared here. 
 ```
 
 Example for Azure:
@@ -199,7 +192,20 @@ controller:
         # Any other annotation can be declared here.
 ```
 
+Example for Oracle Cloud Infrastructure:
+
+```yaml
+controller:
+  service:
+      annotations:
+        # Create internal LB
+        service.beta.kubernetes.io/oci-load-balancer-internal: "true"
+        # Any other annotation can be declared here.
+```
+
 An use case for this scenario is having a split-view DNS setup where the public zone CNAME records point to the external balancer URL while the private zone CNAME records point to the internal balancer URL. This way, you only need one ingress kubernetes object.
+
+Optionally you can set `controller.service.loadBalancerIP` if you need a static IP for the resulting `LoadBalancer`.
 
 ### Ingress Admission Webhooks
 

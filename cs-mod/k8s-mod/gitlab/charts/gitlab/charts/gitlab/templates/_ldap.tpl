@@ -26,7 +26,7 @@ Usage example:
 {{- $.name }}:
 {{- toYaml (omit $.config "password") | replace "\r\n" "\n" | trimSuffix "\n" | nindent 2 -}}
 {{- if and $.config.password (not (kindIs "string" $.config.password ))}}
-  password: "<%= File.read('/etc/gitlab/ldap/{{ $.name }}/password').strip.dump[1..-2] %>"
+  password: <%= File.read('/etc/gitlab/ldap/{{ $.name }}/password').strip.to_json %>
 {{- end -}}
 {{- end -}}{{/* gitlab.appConfig.ldap.servers.configuration */}}
 

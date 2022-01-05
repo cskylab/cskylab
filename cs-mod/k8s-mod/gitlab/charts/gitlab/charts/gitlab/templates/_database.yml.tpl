@@ -17,7 +17,7 @@ production:
     encoding: unicode
     database: {{ template "gitlab.psql.database" $context }}
     username: {{ template "gitlab.psql.username" $context }}
-    password: "<%= File.read({{ template "gitlab.psql.password.file" $context }}).strip.dump[1..-2] %>"
+    password: <%= File.read({{ template "gitlab.psql.password.file" $context }}).strip.to_json %>
     host: {{ include "gitlab.psql.host" $context | quote }}
     port: {{ template "gitlab.psql.port" $context }}
     connect_timeout: {{ template "gitlab.psql.connectTimeout" $context }}

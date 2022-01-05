@@ -1,4 +1,4 @@
-{{- if .Values.defaultBackend.autoscaling.enabled }}
+{{- if and .Values.defaultBackend.enabled .Values.defaultBackend.autoscaling.enabled }}
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -9,9 +9,10 @@ metadata:
     {{- include "ingress-nginx.labels" . | nindent 4 }}
     app.kubernetes.io/component: default-backend
   name: {{ template "ingress-nginx.defaultBackend.fullname" . }}
+  namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
-    apiVersion: {{ template "deployment.apiVersion" . }}
+    apiVersion: apps/v1
     kind: Deployment
     name: {{ template "ingress-nginx.defaultBackend.fullname" . }}
   minReplicas: {{ .Values.defaultBackend.autoscaling.minReplicas }}

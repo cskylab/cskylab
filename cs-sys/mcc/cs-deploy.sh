@@ -94,7 +94,7 @@ system_keyboard="us"
 netplan_timeout="30"
 
 # Kubernetes version for kubectl
-k8s_version="1.22.4-00"
+k8s_version="1.23.1-00"
 
 # Go version
 go_version="go1.17.3.linux-amd64.tar.gz"
