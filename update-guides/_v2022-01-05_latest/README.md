@@ -1,4 +1,4 @@
-# vAAAA-MM-DD
+# v2022-01-05
 
 ## Release notes
 
@@ -9,12 +9,6 @@ All changes have been incorporated to templates library `tpl-cskylab`. New servi
 To keep your cSkyLab installation up to date you must apply the patches and applications upgrades in your actual deployments, according to the following procedures.
 
 It is highly recommended to update zone `cs-mod`, before proceeding to update zones `cs-pro` and `cs-sys`.
-
-## Patches
-
-| Patch | Procedure |
-| ----- | --------- |
-|       |           |
 
 ## Applications upgrades
 
@@ -27,4 +21,4 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 | Harbor chart 11.1.6        | [harbor-1116.md](./harbor-1116.md)               |
 | Nextcloud chart 2.11.3     | [nextcloud-2113.md](./nextcloud-2113.md)         |
 | MinIO chart 9.2.10         | [minio-9210.md](./minio-9210.md)                 |
-| Kubernetes 1.23.1         | [k8s-1231.md](./k8s-1231.md)                 |
+| Kubernetes 1.23.1          | [k8s-1231.md](./k8s-1231.md)                     |
