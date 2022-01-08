@@ -134,9 +134,9 @@ To learn more about minio/operator chart see:
 
 ### Helm charts and values
 
-| Chart              | Values                   |
-| ------------------ | ------------------------ |
-| minio/operator | `values-minio-operator.yaml` |
+| Chart          | Values                 |
+| -------------- | ---------------------- |
+| minio/operator | `values-operator.yaml` |
 
 ### Scripts
 
@@ -209,14 +209,14 @@ Examples:
 
 The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
 
-| Parameter                    | Description                                     | Values                              |
-| ---------------------------- | ----------------------------------------------- | ----------------------------------- |
-| `_tplname`                   | template name                                   | `{{ ._tplname }}`                   |
-| `_tpldescription`            | template description                            | `{{ ._tpldescription }}`            |
-| `_tplversion`                | template version                                | `{{ ._tplversion }}`                |
-| `kubeconfig`                 | kubeconfig file                                 | `{{ .kubeconfig }}`                 |
-| `namespace.name`             | namespace name                                  | `{{ .namespace.name }}`             |
-| `registry.proxy`             | docker private proxy URL                        | `{{ .registry.proxy }}`             |
+| Parameter         | Description              | Values                   |
+| ----------------- | ------------------------ | ------------------------ |
+| `_tplname`        | template name            | `{{ ._tplname }}`        |
+| `_tpldescription` | template description     | `{{ ._tpldescription }}` |
+| `_tplversion`     | template version         | `{{ ._tplversion }}`     |
+| `kubeconfig`      | kubeconfig file          | `{{ .kubeconfig }}`      |
+| `namespace.name`  | namespace name           | `{{ .namespace.name }}`  |
+| `registry.proxy`  | docker private proxy URL | `{{ .registry.proxy }}`  |
 
 ## License
 
