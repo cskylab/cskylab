@@ -1,0 +1,9 @@
+# Default values for minio-operator.
+
+operator:
+  image:
+    repository: {{ .registry.proxy }}/minio/operator
+
+console:
+  image:
+    repository: {{ .registry.proxy }}/minio/console
