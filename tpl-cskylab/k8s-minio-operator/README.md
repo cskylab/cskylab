@@ -15,6 +15,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
+  - [Operator console](#operator-console)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
 - [Reference](#reference)
@@ -109,6 +110,24 @@ To display namespace, persistence and chart status run:
   # Display namespace, persistence and charts status:
     ./csdeploy.sh -l
 ```
+
+### Operator console
+
+Connect to operator console with the following procedure:
+
+- Get the JWT for logging in to the console:
+  
+```bash
+kubectl get secret $(kubectl get serviceaccount console-sa --namespace minio-operator -o jsonpath="{.secrets[0].name}") --namespace minio-operator -o jsonpath="{.data.token}" | base64 --decode 
+```
+
+- Get the Operator Console URL by running:
+
+```bash
+kubectl --namespace minio-operator port-forward svc/console 9090:9090
+```
+
+- Visit the Operator Console at <http://127.0.0.1:9090>
 
 ### Utilities
 
