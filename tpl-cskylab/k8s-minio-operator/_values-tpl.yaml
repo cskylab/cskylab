@@ -6,7 +6,7 @@
 
 _tplname: k8s-minio-operator
 _tpldescription: Kubernetes MinIO Operator
-_tplversion: 22.01.07
+_tplversion: 22.01.23
 
 #
 # Values to override
@@ -18,6 +18,14 @@ kubeconfig: config-k8s-mod
 namespace:
   ## k8s namespace name
   name: minio-operator
+
+publishing:
+  ## External url
+  url: minio-operator.cskylab.net
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
 
 registry:
   ## Proxy Repository for Docker

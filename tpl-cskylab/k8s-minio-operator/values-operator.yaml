@@ -7,3 +7,15 @@ operator:
 console:
   image:
     repository: {{ .registry.proxy }}/minio/console
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: {{ .certificate.clusterissuer }}
+    # cert-manager.io/cluster-issuer: letsencrypt-staging
+    # cert-manager.io/cluster-issuer: letsencrypt
+
+    host: {{ .publishing.url }}
+    tls:
+    - hosts:
+      - {{ .publishing.url }}
+      secretName: minio-operator-tls
