@@ -40,6 +40,15 @@ Install namespace and charts:
 ./csdeploy.sh -l
 ```
 
+Run:
+
+- Published at: `{{ .publishing.url }}`
+- Get the JWT for logging in to the console:
+  
+```bash
+kubectl get secret $(kubectl get serviceaccount console-sa --namespace minio-operator -o jsonpath="{.secrets[0].name}") --namespace minio-operator -o jsonpath="{.data.token}" | base64 --decode 
+```
+
 ## Prerequisites
 
 - Administrative access to Kubernetes cluster.
@@ -120,14 +129,6 @@ Connect to operator console with the following procedure:
 ```bash
 kubectl get secret $(kubectl get serviceaccount console-sa --namespace minio-operator -o jsonpath="{.secrets[0].name}") --namespace minio-operator -o jsonpath="{.data.token}" | base64 --decode 
 ```
-
-- Get the Operator Console URL by running:
-
-```bash
-kubectl --namespace minio-operator port-forward svc/console 9090:9090
-```
-
-- Visit the Operator Console at <http://127.0.0.1:9090>
 
 ### Utilities
 
@@ -228,14 +229,16 @@ Examples:
 
 The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
 
-| Parameter         | Description              | Values                   |
-| ----------------- | ------------------------ | ------------------------ |
-| `_tplname`        | template name            | `{{ ._tplname }}`        |
-| `_tpldescription` | template description     | `{{ ._tpldescription }}` |
-| `_tplversion`     | template version         | `{{ ._tplversion }}`     |
-| `kubeconfig`      | kubeconfig file          | `{{ .kubeconfig }}`      |
-| `namespace.name`  | namespace name           | `{{ .namespace.name }}`  |
-| `registry.proxy`  | docker private proxy URL | `{{ .registry.proxy }}`  |
+| Parameter                   | Description                | Values                             |
+| --------------------------- | -------------------------- | ---------------------------------- |
+| `_tplname`                  | template name              | `{{ ._tplname }}`                  |
+| `_tpldescription`           | template description       | `{{ ._tpldescription }}`           |
+| `_tplversion`               | template version           | `{{ ._tplversion }}`               |
+| `kubeconfig`                | kubeconfig file            | `{{ .kubeconfig }}`                |
+| `namespace.name`            | namespace name             | `{{ .namespace.name }}`            |
+| `publishing.url`            | external URL               | `{{ .publishing.url }}`            |
+| `certificate.clusterissuer` | cert-manager clusterissuer | `{{ .certificate.clusterissuer }}` |
+| `registry.proxy`            | docker private proxy URL   | `{{ .registry.proxy }}`            |
 
 ## License
 
