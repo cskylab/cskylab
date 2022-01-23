@@ -34,7 +34,6 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
     - [Manual certificate renewal](#manual-certificate-renewal)
   - [k8s Raspberry Pi](#k8s-raspberry-pi)
     - [Enable cgroups limit support](#enable-cgroups-limit-support)
-    - [Allow iptables to see bridged traffic](#allow-iptables-to-see-bridged-traffic)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
     - [Abridged ‘find’ command examples](#abridged-find-command-examples)
@@ -623,20 +622,6 @@ cat /boot/firmware/cmdline.txt
 
 # Reboot the Raspberry Pi
 sudo reboot
-```
-
-#### Allow iptables to see bridged traffic
-
-According to the documentation, Kubernetes needs iptables to be configured to see bridged network traffic. You can do this by changing the sysctl config:
-
-```bash
-# Enable net.bridge.bridge-nf-call-iptables and -iptables6
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-EOF
-
-sudo sysctl --system
 ```
 
 - Reboot the Raspberry Pi
