@@ -1,0 +1,407 @@
+#
+#   Kubernetes Local Persistent Volume
+#
+#   Verify the following values:
+#
+#     StorageClass:
+#     Capacity:
+#     AccessMode:
+#
+#   Command to execute inside the node that holds the local storage:
+#
+#     sudo cs-lvmserv.sh -m create -d /srv/{{ .namespace.name }}
+#
+
+# Storage Class
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .namespace.name }}-tenant
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+# MinIO PV's
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv01-disk01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv01-disk01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv01_disk01 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv01-disk02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv01-disk02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv01_disk02 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv01-disk03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv01-disk03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv01_disk03 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv01-disk04
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv01-disk04/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv01_disk04 }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv02-disk01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv02-disk01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv02_disk01 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv02-disk02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv02-disk02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv02_disk02 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv02-disk03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv02-disk03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv02_disk03 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv02-disk04
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv02-disk04/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv02_disk04 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv03-disk01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv03-disk01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv03_disk01 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv03-disk02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv03-disk02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv03_disk02 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv03-disk03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv03-disk03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv03_disk03 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv03-disk04
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv03-disk04/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv03_disk04 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv04-disk01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv04-disk01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv04_disk01 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv04-disk02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv04-disk02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv04_disk02 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv04-disk03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv04-disk03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv04_disk03 }}
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .namespace.name }}-srv04-disk04
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: {{ .namespace.name }}-tenant
+  local:
+    path: /srv/{{ .namespace.name }}-srv04-disk04/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .localpvnodes.srv04_disk04 }}
