@@ -27,7 +27,7 @@ volumeBindingMode: WaitForFirstConsumer
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv01-disk01
+  name: {{ .namespace.name }}-s00-d00
 spec:
   capacity:
     storage: 10Gi
@@ -36,8 +36,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data0-{{ .namespace.name }}-ss-0-0
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv01-disk01/data
+    path: /srv/{{ .namespace.name }}-s00-d00/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -51,7 +54,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv01-disk02
+  name: {{ .namespace.name }}-s00-d01
 spec:
   capacity:
     storage: 10Gi
@@ -60,8 +63,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data1-{{ .namespace.name }}-ss-0-0
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv01-disk02/data
+    path: /srv/{{ .namespace.name }}-s00-d01/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -75,7 +81,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv01-disk03
+  name: {{ .namespace.name }}-s00-d02
 spec:
   capacity:
     storage: 10Gi
@@ -84,8 +90,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data2-{{ .namespace.name }}-ss-0-0
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv01-disk03/data
+    path: /srv/{{ .namespace.name }}-s00-d02/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -99,7 +108,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv01-disk04
+  name: {{ .namespace.name }}-s00-d03
 spec:
   capacity:
     storage: 10Gi
@@ -108,8 +117,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data3-{{ .namespace.name }}-ss-0-0
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv01-disk04/data
+    path: /srv/{{ .namespace.name }}-s00-d03/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -122,7 +134,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv02-disk01
+  name: {{ .namespace.name }}-s01-d00
 spec:
   capacity:
     storage: 10Gi
@@ -131,8 +143,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data0-{{ .namespace.name }}-ss-0-1
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv02-disk01/data
+    path: /srv/{{ .namespace.name }}-s01-d00/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -146,7 +161,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv02-disk02
+  name: {{ .namespace.name }}-s01-d01
 spec:
   capacity:
     storage: 10Gi
@@ -155,8 +170,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data1-{{ .namespace.name }}-ss-0-1
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv02-disk02/data
+    path: /srv/{{ .namespace.name }}-s01-d01/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -170,7 +188,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv02-disk03
+  name: {{ .namespace.name }}-s01-d02
 spec:
   capacity:
     storage: 10Gi
@@ -179,8 +197,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data2-{{ .namespace.name }}-ss-0-1
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv02-disk03/data
+    path: /srv/{{ .namespace.name }}-s01-d02/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -194,7 +215,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv02-disk04
+  name: {{ .namespace.name }}-s01-d03
 spec:
   capacity:
     storage: 10Gi
@@ -203,8 +224,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data3-{{ .namespace.name }}-ss-0-1
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv02-disk04/data
+    path: /srv/{{ .namespace.name }}-s01-d03/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -218,7 +242,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv03-disk01
+  name: {{ .namespace.name }}-s02-d00
 spec:
   capacity:
     storage: 10Gi
@@ -227,8 +251,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data0-{{ .namespace.name }}-ss-0-2
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv03-disk01/data
+    path: /srv/{{ .namespace.name }}-s02-d00/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -242,7 +269,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv03-disk02
+  name: {{ .namespace.name }}-s02-d01
 spec:
   capacity:
     storage: 10Gi
@@ -251,8 +278,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data1-{{ .namespace.name }}-ss-0-2
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv03-disk02/data
+    path: /srv/{{ .namespace.name }}-s02-d01/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -266,7 +296,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv03-disk03
+  name: {{ .namespace.name }}-s02-d02
 spec:
   capacity:
     storage: 10Gi
@@ -275,8 +305,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data2-{{ .namespace.name }}-ss-0-2
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv03-disk03/data
+    path: /srv/{{ .namespace.name }}-s02-d02/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -290,7 +323,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv03-disk04
+  name: {{ .namespace.name }}-s02-d03
 spec:
   capacity:
     storage: 10Gi
@@ -299,8 +332,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data3-{{ .namespace.name }}-ss-0-2
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv03-disk04/data
+    path: /srv/{{ .namespace.name }}-s02-d03/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -314,7 +350,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv04-disk01
+  name: {{ .namespace.name }}-s03-d00
 spec:
   capacity:
     storage: 10Gi
@@ -323,8 +359,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data0-{{ .namespace.name }}-ss-0-3
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv04-disk01/data
+    path: /srv/{{ .namespace.name }}-s03-d00/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -338,7 +377,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv04-disk02
+  name: {{ .namespace.name }}-s03-d01
 spec:
   capacity:
     storage: 10Gi
@@ -347,8 +386,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data1-{{ .namespace.name }}-ss-0-3
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv04-disk02/data
+    path: /srv/{{ .namespace.name }}-s03-d01/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -362,7 +404,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv04-disk03
+  name: {{ .namespace.name }}-s03-d02
 spec:
   capacity:
     storage: 10Gi
@@ -371,8 +413,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data2-{{ .namespace.name }}-ss-0-3
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv04-disk03/data
+    path: /srv/{{ .namespace.name }}-s03-d02/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -386,7 +431,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .namespace.name }}-srv04-disk04
+  name: {{ .namespace.name }}-s03-d03
 spec:
   capacity:
     storage: 10Gi
@@ -395,8 +440,11 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-tenant
+  claimRef:
+    name: data3-{{ .namespace.name }}-ss-0-3
+    namespace: minio-tenant
   local:
-    path: /srv/{{ .namespace.name }}-srv04-disk04/data
+    path: /srv/{{ .namespace.name }}-s03-d03/data
   nodeAffinity:
     required:
       nodeSelectorTerms:

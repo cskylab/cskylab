@@ -1,6 +1,6 @@
 # Kubernetes MinIO Operator <!-- omit in toc -->
 
-## Helm charts: minio/operator v4.4.3 <!-- omit in toc -->
+## Helm charts: minio/operator v4.4.7 <!-- omit in toc -->
 
 This namespace deploys a [MinIO Operator](https://github.com/minio/operator) in Kubernetes.
 

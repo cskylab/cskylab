@@ -6,7 +6,7 @@
 
 _tplname: k8s-minio-tenant
 _tpldescription: Kubernetes MinIO Tenant
-_tplversion: 22.01.23
+_tplversion: 22.02.08
 
 #
 # Values to override
@@ -20,8 +20,10 @@ namespace:
   name: minio-tenant
 
 publishing:
-  ## External url
-  url: minio-tenant.cskylab.net
+  ## External api url used by mc
+  miniourl: minio-tenant.cskylab.net
+  ## External api url used by console
+  consoleurl: minio-tenant-console.cskylab.net
 
 credentials:
   # MinIO root user credentials
@@ -35,3 +37,13 @@ certificate:
 registry:
   ## Proxy Repository for Docker
   proxy: harbor.cskylab.net/dockerhub
+
+localpvnodes:    # (k8s node names)
+  srv00: k8s-mod-n1
+  srv01: k8s-mod-n2
+  srv02: k8s-mod-n3
+  srv03: k8s-mod-n4
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
