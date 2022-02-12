@@ -38,7 +38,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data0-{{ .namespace.name }}-ss-0-0
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s00-d00/data
   nodeAffinity:
@@ -65,7 +65,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data1-{{ .namespace.name }}-ss-0-0
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s00-d01/data
   nodeAffinity:
@@ -92,7 +92,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data2-{{ .namespace.name }}-ss-0-0
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s00-d02/data
   nodeAffinity:
@@ -119,7 +119,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data3-{{ .namespace.name }}-ss-0-0
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s00-d03/data
   nodeAffinity:
@@ -145,7 +145,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data0-{{ .namespace.name }}-ss-0-1
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s01-d00/data
   nodeAffinity:
@@ -172,7 +172,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data1-{{ .namespace.name }}-ss-0-1
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s01-d01/data
   nodeAffinity:
@@ -199,7 +199,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data2-{{ .namespace.name }}-ss-0-1
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s01-d02/data
   nodeAffinity:
@@ -226,7 +226,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data3-{{ .namespace.name }}-ss-0-1
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s01-d03/data
   nodeAffinity:
@@ -253,7 +253,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data0-{{ .namespace.name }}-ss-0-2
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s02-d00/data
   nodeAffinity:
@@ -280,7 +280,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data1-{{ .namespace.name }}-ss-0-2
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s02-d01/data
   nodeAffinity:
@@ -307,7 +307,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data2-{{ .namespace.name }}-ss-0-2
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s02-d02/data
   nodeAffinity:
@@ -334,7 +334,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data3-{{ .namespace.name }}-ss-0-2
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s02-d03/data
   nodeAffinity:
@@ -361,7 +361,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data0-{{ .namespace.name }}-ss-0-3
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s03-d00/data
   nodeAffinity:
@@ -388,7 +388,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data1-{{ .namespace.name }}-ss-0-3
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s03-d01/data
   nodeAffinity:
@@ -415,7 +415,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data2-{{ .namespace.name }}-ss-0-3
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s03-d02/data
   nodeAffinity:
@@ -442,7 +442,7 @@ spec:
   storageClassName: {{ .namespace.name }}-tenant
   claimRef:
     name: data3-{{ .namespace.name }}-ss-0-3
-    namespace: minio-tenant
+    namespace: {{ .namespace.name }}
   local:
     path: /srv/{{ .namespace.name }}-s03-d03/data
   nodeAffinity:
