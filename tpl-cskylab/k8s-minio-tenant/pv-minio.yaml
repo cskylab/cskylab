@@ -48,7 +48,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv01_disk01 }}
+          - {{ .localpvnodes.srv00 }}
 
 ---
 apiVersion: v1
@@ -75,7 +75,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv01_disk02 }}
+          - {{ .localpvnodes.srv00 }}
 
 ---
 apiVersion: v1
@@ -102,7 +102,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv01_disk03 }}
+          - {{ .localpvnodes.srv00 }}
 
 ---
 apiVersion: v1
@@ -129,7 +129,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv01_disk04 }}
+          - {{ .localpvnodes.srv00 }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -155,7 +155,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv02_disk01 }}
+          - {{ .localpvnodes.srv01 }}
 
 ---
 apiVersion: v1
@@ -182,7 +182,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv02_disk02 }}
+          - {{ .localpvnodes.srv01 }}
 
 ---
 apiVersion: v1
@@ -209,7 +209,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv02_disk03 }}
+          - {{ .localpvnodes.srv01 }}
 
 ---
 apiVersion: v1
@@ -236,7 +236,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv02_disk04 }}
+          - {{ .localpvnodes.srv01 }}
 
 ---
 apiVersion: v1
@@ -263,7 +263,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv03_disk01 }}
+          - {{ .localpvnodes.srv02 }}
 
 ---
 apiVersion: v1
@@ -290,7 +290,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv03_disk02 }}
+          - {{ .localpvnodes.srv02 }}
 
 ---
 apiVersion: v1
@@ -317,7 +317,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv03_disk03 }}
+          - {{ .localpvnodes.srv02 }}
 
 ---
 apiVersion: v1
@@ -344,7 +344,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv03_disk04 }}
+          - {{ .localpvnodes.srv02 }}
 
 ---
 apiVersion: v1
@@ -371,7 +371,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv04_disk01 }}
+          - {{ .localpvnodes.srv03 }}
 
 ---
 apiVersion: v1
@@ -398,7 +398,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv04_disk02 }}
+          - {{ .localpvnodes.srv03 }}
 
 ---
 apiVersion: v1
@@ -425,7 +425,7 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv04_disk03 }}
+          - {{ .localpvnodes.srv03 }}
 
 ---
 apiVersion: v1
@@ -452,4 +452,4 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - {{ .localpvnodes.srv04_disk04 }}
+          - {{ .localpvnodes.srv03 }}
