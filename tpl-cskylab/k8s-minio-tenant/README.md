@@ -62,15 +62,10 @@ Install namespace and charts:
 
 Access:
 
+- Console URL: `{{ .publishing.consoleurl }}`
 - MinIO URL: `{{ .publishing.miniourl }}`
 - AccessKey: `{{ .credentials.minio_accesskey }}`
 - SecretKey: `{{ .credentials.minio_secretkey }}`
-
-- Console URL: `{{ .publishing.consoleurl }}`
-- AccessKey: `{{ .credentials.console_accesskey }}`
-- SecretKey: `{{ .credentials.console_secretkey }}`
-
-> Important: Console keys must be different from MinIO root keys
 
 ## Prerequisites
 
