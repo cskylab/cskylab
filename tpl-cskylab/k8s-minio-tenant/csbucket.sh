@@ -550,6 +550,10 @@ if [[ "${execution_mode}" == "list-status" ]] ||
   echo
   mc admin info minio/
   echo
+  echo "${msg_info} MinIO healing information"
+  echo
+  echo "MinIO host: https://${minio_host}"
+  echo
   mc admin heal --dry-run minio
   echo
 

@@ -348,6 +348,13 @@ if [[ "${execution_mode}" == "install" ]]; then
   # Create namespace
   kubectl create namespace "${namespace}"
 
+  echo
+  echo "${msg_info} Generate mod-tenant-config.yaml from config.env"
+  echo
+  # Bypass shellcheck intentionally.
+  # shellcheck disable=SC1091
+  source ./source-mod-tenant-config.sh
+  ls -lah ./mod-tenant-config.yaml
 
   # Create Persistent Volumes from pv-*.yaml manifests
   shopt -s nullglob
