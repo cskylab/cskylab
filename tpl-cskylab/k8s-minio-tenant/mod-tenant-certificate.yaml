@@ -15,14 +15,14 @@ spec:
     - {{ .publishing.miniourl }}
     - {{ .publishing.consoleurl }}
     # Internal
-    - {{ .namespace.name }}-tenant-hl
-    - {{ .namespace.name }}-tenant-hl.{{ .namespace.name }}.svc.cluster.local
-    - '*.{{ .namespace.name }}-tenant-hl'
-    - '*.{{ .namespace.name }}-tenant-hl.{{ .namespace.name }}.svc.cluster.local'
+    - {{ .namespace.name }}-hl
+    - {{ .namespace.name }}-hl.{{ .namespace.name }}.svc.cluster.local
+    - '*.{{ .namespace.name }}-hl'
+    - '*.{{ .namespace.name }}-hl.{{ .namespace.name }}.svc.cluster.local'
     - minio
     - minio.{{ .namespace.name }}.svc.cluster.local
-    - {{ .namespace.name }}-tenant-console
-    - {{ .namespace.name }}-tenant-console.{{ .namespace.name }}.svc.cluster.local
+    - {{ .namespace.name }}-console
+    - {{ .namespace.name }}-console.{{ .namespace.name }}.svc.cluster.local
   issuerRef:
     name: {{ .certificate.clusterissuer }}
     # We can reference ClusterIssuers by changing the kind here.
