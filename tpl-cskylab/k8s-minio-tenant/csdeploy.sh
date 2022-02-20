@@ -88,14 +88,7 @@ namespace="{{ .namespace.name }}"
 source_charts="$(
   cat <<EOF
 
-## Pull helm charts from repositories
-
-## Repositories
-helm repo add minio https://operator.min.io/
-helm repo update
-
-## Charts
-helm pull minio/tenant --version 4.4.7 --untar
+## No helm charts to pull
 
 EOF
 )"
