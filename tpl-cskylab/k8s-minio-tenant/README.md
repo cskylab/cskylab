@@ -1,6 +1,6 @@
 # Kubernetes MinIO Tenant <!-- omit in toc -->
 
-## Helm charts: minio/tenant v4.4.7 <!-- omit in toc -->
+## Image: quay.io/minio/minio:RELEASE.2022-02-18T01-50-10Z <!-- omit in toc -->
 
 ---
 
@@ -26,20 +26,13 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
     - [Create bucket, users and policies](#create-bucket-users-and-policies)
     - [Delete bucket, users and policies](#delete-bucket-users-and-policies)
     - [Display bucket, users and policies](#display-bucket-users-and-policies)
-    - [Restic backup jobs](#restic-backup-jobs)
-      - [Prepare the bucket source environment file](#prepare-the-bucket-source-environment-file)
-      - [Launch restic cronjobs](#launch-restic-cronjobs)
-      - [Delete restic cronjobs](#delete-restic-cronjobs)
-      - [Launch an interactive restic-forge environment in a pod](#launch-an-interactive-restic-forge-environment-in-a-pod)
   - [MinIO Client](#minio-client)
-    - [Web utility](#web-utility)
     - [Console utility](#console-utility)
     - [Command line utility](#command-line-utility)
 - [Reference](#reference)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
     - [csbucket](#csbucket)
-  - [csrestic-minio](#csrestic-minio)
   - [Template values](#template-values)
 - [License](#license)
 
@@ -126,33 +119,7 @@ Data services are supported by the following nodes:
 | `/srv/{{ .namespace.name }}-s03-d02` | `{{ .localpvnodes.srv03 }}` |
 | `/srv/{{ .namespace.name }}-s03-d03` | `{{ .localpvnodes.srv03 }}` |
 
-To **create** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
-
-```bash
-# Server {{ .localpvnodes.srv00 }}
-sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s00-d00" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s00-d01" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s00-d02" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s00-d03"
-
-# Server {{ .localpvnodes.srv01 }}
-sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s01-d00" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s01-d01" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s01-d02" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s01-d03"
-
-# Server {{ .localpvnodes.srv02 }}
-sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s02-d00" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s02-d01" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s02-d02" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s02-d03"
-
-# Server {{ .localpvnodes.srv03 }}
-sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s03-d00" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s03-d01" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s03-d02" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-s03-d03"
-```
+To **create** the corresponding LVM data services, execute from your **mcc** management machine the following command:
 
 ```bash
 #
@@ -182,33 +149,7 @@ echo && echo "******** SOE - START of execution ********" && echo \
 && echo && echo "******** EOE - END of execution ********" && echo
 ```
 
-To **delete** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
-
-```bash
-# Server 1
-sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s00-d00" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s00-d01" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s00-d02" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s00-d03"
-
-# Server 2
-sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s01-d00" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s01-d01" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s01-d02" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s01-d03"
-
-# Server 3
-sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s02-d00" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s02-d01" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s02-d02" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s02-d03"
-
-# Server 4
-sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s03-d00" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s03-d01" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s03-d02" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-s03-d03"
-```
+To **delete** the corresponding LVM data services, execute from your **mcc** management machine the following command:
 
 ```bash
 #
@@ -242,15 +183,16 @@ echo && echo "******** SOE - START of execution ********" && echo \
 
 ### Install
 
-Check versions and update if necesary, for the following images in `mod-tenant.yaml` file:
+Check versions and update if necesary, for the following image in `mod-tenant.yaml` file:
 
-- minio/minio
-- minio/console
+```yaml
+  ## Registry location and Tag to download MinIO Server image
+  image: quay.io/minio/minio:RELEASE.2022-02-18T01-50-10Z
+```
 
-To check for the later docker images versions see:
+To check for the latest image version see:
 
-- <https://hub.docker.com/r/minio/minio>
-- <https://hub.docker.com/r/minio/console>
+- <https://quay.io/minio/minio>
 
 To create namespace and install MinIO tenant:
 
@@ -346,92 +288,7 @@ To list current bucket, users and policies:
   ./csbucket.sh -l
 ```
 
-#### Restic backup jobs
-
-You can make restic backups for MinIO buckets with cskylab/csrestic image scheduled through crontab jobs. 
-
-##### Prepare the bucket source environment file
-
-To schedule automatic restic backups for a bucket, you must prepare the bucket source environment file. This file will trigger a cronjob when applying manifests with `csrestic-minio.sh` script. You can copy from `./buckets/` directory and customize the restic environment with the appropriate options for repository, passwords, schedule... etc.
-
-The following is an example of source environment file for a bucket called beatles:
-
-```bash
-#
-#   Source environment file for MinIO bucket beatles
-#
-
-# This script is designed to be sourced
-# No shebang intentionally
-# shellcheck disable=SC2148
-
-## minio bucket environment
-export MINIO_ACCESS_KEY="beatles_rw"
-export MINIO_SECRET_KEY="eeMlviN2Lp653PPgv5M9Bc691nqmbvoP"
-export MINIO_URL="minio-standalone.cskylab.com"
-export MINIO_BUCKET="beatles"
-export MC_HOST_minio="https://beatles_rw:eeMlviN2Lp653PPgv5M9Bc691nqmbvoP@minio-standalone.cskylab.com"
-
-## restic-environment
-export AWS_ACCESS_KEY_ID="restic-test_rw"
-export AWS_SECRET_ACCESS_KEY="iZ6Qpx1WlmXXoXKxBmiCMKWCsYOrgZKr"
-export RESTIC_REPOSITORY="s3:https://minio-standalone.cskylab.com/restic-test/"
-export RESTIC_PASSWORD="sGKvPNSRzQ1YlAxv"
-
-## Restic backup job schedule (UTC)
-## At every 15th minute.
-export RESTIC_BACKUP_JOB_SCHEDULE="*/15 * * * *"
-export RESTIC_FORGET_POLICY="--keep-last 6 --keep-hourly 12 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10"
-
-## Restic repo maintenance job schedule (UTC)
-## At 02:00.
-export RESTIC_REPO_MAINTENANCE_JOB_SCHEDULE="0 2 * * *"
-# Percentage of pack files to check in repo maintenance
-export RESTIC_REPO_MAINTENANCE_CHECK_DATA_SUBSET="10%"
-```
-
-##### Launch restic cronjobs
-
-To launch or reconfigure backup jobs for all `source-*.sh` environment files in the configuration directory, run:
-
-```bash
-  # Apply and reconfigure all restic cronjobs from 'source-*.sh' environment files.
-    csrestic-jobs.sh -m apply
-```
-
-Restic backup jobs and restic repository maintenance jobs are scheduled acording to crontab policies specified in variables `RESTIC_BACKUP_JOB_SCHEDULE` and `RESTIC_REPO_MAINTENANCE_JOB_SCHEDULE`. If any of these variables are empty, the corresponding job will not be scheduled.
-
-Restic repository maintenance jobs should not interfere with regular backup runs.
-
-##### Delete restic cronjobs
-
-To remove all restic cronjobs in the namespace:
-
-```bash
-  # Delete all restic cronjobs.
-    csrestic-jobs.sh -m remove
-```
-
-##### Launch an interactive restic-forge environment in a pod
-
-A restic forge environment is a pod with access to a MinIO bucket and a restic repository mounted with all the snapshots available for restore operations.
-
-To launch a restic forge environment, use the specific MinIO bucket source environment file:
-
-```bash
-  # Launch a restic forge environment for bucket "beatles"
-    csrestic-jobs.sh -f source-beatles.sh
-```
-
 ### MinIO Client
-
-#### Web utility
-
-To access MinIO throug web utility:
-
-- MinIO URL: `{{ .publishing.miniourl }}`
-- AccessKey: `{{ .credentials.minio_accesskey }}`
-- SecretKey: `{{ .credentials.minio_secretkey }}`
 
 #### Console utility
 
@@ -448,9 +305,8 @@ If you have minio client installed, you can access `mc` command line utiliy from
 File `.envrc` export automatically through "direnv" the environment variable needed to operate `mc` with `minio` as hostname from its directory in git repository:
 
 ```bash
-# minio-tenant environment variable
-export MC_HOST_minio="https://$(kubectl -n={{ .namespace.name }} get secrets minio-creds-secret -o jsonpath={.data.accesskey} | base64 --decode):$(kubectl -n={{ .namespace.name }} get secrets minio-creds-secret -o jsonpath={.data.secretkey} | base64 --decode)@{{ .publishing.miniourl }}"
-
+# MinIO host environment variable
+export MC_HOST_minio="https://{{ .credentials.minio_accesskey }}:{{ .credentials.minio_secretkey }}@{{ .publishing.miniourl }}"
 ```
 
 You can run `mc` commands to operate from console with buckets and files: Ex `mc tree minio`.
@@ -577,85 +433,29 @@ Examples:
 |                                               | Display policies                      | List policies from MinIO client.                                            |
 |                                               |                                       |                                                                             |
 
-### csrestic-minio
-
-```console
-Purpose:
-  k8s restic backup jobs for MinIO buckets.
-
-Usage:
-  csrestic-minio.sh [-l] [-m <execution_mode>] [-f <source-env.sh] [-h] [-q]
-
-Execution modes:
-  -l  [list-status]         - List current namespace status.
-  
-  -m  <execution_mode>      - Valid modes are:
-      [apply]               - Apply and reconfigure all restic cronjobs from 'source-*.sh' environment files.
-      [remove]              - Delete all restic cronjobs.
-  
-  -f  <source-env.sh>       - Launch a restic forge environment 
-                              for interactive restore operations.
-
-Options and arguments:
-  -h  Help
-  -q  Quiet (Nonstop) execution
-
-Examples:
-  # Apply and reconfigure all restic cronjobs from 'source-*.sh' environment files.
-    csrestic-minio.sh -m apply
-
-  # Delete all restic cronjobs.
-    csrestic-minio.sh -m remove
-
-  # Launch a restic forge environment for bucket "beatles"
-    csrestic-minio.sh -f source-beatles.sh
-
-  # Display job status
-    csrestic-minio.sh -l
-```
-
-**Tasks performed:**
-
-| ${execution_mode}              | Tasks                                        | Block / Description                                                             |
-| ------------------------------ | -------------------------------------------- | ------------------------------------------------------------------------------- |
-| [forge]                        |                                              | **Launch restic forge environment**                                             |
-|                                | Source env variables from `source-bucket.sh` | Define environment variables from source file.                                  |
-|                                | Generate unique restic forge pod name        | Generate unique restic forge pod name from bucket name and random text.         |
-|                                | Deploy pod                                   | Deploy pod using environment variables.                                         |
-|                                | Conect to pod                                | Open console for interactive restore operations.                                |
-|                                | Delete pod                                   | Delete pod after interactive console session.                                   |
-| [apply]                        |                                              | **Deploy jobs**                                                                 |
-|                                | Apply restic backup cronjobs                 | Apply backup cronjobs scheduled in source environment files `source-*.sh`.      |
-|                                | Apply restic repo maintenance cronjobs       | Apply maintenance cronjobs scheduled in source environment files `source-*.sh`. |
-| [remove]                       |                                              | **Deploy jobs**                                                                 |
-|                                | Delete cronjobs                              | Delete all cronjobs in namespace with label `resticjob`.                        |
-| [list-status] [apply] [remove] |                                              | **Display status information**                                                  |
-|                                | Display namespace                            | Namespace and object status.                                                    |
-|                                |                                              |                                                                                 |
-
 ### Template values
 
 The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
 
-| Parameter                              | Description                  | Values                                        |
-| -------------------------------------- | ---------------------------- | --------------------------------------------- |
-| `_tplname`                             | template name                | `{{ ._tplname }}`                             |
-| `_tpldescription`                      | template description         | `{{ ._tpldescription }}`                      |
-| `_tplversion`                          | template version             | `{{ ._tplversion }}`                          |
-| `kubeconfig`                           | kubeconfig file              | `{{ .kubeconfig }}`                           |
-| `namespace.name`                       | namespace name               | `{{ .namespace.name }}`                       |
-| `publishing.miniourl`                  | publishing url               | `{{ .publishing.miniourl }}`                  |
-| `publishing.consoleurl`                | console url                  | `{{ .publishing.consoleurl }}`                |
-| `credentials.minio_accesskey`          | access key                   | `{{ .credentials.minio_accesskey }}`          |
-| `credentials.minio_secretkey`          | secret key                   | `{{ .credentials.minio_secretkey }}`          |
-| `credentials.console_accesskey`        | console access key           | `{{ .credentials.console_accesskey }}`        |
-| `credentials.console_secretkey`        | console secret key           | `{{ .credentials.console_secretkey }}`        |
-| `credentials.console_pbkdf_passphrase` | console passphrase           | `{{ .credentials.console_pbkdf_passphrase }}` |
-| `credentials.console_pbkdf_salt`       | console salt                 | `{{ .credentials.console_pbkdf_salt }}`       |
-| `localpvnodes.srv00`                   | local persistent volume node | `{{ .localpvnodes.srv00 }}`                   |
-| `localpvnodes.srv01`                   | local persistent volume node | `{{ .localpvnodes.srv01 }}`                   |
-| `localpvnodes.srv02`                   | local persistent volume node | `{{ .localpvnodes.srv03 }}`                   |
-| `localpvnodes.srv03`                   | local persistent volume node | `{{ .localpvnodes.srv03 }}`                   |
+| Parameter                         | Description                        | Values                                   |
+| --------------------------------- | ---------------------------------- | ---------------------------------------- |
+| `_tplname`                        | template name                      | `{{ ._tplname }}`                        |
+| `_tpldescription`                 | template description               | `{{ ._tpldescription }}`                 |
+| `_tplversion`                     | template version                   | `{{ ._tplversion }}`                     |
+| `kubeconfig`                      | kubeconfig file                    | `{{ .kubeconfig }}`                      |
+| `namespace.name`                  | namespace name                     | `{{ .namespace.name }}`                  |
+| `publishing.miniourl`             | publishing url                     | `{{ .publishing.miniourl }}`             |
+| `publishing.consoleurl`           | console url                        | `{{ .publishing.consoleurl }}`           |
+| `credentials.minio_accesskey`     | access key                         | `{{ .credentials.minio_accesskey }}`     |
+| `credentials.minio_secretkey`     | secret key                         | `{{ .credentials.minio_secretkey }}`     |
+| `certificate.clusterissuer`       | cert-manager clusterissuer         | `{{ .certificate.clusterissuer }}`       |
+| `registry.proxy`                  | docker private proxy URL           | `{{ .registry.proxy }}`                  |
+| `localpvnodes.srv00`              | local persistent volume node       | `{{ .localpvnodes.srv00 }}`              |
+| `localpvnodes.srv01`              | local persistent volume node       | `{{ .localpvnodes.srv01 }}`              |
+| `localpvnodes.srv02`              | local persistent volume node       | `{{ .localpvnodes.srv03 }}`              |
+| `localpvnodes.srv03`              | local persistent volume node       | `{{ .localpvnodes.srv03 }}`              |
+| `localpvnodes.domain`             | k8s-nodes domain name              | `{{ .localpvnodes.domain }}`             |
+| `localpvnodes.localadminusername` | k8s-nodes local administrator name | `{{ .localpvnodes.localadminusername }}` |
 
 ## License
 
