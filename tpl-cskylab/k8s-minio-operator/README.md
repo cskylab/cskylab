@@ -1,6 +1,6 @@
 # Kubernetes MinIO Operator <!-- omit in toc -->
 
-## Helm charts: minio/operator v4.4.7 <!-- omit in toc -->
+## Helm charts: minio/operator v4.4.8 <!-- omit in toc -->
 
 This namespace deploys a [MinIO Operator](https://github.com/minio/operator) in Kubernetes.
 
@@ -46,7 +46,7 @@ Run:
 - Get the JWT for logging in to the console:
   
 ```bash
-kubectl get secret $(kubectl get serviceaccount console-sa --namespace minio-operator -o jsonpath="{.secrets[0].name}") --namespace minio-operator -o jsonpath="{.data.token}" | base64 --decode 
+kubectl get secret $(kubectl get serviceaccount console-sa --namespace {{ .namespace.name }} -o jsonpath="{.secrets[0].name}") --namespace {{ .namespace.name }} -o jsonpath="{.data.token}" | base64 --decode 
 ```
 
 ## Prerequisites
@@ -127,7 +127,7 @@ Connect to operator console with the following procedure:
 - Get the JWT for logging in to the console:
   
 ```bash
-kubectl get secret $(kubectl get serviceaccount console-sa --namespace minio-operator -o jsonpath="{.secrets[0].name}") --namespace minio-operator -o jsonpath="{.data.token}" | base64 --decode 
+kubectl get secret $(kubectl get serviceaccount console-sa --namespace {{ .namespace.name }} -o jsonpath="{.secrets[0].name}") --namespace {{ .namespace.name }} -o jsonpath="{.data.token}" | base64 --decode 
 ```
 
 ### Utilities
