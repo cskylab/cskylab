@@ -55,7 +55,7 @@ func Create(configValues, tplPath, parsePath string, silentMode bool) {
 		log.Fatalf("Error in CopyDirectory, %s", err)
 	}
 
-	// Remove __values-tpl template configuration file from destination directory
+	// Remove _values-tpl template configuration file from destination directory
 	tplFile := filepath.Clean(parsePath + string(os.PathSeparator) + tplConfigFile + ".yaml")
 	err = os.Remove(tplFile)
 
@@ -64,7 +64,7 @@ func Create(configValues, tplPath, parsePath string, silentMode bool) {
 		return
 	}
 
-	// Remove runbook files with pattern "rb*.md"
+	// Remove runbook files with pattern "_rb*.md"
 	rbPattern := filepath.Clean(parsePath + string(os.PathSeparator) + "_rb-*.md")
 
 	rbFiles, err := filepath.Glob(rbPattern)
