@@ -64,6 +64,19 @@ func Create(configValues, tplPath, parsePath string, silentMode bool) {
 		return
 	}
 
+	// Remove runbook files with pattern "rb*.md"
+	rbPattern := filepath.Clean(parsePath + string(os.PathSeparator) + "_rb-*.md")
+
+	rbFiles, err := filepath.Glob(rbPattern)
+	if err != nil {
+		panic(err)
+	}
+	for _, f := range rbFiles {
+		if err := os.Remove(f); err != nil {
+			panic(err)
+		}
+	}
+
 	// Write viper settings to yaml file in parsePath
 	fmt.Println()
 	fmt.Println(msgInfo, "Resulting override values written to file:", filepath.Clean(parsePath+string(os.PathSeparator)+viperConfigFile+".yaml"))

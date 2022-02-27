@@ -29,7 +29,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Version: "1.0.1",
+	Version: "1.0.2",
 	Use:     "cskygen",
 	Short:   "Configuration Genesis",
 	Long: `
