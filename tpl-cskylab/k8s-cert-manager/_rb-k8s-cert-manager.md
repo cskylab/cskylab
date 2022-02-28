@@ -20,7 +20,7 @@ Update env variables with your own values, copy and run the following command:
 
 ```bash
 echo \
-&& export RB_REPO_DIR="$HOME/YourRepo" \
+&& export RB_REPO_DIR="Your_Repository_Root_Directory" \
 && export RB_ZONE="cs-mod" \
 && export RB_K8S_CLUSTER="k8s-mod" \
 && export RB_K8S_NAMESPACE="cert-manager" \

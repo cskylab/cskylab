@@ -22,7 +22,7 @@ Update env variables with your own values, copy and run the following command:
 
 ```bash
 echo \
-&& export RB_REPO_DIR="$HOME/YourRepo"  \
+&& export RB_REPO_DIR="Your_Repository_Root_Directory"  \
 && export RB_REPO_CFG_FABRIC_DIR="${RB_REPO_DIR}/_cfg-fabric" \
 && export RB_REPO_TPL_DIR="${RB_REPO_DIR}/tpl-cskylab" \
 && echo
@@ -49,6 +49,8 @@ echo \
 && echo \
 && find ${RB_REPO_TPL_DIR} -name "_rb-*.md" | \
         xargs -n 1 cp -v --target-directory=${RB_REPO_CFG_FABRIC_DIR} \
+&& find ${RB_REPO_CFG_FABRIC_DIR} -name "_rb-*.md" | \
+        xargs -n 1 sed -i "s#Your_Repository_Root_Directory#${RB_REPO_DIR}#g" \
 && echo \
 && echo "******** Files in ${RB_REPO_CFG_FABRIC_DIR} directory:" \
 && echo \
