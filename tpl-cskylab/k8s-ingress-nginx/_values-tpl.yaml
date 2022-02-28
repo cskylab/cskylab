@@ -6,7 +6,7 @@
 
 _tplname: cs-ingress-nginx
 _tpldescription: Ingress nginx controller for Kubernetes.
-_tplversion: 21.11.07
+_tplversion: 22.02.28
 
 #
 # Values to override

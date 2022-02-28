@@ -1,5 +1,7 @@
 # {{ .machine.hostname }} <!-- omit in toc -->
 
+This machine runs Bind 9 DNS Services on Ubuntu Server 20.04 LTS.
+
 [comment]: <> (**Machine functional description goes here**)
 
 Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.

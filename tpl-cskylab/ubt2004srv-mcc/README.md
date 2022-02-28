@@ -1,5 +1,9 @@
 # {{ .machine.hostname }} - Mission Control Center<!-- omit in toc -->
 
+This machine runs a management host (Mission Control Center) on Ubuntu Server 20.04 LTS.
+
+It is intended to host VS Code Remote Server and to be accessed with VS Code Remote via ssh.
+
 [comment]: <> (**Functional description goes here**)
 
 `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.

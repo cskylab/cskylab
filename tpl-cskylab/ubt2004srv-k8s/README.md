@@ -1,5 +1,9 @@
 # {{ .machine.hostname }} <!-- omit in toc -->
 
+This machine runs a Kubernetes node on Ubuntu Server 20.04 LTS.
+
+Persistent Volumes on local storage are supported by LVM services.
+
 [comment]: <> (**Machine functional description goes here**)
 
 Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.

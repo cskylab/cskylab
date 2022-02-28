@@ -6,7 +6,7 @@
 
 _tplname: ubt2004srv-dns
 _tpldescription: Ubuntu server 20.04 DNS bind9 installation
-_tplversion: 21.11.04
+_tplversion: 22.02.28
 
 #
 # Values to override
@@ -31,4 +31,3 @@ machine:
   setupdir: "/etc/csky-setup"
   systemlocale: "C.UTF-8"
   systemkeyboard: "us"
-  

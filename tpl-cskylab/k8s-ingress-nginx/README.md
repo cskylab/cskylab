@@ -8,8 +8,7 @@ To use in your deployments, add the `kubernetes.io/ingress.class: nginx` annotat
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
-> **Note**: `k8s-ingress-nginx` should be considered as cluster service. It is recommended to deploy it as a
-cluster singleton.
+> **Note**: `k8s-ingress-nginx` should be considered as cluster service. It is recommended to deploy it as a cluster singleton.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)

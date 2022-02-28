@@ -1,5 +1,10 @@
 # {{ .machine.hostname }} <!-- omit in toc -->
 
+This machine runs a KVM host on Ubuntu Server 20.04 LTS.
+
+Virtual machines are created on storage supported by LVM services.
+
+
 [comment]: <> (**Machine functional description goes here**)
 
 Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.

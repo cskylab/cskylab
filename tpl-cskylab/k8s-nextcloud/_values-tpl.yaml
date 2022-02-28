@@ -6,7 +6,7 @@
 
 _tplname: cs-nextcloud
 _tpldescription: Kubernetes nextcloud namespace
-_tplversion: 21.11.08
+_tplversion: 22.02.28
 
 #
 # Values to override

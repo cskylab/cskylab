@@ -1,8 +1,10 @@
 # Kubernetes MinIO Operator <!-- omit in toc -->
 
-## Helm charts: minio/operator v4.4.8 <!-- omit in toc -->
+## Helm charts: minio/operator v4.4.10 <!-- omit in toc -->
 
-This namespace deploys a [MinIO Operator](https://github.com/minio/operator) in Kubernetes.
+MinIO is a Kubernetes-native high performance object store with an S3-compatible API. The [MinIO Kubernetes Operator](https://github.com/minio/operator) supports deploying MinIO Tenants onto private and public cloud infrastructures ("Hybrid" Cloud). This namespace deploys a [MinIO Operator](https://github.com/minio/operator) in a Kubernetes cluster.
+
+> **Note**: `MinIO Operator` should be considered as cluster service. It is recommended to deploy it as a cluster singleton.
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 

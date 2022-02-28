@@ -2,8 +2,7 @@
 
 ## Helm charts: bitnami/metallb v2.5.16 <!-- omit in toc -->
 
-[MetalLB](https://metallb.universe.tf/) is a load-balancer implementation for bare metal Kubernetes
-clusters, using standard routing protocols.
+[MetalLB](https://metallb.universe.tf/) is a load-balancer implementation for bare metal Kubernetes clusters, using standard routing protocols.
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 

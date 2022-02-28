@@ -1,5 +1,7 @@
 # {{ .machine.hostname }} <!-- omit in toc -->
 
+This machine runs a Certification Authority on Ubuntu Server 20.04 LTS
+
 [comment]: <> (**Machine functional description goes here**)
 
 Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
