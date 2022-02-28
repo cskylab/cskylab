@@ -1,6 +1,6 @@
 # cskygen - cSkyLab Configuration Genesis <!-- omit in toc -->
 
-## v1.0.1 <!-- omit in toc -->
+## v1.0.2 <!-- omit in toc -->
 
 `cskygen` is a CLI application that generates configuration files from pre-configured templates.
 
@@ -14,8 +14,8 @@ It is compatible and integrates the use of [Helm Charts](https://helm.sh/) in ku
   - [Template Libraries](#template-libraries)
 - [How-to guides](#how-to-guides)
   - [Build & install cskygen](#build--install-cskygen)
-  - [Create application configuration files from templates with runbooks](#create-application-configuration-files-from-templates-with-runbooks)
-  - [Manually create application configuration files from templates](#manually-create-application-configuration-files-from-templates)
+  - [Using cskygen with configuration runbooks](#using-cskygen-with-configuration-runbooks)
+  - [Using cskygen manually](#using-cskygen-manually)
 - [License](#license)
 
 ---
@@ -69,7 +69,7 @@ To build and install cskygen binary file in $GOPATH/bin, open a terminal in the 
 go install .
 ```
 
-### Create application configuration files from templates with runbooks
+### Using cskygen with configuration runbooks
 
 cSkyLab Templates provide runbook models with snipets and yaml override values to make easier the creation of any application configuration directory from its template. These runbook models can be imported to a working directory `_cfg-fabric` to be customized with the appropriate contents for each application or service you need to deploy.
 
@@ -80,9 +80,9 @@ To create configuration files from templates with runbooks:
 - Go to the zone `_cfg-fabric` directory. (e.g., `/YourRepo/cs-mod/_cfg-fabric/`)
 - Open terminal and follow instructions in `README.md` and `*.md` runbooks.
 
-### Manually create application configuration files from templates
+### Using cskygen manually
 
-To manually create application configuration files from templates you must follow two steps:
+To manually use cskygen to create application configuration files from templates you must follow two steps:
 
 1. Prepare the overriding file
 2. Execute cskygen
@@ -91,17 +91,17 @@ To manually create application configuration files from templates you must follo
 
 - Select the template you want to use
 - Copy the template default values file: `_values-tpl.yaml` to your `$HOME` directory with your overriding file name (Ex.: `app_xxx.yaml`)
-- In your overriding file at your `$HOME` directory, Change the desired values for your installation.
+- In your overriding file at your `$HOME` directory, change the desired values for your installation.
 - Save the file
 
 **2.- Execute cskygen:**
 
 - Open a terminal in your `$HOME` directory
-- Execute the `cskygen create` command with the appropiate flags:
+- Execute the `cskygen create` command with the following flags:
 
   | flag |                                                                        |
   | ---- | ---------------------------------------------------------------------- |
-  | `-d` | Destination service directory (Must not exist)                         |
+  | `-d` | Destination app configuration repository directory (Must not exist)    |
   | `-t` | Template directory                                                     |
   | `-f` | Overriding file (.yaml extension required on filename but not in flag) |
 
