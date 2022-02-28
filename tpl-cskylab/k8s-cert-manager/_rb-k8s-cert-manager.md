@@ -20,10 +20,10 @@ Update env variables with your own values, copy and run the following command:
 
 ```bash
 echo \
-&& export RB_REPO_DIR="$HOME/xxxxxxxxx" \
+&& export RB_REPO_DIR="$HOME/YourRepo" \
 && export RB_ZONE="cs-mod" \
 && export RB_K8S_CLUSTER="k8s-mod" \
-&& export RB_K8S_NAMESPACE="cert-m2" \
+&& export RB_K8S_NAMESPACE="cert-manager" \
 && export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-cert-manager" \
 && echo
 ```
