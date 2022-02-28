@@ -71,13 +71,11 @@ go install .
 
 ### Using cskygen with configuration runbooks
 
-cSkyLab Templates provide runbook models with snipets and yaml override values to make easier the creation of any application configuration directory from its template. These runbook models can be imported to a working directory `_cfg-fabric` to be customized with the appropriate contents for each application or service you need to deploy.
-
-It is reccomended to have a `_cfg-fabric` directory for each zone of your installation (cs-mod, cs-pro... etc.)
+cSkyLab Templates provide configuration runbook models with snipets and yaml override values, to make easier the creation of any application configuration directory from its template. These runbook models can be imported to a working directory `_cfg-fabric` to be customized with the appropriate values for each application or service you need to deploy.
 
 To create configuration files from templates with runbooks:
 
-- Go to the zone `_cfg-fabric` directory. (e.g., `/YourRepo/cs-mod/_cfg-fabric/`)
+- Go to `_cfg-fabric` directory. (e.g., `/YourRepo/_cfg-fabric/`)
 - Open terminal and follow instructions in `README.md` and `*.md` runbooks.
 
 ### Using cskygen manually
