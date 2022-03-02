@@ -1,5 +1,7 @@
 # MetalLB Load-balancer for kubernetes<!-- omit in toc -->
 
+>**DEPRECATED**: This template is no longer maintained. To deploy metallb-system use template `k8s-metallb-system-mf`
+
 ## Helm charts: bitnami/metallb v2.5.16 <!-- omit in toc -->
 
 [MetalLB](https://metallb.universe.tf/) is a load-balancer implementation for bare metal Kubernetes clusters, using standard routing protocols.

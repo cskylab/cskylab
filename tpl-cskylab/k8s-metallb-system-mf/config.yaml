@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .namespace.name }}
+  name: config
+data:
+  config: |
+    address-pools:
+      - name: static-pool
+        auto-assign: false
+        protocol: layer2
+        addresses:
+        {{- range .metallb.staticpooladdr }}
+        - {{ . }}
+        {{- end }}
+      - name: dynamic-pool
+        protocol: layer2
+        addresses:
+        {{- range .metallb.dynamicpooladdr }}
+        - {{ . }}
+        {{- end }}
