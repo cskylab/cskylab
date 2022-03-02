@@ -292,7 +292,7 @@ if [[ "${execution_mode}" == "list-status" ]] ||
 
   # Display namespace status
   echo
-  echo "${msg_info} ${namespace} v0.9.5 status information"
+  echo "${msg_info} ${namespace} status information"
   echo
   kubectl -n "${namespace}" get all
   echo
