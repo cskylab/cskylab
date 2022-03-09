@@ -1,15 +1,26 @@
-# Nextcloud chart 2.11.3 Upgrade <!-- omit in toc -->
+<!-- markdownlint-disable MD024 -->
 
-- [Background](#background)
-- [How-to guides](#how-to-guides)
-  - [Change redis to standalone mode](#change-redis-to-standalone-mode)
-  - [Update configuration files](#update-configuration-files)
-  - [Pull charts & re-install application](#pull-charts--re-install-application)
-- [Reference](#reference)
+# k8s-nextcloud Update Guides <!-- omit in toc -->
+
+- [v22-01-05](#v22-01-05)
+  - [Background](#background)
+  - [How-to guides](#how-to-guides)
+    - [1.- Change redis to standalone mode](#1--change-redis-to-standalone-mode)
+    - [2.- Update configuration files](#2--update-configuration-files)
+    - [3.- Pull charts & re-install application](#3--pull-charts--re-install-application)
+  - [Reference](#reference)
+- [v21-12-06](#v21-12-06)
+  - [Background](#background-1)
+  - [How-to guides](#how-to-guides-1)
+    - [1.- Update configuration files](#1--update-configuration-files)
+    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
+  - [Reference](#reference-1)
 
 ---
 
-## Background
+## v22-01-05
+
+### Background
 
 Nextcloud chart 2.11.3 updates chart parameters in Nextcloud appVersion 22.2.3.
 
@@ -17,9 +28,9 @@ Before applying this chart, you must change redis configuration in `values-nextc
 
 This procedure updates Nextcloud installation in k8s-mod cluster.
 
-## How-to guides
+### How-to guides
 
-### Change redis to standalone mode
+#### 1.- Change redis to standalone mode
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` folder repository.
 
@@ -96,7 +107,7 @@ redis:
 
 - Remove from configuration the file `pv-redis-slave.yaml` (This will prevent to declare an unneeded PV when re-installing the application)
 
-### Update configuration files
+#### 2.- Update configuration files
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` folder repository.
 
@@ -132,7 +143,7 @@ EOF
 
 - Save file
 
-### Pull charts & re-install application
+#### 3.- Pull charts & re-install application
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` folder repository.
 
@@ -151,6 +162,75 @@ Execute the following commands to pull charts and upgrade:
 
 >**Note**: After applying the new values, you should have now standalone redis mode with one redis pod: `pod/nextcloud-redis-master-0`
 
-## Reference
+### Reference
+
+- <https://github.com/nextcloud/helm/tree/master/charts/nextcloud>
+
+---
+
+## v21-12-06
+
+### Background
+
+Nextcloud chart 2.10.2 updates chart parameters in Nextcloud appVersion 22.2.3.
+
+This procedure updates Nextcloud installation in k8s-mod cluster.
+
+### How-to guides
+
+#### 1.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 2.10.2 --untar
+helm pull bitnami/mariadb --version 10.1.0 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## Helm charts: nextcloud/nextcloud v2.10.2 bitnami/mariadb v10.1.0 <!-- omit in toc -->
+```
+
+- Save file
+
+#### 2.- Pull charts & upgrade
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` folder repository.
+
+Execute the following commands to pull charts and upgrade:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+```
+
+### Reference
 
 - <https://github.com/nextcloud/helm/tree/master/charts/nextcloud>

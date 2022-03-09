@@ -1,22 +1,27 @@
-# Keycloak chart 16.0.5 Upgrade <!-- omit in toc -->
+<!-- markdownlint-disable MD024 -->
 
-- [Background](#background)
-- [How-to guides](#how-to-guides)
-  - [Update configuration files](#update-configuration-files)
-  - [Pull charts & upgrade](#pull-charts--upgrade)
-- [Reference](#reference)
+# k8s-keycloak Update Guides <!-- omit in toc -->
+
+- [v22-01-05](#v22-01-05)
+  - [Background](#background)
+  - [How-to guides](#how-to-guides)
+    - [1.- Update configuration files](#1--update-configuration-files)
+    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
+  - [Reference](#reference)
 
 ---
 
-## Background
+## v22-01-05
+
+### Background
 
 Keycloak chart 16.0.5 updates chart components in keycloak appVersion 15.0.2.
 
 This procedure updates Keycloak installation in k8s-mod cluster.
 
-## How-to guides
+### How-to guides
 
-### Update configuration files
+#### 1.- Update configuration files
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` folder repository.
 
@@ -50,7 +55,7 @@ EOF
 
 - Save file
 
-### Pull charts & upgrade
+#### 2.- Pull charts & upgrade
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` folder repository.
 
@@ -67,7 +72,7 @@ Execute the following commands to pull charts and upgrade:
 ./csdeploy.sh -l
 ```
 
-## Reference
+### Reference
 
 - <https://github.com/codecentric/helm-charts/tree/master/charts/keycloak>
 - <https://www.keycloak.org/>

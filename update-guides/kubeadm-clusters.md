@@ -1,27 +1,31 @@
-# Kubernetes cluster upgrade procedures <!-- omit in toc -->
+<!-- markdownlint-disable MD024 -->
 
-## k8s version 1.23.1-00 <!-- omit in toc -->
+# kubeadm-clusters Update Guides <!-- omit in toc -->
+
+- [v22-01-05](#v22-01-05)
+  - [k8s version 1.23.1-00](#k8s-version-1231-00)
+  - [List available kubeadm versions](#list-available-kubeadm-versions)
+  - [Upgrading k8s master node](#upgrading-k8s-master-node)
+  - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes)
+    - [Drain the node](#drain-the-node)
+    - [Upgrade the node](#upgrade-the-node)
+    - [Uncordon the node](#uncordon-the-node)
+  - [Upgrade mcc management station](#upgrade-mcc-management-station)
+    - [Update mcc configuration](#update-mcc-configuration)
+    - [Connect with mcc](#connect-with-mcc)
+    - [Inject & Deploy configuration to mcc](#inject--deploy-configuration-to-mcc)
+
+---
+
+## v22-01-05
+
+### k8s version 1.23.1-00
 
 This page explains how to upgrade a Kubernetes cluster created with kubeadm from version 1.22.x to version 1.23.x, and from version 1.23.x to 1.23.y (where y > x). Skipping MINOR versions when upgrading is unsupported.
 
 The complete procedures to upgrade kubeadm kubernetes clusters are covered in: <https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade>
 
-## Table of Contents <!-- omit in toc -->
-
-- [List available kubeadm versions](#list-available-kubeadm-versions)
-- [Upgrading k8s master node](#upgrading-k8s-master-node)
-- [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes)
-  - [Drain the node](#drain-the-node)
-  - [Upgrade the node](#upgrade-the-node)
-  - [Uncordon the node](#uncordon-the-node)
-- [Upgrade mcc management station](#upgrade-mcc-management-station)
-  - [Update mcc configuration](#update-mcc-configuration)
-  - [Connect with mcc](#connect-with-mcc)
-  - [Inject & Deploy configuration to mcc](#inject--deploy-configuration-to-mcc)
-
----
-
-## List available kubeadm versions
+### List available kubeadm versions
 
 To view all available kubeadm versions:
 
@@ -30,7 +34,7 @@ To view all available kubeadm versions:
 sudo apt update && sudo apt-cache madison kubeadm
 ```
 
-## Upgrading k8s master node
+### Upgrading k8s master node
 
 Connect to k8s master machine and follow the next steps:
 
@@ -115,9 +119,9 @@ sudo apt-get update \
 sudo reboot
 ```
 
-## Upgrading k8s worker nodes
+### Upgrading k8s worker nodes
 
-### Drain the node
+#### Drain the node
 
 Prepare the node for maintenance by marking it unschedulable and evicting the workloads. From computer management machine run:
 
@@ -126,7 +130,7 @@ Prepare the node for maintenance by marking it unschedulable and evicting the wo
 kubectl drain <node-to-drain> --ignore-daemonsets --delete-emptydir-data --disable-eviction --force
 ```
 
-### Upgrade the node
+#### Upgrade the node
 
 Connect to k8s worker node machine and follow the next steps:
 
@@ -195,7 +199,7 @@ sudo apt-get update \
 sudo reboot
 ```
 
-### Uncordon the node
+#### Uncordon the node
 
 Bring the node back online by marking it schedulable. From computer management machine run:
 
@@ -211,9 +215,9 @@ Verify the cluster status:
 kubectl get nodes
 ```
 
-## Upgrade mcc management station
+### Upgrade mcc management station
 
-### Update mcc configuration
+#### Update mcc configuration
 
 >**Note:** You must have pre-deployed in your computer your ssh keys.
 
@@ -228,7 +232,7 @@ k8s_version="1.23.1-00"
 
 - Save the file, commit changes and synchronize repository with remote
 
-### Connect with mcc
+#### Connect with mcc
 
 - Connect to your cSkyLab installation in one of the following ways:
   - **VPN**: Establish vpn session with `vpn_mgt` profile
@@ -253,7 +257,7 @@ Host mcc.cskylab.net
 
 >**Note:** Delete records for mcc.cskylab.net & 192.168.80.5 in your `$HOME/.ssh/known_hosts` file if needed.
 
-### Inject & Deploy configuration to mcc
+#### Inject & Deploy configuration to mcc
 
 - Perform installation procedure:
 
@@ -265,4 +269,3 @@ Host mcc.cskylab.net
 # Run csinject.sh to inject & deploy configuration in [install] deploy mode
 ./csinject.sh -qdm install
 ```
-
