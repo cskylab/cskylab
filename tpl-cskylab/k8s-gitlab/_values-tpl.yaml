@@ -4,9 +4,9 @@
 #   cskygen template default values file
 #
 
-_tplname: cs-gitlab
+_tplname: k8s-gitlab
 _tpldescription: Gitlab DevOps platform
-_tplversion: 22.02.28
+_tplversion: 909-909-909
 
 #
 # Values to override

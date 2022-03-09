@@ -6,7 +6,7 @@
 
 _tplname: cs-metallb-system
 _tpldescription: MetalLB load-balancer for bare metal Kubernetes clusters
-_tplversion: 22.03.02
+_tplversion: 22.02.28
 
 #
 # Values to override

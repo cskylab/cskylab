@@ -1,29 +1,25 @@
 # MetalLB Load-balancer for kubernetes<!-- omit in toc -->
 
->**DEPRECATED**: This template is no longer maintained. To deploy metallb-system use template `k8s-metallb-system-mf`
+## v909-909-909 <!-- omit in toc -->
 
-## Helm charts: bitnami/metallb v2.5.16 <!-- omit in toc -->
+## MetalLB manifest version v0.12.1 <!-- omit in toc -->
 
 [MetalLB](https://metallb.universe.tf/) is a load-balancer implementation for bare metal Kubernetes clusters, using standard routing protocols.
 
-Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
-> **Note**: [MetalLB](https://metallb.universe.tf/) is a cluster service, and as such can only be deployed as a
-cluster singleton. Running multiple installations of [MetalLB](https://metallb.universe.tf/) in a
-single cluster is not supported.
+> **Note**: [MetalLB](https://metallb.universe.tf/) is a cluster service, and as such can only be deployed as a cluster singleton. Running multiple installations of [MetalLB](https://metallb.universe.tf/) in a single cluster is not supported.
+
+Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
 - [How-to guides](#how-to-guides)
   - [Configure IP Addresses pools](#configure-ip-addresses-pools)
-  - [Pull Helm charts](#pull-helm-charts)
   - [Install](#install)
   - [Update](#update)
-  - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
 - [Reference](#reference)
-  - [Helm charts and values](#helm-charts-and-values)
   - [Scripts](#scripts)
     - [csdeploy](#csdeploy)
   - [Template values](#template-values)
@@ -31,13 +27,10 @@ single cluster is not supported.
 
 ## TL;DR
 
-- Before deploying, review or modify override values in file `values-metallb.yaml`
+- Before deploying, review or modify IP address pools values in file `config.yaml`
 - To deploy namespace and chart:
 
 ```bash
-# Pull charts to './charts/' directory
-./csdeploy.sh -m pull-charts
-
 # Install  
 ./csdeploy.sh -m install
 
@@ -52,7 +45,7 @@ single cluster is not supported.
 - Administrative access to Kubernetes cluster.
 - Helm v3
 - No instance of MetalLB running on K8s cluster.
-- MetalLB IP Addresses pools configured.
+- MetalLB IP Addresses pools configured in file `config.yaml`
 
 ## How-to guides
 
@@ -60,73 +53,41 @@ single cluster is not supported.
 
 MetalLB configures static and dynamic addresses pools. Initial addresses pools values are provided by the template. You must review or modify these values before installing.
 
-- To modify IP Addresses pools edit the `configInline` section on chart overrides file `values-metallb.yaml`.
+- To modify IP Addresses pools edit file `config.yaml` and configure addresses for static and dynamic pools.
 
 - After configuring the desired IP Addresses pools, you can install or update the service.
 
-### Pull Helm charts
-
-- Modify repositories and versions needed in the variable `source_charts` inside the script `csdeploy.sh`.
-
-- To pull the new versions run:
-
-```bash
-# Pull charts to './charts/' directory
-  ./csdeploy.sh -m pull-charts
-```
-
->Note: When pulling new charts, all the content of `./charts` directory will be removed, and replaced by the new pulled charts.
-
-- To redeploy the new versions run:
-
-```bash
-# Redeploy and upgrade charts
-  ./csdeploy.sh -m update
-```
-
 ### Install
 
-To Create namespace and install charts:
+To Create namespace and apply manifest:
 
 ```bash
-  #  Create namespace, secrets, config-maps, PV's, apply manifests and install charts.
     ./csdeploy.sh -m install
 ```
 
 ### Update
 
-To update IP Addresses pools and charts settings, change values in files `values-metallb.yaml`.
+To update IP Addresses pools, change values in file `config.yaml`.
 
-Update or upgrade chart by running:
+Update namespace deployment by running:
 
 ```bash
-  # Reapply manifests and update or upgrade charts
     ./csdeploy.sh -m update
 ```
 
-### Uninstall
-
-To uninstall charts and remove namespace run:
-
-```bash
-  # Uninstall charts, delete manifests, remove PV's and namespace
-    ./csdeploy.sh -m uninstall
-```
+>**Note**: Update deploy mode will only update IP addresses & configuration values in `config.yaml`. MetalLB manifest is only applied in install deploy mode.
 
 ### Remove
-
-This option is intended to be used only to remove the namespace when chart deployment is failed. Otherwise, you must run `./csdeploy.sh -m uninstall`.
 
 To remove namespace and all its contents run:
 
 ```bash
-  # Remove PV's namespace and all its contents
     ./csdeploy.sh -m remove
 ```
 
 ### Display status
 
-To display namespace and chart status run:
+To display namespace status run:
 
 ```bash
   # Display namespace config-map and chart status:
@@ -138,21 +99,14 @@ To display namespace and chart status run:
 To learn more see:
 
 - <https://metallb.universe.tf>
-- <https://github.com/bitnami/charts/tree/master/bitnami/metallb/>
-
-### Helm charts and values
-
-| Chart           | Values                |
-| --------------- | --------------------- |
-| bitnami/metallb | `values-metallb.yaml` |
 
 ### Scripts
 
 #### csdeploy
 
 ```console
-Purpose:
-  MetalLB load-balancer.
+  MetalLB v0.12.1 configuration.
+  Use this script to deploy and configure metallb-system namespace.
 
 Usage:
   sudo csdeploy.sh [-l] [-m <execution_mode>] [-h] [-q]
@@ -161,57 +115,44 @@ Execution modes:
   -l  [list-status]     - List current status.
   -m  <execution_mode>  - Valid modes are:
 
-      [pull-charts]     - Pull charts to './charts/' directory.
-      [install]         - Create namespace and install charts.
-      [update]          - Modify addresses pools and upgrade charts versions.
-      [uninstall]       - Uninstall charts and remove namespace.
-      [remove]          - Remove namespace and all its contents.
+      [install]         - Install metallb-system namespace and manifests.
+      [remove]          - Remove manifests and metallb-system namespace.
+      [update]          - Update config-map with address pools and options.
 
 Options and arguments:  
   -h  Help
   -q  Quiet (Nonstop) execution.
 
 Examples:
-  # Pull charts to './charts/' directory
-    ./csdeploy.sh -m pull-charts
-
-  # Create namespace and install charts.
+  # Install namespace and mainfests:
     ./csdeploy.sh -m install
 
-  # Modify addresses pools and upgrade charts.
+  # Update config-map with address pools and options in file config.yaml:
     ./csdeploy.sh -m update
 
-  # Uninstall charts, and namespace.
-    ./csdeploy.sh -m uninstall
-
-  # Remove namespace and all its contents
+  # Remove manifests and metallb-system namespace
     ./csdeploy.sh -m remove
 
-  # Display namespace, addresses pools  and charts status.
+  # Display namespace status:
     ./csdeploy.sh -l
 ```
 
 **Tasks performed:**
 
-| ${execution_mode}                | Tasks                      | Block / Description                                                         |
-| -------------------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| [pull-charts]                    |                            | **Pull helm charts from repositories**                                      |
-|                                  | Clean `./charts` directory | Remove all contents in `./charts` directory.                                |
-|                                  | Pull helm charts           | Pull new charts according to sourced script in variable `source_charts`.    |
-|                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
-| [install]                        |                            | **Create namespace**                                                        |
-|                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-| [update] [install]               |                            | **Deploy charts**                                                           |
-|                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
-| [uninstall]                      |                            | **Uninstall charts**                                                        |
-|                                  | Uninstall charts           | Uninstall all charts in `./charts` directory.                               |
-| [uninstall] [remove]             |                            | **Remove namespace**                                                        |
-|                                  | Remove namespace           | Remove namespace and all its objects.                                       |
-| [install] [update] [list-status] |                            | **Display status information**                                              |
-|                                  | Display namespace          | Namespace and object status.                                                |
-|                                  | Display config-map         | Status of addresses pools.                                                  |
-|                                  | Display charts             | Charts releases history information.                                        |
-|                                  |                            |                                                                             |
+| ${execution_mode}                | Tasks              | Block / Description                                            |
+| -------------------------------- | ------------------ | -------------------------------------------------------------- |
+| [install]                        |                    | **Install MetalLB**                                            |
+|                                  | Create namespace   | Namespace must be unique in cluster and named `metallb-system` |
+|                                  | Apply manifest     | Apply `metallb.yaml` manifest                                  |
+| [update] [install]               |                    | **Update config-map**                                           |
+|                                  | Apply config-map   | Apply address pool configuration in file `config.yaml`         |
+| [remove]                         |                    | **Remove namespace**                                           |
+|                                  | Remove namespace   | Remove namespace and all its objects.                          |
+| [install] [update] [list-status] |                    | **Display status information**                                 |
+|                                  | Display namespace  | Namespace and object status.                                   |
+|                                  | Display config-map | Status of addresses pools.                                     |
+|                                  | Display charts     | Charts releases history information.                           |
+|                                  |                    |                                                                |
 
 ### Template values
 

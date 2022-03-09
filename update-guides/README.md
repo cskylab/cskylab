@@ -2,15 +2,40 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
-- [v22-01-05](#v22-01-05)
+- [v909-909-909](#v909-909-909)
   - [Release notes](#release-notes)
   - [Application updates](#application-updates)
-- [v21-12-06](#v21-12-06)
+- [v22-01-05](#v22-01-05)
   - [Release notes](#release-notes-1)
-  - [Patches](#patches)
   - [Application updates](#application-updates-1)
+- [v21-12-06](#v21-12-06)
+  - [Release notes](#release-notes-2)
+  - [Patches](#patches)
+  - [Application updates](#application-updates-2)
 - [v21-11-24](#v21-11-24)
   - [Baseline build AM](#baseline-build-am)
+
+---
+
+## v909-909-909
+
+### Release notes
+
+Welcome to cSkyLab release of 909-909-909. This release includes updates for 7 applications and kubernetes version update to v1.23.4-00
+
+All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments from this release, will have all these updates applied.
+
+To keep your cSkyLab installation up to date you must apply the patches and applications upgrades in your actual deployments, according to the following procedures.
+
+It is highly recommended to update zone `cs-mod`, before proceeding to update zones `cs-pro` and `cs-sys`.
+
+### Application updates
+
+Application update procedures in this release:
+
+| Procedures                                    |
+| --------------------------------------------- |
+| [k8s-metallb-system](./k8s-metallb-system.md) |
 
 ---
 
