@@ -1,6 +1,8 @@
 <!-- markdownlint-disable MD024 -->
 
-# k8s-ingress-nginx Update Guides <!-- omit in toc -->
+# k8s-ingress-nginx <!-- omit in toc -->
+
+## Update Guides <!-- omit in toc -->
 
 - [v22-01-05](#v22-01-05)
   - [Background](#background)

@@ -1,6 +1,8 @@
 <!-- markdownlint-disable MD024 -->
 
-# kubeadm-clusters Update Guides <!-- omit in toc -->
+# kubeadm-clusters <!-- omit in toc -->
+
+## Update Guides <!-- omit in toc -->
 
 - [v22-01-05](#v22-01-05)
   - [k8s version 1.23.1-00](#k8s-version-1231-00)

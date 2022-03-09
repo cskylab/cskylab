@@ -18,7 +18,7 @@
 
 ### Release notes
 
-Welcome to cSkyLab release of January 5, 2022.
+Welcome to cSkyLab release of January 5, 2022. This release includes updates for 7 applications and kubernetes version update to v1.23.1-00
 
 All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments from this release, will have all these updates applied.
 
@@ -28,13 +28,15 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 ### Application updates
 
+Application update procedures in this release:
+
 | Procedures                                    |
 | --------------------------------------------- |
 | [k8s-metallb-system](./k8s-metallb-system.md) |
 | [k8s-ingress-nginx](./k8s-ingress-nginx.md)   |
 | [k8s-harbor.md](./k8s-harbor.md)              |
 | [k8s-gitlab.md](./k8s-gitlab.md)              |
-| [k8s-keycloak.md](./k8s-keycloak.md)        |
+| [k8s-keycloak.md](./k8s-keycloak.md)          |
 | [k8s-miniostalone.md](./k8s-miniostalone.md)  |
 | [k8s-nextcloud.md](./k8s-nextcloud.md)        |
 | [kubeadm-clusters.md](./kubeadm-clusters.md)  |
