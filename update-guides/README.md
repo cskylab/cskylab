@@ -56,9 +56,9 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 ### Patches
 
-| Patch              | Procedure                                        |
-| ------------------ | ------------------------------------------------ |
-| cron-job snapshots | [cron-job-snapshots.md](./cron-job-snapshots.md) |
+| Patch              | Procedure                                                                    |
+| ------------------ | ---------------------------------------------------------------------------- |
+| cron-job snapshots | [v21-12-06_cron-job-snapshots.md](./patches/v21-12-06_cron-job-snapshots.md) |
 
 ### Applications upgrades
 
