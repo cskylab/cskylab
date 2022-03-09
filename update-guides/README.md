@@ -9,7 +9,8 @@
   - [Release notes](#release-notes-1)
   - [Patches](#patches)
   - [Application updates](#application-updates-1)
-- [v21-11-24  Baseline build AM](#v21-11-24--baseline-build-am)
+- [v21-11-24](#v21-11-24)
+  - [Baseline build AM](#baseline-build-am)
 
 ---
 
@@ -73,7 +74,9 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 ---
 
-## v21-11-24  Baseline build AM
+## v21-11-24
+
+### Baseline build AM
 
 This is cSkyLab baseline configuration. Update guides will come after this release.
 
