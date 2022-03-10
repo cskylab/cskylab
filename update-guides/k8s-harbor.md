@@ -29,7 +29,7 @@
 
 ### Background
 
-Harbor chart 12.0.0 updates components versions in Harbor appVersion 2.4.1.
+Harbor chart 11.2.4 updates components versions in Harbor appVersion 2.4.1.
 
 This procedure updates Harbor installation in k8s-mod cluster.
 
@@ -54,7 +54,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/harbor --version 12.0.0 --untar
+helm pull bitnami/harbor --version 11.2.4 --untar
 
 EOF
 )"
@@ -66,7 +66,7 @@ EOF
 ``` bash
 ## v909-909-909 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v12.0.0 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v11.2.4 <!-- omit in toc -->
 ```
 
 - Save file

@@ -2,7 +2,7 @@
 
 ## v909-909-909 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v12.0.0 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v11.2.4 <!-- omit in toc -->
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
