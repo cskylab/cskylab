@@ -52,7 +52,7 @@ From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/metall
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/` repository directory.
 
-- Rename `cs-mod/k8s-mod-metallb-system` directory to `cs-mod/k8s-mod-metallb-system-dep`
+- Rename `cs-mod/k8s-mod/metallb-system` directory to `cs-mod/k8s-mod/metallb-system-dep`
 
 >**Note**: This configuration directory can be reused to reinstall the namespace in case the migration procedure fails.
 
@@ -84,7 +84,7 @@ From VS Code Remote connected to `mcc`, open  terminal at new `cs-mod/k8s-mod/me
 ./csdeploy.sh -l
 ```
 
-- After migration, remove old configuration directory `cs-mod/k8s-mod-metallb-system-dep`
+- After migration, remove old configuration directory `cs-mod/k8s-mod/metallb-system-dep`
 
 ### Reference
 
