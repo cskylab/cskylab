@@ -58,7 +58,9 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## Helm charts: `codecentric/keycloak` v16.0.5 <!-- omit in toc -->
+## v909-909-909 <!-- omit in toc -->
+
+## Helm charts: `codecentric/keycloak` v17.0.2 <!-- omit in toc -->
 ```
 
 - Save file
