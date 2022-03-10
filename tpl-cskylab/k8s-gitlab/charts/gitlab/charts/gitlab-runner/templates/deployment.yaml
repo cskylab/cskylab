@@ -108,6 +108,11 @@ spec:
         ports:
         - name: {{ .Values.metrics.portName | quote }}
           containerPort: {{ .Values.metrics.port }}
+        {{- if and (eq (default 1.0 .Values.replicas) 1.0) .Values.sessionServer .Values.sessionServer.enabled }}
+        - name: session-server
+          containerPort: {{ include "gitlab-runner.server-session-internal-port" . }}
+          protocol: TCP
+        {{- end }}
         volumeMounts:
         - name: runner-secrets
           mountPath: /secrets

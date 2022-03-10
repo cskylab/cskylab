@@ -14,7 +14,6 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
   name: {{ tpl .Values.controller.ingressClassResource.name . }}
-  namespace: {{ .Release.Namespace }}
 {{- if .Values.controller.ingressClassResource.default }}
   annotations:
     ingressclass.kubernetes.io/is-default-class: "true"

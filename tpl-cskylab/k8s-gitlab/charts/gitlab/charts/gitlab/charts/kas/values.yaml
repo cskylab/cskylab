@@ -99,3 +99,7 @@ networkpolicy:
     enabled: false
     rules: []
   annotations: {}
+
+affinity:
+  podAntiAffinity:
+    topologyKey:

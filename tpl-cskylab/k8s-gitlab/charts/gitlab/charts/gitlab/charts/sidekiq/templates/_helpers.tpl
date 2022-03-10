@@ -11,7 +11,7 @@ Pod values take precedence, then chart values, and finally global
 values.
 */}}
 {{- define "sidekiq.podExtraEnv" -}}
-{{- $allExtraEnv := merge (default (dict) .local.extraEnv) (default (dict) .parent.Values.extraEnv) .parent.Values.global.extraEnv -}}
+{{- $allExtraEnv := merge (default (dict) .local.extraEnv) (default (dict) .context.Values.extraEnv) .context.Values.global.extraEnv -}}
 {{- range $key, $value := $allExtraEnv }}
 - name: {{ $key }}
   value: {{ $value | quote }}

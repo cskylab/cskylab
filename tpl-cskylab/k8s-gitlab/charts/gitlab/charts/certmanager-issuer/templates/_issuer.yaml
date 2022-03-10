@@ -1,4 +1,5 @@
 {{ if (pluck "configureCertmanager" .Values.global.ingress (dict "configureCertmanager" false) | first) }}
+{{- $ingressCfg := dict "global" $.Values.global.ingress "local" .ingress "context" $ -}}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -21,5 +22,5 @@ spec:
     - selector: {}
       http01:
         ingress:
-          class: {{ template "gitlab.ingressclass" . }}
+          class: {{ template "ingress.class.name" $ingressCfg }}
 {{ end }}

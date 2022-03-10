@@ -4,24 +4,234 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-01-05](#v22-01-05)
+- [v909-909-909](#v909-909-909)
   - [Background](#background)
     - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
-    - [1.- Intermediate update to gitlab chart 5.5.2](#1--intermediate-update-to-gitlab-chart-552)
+    - [1.- Intermediate update to gitlab chart 5.6.6](#1--intermediate-update-to-gitlab-chart-566)
       - [1a.- Update configuration files](#1a--update-configuration-files)
+      - [1b.- Pull charts & update](#1b--pull-charts--update)
+    - [2.- Intermediate update to gitlab chart 5.7.5](#2--intermediate-update-to-gitlab-chart-575)
+      - [2a.- Update configuration files](#2a--update-configuration-files)
+      - [2b.- Pull charts & update](#2b--pull-charts--update)
+    - [3.- Final update to gitlab chart 5.8.2](#3--final-update-to-gitlab-chart-582)
+      - [3a.- Update configuration files](#3a--update-configuration-files)
+      - [3b.- Pull charts & update](#3b--pull-charts--update)
+  - [Reference](#reference)
+- [v22-01-05](#v22-01-05)
+  - [Background](#background-1)
+    - [Prerequisites](#prerequisites-1)
+  - [How-to guides](#how-to-guides-1)
+    - [1.- Intermediate update to gitlab chart 5.5.2](#1--intermediate-update-to-gitlab-chart-552)
+      - [1a.- Update configuration files](#1a--update-configuration-files-1)
       - [1b.- Pull charts & upgrade](#1b--pull-charts--upgrade)
     - [2.- Update to gitlab chart 5.6.0](#2--update-to-gitlab-chart-560)
-      - [2a.- Update configuration files](#2a--update-configuration-files)
+      - [2a.- Update configuration files](#2a--update-configuration-files-1)
       - [2b.- Pull charts & upgrade](#2b--pull-charts--upgrade)
-  - [Reference](#reference)
+  - [Reference](#reference-1)
 - [v21-12-06](#v21-12-06)
-  - [Background](#background-1)
-  - [How-to guides](#how-to-guides-1)
+  - [Background](#background-2)
+  - [How-to guides](#how-to-guides-2)
     - [1.- Rename section in values-gitlab.yaml](#1--rename-section-in-values-gitlabyaml)
     - [2.- Update configuration files](#2--update-configuration-files)
     - [3.- Pull charts & upgrade](#3--pull-charts--upgrade)
-  - [Reference](#reference-1)
+  - [Reference](#reference-2)
+
+---
+
+## v909-909-909
+
+### Background
+
+This procedure updates GitLab chart to version 5.8.2 with appVersion 14.8.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous.
+
+In this case, the update process require to perform intermediate updates:
+
+- From chart 5.6.x to chart 5.6.6
+- From chart 5.6.6 to chart 5.7.5
+- From chart 5.7.5 to chart 5.8.2
+
+This procedure updates gitlab installation in k8s-mod cluster.
+
+#### Prerequisites
+
+You must be running at least chart 5.6.0 (Updated or deployed from cSkyLab v22-01-05)
+
+### How-to guides
+
+#### 1.- Intermediate update to gitlab chart 5.6.6
+
+This step also updates bitnami/postgresql chart to v11.1.5
+
+##### 1a.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add gitlab https://charts.gitlab.io/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull gitlab/gitlab --version 5.6.6 --untar
+helm pull bitnami/postgresql --version 11.1.5 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+- Save file
+
+##### 1b.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` repository directory.
+
+Execute the following commands to pull charts and upgrade gitlab:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+
+# Save rail secrets to rail-secrets.yaml
+kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
+```
+
+#### 2.- Intermediate update to gitlab chart 5.7.5
+
+##### 2a.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add gitlab https://charts.gitlab.io/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull gitlab/gitlab --version 5.7.5 --untar
+helm pull bitnami/postgresql --version 11.1.5 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+- Save file
+
+##### 2b.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` repository directory.
+
+Execute the following commands to pull charts and upgrade gitlab:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+
+# Save rail secrets to rail-secrets.yaml
+kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
+```
+
+#### 3.- Final update to gitlab chart 5.8.2
+
+##### 3a.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` repository directory.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add gitlab https://charts.gitlab.io/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull gitlab/gitlab --version 5.8.2 --untar
+helm pull bitnami/postgresql --version 11.1.5 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v909-909-909 <!-- omit in toc -->
+
+## Helm charts: gitlab/gitlab v5.8.2 bitnami/postgresql v11.1.5<!-- omit in toc -->
+```
+
+- Save file
+
+##### 3b.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` folder repository.
+
+Execute the following commands to pull charts and upgrade gitlab:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+
+# Save rail secrets to rail-secrets.yaml
+kubectl -n=namespace get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
+```
+
+### Reference
+
+- <https://docs.gitlab.com/charts/>
 
 ---
 

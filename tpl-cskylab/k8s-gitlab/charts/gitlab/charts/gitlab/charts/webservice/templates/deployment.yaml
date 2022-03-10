@@ -29,9 +29,6 @@ metadata:
     {{-   toYaml .deployment.annotations | nindent 4 }}
     {{- end }}
 spec:
-  {{- if $.Values.global.operator.enabled }}
-  paused: true
-  {{- end }}
   # Don't provide replicas when HPA are present
   # replicas: {{ .hpa.minReplicas }}
   selector:
@@ -76,7 +73,7 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: "kubernetes.io/hostname"
+            - topologyKey: {{ default $.Values.global.affinity.podAntiAffinity.topologyKey $.Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   {{- include "gitlab.selectorLabels" $ | nindent 18 }}
@@ -87,7 +84,7 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
+              topologyKey: {{ default $.Values.global.affinity.podAntiAffinity.topologyKey $.Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   {{- include "gitlab.selectorLabels" $ | nindent 18 }}
@@ -137,10 +134,6 @@ spec:
           args:
             - /scripts/wait-for-deps
           env:
-            {{- if $.Values.global.operator.enabled }}
-            - name: BYPASS_SCHEMA_VERSION
-              value: 'true'
-            {{- end }}
             - name: GITALY_FEATURE_DEFAULT_ON
               value: "1"
             - name: CONFIG_TEMPLATE_DIRECTORY
@@ -382,6 +375,8 @@ spec:
               items:
                 - key: {{ template "gitlab.gitlab-shell.authToken.key" $ }}
                   path: shell/.gitlab_shell_secret
+          {{- include "gitlab.appConfig.incomingEmail.mountSecrets" $ | nindent 10 }}
+          {{- include "gitlab.appConfig.serviceDeskEmail.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.gitaly.clientSecrets" $ | nindent 10 }}
           {{- include "gitlab.redis.secrets" $ | nindent 10 }}
           {{- range $.Values.local.psql }}

@@ -115,6 +115,16 @@ generate_secret_if_needed {{ template "gitlab.kas.secret" . }} --from-literal={{
 generate_secret_if_needed {{ template "gitlab.kas.privateApi.secret" . }} --from-literal={{ template "gitlab.kas.privateApi.key" . }}=$(gen_random 'a-zA-Z0-9' 32 | base64)
 {{ end }}
 
+{{ if .Values.global.appConfig.incomingEmail.enabled -}}
+# Gitlab-mailroom incomingEmail webhook secret
+generate_secret_if_needed {{ template "gitlab.appConfig.incomingEmail.authToken.secret" . }} --from-literal={{ template "gitlab.appConfig.incomingEmail.authToken.key" . }}=$(gen_random 'a-zA-Z0-9' 32 | base64)
+{{ end }}
+
+{{ if .Values.global.appConfig.serviceDeskEmail.enabled -}}
+# Gitlab-mailroom serviceDeskEmail webhook secret
+generate_secret_if_needed {{ template "gitlab.appConfig.serviceDeskEmail.authToken.secret" . }} --from-literal={{ template "gitlab.appConfig.serviceDeskEmail.authToken.key" . }}=$(gen_random 'a-zA-Z0-9' 32 | base64)
+{{ end }}
+
 # Registry certificates
 mkdir -p certs
 openssl req -new -newkey rsa:4096 -subj "/CN=gitlab-issuer" -nodes -x509 -keyout certs/registry-example-com.key -out certs/registry-example-com.crt -days 3650

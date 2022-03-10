@@ -40,7 +40,7 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: "kubernetes.io/hostname"
+            - topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   {{- include "gitlab.selectorLabels" . | nindent 18 }}
@@ -50,7 +50,7 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
+              topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   {{- include "gitlab.selectorLabels" . | nindent 18 }}
@@ -135,6 +135,7 @@ spec:
                 - key: {{ .Values.global.appConfig.incomingEmail.password.key }}
                   path: mailroom/password_incoming_email
           {{ end }}
+          {{- include "gitlab.appConfig.incomingEmail.mountSecrets" $ | nindent 10 }}
           {{- if .Values.global.appConfig.serviceDeskEmail.enabled }}
           {{- if eq .Values.global.appConfig.serviceDeskEmail.inboxMethod "microsoft_graph" }}
           - secret:
@@ -149,6 +150,7 @@ spec:
                 - key: {{ .Values.global.appConfig.serviceDeskEmail.password.key }}
                   path: mailroom/password_service_desk
           {{- end }}
+          {{- include "gitlab.appConfig.serviceDeskEmail.mountSecrets" $ | nindent 10 }}
           {{- end }}
       - name: mailroom-secrets
         emptyDir:

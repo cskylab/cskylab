@@ -329,8 +329,13 @@ Defaults to nil
 {{/*
 Return the appropriate apiVersion for Ingress.
 
+It expects a dictionary with three entries:
+  - `global` which contains global ingress settings, e.g. .Values.global.ingress
+  - `local` which contains local ingress settings, e.g. .Values.ingress
+  - `context` which is the parent context (either `.` or `$`)
+
 Example usage:
-{{- $ingressCfg := dict "global" .Values.global.ingress "local" .Values.ingress "capabilities" .Capabilities -}}
+{{- $ingressCfg := dict "global" .Values.global.ingress "local" .Values.ingress "context" . -}}
 kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
 */}}
 {{- define "gitlab.ingress.apiVersion" -}}
@@ -338,38 +343,13 @@ kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressC
 {{-     .local.apiVersion -}}
 {{-   else if .global.apiVersion -}}
 {{-     .global.apiVersion -}}
-{{-   else if .capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+{{-   else if .context.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
 {{-     print "networking.k8s.io/v1" -}}
-{{-   else if .capabilities.APIVersions.Has "networking.k8s.io/v1beta1/Ingress" -}}
+{{-   else if .context.Capabilities.APIVersions.Has "networking.k8s.io/v1beta1/Ingress" -}}
 {{-     print "networking.k8s.io/v1beta1" -}}
 {{-   else -}}
 {{-     print "extensions/v1beta1" -}}
 {{-   end -}}
-{{- end -}}
-
-{{/*
-Return an ingressClassName field if the Ingress apiVersion allows it
-*/}}
-{{- define "gitlab.ingress.classnameField" -}}
-{{-   if or (.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress") (eq .Values.global.ingress.apiVersion "networking.k8s.io/v1") -}}
-ingressClassName: {{ include "gitlab.ingressclass" . }}
-{{-   end -}}
-{{- end -}}
-
-{{/*
-Return an ingress.class if the Ingress apiVersion allows it
-*/}}
-{{- define "gitlab.ingress.classAnnotation" -}}
-{{-   if and (not (.Capabilities.APIVersions.Has "networking.k8s.io/v1/IngressClass")) (not (eq .Values.global.ingress.apiVersion "networking.k8s.io/v1")) -}}
-kubernetes.io/ingress.class: "{{ template "gitlab.ingressclass" . }}"
-{{-   end -}}
-{{- end -}}
-
-{{/*
-Returns the nginx ingress class
-*/}}
-{{- define "gitlab.ingressclass" -}}
-{{- pluck "class" .Values.global.ingress (dict "class" (printf "%s-nginx" .Release.Name)) | first -}}
 {{- end -}}
 
 {{/*
@@ -388,13 +368,6 @@ Overrides the ingress-nginx template to make sure gitlab-shell name matches
 */}}
 {{- define "ingress-nginx.tcp-configmap" -}}
 {{ .Release.Name}}-nginx-ingress-tcp
-{{- end -}}
-
-{{/*
-Overrides the ingress-nginx template to make sure our ingresses match
-*/}}
-{{- define "ingress-nginx.controller.ingress-class" -}}
-{{ template "gitlab.ingressclass" . }}
 {{- end -}}
 
 {{/* ######### annotations */}}

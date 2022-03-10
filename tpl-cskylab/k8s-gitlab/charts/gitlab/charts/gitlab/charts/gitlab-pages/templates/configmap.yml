@@ -125,5 +125,11 @@ data:
     {{- if .Values.rateLimitSourceIPBurst }}
     rate-limit-source-ip-burst={{ .Values.rateLimitSourceIPBurst }}
     {{- end }}
+    {{- if .Values.rateLimitDomain }}
+    rate-limit-domain={{ .Values.rateLimitDomain }}
+    {{- end }}
+    {{- if .Values.rateLimitDomainBurst }}
+    rate-limit-domain-burst={{ .Values.rateLimitDomainBurst }}
+    {{- end }}
   configure: |
     {{- include "gitlab.scripts.configure.secrets" (dict "required" "pages" "optional" "pages") | nindent 4 -}}

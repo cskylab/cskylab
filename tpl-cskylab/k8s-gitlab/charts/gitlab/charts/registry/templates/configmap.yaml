@@ -52,6 +52,7 @@ data:
       {{- with .Values.validation.manifests }}
       manifests:
         referencelimit: {{ .referencelimit }}
+        payloadsizelimit: {{ .payloadsizelimit }}
         urls:
           allow:
         {{- range .urls.allow }}
@@ -124,6 +125,15 @@ data:
       {{- else }}
       {{- include (print $.Template.BasePath "/_storage_default.yaml") . | nindent 6}}
       {{- end }}
+    middleware:
+    {{- if .Values.middleware.storage }}
+      storage:
+      {{ range $index, $v := .Values.middleware.storage }}
+      - name: {{ $v.name }}
+        options: {{ omit $v.options "privatekeySecret" "privatekey" | toYaml | nindent 10 }}
+          privatekey: {{ printf "/etc/docker/registry/middleware.storage/%d/%s" $index $v.options.privatekeySecret.key }}
+      {{ end }}
+    {{- end }}
     {{- include "registry.database.config" $ | nindent 4 }}
     {{- include "registry.gc.config" $ | nindent 4 }}
     {{- include "registry.migration.config" $ | nindent 4 }}

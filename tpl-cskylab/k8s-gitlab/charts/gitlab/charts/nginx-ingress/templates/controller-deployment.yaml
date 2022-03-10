@@ -236,10 +236,9 @@ spec:
     {{- if .Values.controller.hostNetwork }}
       hostNetwork: {{ .Values.controller.hostNetwork }}
     {{- end }}
-    {{/* GitLab change: disable ingress-nginx use of nodeSelector
     {{- if .Values.controller.nodeSelector }}
-      nodeSelector: {{ toYaml .Values.controller.nodeSelector | nindent 8 */}}
-    {{- if include "gitlab.nodeSelector" . }}
+      nodeSelector: {{ toYaml .Values.controller.nodeSelector | nindent 8 }}
+    {{- else if include "gitlab.nodeSelector" . }}
       {{- include "gitlab.nodeSelector" . | nindent 6 }}
     {{- end }}
     {{- if .Values.controller.tolerations }}

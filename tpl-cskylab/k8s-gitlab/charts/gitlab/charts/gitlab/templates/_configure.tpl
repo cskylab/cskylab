@@ -3,7 +3,7 @@
   {{ include "gitlab.scripts.configure" (
             dict
                 "required" "your required secrets dirs" // optional, default "redis shell gitaly registry rails-secrets gitlab-workhorse"
-                "optional" "your optional secrets dirs" // optional, default "minio objectstorage postgres ldap omniauth smtp kas"
+                "optional" "your optional secrets dirs" // optional, default "minio objectstorage postgres ldap omniauth smtp kas mailroom"
     ) }}
 */}}
 {{- define "gitlab.scripts.configure.secrets" -}}
@@ -15,7 +15,7 @@ for secret in {{ default "shell gitaly registry rails-secrets gitlab-workhorse" 
   mkdir -p "${secret_dir}/${secret}"
   cp -v -r -L "${config_dir}/${secret}/." "${secret_dir}/${secret}/"
 done
-for secret in {{ default "redis minio objectstorage postgres ldap omniauth smtp kas pages oauth-secrets" $.optional }} ; do
+for secret in {{ default "redis minio objectstorage postgres ldap omniauth smtp kas pages oauth-secrets mailroom" $.optional }} ; do
   if [ -e "${config_dir}/${secret}" ]; then
     mkdir -p "${secret_dir}/${secret}"
     cp -v -r -L "${config_dir}/${secret}/." "${secret_dir}/${secret}/"

@@ -86,7 +86,9 @@ deployment:
 
 nodeSelector: {}
 tolerations: []
-affinity: {}
+affinity:
+  podAntiAffinity:
+    topologyKey:
 
 podLabels: {}
 common:

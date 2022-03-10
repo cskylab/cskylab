@@ -51,10 +51,10 @@ data:
         email_reply_to: {{ template "gitlab.email.reply_to" . }}
         email_subject_suffix: {{ .Values.global.email.subject_suffix | quote }}
       {{- with .Values.global.appConfig }}
-      {{- if eq .incomingEmail.enabled true }}
+      {{- if .incomingEmail.enabled }}
       {{- include "gitlab.appConfig.incoming_email" . | nindent 6 }}
       {{- end }}
-      {{- if eq .serviceDeskEmail.enabled true }}
+      {{- if .serviceDeskEmail.enabled }}
       {{- include "gitlab.appConfig.service_desk_email" . | nindent 6 }}
       {{- end }}
       {{- include "gitlab.appConfig.cronJobs" . | nindent 6 }}

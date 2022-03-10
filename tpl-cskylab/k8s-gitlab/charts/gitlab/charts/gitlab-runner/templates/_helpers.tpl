@@ -66,6 +66,27 @@ Define the image, using .Chart.AppVersion and GitLab Runner image as a default v
 {{- end -}}
 
 {{/*
+Define the server session timeout, using 1800 as a default value
+*/}}
+{{- define "gitlab-runner.server-session-timeout" }}
+{{-   default 1800 .Values.sessionServer.timeout }}
+{{- end -}}
+
+{{/*
+Define the server session internal port, using 9000 as a default value
+*/}}
+{{- define "gitlab-runner.server-session-external-port" }}
+{{-   default 9000 .Values.sessionServer.externalPort }}
+{{- end -}}
+
+{{/*
+Define the server session external port, using 8093 as a default value
+*/}}
+{{- define "gitlab-runner.server-session-internal-port" }}
+{{-   default 8093 .Values.sessionServer.internalPort }}
+{{- end -}}
+
+{{/*
 Unregister runners on pod stop
 */}}
 {{- define "gitlab-runner.unregisterRunners" -}}
