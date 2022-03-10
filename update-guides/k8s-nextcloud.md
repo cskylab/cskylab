@@ -4,19 +4,106 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-01-05](#v22-01-05)
+- [v909-909-909](#v909-909-909)
   - [Background](#background)
+  - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
+    - [1.- Update configuration files](#1--update-configuration-files)
+    - [2.- Pull charts & update](#2--pull-charts--update)
+  - [Reference](#reference)
+- [v22-01-05](#v22-01-05)
+  - [Background](#background-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Change redis to standalone mode](#1--change-redis-to-standalone-mode)
     - [2.- Update configuration files](#2--update-configuration-files)
     - [3.- Pull charts & re-install application](#3--pull-charts--re-install-application)
-  - [Reference](#reference)
-- [v21-12-06](#v21-12-06)
-  - [Background](#background-1)
-  - [How-to guides](#how-to-guides-1)
-    - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
   - [Reference](#reference-1)
+- [v21-12-06](#v21-12-06)
+  - [Background](#background-2)
+  - [How-to guides](#how-to-guides-2)
+    - [1.- Update configuration files](#1--update-configuration-files-1)
+    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
+  - [Reference](#reference-2)
+
+---
+
+## v909-909-909
+
+### Background
+
+Nextcloud chart 2.12.1 updates chart parameters in Nextcloud appVersion 22.2.3.
+
+Before applying this chart, you must change redis configuration in `values-nextcloud.yaml` from replicated to standalone mode.
+
+This procedure updates Nextcloud installation in k8s-mod cluster.
+
+### Prerequisites
+
+Before aplying this update it is mandatory to have the namespace updated to cSkyLab v22-01-05:
+
+- Nextcloud chart 2.11.3
+- Redis in standalone mode
+  
+### How-to guides
+
+#### 1.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 2.12.1 --untar
+helm pull bitnami/mariadb --version 10.4.0 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v909-909-909 <!-- omit in toc -->
+
+## Helm charts: nextcloud/nextcloud v2.12.1 bitnami/mariadb v10.4.0 <!-- omit in toc -->
+```
+
+- Save file
+
+#### 2.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` repository directory.
+
+Execute the following commands to pull charts and update:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Re-install
+./csdeploy.sh -m install
+
+# Check status
+./csdeploy.sh -l
+```
+
+### Reference
+
+- <https://github.com/nextcloud/helm/tree/master/charts/nextcloud>
 
 ---
 

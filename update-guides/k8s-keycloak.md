@@ -8,13 +8,13 @@
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
+    - [2.- Pull charts & update](#2--pull-charts--update)
   - [Reference](#reference)
 - [v22-01-05](#v22-01-05)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
     - [1.- Update configuration files](#1--update-configuration-files-1)
-    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade-1)
+    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
   - [Reference](#reference-1)
 
 ---
@@ -63,9 +63,9 @@ EOF
 
 - Save file
 
-#### 2.- Pull charts & upgrade
+#### 2.- Pull charts & update
 
-From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` folder repository.
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` repository directory.
 
 Execute the following commands to pull charts and upgrade:
 
