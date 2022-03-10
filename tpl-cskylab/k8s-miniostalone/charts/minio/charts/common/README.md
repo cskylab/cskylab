@@ -32,8 +32,8 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
 
 ## Prerequisites
 
-- Kubernetes 1.12+
-- Helm 3.1.0
+- Kubernetes 1.19+
+- Helm 3.2.0+
 
 ## Parameters
 
@@ -79,18 +79,19 @@ The following table lists the helpers available in the library which are scoped 
 
 ### Ingress
 
-| Helper identifier                         | Description                                                          | Expected Input                                                                                                                                                                   |
-|-------------------------------------------|----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `common.ingress.backend`                  | Generate a proper Ingress backend entry depending on the API version | `dict "serviceName" "foo" "servicePort" "bar"`, see the [Ingress deprecation notice](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) for the syntax differences |
-| `common.ingress.supportsPathType`         | Prints "true" if the pathType field is supported                     | `.` Chart context                                                                                                                                                                |
-| `common.ingress.supportsIngressClassname` | Prints "true" if the ingressClassname field is supported             | `.` Chart context                                                                                                                                                                |
+| Helper identifier                         | Description                                                                                                       | Expected Input                                                                                                                                                                   |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `common.ingress.backend`                  | Generate a proper Ingress backend entry depending on the API version                                              | `dict "serviceName" "foo" "servicePort" "bar"`, see the [Ingress deprecation notice](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/) for the syntax differences |
+| `common.ingress.supportsPathType`         | Prints "true" if the pathType field is supported                                                                  | `.` Chart context                                                                                                                                                                |
+| `common.ingress.supportsIngressClassname` | Prints "true" if the ingressClassname field is supported                                                          | `.` Chart context                                                                                                                                                                |
+| `common.ingress.certManagerRequest`       | Prints "true" if required cert-manager annotations for TLS signed certificates are set in the Ingress annotations | `dict "annotations" .Values.path.to.the.ingress.annotations`                                                                                                                     |
 
 ### Labels
 
-| Helper identifier           | Description                                          | Expected Input    |
-|-----------------------------|------------------------------------------------------|-------------------|
-| `common.labels.standard`    | Return Kubernetes standard labels                    | `.` Chart context |
-| `common.labels.matchLabels` | Return the proper Docker Image Registry Secret Names | `.` Chart context |
+| Helper identifier           | Description                                                                 | Expected Input    |
+|-----------------------------|-----------------------------------------------------------------------------|-------------------|
+| `common.labels.standard`    | Return Kubernetes standard labels                                           | `.` Chart context |
+| `common.labels.matchLabels` | Labels to use on `deploy.spec.selector.matchLabels` and `svc.spec.selector` | `.` Chart context |
 
 ### Names
 
@@ -326,3 +327,19 @@ $ helm install test mychart --set path.to.value00="",path.to.value01=""
 - https://docs.bitnami.com/tutorials/resolve-helm2-helm3-post-migration-issues/
 - https://helm.sh/docs/topics/v2_v3_migration/
 - https://helm.sh/blog/migrate-from-helm-v2-to-helm-v3/
+
+## License
+
+Copyright &copy; 2022 Bitnami
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
