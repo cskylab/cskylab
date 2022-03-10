@@ -4,7 +4,7 @@
 #   cskygen template default values file
 #
 
-_tplname: cs-keycloak
+_tplname: k8s-keycloak
 _tpldescription: Kubernetes Keycloak namespace
 _tplversion: 909-909-909
 

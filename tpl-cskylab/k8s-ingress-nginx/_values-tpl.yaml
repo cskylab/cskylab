@@ -4,7 +4,7 @@
 #   cskygen template default values file
 #
 
-_tplname: cs-ingress-nginx
+_tplname: k8s-ingress-nginx
 _tpldescription: Ingress nginx controller for Kubernetes.
 _tplversion: 909-909-909
 

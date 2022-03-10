@@ -4,7 +4,7 @@
 #   cskygen template default values file
 #
 
-_tplname: cs-miniostalone
+_tplname: k8s-miniostalone
 _tpldescription: MinIO standalone
 _tplversion: 909-909-909
 

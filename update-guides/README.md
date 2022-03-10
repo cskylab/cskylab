@@ -21,11 +21,18 @@
 
 ### Release notes
 
-Welcome to cSkyLab release of 909-909-909. This release includes updates for 7 applications and kubernetes version update to v1.23.4-00
+Welcome to cSkyLab release of 909-909-909.
 
-All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments from this release, will have all these updates applied.
+This release introduces the use of configuration runbooks to make it easier to generate service configuration directories from the template library. Follow instructions on `_cfg-fabric/README.md` to work with these new runbooks.
 
-To keep your cSkyLab installation up to date you must apply the patches and applications upgrades in your actual deployments, according to the following procedures.
+Two new services has been added to `tpl-cskylab` template library:
+
+- k8s-minio-operator
+- k8s-minio-tenant
+
+This release also includes updates for 8 applications and kubernetes version update to v1.23.4-00
+
+All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments from this release, will have all these updates applied. Only previously deployed applications and services should be updated.
 
 It is highly recommended to update zone `cs-mod`, before proceeding to update zones `cs-pro` and `cs-sys`.
 
@@ -43,6 +50,7 @@ Application update procedures in this release:
 | [k8s-gitlab.md](./k8s-gitlab.md)              |
 | [k8s-nextcloud.md](./k8s-nextcloud.md)        |
 | [k8s-miniostalone.md](./k8s-miniostalone.md)  |
+| [kubeadm-clusters.md](./kubeadm-clusters.md)  |
 
 ---
 
