@@ -32,7 +32,7 @@ Two new services has been added to `tpl-cskylab` template library:
 
 This release also includes updates for 8 applications and kubernetes version update to v1.23.4-00
 
-All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments from this release, will have all these updates applied. Only previously deployed applications and services should be updated.
+All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments created with this release, will have all these updates applied. Only previously deployed applications and services should be updated.
 
 It is highly recommended to update zone `cs-mod`, before proceeding to update zones `cs-pro` and `cs-sys`.
 
