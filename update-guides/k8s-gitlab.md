@@ -61,7 +61,7 @@ You must be running at least chart 5.6.0 (Updated or deployed from cSkyLab v22-0
 
 #### 1.- Intermediate update to gitlab chart 5.6.6
 
-This step also updates bitnami/postgresql chart to v11.1.5
+This step also updates bitnami/postgresql chart to v10.16.2
 
 ##### 1a.- Update configuration files
 
@@ -84,7 +84,7 @@ helm repo update
 
 # Charts
 helm pull gitlab/gitlab --version 5.6.6 --untar
-helm pull bitnami/postgresql --version 11.1.5 --untar
+helm pull bitnami/postgresql --version 10.16.2 --untar
 
 EOF
 )"
@@ -138,7 +138,7 @@ helm repo update
 
 # Charts
 helm pull gitlab/gitlab --version 5.7.5 --untar
-helm pull bitnami/postgresql --version 11.1.5 --untar
+helm pull bitnami/postgresql --version 10.16.2 --untar
 
 EOF
 )"
@@ -192,7 +192,7 @@ helm repo update
 
 # Charts
 helm pull gitlab/gitlab --version 5.8.2 --untar
-helm pull bitnami/postgresql --version 11.1.5 --untar
+helm pull bitnami/postgresql --version 10.16.2 --untar
 
 EOF
 )"
@@ -204,7 +204,7 @@ EOF
 ``` bash
 ## v909-909-909 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v5.8.2 bitnami/postgresql v11.1.5<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v5.8.2 bitnami/postgresql v10.16.2<!-- omit in toc -->
 ```
 
 - Save file
