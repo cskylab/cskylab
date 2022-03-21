@@ -5,7 +5,7 @@
 ## Update Guides <!-- omit in toc -->
 
 - [v909-909-909](#v909-909-909)
-  - [k8s version 1.23.4-00](#k8s-version-1234-00)
+  - [k8s version 1.23.5-00](#k8s-version-1235-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions)
   - [Upgrading k8s master node](#upgrading-k8s-master-node)
   - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes)
@@ -33,7 +33,7 @@
 
 ## v909-909-909
 
-### k8s version 1.23.4-00
+### k8s version 1.23.5-00
 
 This page explains how to upgrade a Kubernetes cluster created with kubeadm from version 1.22.x to version 1.23.x, and from version 1.23.x to 1.23.y (where y > x). Skipping MINOR versions when upgrading is unsupported.
 
@@ -58,7 +58,7 @@ Connect to k8s master machine and follow the next steps:
 # Kubeadm upgrade
 sudo apt-mark unhold kubeadm \
   && sudo apt-get update \
-  && sudo apt-get install -y kubeadm=1.23.4-00 \
+  && sudo apt-get install -y kubeadm=1.23.5-00 \
   && sudo apt-mark hold kubeadm \
   && sudo apt-mark showhold
 ```
@@ -105,7 +105,7 @@ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl versio
 # Upgrade kubelet and kubectl
 sudo apt-mark unhold kubelet kubectl \
   && sudo apt-get update \
-  && sudo apt-get install -y kubelet=1.23.4-00 kubectl=1.23.4-00 \
+  && sudo apt-get install -y kubelet=1.23.5-00 kubectl=1.23.5-00 \
   && sudo apt-mark hold kubelet kubectl \
   && sudo apt-mark showhold
 ```
@@ -154,7 +154,7 @@ Connect to k8s worker node machine and follow the next steps:
 # Kubeadm upgrade
 sudo apt-mark unhold kubeadm \
   && sudo apt-get update \
-  && sudo apt-get install -y kubeadm=1.23.4-00 \
+  && sudo apt-get install -y kubeadm=1.23.5-00 \
   && sudo apt-mark hold kubeadm \
   && sudo apt-mark showhold
 ```
@@ -185,7 +185,7 @@ sudo kubeadm upgrade node
 # Upgrade kubelet and kubectl
 sudo apt-mark unhold kubelet kubectl \
   && sudo apt-get update \
-  && sudo apt-get install -y kubelet=1.23.4-00 kubectl=1.23.4-00 \
+  && sudo apt-get install -y kubelet=1.23.5-00 kubectl=1.23.5-00 \
   && sudo apt-mark hold kubelet kubectl \
   && sudo apt-mark showhold
 ```
@@ -241,7 +241,7 @@ kubectl get nodes
 
 ```bash
 # Kubernetes version for kubectl
-k8s_version="1.23.4-00"
+k8s_version="1.23.5-00"
 
 # Go version
 go_version="go1.17.8.linux-amd64.tar.gz"
