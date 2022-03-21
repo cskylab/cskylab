@@ -14,7 +14,7 @@
     - [2.- Intermediate update to gitlab chart 5.7.5](#2--intermediate-update-to-gitlab-chart-575)
       - [2a.- Update configuration files](#2a--update-configuration-files)
       - [2b.- Pull charts & update](#2b--pull-charts--update)
-    - [3.- Final update to gitlab chart 5.8.2](#3--final-update-to-gitlab-chart-582)
+    - [3.- Final update to gitlab chart 5.8.4](#3--final-update-to-gitlab-chart-584)
       - [3a.- Update configuration files](#3a--update-configuration-files)
       - [3b.- Pull charts & update](#3b--pull-charts--update)
   - [Reference](#reference)
@@ -43,13 +43,13 @@
 
 ### Background
 
-This procedure updates GitLab chart to version 5.8.2 with appVersion 14.8.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous.
+This procedure updates GitLab chart to version 5.8.4 with appVersion 14.8.4. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous.
 
 In this case, the update process require to perform intermediate updates:
 
 - From chart 5.6.x to chart 5.6.6
 - From chart 5.6.6 to chart 5.7.5
-- From chart 5.7.5 to chart 5.8.2
+- From chart 5.7.5 to chart 5.8.4
 
 This procedure updates gitlab installation in k8s-mod cluster.
 
@@ -169,7 +169,7 @@ Execute the following commands to pull charts and upgrade gitlab:
 kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
 ```
 
-#### 3.- Final update to gitlab chart 5.8.2
+#### 3.- Final update to gitlab chart 5.8.4
 
 ##### 3a.- Update configuration files
 
@@ -191,7 +191,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull gitlab/gitlab --version 5.8.2 --untar
+helm pull gitlab/gitlab --version 5.8.4 --untar
 helm pull bitnami/postgresql --version 10.16.2 --untar
 
 EOF
