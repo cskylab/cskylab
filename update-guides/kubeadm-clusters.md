@@ -81,13 +81,13 @@ sudo kubeadm upgrade plan
 
 ```bash
 # Apply upgrade
-sudo kubeadm upgrade apply v1.23.1
+sudo kubeadm upgrade apply v1.23.5
 ```
 
 - Once the command finishes you should see:
 
 ```bash
-[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.23.1". Enjoy!
+[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.23.5". Enjoy!
 ```
 
 Upgrade Weave Net CNI provider:
