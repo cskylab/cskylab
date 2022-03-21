@@ -94,8 +94,8 @@ Execute the following commands to pull charts and update:
 # Pull charts to './charts/' directory
 ./csdeploy.sh -m pull-charts
 
-# Re-install
-./csdeploy.sh -m install
+# Update
+./csdeploy.sh -m update
 
 # Check status
 ./csdeploy.sh -l
