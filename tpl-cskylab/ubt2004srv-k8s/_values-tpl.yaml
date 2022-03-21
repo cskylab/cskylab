@@ -13,7 +13,7 @@ _tplversion: 909-909-909
 #
 
 ## Kubernetes version to install
-k8s_version: "1.23.4-00"
+k8s_version: "1.23.5-00"
 
 ## Machine related configuration values
 machine:
