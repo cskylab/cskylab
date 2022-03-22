@@ -21,7 +21,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   condition: postgresql.install
 - name: gitlab-runner
-  version: 0.38.0
+  version: 0.38.1
   repository: https://charts.gitlab.io/
   condition: gitlab-runner.install
 - name: grafana
