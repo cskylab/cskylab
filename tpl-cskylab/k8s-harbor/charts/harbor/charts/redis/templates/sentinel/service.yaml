@@ -51,10 +51,10 @@ spec:
       port: {{ .Values.sentinel.service.nodePorts.redis }}
       {{- else if eq .Values.sentinel.service.type "NodePort" }}
       port: {{ $redisport }}
-      {{- else}}
-      port: {{ .Values.sentinel.service.ports.redis }}
+      {{- else }}
+      port: {{ .Values.sentinel.service.port }}
       {{- end }}
-      targetPort: {{ .Values.replica.containerPorts.redis }}
+      targetPort: {{ .Values.replica.containerPort }}
       {{- if and (or (eq .Values.sentinel.service.type "NodePort") (eq .Values.sentinel.service.type "LoadBalancer")) .Values.sentinel.service.nodePorts.redis }}
       nodePort: {{ .Values.sentinel.service.nodePorts.redis }}
       {{- else if eq .Values.sentinel.service.type "ClusterIP" }}
@@ -68,9 +68,9 @@ spec:
       {{- else if eq .Values.sentinel.service.type "NodePort" }}
       port:  {{ $sentinelport }}
       {{- else }}
-      port: {{ .Values.sentinel.service.ports.sentinel }}
+      port: {{ .Values.sentinel.service.sentinelPort }}
       {{- end }}
-      targetPort: {{ .Values.sentinel.containerPorts.sentinel }}
+      targetPort: {{ .Values.sentinel.containerPort }}
       {{- if and (or (eq .Values.sentinel.service.type "NodePort") (eq .Values.sentinel.service.type "LoadBalancer")) .Values.sentinel.service.nodePorts.sentinel }}
       nodePort: {{ .Values.sentinel.service.nodePorts.sentinel }}
       {{- else if eq .Values.sentinel.service.type "ClusterIP" }}
@@ -81,14 +81,14 @@ spec:
     {{- if eq .Values.sentinel.service.type "NodePort" }}
     - name: sentinel-internal
       nodePort: null
-      port: {{ .Values.sentinel.containerPorts.sentinel }}
+      port: {{ .Values.sentinel.containerPort }}
       protocol: TCP
-      targetPort: {{ .Values.sentinel.containerPorts.sentinel }}
+      targetPort: {{ .Values.sentinel.containerPort }}
     - name: redis-internal
       nodePort: null
-      port: {{ .Values.replica.containerPorts.redis }}
+      port: {{ .Values.replica.containerPort }}
       protocol: TCP
-      targetPort: {{ .Values.replica.containerPorts.redis }}
+      targetPort: {{ .Values.replica.containerPort }}
     {{- end }}
   selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
     app.kubernetes.io/component: node
