@@ -30,6 +30,16 @@ auth:
 ##
 defaultBuckets: ""
 
+## @param extraEnvVars Extra environment variables to be set on MinIO&reg; container
+## e.g:
+## extraEnvVars:
+##   - name: FOO
+##     value: "bar"
+##
+extraEnvVars:
+  - name: MINIO_SERVER_URL
+    value: "https://{{ .publishing.url }}:443"
+
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 ##

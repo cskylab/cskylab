@@ -7,19 +7,20 @@
 - [v909-909-909](#v909-909-909)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
-    - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts & update](#2--pull-charts--update)
+    - [1.- Update chart values file](#1--update-chart-values-file)
+    - [2.- Update configuration files](#2--update-configuration-files)
+    - [3.- Pull charts & update](#3--pull-charts--update)
   - [Reference](#reference)
 - [v22-01-05](#v22-01-05)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
-    - [1.- Update configuration files](#1--update-configuration-files-1)
+    - [1.- Update configuration files](#1--update-configuration-files)
     - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
   - [Reference](#reference-1)
 - [v21-12-06](#v21-12-06)
   - [Background](#background-2)
   - [How-to guides](#how-to-guides-2)
-    - [1.- Update configuration files](#1--update-configuration-files-2)
+    - [1.- Update configuration files](#1--update-configuration-files-1)
     - [2.- Pull charts & upgrade](#2--pull-charts--upgrade-1)
   - [Reference](#reference-2)
 
@@ -31,11 +32,31 @@
 
 MinIO chart 11.1.5 updates components versions in MinIO appVersion 2022.3.22.
 
+A change has to be made in chart configuration values `values-minio.yaml` in order to send the appropriate self-signed URL when sharing a file from the console.
+
 This procedure updates MinIO installation in k8s-mod cluster.
 
 ### How-to guides
 
-#### 1.- Update configuration files
+#### 1.- Update chart values file
+
+Edit values file `values-minio.yaml` and add the following section after **defaultBukets:** section (Before **persistence:**):
+
+```yaml
+## @param extraEnvVars Extra environment variables to be set on MinIO&reg; container
+## e.g:
+## extraEnvVars:
+##   - name: FOO
+##     value: "bar"
+##
+extraEnvVars:
+  - name: MINIO_SERVER_URL
+    value: "https://miniostalone.cskylab.net:443"
+```
+
+>**Note**: The given value must be the URL corresponding with the API, not with the console.
+
+#### 2.- Update configuration files
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/miniostalone` folder repository.
 
@@ -71,7 +92,7 @@ EOF
 
 - Save file
 
-#### 2.- Pull charts & update
+#### 3.- Pull charts & update
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/miniostalone` repository directory.
 

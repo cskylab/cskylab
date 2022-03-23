@@ -60,7 +60,8 @@ Install namespace and charts:
 
 Run:
 
-- Published at: `{{ .publishing.console_url }}`
+- API URL: `{{ .publishing.url }}`
+- Console URL: `{{ .publishing.console_url }}`
 - Access Key: `{{ .credentials.minio_accesskey }}`
 - Secret Key: `{{ .credentials.minio_secretkey }}`
 
