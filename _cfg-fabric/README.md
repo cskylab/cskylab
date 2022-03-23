@@ -32,7 +32,7 @@ echo \
 
 After setting ENV variables, copy and run the following snippet:
 
->**Note:** All existing runbook models (files named **_rb-*.md**) will be updated.
+>**Note:** All existing runbook models (files named **_rb-*.md**) will be replaced. After running the snippet, if you're using your own private CA in a cert-manager clusterissuer, you should change the value for `ca-test-internal` in all runbooks with the value of your private clusterissuer.
 
 ```bash
 echo \
