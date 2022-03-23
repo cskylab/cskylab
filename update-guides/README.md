@@ -32,7 +32,7 @@ Two new services has been added to `tpl-cskylab` template library:
 
 To run these services, 4 worker nodes have to be deployed for both `k8s-mod` and `k8s-pro` k8s clusters. Platforms linux/amrv7 and linux/arm64 are supported for k8s nodes, in addition to linux/amd64
 
-This release also includes updates for 8 applications and kubernetes version update to v1.23.4-00.
+This release also includes updates for 8 applications and kubernetes version update to v1.23.5-00.
 
 All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments created with this release, will have all these updates applied. Only previously deployed applications and services should be updated.
 
