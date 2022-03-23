@@ -2,7 +2,7 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
-- [v909-909-909](#v909-909-909)
+- [v22-03-23](#v22-03-23)
   - [Release notes](#release-notes)
   - [Application updates](#application-updates)
 - [v22-01-05](#v22-01-05)
@@ -17,11 +17,11 @@
 
 ---
 
-## v909-909-909
+## v22-03-23
 
 ### Release notes
 
-Welcome to cSkyLab release of 909-909-909.
+Welcome to cSkyLab release of March 23, 2022.
 
 This release introduces the use of configuration runbooks to make it easier to generate service configuration directories from the template library. Follow instructions on `_cfg-fabric/README.md` to work with these new runbooks.
 

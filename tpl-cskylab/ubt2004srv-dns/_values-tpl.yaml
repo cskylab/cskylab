@@ -6,7 +6,7 @@
 
 _tplname: ubt2004srv-dns
 _tpldescription: Ubuntu server 20.04 DNS bind9 installation
-_tplversion: 909-909-909
+_tplversion: 22-03-23
 
 #
 # Values to override

@@ -6,7 +6,7 @@
 
 _tplname: k8s-metallb-system
 _tpldescription: MetalLB load-balancer for bare metal Kubernetes clusters
-_tplversion: 909-909-909
+_tplversion: 22-03-23
 
 #
 # Values to override

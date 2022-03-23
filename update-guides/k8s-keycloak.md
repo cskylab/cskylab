@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v909-909-909](#v909-909-909)
+- [v22-03-23](#v22-03-23)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update configuration files](#1--update-configuration-files)
@@ -19,7 +19,7 @@
 
 ---
 
-## v909-909-909
+## v22-03-23
 
 ### Background
 
@@ -58,7 +58,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v909-909-909 <!-- omit in toc -->
+## v22-03-23 <!-- omit in toc -->
 
 ## Helm charts: `codecentric/keycloak` v17.0.2 <!-- omit in toc -->
 ```

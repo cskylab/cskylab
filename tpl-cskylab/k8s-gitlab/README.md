@@ -1,6 +1,6 @@
 # Gitlab open DevOps platform <!-- omit in toc -->
 
-## v909-909-909 <!-- omit in toc -->
+## v22-03-23 <!-- omit in toc -->
 
 ## Helm charts: gitlab/gitlab v5.8.4 bitnami/postgresql v10.16.2<!-- omit in toc -->
 

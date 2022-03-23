@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v909-909-909](#v909-909-909)
+- [v22-03-23](#v22-03-23)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update chart values file](#1--update-chart-values-file)
@@ -26,7 +26,7 @@
 
 ---
 
-## v909-909-909
+## v22-03-23
 
 ### Background
 
@@ -85,7 +85,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v909-909-909 <!-- omit in toc -->
+## v22-03-23 <!-- omit in toc -->
 
 ## Helm charts: bitnami/minio v11.1.5<!-- omit in toc -->
 ```

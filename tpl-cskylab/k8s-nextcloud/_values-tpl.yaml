@@ -6,7 +6,7 @@
 
 _tplname: k8s-nextcloud
 _tpldescription: Kubernetes nextcloud namespace
-_tplversion: 909-909-909
+_tplversion: 22-03-23
 
 #
 # Values to override
