@@ -7,7 +7,7 @@ A [Helm Library Chart](https://helm.sh/docs/topics/library_charts/#helm) for gro
 ```yaml
 dependencies:
   - name: common
-    version: 0.x.x
+    version: 1.x.x
     repository: https://charts.bitnami.com/bitnami
 ```
 
@@ -88,18 +88,19 @@ The following table lists the helpers available in the library which are scoped 
 
 ### Labels
 
-| Helper identifier           | Description                                          | Expected Input    |
-|-----------------------------|------------------------------------------------------|-------------------|
-| `common.labels.standard`    | Return Kubernetes standard labels                    | `.` Chart context |
-| `common.labels.matchLabels` | Return the proper Docker Image Registry Secret Names | `.` Chart context |
+| Helper identifier           | Description                                                                 | Expected Input    |
+|-----------------------------|-----------------------------------------------------------------------------|-------------------|
+| `common.labels.standard`    | Return Kubernetes standard labels                                           | `.` Chart context |
+| `common.labels.matchLabels` | Labels to use on `deploy.spec.selector.matchLabels` and `svc.spec.selector` | `.` Chart context |
 
 ### Names
 
-| Helper identifier       | Description                                                | Expected Input   |
-|-------------------------|------------------------------------------------------------|-------------------|
-| `common.names.name`     | Expand the name of the chart or use `.Values.nameOverride` | `.` Chart context |
-| `common.names.fullname` | Create a default fully qualified app name.                 | `.` Chart context |
-| `common.names.chart`    | Chart name plus version                                    | `.` Chart context |
+| Helper identifier        | Description                                                | Expected Input    |
+|--------------------------|------------------------------------------------------------|-------------------|
+| `common.names.name`      | Expand the name of the chart or use `.Values.nameOverride` | `.` Chart context |
+| `common.names.fullname`  | Create a default fully qualified app name.                 | `.` Chart context |
+| `common.names.namespace` | Allow the release namespace to be overridden               | `.` Chart context |
+| `common.names.chart`     | Chart name plus version                                    | `.` Chart context |
 
 ### Secrets
 

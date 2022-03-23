@@ -31,7 +31,7 @@
 
 ### Background
 
-Nextcloud chart 2.12.1 updates chart parameters in Nextcloud appVersion 22.2.3.
+Nextcloud chart 2.12.2 updates chart parameters in Nextcloud appVersion 22.2.3.
 
 Before applying this chart, you must change redis configuration in `values-nextcloud.yaml` from replicated to standalone mode.
 
