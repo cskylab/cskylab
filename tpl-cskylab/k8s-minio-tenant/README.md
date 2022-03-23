@@ -2,7 +2,7 @@
 
 ## v909-909-909 <!-- omit in toc -->
 
-## Image: quay.io/minio/minio:RELEASE.2022-03-08T22-28-51Z <!-- omit in toc -->
+## Image: quay.io/minio/minio:RELEASE.2022-03-22T02-05-10Z <!-- omit in toc -->
 
 ---
 
