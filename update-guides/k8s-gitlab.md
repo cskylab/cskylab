@@ -204,7 +204,7 @@ EOF
 ``` bash
 ## v909-909-909 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v5.8.2 bitnami/postgresql v10.16.2<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v5.8.4 bitnami/postgresql v10.16.2<!-- omit in toc -->
 ```
 
 - Save file
