@@ -29,7 +29,7 @@
 
 ### Background
 
-MinIO chart 11.1.1 updates components versions in MinIO appVersion 2022.3.8.
+MinIO chart 11.1.4 updates components versions in MinIO appVersion 2022.3.17.
 
 This procedure updates MinIO installation in k8s-mod cluster.
 
