@@ -103,10 +103,9 @@ spec:
         {{- if .Values.defaultBackend.resources }}
           resources: {{ toYaml .Values.defaultBackend.resources | nindent 12 }}
         {{- end }}
-    {{/* GitLab change: disable ingress-nginx use of nodeSelector
     {{- if .Values.defaultBackend.nodeSelector }}
-      nodeSelector: {{ toYaml .Values.defaultBackend.nodeSelector | nindent 8 */}}
-    {{- if include "gitlab.nodeSelector" . }}
+      nodeSelector: {{ toYaml .Values.defaultBackend.nodeSelector | nindent 8 }}
+    {{- else if include "gitlab.nodeSelector" . }}
       {{- include "gitlab.nodeSelector" . | nindent 6 }}
     {{- end }}
       serviceAccountName: {{ template "ingress-nginx.defaultBackend.serviceAccountName" . }}

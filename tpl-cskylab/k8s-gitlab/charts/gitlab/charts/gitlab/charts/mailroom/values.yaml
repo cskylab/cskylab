@@ -21,6 +21,13 @@ podLabels: {}
 common:
   labels: {}
 
+workhorse: {}
+  # by default, Workhorse is a part of the Webservice Pods / Service
+  # scheme: 'http'
+  # host: '0.0.0.0'
+  # serviceName: 'webservice'
+  # port: 8181
+
 global:
   redis:
     password: {}
@@ -45,6 +52,10 @@ global:
       clientSecret:
         key: secret
       pollInterval: 60
+      deliveryMethod: sidekiq
+      authToken:
+        secret: ""
+        key: authToken
 
     serviceDeskEmail:
       enabled: false
@@ -66,6 +77,10 @@ global:
       clientSecret:
         key: secret
       pollInterval: 60
+      deliveryMethod: sidekiq
+      authToken:
+        secret: ""
+        key: authToken
 
 hpa:
   minReplicas: 1
@@ -145,3 +160,7 @@ serviceAccount:
 
 deployment:
   strategy: {}
+
+affinity:
+  podAntiAffinity:
+    topologyKey:

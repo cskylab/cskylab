@@ -68,7 +68,6 @@ Common labels
 */}}
 {{- define "ingress-nginx.labels" -}}
 helm.sh/chart: {{ include "ingress-nginx.chart" . }}
-{{ include "ingress-nginx.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -145,12 +144,4 @@ IngressClass parameters.
 
 {{- define "ingress-nginx.tcp-configmap" -}}
 {{ default (printf "%s-%s" (include "ingress-nginx.fullname" .) "tcp") .Values.tcpExternalConfig }}
-{{- end -}}
-
-{{- define "ingress-nginx.controller.ingress-class" -}}
-{{- if not .Values.controller.ingressClass -}}
-{{ .Release.Name }}-nginx
-{{- else -}}
-nginx
-{{- end -}}
 {{- end -}}

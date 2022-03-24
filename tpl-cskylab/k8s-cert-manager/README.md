@@ -1,6 +1,8 @@
 # x509 Certificate management for Kubernetes <!-- omit in toc -->
 
-## Helm charts: `jetstack/cert-manager v1.6.1` <!-- omit in toc -->
+## v22-03-23 <!-- omit in toc -->
+
+## Helm charts: `jetstack/cert-manager v1.7.1` <!-- omit in toc -->
 
 [cert-manager](https://cert-manager.io/docs/) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing key pair, or self signed.
 

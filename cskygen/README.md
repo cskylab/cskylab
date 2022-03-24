@@ -1,39 +1,34 @@
 # cskygen - cSkyLab Configuration Genesis <!-- omit in toc -->
 
-## v1.0.1 <!-- omit in toc -->
+## v1.0.2 <!-- omit in toc -->
 
 `cskygen` is a CLI application that generates configuration files from pre-configured templates.
 
 It is widely used in cSkyLab project to create configuration files for machines, services and applications.
 
-cskygen is developed to be used with templates using [Go templates](https://godoc.org/text/template) specifications.
+cskygen is developed using [Go templates](https://godoc.org/text/template) specifications.
 
 It is compatible and integrates the use of [Helm Charts](https://helm.sh/) in kubernetes services deployment.
 
 - [Background](#background)
-  - [Templates Libraries](#templates-libraries)
-    - [Template development](#template-development)
+  - [Template Libraries](#template-libraries)
 - [How-to guides](#how-to-guides)
   - [Build & install cskygen](#build--install-cskygen)
-    - [Build binary file](#build-binary-file)
-  - [Creating service and application configuration files from a template](#creating-service-and-application-configuration-files-from-a-template)
-    - [1.- Prepare the overriding file](#1--prepare-the-overriding-file)
-    - [2.- Execute cskygen](#2--execute-cskygen)
+  - [Using cskygen with configuration runbooks](#using-cskygen-with-configuration-runbooks)
+  - [Using cskygen manually](#using-cskygen-manually)
 - [License](#license)
 
 ---
 
 ## Background
 
-At cSkyLab project, machine services and applications are based on pre-configured templates files (models of applications and services).
+When creating customized configuration files from the template, cskygen uses a customization process based on 2 layers applied in the following order:
 
-When creating a new deployment, cskygen uses a configuration process based on 2 layers that are applied with the following order:
+1. Template default values file: `_values-tpl.yaml`. It contains default customizable values. It must exist with that name inside the template directory.
 
-1. Pre-configured Template default values file: `_values-tpl.yaml`. It contains default customizable values. It must exist with that name inside the template directory.
+2. Overriding file : User generated `.yaml` file. It contains overriding values that define the service according to the customizations you made.
 
-2. Overriding file : `service_name.yaml` contains overriding values that define the service according to the customizations you made.
-
-Values from the `service_name.yaml` file take precedence over the  `_values-tpl.yaml`.
+Values from the overriding file take precedence over the template default values file.
 
 cskygen uses [Viper](https://github.com/spf13/viper) to read and merge `.yaml` configuration files.
 
@@ -41,30 +36,30 @@ cskygen uses [Viper](https://github.com/spf13/viper) to read and merge `.yaml` c
 
 > **NOTE**: To avoid parsing images and [Helm Charts](https://helm.sh/), files below directories named `images` or `charts` will not be considered by cskygen.
 
-### Templates Libraries
+### Template Libraries
 
-Templates libraries contains templates to generate configuration files for machines, applications and services using the `cskygen` utility.
+Template libraries contains configuration models used to generate customized configuration files for machines, applications and services with the `cskygen` utility.
 
-You can create your own library either by forking cSkyLab templates library or by creating it from scratch.
-
-To learn more about cSkylab template library see documentation at [cSkyLab Templates Library](../tpl-cskylab/README.md)
-
-#### Template development
+cSkyLab project template library is located at directory `tp-cskylab` in your repository. You can create your own library either by forking cSkyLab templates or by creating it from scratch.
 
 Template resource files must be developed according to [Go templates](https://godoc.org/text/template) specifications.
 
 > **NOTE**: All keys in overriding and template values files must be in lowercase. Files cannot have empty keys configured.
 
+To learn more about cSkylab template library see documentation at [cSkyLab Templates Library](../tpl-cskylab/README.md)
+
 ## How-to guides
 
 ### Build & install cskygen
 
+Building & installing `cskygen` is necessary to generate application and service configurations from template libraries.
+
 **Prerequisites**:
 
 - cSkyLab git repository cloned
-- Go language installed
+- Go language 1.16 or later installed
 
-#### Build binary file
+**Build binary file**:
 
 `cskygen` uses go modules `go.mod` and can be installed directly from the git repository.
 
@@ -74,73 +69,41 @@ To build and install cskygen binary file in $GOPATH/bin, open a terminal in the 
 go install .
 ```
 
-### Creating service and application configuration files from a template
+### Using cskygen with configuration runbooks
 
-To create service and application configuration files from a template you must follow two steps:
+cSkyLab Templates provide configuration runbook models with snipets and yaml override values, to make easier the creation of any application configuration directory from its template. These runbook models can be imported to a working directory `_cfg-fabric` to be customized with the appropriate values for each application or service you need to deploy.
+
+To create configuration files from templates with runbooks:
+
+- Go to `_cfg-fabric` directory. (e.g., `/YourRepo/_cfg-fabric/`)
+- Open terminal and follow instructions in `README.md` and `*.md` runbooks.
+
+### Using cskygen manually
+
+To manually use cskygen to create application configuration files from templates you must follow two steps:
 
 1. Prepare the overriding file
 2. Execute cskygen
 
-#### 1.- Prepare the overriding file
+**1.- Prepare the overriding file:**
 
-- In `tpl_overriding-files` directory create your overriding file (Ex.: `service_name.yaml`) copying contents from `_overriding-model.yaml` file.
-
-It is highly recommended to name the overriding file, according to the service and destination directory names (Ex. `k8s-mod-n1.yaml`, `k8s-mod-metallb.yaml`...).
-
-- Go to the directory of the template you want to use, and open the values file `_values-tpl.yaml`
-- Copy the `values to override` section from the file `_values-tpl.yaml` into the same section in your overriding file.
-- Change the desired values for your installation.
-- Modify the code commented command `cskygen create` with the appropriate flags:
-
-  | flag |                                                                       |
-  | ---- | --------------------------------------------------------------------- |
-  | `-d` | Destination service directory (Must not exist)                        |
-  | `-t` | Template directory                                                    |
-  | `-f` | Overrides file (.yaml extension required on filename but not in flag) |
-
+- Select the template you want to use
+- Copy the template default values file: `_values-tpl.yaml` to your `$HOME` directory with your overriding file name (Ex.: `app_xxx.yaml`)
+- In your overriding file at your `$HOME` directory, change the desired values for your installation.
 - Save the file
 
-**Example:**
+**2.- Execute cskygen:**
 
-Overrides file to create metallb-system service in k8s-mod cluster:
+- Open a terminal in your `$HOME` directory
+- Execute the `cskygen create` command with the following flags:
 
-```yaml
-#
-#   cskygen configuration values file
-#
-#   Copyright © 2021 cSkyLab.com
-#
+  | flag |                                                                        |
+  | ---- | ---------------------------------------------------------------------- |
+  | `-d` | Destination app configuration repository directory (Must not exist)    |
+  | `-t` | Template directory                                                     |
+  | `-f` | Overriding file (.yaml extension required on filename but not in flag) |
 
-# 
-#   Command:
-#
-#   cskygen create -t ../tpl/k8s-metallb-system -d ../cs-mod/k8s-mod/metallb-system -f k8s-mod-metallb-system
-#
-
-#
-# Values to override
-#
-
-## k8s cluster credentials kubeconfig file
-kubeconfig: config-k8s-mod
-
-namespace:
-  ## k8s namespace name
-  name: metallb-system
-
-## MetalLB static and dynamc ip addresses pools
-metallb:
-  staticpooladdr: 
-    - 192.168.82.20/32  # k8s-ingress
-  dynamicpooladdr: 
-    - 192.168.82.75-192.168.82.90   # Auto assigned
-  ```
-
-#### 2.- Execute cskygen
-
-- Open a terminal in `tpl_overriding-files` directory
-- Copy and execute the `cskygen create` command in the overriding file
-- Check the created configuration directory.
+- Check the created configuration directory
 
 If you need to repeat the process with different overriding values, simply delete the configuration directory, change the overriding values, and execute again the `cskygen create` command to generate the new configuration directory.
 

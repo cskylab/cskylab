@@ -1,4 +1,0 @@
-{{- $sharedSecretValues := index .Values "shared-secrets" -}}
-{{- if and $sharedSecretValues.enabled (not .Values.global.operator.enabled) }}
-{{ include (print $.Template.BasePath "/shared-secrets/_self-signed-cert-job.yml") . }}
-{{- end }}

@@ -4,9 +4,9 @@
 #   cskygen template default values file
 #
 
-_tplname: Harbor
+_tplname: k8s-harbor
 _tpldescription: Harbor opensource registry
-_tplversion: 21.11.07
+_tplversion: 22-03-23
 
 #
 # Values to override

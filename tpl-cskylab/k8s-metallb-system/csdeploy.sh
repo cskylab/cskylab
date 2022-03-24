@@ -3,9 +3,9 @@
 #
 #   csdeploy.sh
 #
-#       MetalLB load-balancer.
+#       MetalLB v0.12.1 configuration.
 #
-#   Copyright © 2021 cSkyLab.com
+#   Copyright © 2020 cSky.cloud authors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ usage_msg="$(
   cat <<EOF
 
 Purpose:
-  MetalLB load-balancer.
+  MetalLB v0.12.1 configuration.
+  Use this script to deploy and configure metallb-system namespace.
 
 Usage:
   sudo csdeploy.sh [-l] [-m <execution_mode>] [-h] [-q]
@@ -43,33 +44,25 @@ Execution modes:
   -l  [list-status]     - List current status.
   -m  <execution_mode>  - Valid modes are:
 
-      [pull-charts]     - Pull charts to './charts/' directory.
-      [install]         - Create namespace and install charts.
-      [update]          - Modify address pools and upgrade charts versions.
-      [uninstall]       - Uninstall charts and remove namespace.
-      [remove]          - Remove namespace and all its contents.
+      [install]         - Install metallb-system namespace and manifests.
+      [remove]          - Remove manifests and metallb-system namespace.
+      [update]          - Update config-map with address pools and options.
 
 Options and arguments:  
   -h  Help
   -q  Quiet (Nonstop) execution.
 
 Examples:
-  # Pull charts to './charts/' directory
-    ./csdeploy.sh -m pull-charts
-
-  # Create namespace and install charts.
+  # Install namespace and mainfests:
     ./csdeploy.sh -m install
 
-  # Modify address pools and upgrade charts.
+  # Update config-map with address pools and options in file config.yaml:
     ./csdeploy.sh -m update
 
-  # Uninstall charts, and namespace.
-    ./csdeploy.sh -m uninstall
-
-  # Remove namespace and all its contents
+  # Remove manifests and metallb-system namespace
     ./csdeploy.sh -m remove
 
-  # Display namespace, address pools  and charts status.
+  # Display namespace status:
     ./csdeploy.sh -l
 
 EOF
@@ -81,23 +74,7 @@ EOF
 
 # Kubernetes namespace (name of current directory)
 # namespace="${PWD##*/}"
-namespace="{{ .namespace.name }}"
-
-# Source script to pull charts
-source_charts="$(
-  cat <<EOF
-
-## Pull helm charts from repositories
-
-# Repositories
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-
-# Charts
-helm pull bitnami/metallb --version 2.5.16 --untar
-
-EOF
-)"
+namespace="metallb-system" # must follow this name and be unique in cluster
 
 # Color code for messages
 # https://robotmoon.com/256-colors/
@@ -116,15 +93,6 @@ execution_mode=
 command_line="$(basename "$0") $*"
 # Quiet mode execution (false by default)
 quiet_mode=false
-
-# Helm Chart Array
-# Charts must be previously fetched with the appropriate version in ./charts/ directory
-declare -a helm_charts=()
-find ./charts/ -maxdepth 1 -mindepth 1 -type d >/tmp/chartsdir
-while IFS= read -r line; do
-  chart="$(basename "${line}")"
-  helm_charts+=("${chart}")
-done </tmp/chartsdir
 
 # Display usage if no arguments supplied
 if (($# == 0)); then
@@ -208,11 +176,9 @@ fi
 
 # Validate execution modes
 case "${execution_mode}" in
-"pull-charts") ;;
 "install") ;;
-"update") ;;
-"uninstall") ;;
 "remove") ;;
+"update") ;;
 "list-status") ;;
 *)
   echo
@@ -222,39 +188,9 @@ case "${execution_mode}" in
   ;;
 esac
 
-# Get namespace or trigger an error if not found
-if [[ "${execution_mode}" == "update" ]] ||
-  [[ "${execution_mode}" == "uninstall" ]] ||
-  [[ "${execution_mode}" == "remove" ]] ||
-  [[ "${execution_mode}" == "list-status" ]]; then
+# Check namespace exists
+if [[ "${execution_mode}" != "install" ]]; then
   kubectl get namespace "${namespace}"
-fi
-
-# Check for charts and Chart.yaml files
-if [[ "${execution_mode}" == "install" ]] ||
-  [[ "${execution_mode}" == "update" ]] ||
-  [[ "${execution_mode}" == "uninstall" ]]; then
-
-  # Check for charts in chart array
-  count=${#helm_charts[@]}
-  if ((count > 0)); then
-    for chart in "${helm_charts[@]}"; do
-      # Check for file Chart.yaml inside chart directory
-      if ! [[ -f ./charts/"${chart}/Chart.yaml" ]]; then
-        echo
-        echo "${msg_error} ./charts/${chart}/Chart.yaml file does not exist. Fetch chart with the appropriate version" >&2
-        echo
-        exit 1
-      fi
-      # Check for values-chart file
-      if ! [[ -f "./values-${chart}.yaml" ]]; then
-        echo
-        echo "${msg_error} ./values-${chart}.yaml file must exist to deploy the chart." >&2
-        echo
-        exit 1
-      fi
-    done
-  fi
 fi
 
 ################################################################################
@@ -270,24 +206,14 @@ if [[ ${quiet_mode} == false ]]; then
   echo
   echo "      Execution mode: [${execution_mode}]"
   echo
-  if [[ "${execution_mode}" == "pull-charts" ]]; then
-    echo "${source_charts}"
-  else
-    echo "           Namespace: ${namespace}"
-    # Check for charts
-    count=${#helm_charts[@]}
-    if ((count > 0)); then
-      echo "         Helm charts: ${helm_charts[*]}"
-    fi
-  fi
+  echo "           Namespace: ${namespace}"
   echo
   echo "*********************************************************************"
   echo
 
   read -r -s -p $'Press Enter to continue or Ctrl+C to abort...'
   echo
-  if [[ "${execution_mode}" == "remove" ]] ||
-    [[ "${execution_mode}" == "uninstall" ]]; then
+  if [[ "${execution_mode}" == "remove" ]]; then
     echo
     echo "******** WARNING: Services will be REMOVED FROM CLUSTER."
     echo
@@ -302,116 +228,58 @@ echo "${msg_info} START OF EXECUTION (SOE)"
 echo
 
 ################################################################################
-# Pull helm charts from repositories
-################################################################################
-
-if [[ "${execution_mode}" == "pull-charts" ]]; then
-
-  # Clean ./charts directory
-  echo
-  echo "${msg_info} Clean ./charts directory"
-  echo
-  rm -rv ./charts
-  mkdir -v ./charts
-  touch ./charts/.gitkeep
-
-  echo
-  echo "${msg_info} Pull helm charts"
-  echo
-  # Pull helm charts to ./charts directory
-  echo "${source_charts}" >/tmp/source-charts.sh
-  cd ./charts
-  # Bypass shellcheck intentionally.
-  # shellcheck disable=SC1091
-  source /tmp/source-charts.sh
-
-  # Show charts
-  echo
-  echo "${msg_info} Helm charts pulled into ./charts directory:"
-  echo
-  find . -maxdepth 1 -mindepth 1 -type d
-  echo
-fi
-
-################################################################################
-# Create namespace
+# Install MetalLB
 ################################################################################
 
 if [[ "${execution_mode}" == "install" ]]; then
-
-  # Task block for installing apps and services
   echo
-  echo "${msg_info} Create namespace and secrets ${namespace}"
+  echo "${msg_info} Install ${namespace}"
   echo
 
   # Create namespace
   kubectl create namespace "${namespace}"
 
+  # MetalLB installation manifests
+  # https://metallb.universe.tf/installation/#installation-by-manifest
+
+  # Local manifest metallb.yaml is copied from
+  # https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+  kubectl apply -f metallb.yaml
+
+  # Create memberlist secret
+  # The memberlist secret contains the secretkey to encrypt the communication
+  # between speakers for the fast dead node detection
+  # kubectl create secret generic -n ${namespace} memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 fi
 
 ################################################################################
-# Deploy charts
+# Update config-map
 ################################################################################
 
 if [[ "${execution_mode}" == "update" ]] ||
   [[ "${execution_mode}" == "install" ]]; then
 
-  # Check for charts
-  count=${#helm_charts[@]}
-  if ((count > 0)); then
-    # Deploy charts
-    echo
-    echo "${msg_info} Deploy charts"
-    echo
-    for chart in "${helm_charts[@]}"; do
-      helm upgrade --install --namespace "${namespace}" "${chart}" -f "values-${chart}.yaml" "charts/${chart}"
-    done
-    echo
-    echo "${msg_info} Charts deployed"
-    echo
-  fi
+  # Update configmap
+  echo
+  echo "${msg_info} Update config-map"
+  echo
+  kubectl apply -f config.yaml
 fi
 
 ################################################################################
-# Uninstall charts
+# Remove manifests and namespace
 ################################################################################
 
-if [[ "${execution_mode}" == "uninstall" ]]; then
-
-  # Check for charts
-  count=${#helm_charts[@]}
-  if ((count > 0)); then
-    # Deploy charts
-    echo
-    echo "${msg_info} Uninstall charts"
-    echo
-    for chart in "${helm_charts[@]}"; do
-      helm uninstall --namespace "${namespace}" "${chart}"
-    done
-    echo
-    echo "${msg_info} Charts uninstalled"
-    echo
-  fi
-
-fi
-
-################################################################################
-# Remove namespace
-################################################################################
-
-if [[ "${execution_mode}" == "remove" ]] ||
-  [[ "${execution_mode}" == "uninstall" ]]; then
+if [[ "${execution_mode}" == "remove" ]]; then
 
   # Remove namespace
   echo
   echo "${msg_info} Remove ${namespace}"
   echo
+  # Remove manifests
+  kubectl delete -f metallb.yaml
+  # Remove namespace
   kubectl delete namespace "${namespace}"
-
-  echo
-  echo "${msg_info} Namespace ${namespace} removed from cluster"
-  echo
-
 fi
 
 ################################################################################
@@ -424,28 +292,13 @@ if [[ "${execution_mode}" == "list-status" ]] ||
 
   # Display namespace status
   echo
-  echo "${msg_info} Namespace ${namespace} status information"
+  echo "${msg_info} ${namespace} status information"
   echo
   kubectl -n "${namespace}" get all
-
-  # Display metallb-config status
   echo
-  echo "${msg_info} Address pool status information"
+  echo "${msg_info} Address pools and options configmap"
   echo
-  kubectl -n "${namespace}" describe configmaps metallb-config
-
-  # Chart array history information
-  echo
-  echo "${msg_info} Chart release history information"
-  echo
-  # Check for charts
-  count=${#helm_charts[@]}
-  if ((count > 0)); then
-    for charts in "${helm_charts[@]}"; do
-      helm --namespace "${namespace}" history "${charts}"
-      echo
-    done
-  fi
+  kubectl -n "${namespace}" describe configmaps config
 fi
 
 #### END OF EXECUTION (EOE) ####################################################

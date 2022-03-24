@@ -28,6 +28,8 @@ enabled: true
 # Tolerations for pod scheduling
 tolerations: []
 
+annotations: {}
+
 podLabels: {}
 common:
   labels: {}
@@ -80,3 +82,7 @@ extraEnv:
 
 deployment:
   strategy: {}
+
+affinity:
+  podAntiAffinity:
+    topologyKey:

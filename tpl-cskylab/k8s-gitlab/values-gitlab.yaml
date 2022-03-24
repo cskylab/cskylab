@@ -235,10 +235,11 @@ global:
 
   ## doc/charts/globals.md#custom-certificate-authorities
   # configuration of certificates container & custom CA injection
+  # NOTE: Only one secret with customCA
   certificates:
     customCAs:
     - secret: customca-secret
-    - secret: carootlestaging-secret
+    # - secret: carootlestaging-secret
     # - secret: carootleprod-secret
 
   busybox:

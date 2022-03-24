@@ -14,7 +14,9 @@ spec:
   concurrencyPolicy: {{ .Values.backups.cron.concurrencyPolicy }}
   failedJobsHistoryLimit: {{ .Values.backups.cron.failedJobsHistoryLimit }}
   schedule: {{ .Values.backups.cron.schedule | quote }}
+  startingDeadlineSeconds: {{ .Values.backups.cron.startingDeadlineSeconds }}
   successfulJobsHistoryLimit: {{ .Values.backups.cron.successfulJobsHistoryLimit }}
+  suspend: {{ .Values.backups.cron.suspend }}
   jobTemplate:
     spec:
       template:

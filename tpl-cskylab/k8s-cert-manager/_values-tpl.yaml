@@ -4,9 +4,9 @@
 #   cskygen template default values file
 #
 
-_tplname: cs-cert-manager
+_tplname: k8s-cert-manager
 _tpldescription: x509 certificate management for Kubernetes
-_tplversion: 21.11.07
+_tplversion: 22-03-23
 
 #
 # Values to override

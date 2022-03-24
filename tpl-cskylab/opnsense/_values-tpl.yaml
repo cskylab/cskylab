@@ -6,7 +6,7 @@
 
 _tplname: opnsense
 _tpldescription: OPNsense cluster
-_tplversion: 21.11.22
+_tplversion: 22-03-23
 
 #
 # Values to override

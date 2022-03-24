@@ -1,6 +1,0 @@
-<pool type="dir">
-  <name>dirpool.0000</name>
-  <target>
-    <path>/srv/dirpool.0000</path>
-  </target>
-</pool>

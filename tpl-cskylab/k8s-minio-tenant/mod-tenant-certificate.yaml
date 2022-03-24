@@ -1,0 +1,31 @@
+#
+# MinIO tenant external certificate
+#
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .namespace.name }}-certificate
+  namespace: {{ .namespace.name }}
+spec:
+  commonName: {{ .publishing.miniourl }}
+  secretName: {{ .namespace.name }}-tenant-tls
+  dnsNames:
+    # Ingress domain
+    - {{ .publishing.miniourl }}
+    - {{ .publishing.consoleurl }}
+    # Internal
+    - {{ .namespace.name }}-hl
+    - {{ .namespace.name }}-hl.{{ .namespace.name }}.svc.cluster.local
+    - '*.{{ .namespace.name }}-hl'
+    - '*.{{ .namespace.name }}-hl.{{ .namespace.name }}.svc.cluster.local'
+    - minio
+    - minio.{{ .namespace.name }}.svc.cluster.local
+    - {{ .namespace.name }}-console
+    - {{ .namespace.name }}-console.{{ .namespace.name }}.svc.cluster.local
+  issuerRef:
+    name: {{ .certificate.clusterissuer }}
+    # We can reference ClusterIssuers by changing the kind here.
+    # The default value is Issuer (i.e. a locally namespaced Issuer)
+    kind: ClusterIssuer
+    group: cert-manager.io

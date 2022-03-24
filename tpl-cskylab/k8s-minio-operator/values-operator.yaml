@@ -1,0 +1,22 @@
+# Default values for minio-operator.
+
+operator:
+  image:
+    repository: {{ .registry.proxy }}/minio/operator
+
+console:
+  image:
+    repository: {{ .registry.proxy }}/minio/console
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: {{ .certificate.clusterissuer }}
+    # cert-manager.io/cluster-issuer: letsencrypt-staging
+    # cert-manager.io/cluster-issuer: letsencrypt
+
+    host: {{ .publishing.url }}
+    tls:
+    - hosts:
+      - {{ .publishing.url }}
+      secretName: minio-operator-tls

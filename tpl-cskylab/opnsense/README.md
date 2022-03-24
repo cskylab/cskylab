@@ -1,5 +1,8 @@
 # OPNsense® Firewall & Routing
 
+## OPNsense version v22.1.2 <!-- omit in toc -->
+
+
 [OPNsense®](https://opnsense.org/) is an open source HardenedBSD based firewall and routing platform.
 
 Firewall cluster **opn-cluster** gives routing, firewall, DHCP, DNS and VPN services inside cSkyLab.

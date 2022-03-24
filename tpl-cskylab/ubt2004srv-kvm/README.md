@@ -1,5 +1,10 @@
 # {{ .machine.hostname }} <!-- omit in toc -->
 
+This machine runs a KVM host on Ubuntu Server 20.04 LTS.
+
+Virtual machines are created on storage supported by LVM services.
+
+
 [comment]: <> (**Machine functional description goes here**)
 
 Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
@@ -31,6 +36,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
     - [Define virtual machines](#define-virtual-machines)
     - [Undefine virtual machines](#undefine-virtual-machines)
   - [Utilities](#utilities)
+    - [Recover a qcow2 image using fsck](#recover-a-qcow2-image-using-fsck)
     - [Passwords and secrets](#passwords-and-secrets)
     - [Abridged ‘find’ command examples](#abridged-find-command-examples)
     - [USB disk operations](#usb-disk-operations)
@@ -772,6 +778,71 @@ To undefine a virtual machine from xml configuration file, execute:
 ```
 
 ### Utilities
+
+#### Recover a qcow2 image using fsck
+
+Load network block device module:
+
+`# modprobe nbd max_part=8`
+
+Poweroff machine:
+
+`# virsh destroy virtual-machine`
+
+Connect disk image:
+
+`# qemu-nbd --connect=/dev/nbd0 /var/lib/libvirt/images/virtual-machine.qcow2`
+
+Check disk:
+
+```
+# fsck /dev/nbd0p1
+fsck from util-linux 2.25.2
+e2fsck 1.42.12 (29-Aug-2014)
+/dev/nbd0p1: recovering journal
+/dev/nbd0p1 contains a file system with errors, check forced.
+Pass 1: Checking inodes, blocks, and sizes
+Inodes that were part of a corrupted orphan linked list found.  Fix<y>? yes
+Inode 274 was part of the orphaned inode list.  FIXED.
+Inode 132276 was part of the orphaned inode list.  FIXED.
+Deleted inode 142248 has zero dtime.  Fix<y>? yes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+Block bitmap differences:  -603674 -623174 +(689342--689343)
+Fix<y>? yes
+Free blocks count wrong for group #18 (15076, counted=15077).
+Fix<y>? yes
+Free blocks count wrong for group #19 (11674, counted=11675).
+Fix<y>? yes
+Free blocks count wrong (632938, counted=670871).
+Fix<y>? yes
+Inode bitmap differences:  -274 -132276 -142248
+Fix<y>? yes
+Free inodes count wrong for group #0 (52, counted=53).
+Fix<y>? yes
+Free inodes count wrong for group #16 (99, counted=100).
+Fix<y>? yes
+Free inodes count wrong for group #17 (519, counted=520).
+Fix<y>? yes
+Free inodes count wrong (204392, counted=204599).
+Fix<y>? yes
+
+/dev/nbd0p1: ***** FILE SYSTEM WAS MODIFIED *****
+/dev/nbd0p1: 101833/306432 files (0.2% non-contiguous), 553321/1224192 blocks
+```
+
+Disconnect device:
+
+```
+# qemu-nbd --disconnect /dev/nbd0
+/dev/nbd0 disconnected
+```
+
+Start machine:
+
+`# virsh start virtual-machine`
 
 #### Passwords and secrets
 

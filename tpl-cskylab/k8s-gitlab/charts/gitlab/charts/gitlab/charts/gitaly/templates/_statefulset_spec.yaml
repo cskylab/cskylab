@@ -20,14 +20,6 @@ spec:
   podManagementPolicy: Parallel
   {{- if .Values.statefulset.strategy }}
   updateStrategy: {{ .Values.statefulset.strategy | toYaml | nindent 4 }}
-  {{- else if .Values.global.operator.enabled }}
-  updateStrategy:
-    rollingUpdate:
-      {{- if .storage }}
-      partition: {{ default (include "gitlab.gitaly.replicas" .) .storage.gitalyReplicas }}
-      {{- else }}
-      partition: {{ include "gitlab.gitaly.replicas" . }}
-      {{- end }}
   {{- end }}
   template:
     metadata:
@@ -98,7 +90,7 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: "kubernetes.io/hostname"
+            - topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   {{- include "gitlab.selectorLabels" . | nindent 18 }}
@@ -111,7 +103,7 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
+              topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   {{- include "gitlab.selectorLabels" . | nindent 18 }}

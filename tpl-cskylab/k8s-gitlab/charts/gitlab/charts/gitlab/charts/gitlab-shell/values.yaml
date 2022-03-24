@@ -126,3 +126,7 @@ networkpolicy:
 ## Allow to select ssh daemon that would be executed inside container
 ## Possible values: openssh, gitlab-sshd
 sshDaemon: openssh
+
+affinity:
+  podAntiAffinity:
+    topologyKey:

@@ -1,7 +1,0 @@
-br_wan
-br_sys
-br_sys_pfsync
-br_mod_srv
-br_pro_srv
-br_usr
-br_setup

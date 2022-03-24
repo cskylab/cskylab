@@ -1,5 +1,9 @@
 # {{ .machine.hostname }} <!-- omit in toc -->
 
+This machine runs a Kubernetes node on Ubuntu Server 20.04 LTS.
+
+Persistent Volumes on local storage are supported by LVM services.
+
 [comment]: <> (**Machine functional description goes here**)
 
 Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
@@ -32,6 +36,8 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [k8s certificate management](#k8s-certificate-management)
     - [Check certificate expiration](#check-certificate-expiration)
     - [Manual certificate renewal](#manual-certificate-renewal)
+  - [k8s Raspberry Pi](#k8s-raspberry-pi)
+    - [Enable cgroups limit support](#enable-cgroups-limit-support)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
     - [Abridged ‘find’ command examples](#abridged-find-command-examples)
@@ -596,6 +602,33 @@ kubeadm certs renew all
 ```
 
 - Restart k8s master node after running the command.
+
+### k8s Raspberry Pi
+
+Before create or joining a cluster in a Raspberry Pi, you must follow these steps:
+
+#### Enable cgroups limit support
+
+For the Raspberry Pi 4, make the following changes to the /boot/firmware/cmdline.txt file:
+
+```bash
+# Append the cgroups and swap options to the kernel command line
+# Note the space before "cgroup_enable=cpuset", to add a space after the last existing item on the line
+
+# Display file before change
+cat /boot/firmware/cmdline.txt
+
+# Execute the change
+sudo sed -i '$ s/$/ cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 swapaccount=1/' /boot/firmware/cmdline.txt
+
+# Display file after change
+cat /boot/firmware/cmdline.txt
+
+# Reboot the Raspberry Pi
+sudo reboot
+```
+
+- Reboot the Raspberry Pi
 
 ### Utilities
 

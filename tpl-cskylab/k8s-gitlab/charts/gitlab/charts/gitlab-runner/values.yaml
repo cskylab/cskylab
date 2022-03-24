@@ -112,6 +112,21 @@ checkInterval: 30
 #preEntrypointScript: |
 #  echo "hello"
 
+## Specify whether the runner should start the session server.
+## Defaults to false
+## ref: 
+##
+## When sessionServer is enabled, the user can either provide a public publicIP 
+## or either rely on the external IP auto discovery
+## When a serviceAccountName is used with the automounting to the pod disable,
+## we recommend the usage of the publicIP
+sessionServer:
+  enabled: false
+  # timeout: 1800
+  # internalPort: 8093
+  # externalPort: 9000
+  # publicIP: ""
+
 ## For RBAC support:
 rbac:
   create: false
@@ -127,7 +142,7 @@ rbac:
   ## - resources: default "*" if missing or empty.
   ## - verbs: default "*" if missing or empty.
   rules: []
-  # - resources: ["pods", "secrets"]
+  # - resources: ["configmaps", "pods", "pods/attach", "secrets", "services"]
   #   verbs: ["get", "list", "watch", "create", "patch", "delete"]
   # - apiGroups: [""]
   #   resources: ["pods/exec"]
@@ -324,7 +339,7 @@ runners:
 
   ## Specify the tags associated with the runner. Comma-separated list of tags.
   ##
-  ## ref: https://docs.gitlab.com/ce/ci/runners/#use-tags-to-limit-the-number-of-jobs-using-the-runner
+  ## ref: https://docs.gitlab.com/ee/ci/runners/configure_runners.html#use-tags-to-control-which-jobs-a-runner-can-run
   ##
   # tags: ""
 
@@ -336,14 +351,14 @@ runners:
   ## If not specified, Runner will default to true if no tags were specified. In other case it will
   ## default to false.
   ##
-  ## ref: https://docs.gitlab.com/ce/ci/runners/#runner-is-allowed-to-run-untagged-jobs
+  ## ref: https://docs.gitlab.com/ee/ci/runners/configure_runners.html#set-a-runner-to-run-untagged-jobs
   ##
   # runUntagged: true
 
   ## Specify whether the runner should only run protected branches.
-  ## Defaults to False.
+  ## Defaults to false.
   ##
-  ## ref: https://docs.gitlab.com/ee/ci/runners/#prevent-runners-from-revealing-sensitive-information
+  ## ref: https://docs.gitlab.com/ee/ci/runners/configure_runners.html#prevent-runners-from-revealing-sensitive-information
   ##
   # protected: true
 

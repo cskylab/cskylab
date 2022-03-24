@@ -398,3 +398,7 @@ deployments: {}
   # default:
   #   ingress:
   #     path: /
+
+affinity:
+  podAntiAffinity:
+    topologyKey:

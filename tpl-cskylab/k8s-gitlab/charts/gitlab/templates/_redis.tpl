@@ -22,7 +22,7 @@ Build a dict of redis configuration
 
 {{/*
 Return the redis password secret name
-*/}}g
+*/}}
 {{- define "gitlab.redis.password.secret" -}}
 {{- include "gitlab.redis.configMerge" . -}}
 {{- default (printf "%s-redis-secret" .Release.Name) .redisMergedConfig.password.secret | quote -}}

@@ -31,12 +31,6 @@ global:
     # pullPolicy: IfNotPresent
     # pullSecrets: []
 
-  ## GitLab operator is DEPRECATED. DO NOT USE.
-  operator:
-    enabled: false
-    rollout:
-      autoPause: true
-
   ## Supplemental Pod labels. Will not be used for selectors.
   pod:
     labels: {}
@@ -72,6 +66,7 @@ global:
     apiVersion: ""
     configureCertmanager: true
     provider: nginx
+    # class:
     annotations: {}
     enabled: true
     tls: {}
@@ -368,6 +363,10 @@ global:
       clientSecret:
         key: secret
       pollInterval: 60
+      deliveryMethod: sidekiq
+      authToken: {}
+        # secret:
+        # key:
 
     ## https://docs.gitlab.com/charts/charts/gitlab/mailroom/index.html#service-desk-email
     serviceDeskEmail:
@@ -390,23 +389,17 @@ global:
       clientSecret:
         key: secret
       pollInterval: 60
+      deliveryMethod: sidekiq
+      authToken: {}
+        # secret:
+        # key:
 
     ## https://docs.gitlab.com/charts/charts/globals#ldap
     ldap:
       # prevent the use of LDAP for sign-in via web.
       preventSignin: false
       servers: {}
-      ## 'main' is the GitLab 'provider ID' of this LDAP server
-      # main:
-      #   label: 'LDAP'
-      #   host: '_your_ldap_server'
-      #   port: 636
-      #   uid: 'sAMAccountName'
-      #   bind_dn: '_the_full_dn_of_the_user_you_will_bind_with'
-      #   password:
-      #     secret: _the_secret_containing_your_ldap_password
-      #     key: _the_key_which_holds_your_ldap_password
-      #   encryption: 'plain'
+      ## See documentation for complete example of a configured LDAP server
 
     ## https://docs.gitlab.com/charts/charts/globals#kas-settings
     gitlab_kas: {}
@@ -622,6 +615,9 @@ global:
     annotations: {}
 
   antiAffinity: soft
+  affinity:
+    podAntiAffinity:
+      topologyKey: "kubernetes.io/hostname"
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-workhorse-settings
   ## Global settings related to Workhorse
@@ -746,7 +742,7 @@ nginx-ingress:
       externalTrafficPolicy: "Local"
     ingressClassByName: false
     ingressClassResource:
-      name: "{{ .Release.Name }}-nginx"
+      name: '{{ include "ingress.class.name" $ }}'
     resources:
       requests:
         cpu: 100m

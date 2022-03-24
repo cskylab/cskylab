@@ -1,0 +1,38 @@
+## MinIO Ingress Definition
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  namespace: {{ .namespace.name }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: {{ .certificate.clusterissuer }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-body-size: 4G
+spec:
+  rules:
+  - host: {{ .publishing.miniourl }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              number: 443
+  - host: {{ .publishing.consoleurl }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .namespace.name }}-console
+            port:
+              number: 9443
+  tls:
+  - hosts:
+      - {{ .publishing.miniourl }}
+      - {{ .publishing.consoleurl }}
+    secretName: {{ .namespace.name }}-ingress-tls

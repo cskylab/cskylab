@@ -1,6 +1,8 @@
 # Ingress nginx controller for kubernetes <!-- omit in toc -->
 
-## Helm charts: ingress-nginx/ingress-nginx v4.0.13 <!-- omit in toc -->
+## v22-03-23 <!-- omit in toc -->
+
+## Helm charts: ingress-nginx/ingress-nginx v4.0.18 <!-- omit in toc -->
 
 `k8s-ingress-nginx` ingress controller uses NGINX as a reverse proxy and load balancer.
 
@@ -8,8 +10,7 @@ To use in your deployments, add the `kubernetes.io/ingress.class: nginx` annotat
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
-> **Note**: `k8s-ingress-nginx` should be considered as cluster service. It is recommended to deploy it as a
-cluster singleton.
+> **Note**: `k8s-ingress-nginx` should be considered as cluster service. It is recommended to deploy it as a cluster singleton.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)

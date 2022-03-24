@@ -1,5 +1,9 @@
 # {{ .machine.hostname }} <!-- omit in toc -->
 
+This template contains the configuration files needed to run a basic installation of Ubuntu Server 20.04 LTS.
+
+It is intended to create configuration files for physical or virtual machines when there is no need to use LVM storage services.
+
 [comment]: <> (**Functional description goes here**)
 
 `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.

@@ -1,8 +1,0 @@
-_tpldescription: x509 certificate management for Kubernetes
-_tplname: cs-cert-manager
-_tplversion: 21.11.07
-kubeconfig: config-k8s-mod
-letsencrypt:
-  email: certadmin@cskylab.net
-namespace:
-  name: cert-manager

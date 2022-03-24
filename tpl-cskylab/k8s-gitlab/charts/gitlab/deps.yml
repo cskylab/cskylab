@@ -36,6 +36,10 @@ dependencies:
           pattern: '`v(\d+\.\d+\.\d+-gitlab)`'
           range: '>= 2.x.x'
           prereleases: true
+        - filename: charts/registry/Chart.yaml
+          pattern: "appVersion: 'v(\\S+)'"
+          range: '>= 2.x.x'
+          prereleases: true
         - filename: charts/registry/values.yaml
           pattern: "tag: 'v(\\S+)'"
           range: '>= 2.x.x'

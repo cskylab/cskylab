@@ -1,6 +1,6 @@
 image:
   repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry
-  tag: 'v3.19.0-gitlab'
+  tag: 'v3.27.1-gitlab'
   # pullPolicy: IfNotPresent
   # pullSecrets: []
 
@@ -160,9 +160,13 @@ init:
       # Indent /registry/storage/config 2 spaces before inserting into config.yml
       sed -i 's/^/  /' /registry/storage/config
       # Insert into /registry/config.yml after `storage:`
-      sed -i '/storage:/ r /registry/storage/config' /registry/config.yml
+      sed -i '/^storage:/ r /registry/storage/config' /registry/config.yml
       # Remove the now extraneous `config` file
       rm /registry/storage/config
+    fi
+    # Copy any middleware.storage if present
+    if [ -d /config/middleware.storage ]; then
+      cp -v -r -L /config/middleware.storage  /registry/middleware.storage
     fi
     # Set to known path, to used ConfigMap
     cat /config/certificate.crt > /registry/certificate.crt
@@ -193,6 +197,11 @@ resources:
 ## Node labels for pod assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
 nodeSelector: {}
+
+affinity:
+  podAntiAffinity:
+    topologyKey:
+
 # Protocol/Host only. '/jwt/auth' will be appended.
 authEndpoint:
 # Do not change this
@@ -216,10 +225,23 @@ hpa:
   customMetrics: []
 
 storage: {}
-  # secret:
-  # redirect:
-  #   disable:
-  #   exceptions: []
+# secret:
+# redirect:
+#   disable:
+#   exceptions: []
+middleware:
+  # See https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#middleware
+  storage: []
+    ## EXAMPLE ONLY
+    # - name: cloudfront
+    #   options:
+    #     baseurl: cdn.registry.example.com
+    #     # `privatekey` is auto-populated with the content from the privatekey Secret.
+    #     privatekeySecret:
+    #       secret: cdn-private-key
+    #       key: private.pem
+    #     keypairid: YOURKEYPAIRIDFORPRIVATEKEY
+
 minio:
   redirect: false
 
@@ -234,6 +256,7 @@ validation:
   disabled: true
   manifests:
     referencelimit: 0
+    payloadsizelimit: 0
     urls:
       allow: []
       deny: []

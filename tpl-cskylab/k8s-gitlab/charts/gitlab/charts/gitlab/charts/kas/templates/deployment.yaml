@@ -46,6 +46,25 @@ spec:
       serviceAccountName: {{ include "gitlab.serviceAccount.name" . }}
       automountServiceAccountToken: false
       {{- end }}
+      {{- if eq (default .Values.global.antiAffinity .antiAffinity) "hard" }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
+              labelSelector:
+                matchLabels:
+                  {{- include "gitlab.selectorLabels" . | nindent 18 }}
+      {{- else if eq (default .Values.global.antiAffinity .antiAffinity) "soft" }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
+              labelSelector:
+                matchLabels:
+                  {{- include "gitlab.selectorLabels" . | nindent 18 }}
+      {{- end }}
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}

@@ -1,6 +1,6 @@
 # Kubernetes Hello World app<!-- omit in toc -->
 
-## `k8s-hello` v21.11.22 <!-- omit in toc -->
+## `k8s-hello` v22-03-23 <!-- omit in toc -->
 
 This namespace is intended to deploy a simple Hello World application in Kubernetes for testing purposes.
 

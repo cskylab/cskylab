@@ -302,3 +302,7 @@ serviceAccount:
 ## Allow configuring pods' priorityClassName. This is used to control pod priority in case of eviction:
 #  https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
 priorityClassName: ""
+
+affinity:
+  podAntiAffinity:
+    topologyKey:

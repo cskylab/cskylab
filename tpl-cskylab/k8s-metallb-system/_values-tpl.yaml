@@ -4,9 +4,9 @@
 #   cskygen template default values file
 #
 
-_tplname: cs-metallb-system
+_tplname: k8s-metallb-system
 _tpldescription: MetalLB load-balancer for bare metal Kubernetes clusters
-_tplversion: 21.11.07
+_tplversion: 22-03-23
 
 #
 # Values to override

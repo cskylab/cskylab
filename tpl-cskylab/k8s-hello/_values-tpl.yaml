@@ -6,7 +6,7 @@
 
 _tplname: k8s-hello
 _tpldescription: Kubernetes hellow world app
-_tplversion: 21.11.22
+_tplversion: 22-03-23
 
 #
 # Values to override

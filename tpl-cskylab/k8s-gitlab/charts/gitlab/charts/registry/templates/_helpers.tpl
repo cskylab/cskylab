@@ -60,13 +60,6 @@ hostname part of the url.
 {{- end -}}
 
 {{/*
-Returns the nginx ingress class
-*/}}
-{{- define "registry.ingressclass" -}}
-{{- pluck "class" .Values.global.ingress (dict "class" (printf "%s-nginx" .Release.Name)) | first -}}
-{{- end -}}
-
-{{/*
 Populate registry notifications
 */}}
 {{- define "registry.notifications.config" -}}

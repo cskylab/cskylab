@@ -54,7 +54,7 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: "kubernetes.io/hostname"
+            - topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   app: {{ template "name" . }}
@@ -65,7 +65,7 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             podAffinityTerm:
-              topologyKey: kubernetes.io/hostname
+              topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
               labelSelector:
                 matchLabels:
                   app: {{ template "name" . }}
@@ -180,6 +180,15 @@ spec:
                 - key: {{ .Values.storage.extraKey }}
                   path: storage/{{ .Values.storage.extraKey }}
                 {{- end }}
+          {{- end }}
+          {{- if .Values.middleware.storage }}
+            {{-  range $index, $v := .Values.middleware.storage }}
+          - secret:
+              name: {{ $v.options.privatekeySecret.secret }}
+              items:
+                - key: {{ $v.options.privatekeySecret.key }}
+                  path: {{ printf "middleware.storage/%d/%s" $index $v.options.privatekeySecret.key }}
+            {{- end }}
           {{- end }}
           {{- if .Values.profiling.stackdriver.credentials.secret }}
           - secret:

@@ -55,13 +55,26 @@ func Create(configValues, tplPath, parsePath string, silentMode bool) {
 		log.Fatalf("Error in CopyDirectory, %s", err)
 	}
 
-	// Remove __values-tpl template configuration file from destination directory
+	// Remove _values-tpl template configuration file from destination directory
 	tplFile := filepath.Clean(parsePath + string(os.PathSeparator) + tplConfigFile + ".yaml")
 	err = os.Remove(tplFile)
 
 	if err != nil {
 		fmt.Println(err)
 		return
+	}
+
+	// Remove runbook files with pattern "_rb*.md"
+	rbPattern := filepath.Clean(parsePath + string(os.PathSeparator) + "_rb-*.md")
+
+	rbFiles, err := filepath.Glob(rbPattern)
+	if err != nil {
+		panic(err)
+	}
+	for _, f := range rbFiles {
+		if err := os.Remove(f); err != nil {
+			panic(err)
+		}
 	}
 
 	// Write viper settings to yaml file in parsePath
