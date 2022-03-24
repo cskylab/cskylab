@@ -15,6 +15,7 @@ To get all existing configuration runbook models from cSkyLab templates director
 Customize values for your environment variables:
 
 - `RB_REPO_DIR`: Your repository root directory
+- `RB_CERT_MANAGER_PRIVATE_CLUSTERISSUER`: Your private secure cert-manager clusterissuer
 - `RB_REPO_CFG_FABRIC_DIR`: Configuration fabric directory
 - `RB_REPO_TPL_DIR`: Templates directory
 
@@ -23,6 +24,7 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory"  \
+&& export RB_CERT_MANAGER_PRIVATE_CLUSTERISSUER="ca-test-internal"  \
 && export RB_REPO_CFG_FABRIC_DIR="${RB_REPO_DIR}/_cfg-fabric" \
 && export RB_REPO_TPL_DIR="${RB_REPO_DIR}/tpl-cskylab" \
 && echo
@@ -32,7 +34,7 @@ echo \
 
 After setting ENV variables, copy and run the following snippet:
 
->**Note:** All existing runbook models (files named **_rb-*.md**) will be replaced. After running the snippet, if you're using your own private CA in a cert-manager clusterissuer, you should change the value for `ca-test-internal` in all runbooks with the value of your private clusterissuer.
+>**Note:** All existing runbook models (files named **_rb-*.md**) will be replaced.
 
 ```bash
 echo \
@@ -51,6 +53,8 @@ echo \
         xargs -n 1 cp -v --target-directory=${RB_REPO_CFG_FABRIC_DIR} \
 && find ${RB_REPO_CFG_FABRIC_DIR} -name "_rb-*.md" | \
         xargs -n 1 sed -i "s#Your_Repository_Root_Directory#${RB_REPO_DIR}#g" \
+&& find ${RB_REPO_CFG_FABRIC_DIR} -name "_rb-*.md" | \
+        xargs -n 1 sed -i "s#ca-test-internal#${RB_CERT_MANAGER_PRIVATE_CLUSTERISSUER}#g" \
 && echo \
 && echo "******** Files in ${RB_REPO_CFG_FABRIC_DIR} directory:" \
 && echo \

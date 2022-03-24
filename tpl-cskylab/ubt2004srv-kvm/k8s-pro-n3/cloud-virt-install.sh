@@ -5,7 +5,7 @@
 # shellcheck disable=SC2154
 
 #
-# sudo cs-kvmserv.sh -m vm-create -n k8s-pro-n1 -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G -p /srv/vmachines
+# sudo cs-kvmserv.sh -m vm-create -n k8s-pro-n3 -i /srv/setup/focal-server-cloudimg-amd64.img -s 80G -p /srv/vmachines
 #
 
 virt-install --name "${vmachine_name}" \

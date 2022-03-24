@@ -9,7 +9,7 @@
 #
 
 virt-install --name "${vmachine_name}" \
-    --virt-type kvm --memory 65536 --vcpus 4 \
+    --virt-type kvm --memory 32768 --vcpus 4 \
     --boot hd,cdrom,menu=on --autostart \
     --disk path="${vmachines_path}/${vmachine_name}-setup.iso",device=cdrom \
     --disk path="${vmachines_path}/${vmachine_name}-sysdisk.qcow2",device=disk \
