@@ -560,6 +560,11 @@
         <item>
           <domain>cskylab.net</domain>
           <descr/>
+          <host>hello-mod</host>
+        </item>
+        <item>
+          <domain>cskylab.net</domain>
+          <descr/>
           <host>harbor</host>
         </item>
         <item>
@@ -625,17 +630,17 @@
         <item>
           <domain>cskylab.net</domain>
           <descr/>
+          <host>minio-operator</host>
+        </item>
+        <item>
+          <domain>cskylab.net</domain>
+          <descr/>
           <host>minio-tenant</host>
         </item>
         <item>
           <domain>cskylab.net</domain>
           <descr/>
           <host>minio-tenant-console</host>
-        </item>
-        <item>
-          <domain>cskylab.net</domain>
-          <descr/>
-          <host>hello</host>
         </item>
       </aliases>
     </hosts>
@@ -676,6 +681,30 @@
       </aliases>
     </hosts>
     <hosts>
+      <host>k8s-mod-n3</host>
+      <domain>cskylab.net</domain>
+      <rr>A</rr>
+      <ip>192.168.82.13</ip>
+      <mxprio/>
+      <mx/>
+      <descr>k8s-mod node 3</descr>
+      <aliases>
+        <item/>
+      </aliases>
+    </hosts>
+    <hosts>
+      <host>k8s-mod-n4</host>
+      <domain>cskylab.net</domain>
+      <rr>A</rr>
+      <ip>192.168.82.14</ip>
+      <mxprio/>
+      <mx/>
+      <descr>k8s-mod node 4</descr>
+      <aliases>
+        <item/>
+      </aliases>
+    </hosts>
+    <hosts>
       <host>k8s-pro-ingress</host>
       <domain>cskylab.net</domain>
       <rr>A</rr>
@@ -684,7 +713,11 @@
       <mx/>
       <descr>k8s production ingress</descr>
       <aliases>
-        <item/>
+        <item>
+          <domain>cskylab.net</domain>
+          <descr/>
+          <host>hello-pro</host>
+        </item>
       </aliases>
     </hosts>
     <hosts>
@@ -719,6 +752,30 @@
       <mxprio/>
       <mx/>
       <descr>k8s production node 2</descr>
+      <aliases>
+        <item/>
+      </aliases>
+    </hosts>
+    <hosts>
+      <host>k8s-pro-n3</host>
+      <domain>cskylab.net</domain>
+      <rr>A</rr>
+      <ip>192.168.83.13</ip>
+      <mxprio/>
+      <mx/>
+      <descr>k8s production node 3</descr>
+      <aliases>
+        <item/>
+      </aliases>
+    </hosts>
+    <hosts>
+      <host>k8s-pro-n4</host>
+      <domain>cskylab.net</domain>
+      <rr>A</rr>
+      <ip>192.168.83.14</ip>
+      <mxprio/>
+      <mx/>
+      <descr>k8s production node 4</descr>
       <aliases>
         <item/>
       </aliases>
@@ -767,6 +824,18 @@
       <mxprio/>
       <mx/>
       <descr>OPNSense aux firewall</descr>
+      <aliases>
+        <item/>
+      </aliases>
+    </hosts>
+    <hosts>
+      <host>opn-cluster</host>
+      <domain>cskylab.net</domain>
+      <rr>A</rr>
+      <ip>192.168.80.1</ip>
+      <mxprio/>
+      <mx/>
+      <descr>OPNsense cluster VIP</descr>
       <aliases>
         <item/>
       </aliases>
@@ -1738,8 +1807,8 @@
   </widgets>
   <revision>
     <username>root@192.168.81.2</username>
-    <time>1638290437.6933</time>
-    <description>/system_general.php made changes</description>
+    <time>1648140064.1463</time>
+    <description>/services_unbound_host_edit.php made changes</description>
   </revision>
   <OPNsense>
     <Firewall>
@@ -1800,6 +1869,7 @@
             <name>RFC1918</name>
             <type>network</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>10.0.0.0/8
@@ -1812,6 +1882,7 @@
             <name>spamhaus_drop</name>
             <type>urltable</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq>1</updatefreq>
             <content>https://www.spamhaus.org/drop/drop.txt</content>
@@ -1822,6 +1893,7 @@
             <name>spamhaus_edrop</name>
             <type>urltable</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq>1</updatefreq>
             <content>https://www.spamhaus.org/drop/edrop.txt</content>
@@ -1832,6 +1904,7 @@
             <name>k8s_pro_ingress</name>
             <type>host</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.83.20</content>
@@ -1842,12 +1915,17 @@
             <name>k8s_nodes</name>
             <type>host</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.82.11
 192.168.82.12
 192.168.83.11
-192.168.83.12</content>
+192.168.83.12
+192.168.82.13
+192.168.82.14
+192.168.83.13
+192.168.83.14</content>
             <description>Kubernetes nodes</description>
           </alias>
           <alias uuid="0c151809-927e-44d1-951a-2c434bea979a">
@@ -1855,6 +1933,7 @@
             <name>kvm_hosts</name>
             <type>host</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.80.10
@@ -1866,6 +1945,7 @@
             <name>k8s_mod_ingress</name>
             <type>host</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.82.20</content>
@@ -1876,6 +1956,7 @@
             <name>opncluster_gui</name>
             <type>host</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.80.2
@@ -1887,6 +1968,7 @@
             <name>mcc</name>
             <type>host</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.80.5</content>
@@ -1897,6 +1979,7 @@
             <name>WAN_VIP</name>
             <type>host</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.251.20</content>
@@ -1907,6 +1990,7 @@
             <name>OpenVPN_mgt_net</name>
             <type>network</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.81.0/25</content>
@@ -1917,6 +2001,7 @@
             <name>OpenVPN_usr_net</name>
             <type>network</type>
             <proto/>
+            <interface/>
             <counters>0</counters>
             <updatefreq/>
             <content>192.168.86.0/23</content>
@@ -1943,8 +2028,8 @@
       <inactiveTimeout>15</inactiveTimeout>
     </Netflow>
     <Interfaces>
-      <vxlans/>
-      <loopbacks/>
+      <vxlans version="1.0.1"/>
+      <loopbacks version="1.0.0"/>
     </Interfaces>
     <IPsec version="1.0.0">
       <general>
@@ -2069,7 +2154,7 @@
         <template/>
       </error_pages>
     </proxy>
-    <Syslog version="1.0.0">
+    <Syslog version="1.0.1">
       <general>
         <enabled>1</enabled>
       </general>
@@ -2274,7 +2359,7 @@
         <path/>
       </test>
     </monit>
-    <cron version="1.0.2">
+    <cron version="1.0.3">
       <jobs>
         <job uuid="d72c2109-ba1e-43a8-80d0-0b0416a7dad7">
           <origin>IDS</origin>
@@ -2291,7 +2376,7 @@
         </job>
       </jobs>
     </cron>
-    <IDS version="1.0.6">
+    <IDS version="1.0.7">
       <rules/>
       <policies/>
       <userDefinedRules/>
@@ -2350,10 +2435,6 @@
         </file>
         <file uuid="80ab57a2-ab59-4de2-bb6b-0d7cb4280da7">
           <filename>emerging-user_agents.rules</filename>
-          <enabled>1</enabled>
-        </file>
-        <file uuid="d0f3d2d8-fb7c-47e3-b808-4a8578dfb7e4">
-          <filename>emerging-trojan.rules</filename>
           <enabled>1</enabled>
         </file>
         <file uuid="77af93c3-1ea2-46e2-b871-97fe787869af">
@@ -2522,6 +2603,30 @@
         </file>
         <file uuid="f1fd4680-2a4f-4d65-b49d-4142cf641bd2">
           <filename>abuse.ch.feodotracker.rules</filename>
+          <enabled>1</enabled>
+        </file>
+        <file uuid="445617a0-6df5-46c3-a20b-e88c23f6e89d">
+          <filename>emerging-ja3.rules</filename>
+          <enabled>0</enabled>
+        </file>
+        <file uuid="1533300c-2c0f-44bd-8433-a1074af57af0">
+          <filename>emerging-hunting.rules</filename>
+          <enabled>1</enabled>
+        </file>
+        <file uuid="cd18bd85-f7cf-48a5-ab89-2011e7dfcc8e">
+          <filename>emerging-adware_pup.rules</filename>
+          <enabled>1</enabled>
+        </file>
+        <file uuid="d1856f1c-eaa6-476a-9529-605af9952ee0">
+          <filename>emerging-phishing.rules</filename>
+          <enabled>1</enabled>
+        </file>
+        <file uuid="2ef1f813-fe68-4b06-b619-3479e34b1a6e">
+          <filename>emerging-exploit_kit.rules</filename>
+          <enabled>1</enabled>
+        </file>
+        <file uuid="8ff79c5d-f95b-4d50-b717-51d199cd2433">
+          <filename>emerging-coinminer.rules</filename>
           <enabled>1</enabled>
         </file>
       </files>
@@ -3752,9 +3857,7 @@
       <ifname>LAN</ifname>
     </ifgroupentry>
   </ifgroups>
-  <staticroutes>
-    <route/>
-  </staticroutes>
+  <staticroutes version="1.0.0"/>
   <hasync>
     <pfsyncenabled>on</pfsyncenabled>
     <synchronizealiases>on</synchronizealiases>
