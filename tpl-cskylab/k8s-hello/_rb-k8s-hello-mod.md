@@ -21,7 +21,7 @@ echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory" \
 && export RB_ZONE="cs-mod" \
 && export RB_K8S_CLUSTER="k8s-mod" \
-&& export RB_K8S_NAMESPACE="hello" \
+&& export RB_K8S_NAMESPACE="hello-mod" \
 && export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-hello" \
 && echo
 ```
@@ -44,13 +44,13 @@ kubeconfig: config-k8s-mod
 
 namespace:
   ## k8s namespace name
-  name: hello
+  name: hello-mod
     ## Service domain name
   domain: cskylab.net
 
 publishing:
   ## External url
-  url: hello.cskylab.net
+  url: hello-mod.cskylab.net
 
 certificate:
   ## Cert-manager clusterissuer
