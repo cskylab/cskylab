@@ -1,0 +1,10 @@
+# Changelog `mcc`
+
+Configuration changes should be documented in this file.
+
+## 2020-08-31  Tony Stark  <stark@cskylab.net>
+
+- Entry 1
+- Entry 2
+- ......
+- Entry n

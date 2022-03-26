@@ -1,0 +1,51 @@
+#
+#   cskygen configuration values file
+#
+#   Copyright © 2021 cSkyLab.com
+#
+
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl-cskylab/k8s-minio-tenant -d ../cs-mod/k8s-mod/minio-tenant -f k8s-mod-minio-tenant
+#
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: minio-tenant
+
+publishing:
+  ## External api url used by mc
+  miniourl: minio-tenant.cskylab.net
+  ## External api url used by console
+  consoleurl: minio-tenant-console.cskylab.net
+
+credentials:
+  # MinIO root user credentials
+  minio_accesskey: "admin"
+  minio_secretkey: "NoFear21"
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub
+
+localpvnodes:    # (k8s node names)
+  srv00: k8s-mod-n1
+  srv01: k8s-mod-n2
+  srv02: k8s-mod-n3
+  srv03: k8s-mod-n4
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos

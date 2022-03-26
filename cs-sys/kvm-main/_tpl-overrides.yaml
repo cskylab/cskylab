@@ -1,0 +1,28 @@
+_tpldescription: Ubuntu server 20.04 kvm base installation
+_tplname: ubt2004srv-kvm
+_tplversion: 22-01-05
+machine:
+  aws_access: bucketname_rw
+  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
+  domainname: cskylab.net
+  gateway4: 192.168.80.1
+  hostname: kvm-main
+  ipaddress: 192.168.80.10
+  localadminpassword: NoFear21
+  localadminusername: kos
+  nameservers:
+  - 192.168.80.1
+  netmask: 24
+  password: NoFear21
+  repo: s3:https://backup.cskylab.net/bucketname/restic
+  searchdomainnames:
+  - cskylab.net
+  setupdir: /etc/csky-setup
+  systemkeyboard: us
+  systemlocale: C.UTF-8
+  timezone: UTC
+restic:
+  aws_access: restic_rw
+  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
+  password: NoFear21
+  repo: sftp:kos@hostname.cskylab.net:/media/data/restic/mydir

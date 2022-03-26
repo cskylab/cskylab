@@ -1,0 +1,455 @@
+#
+#   Kubernetes Local Persistent Volume
+#
+#   Verify the following values:
+#
+#     StorageClass:
+#     Capacity:
+#     AccessMode:
+#
+#   Command to execute inside the node that holds the local storage:
+#
+#     sudo cs-lvmserv.sh -m create -d /srv/minio-tenant
+#
+
+# Storage Class
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: minio-tenant-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+# MinIO PV's
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s00-d00
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 0-minio-tenant-ss-0-0
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s00-d00/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n1
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s00-d01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 1-minio-tenant-ss-0-0
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s00-d01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n1
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s00-d02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 2-minio-tenant-ss-0-0
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s00-d02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n1
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s00-d03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 3-minio-tenant-ss-0-0
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s00-d03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n1
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s01-d00
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 0-minio-tenant-ss-0-1
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s01-d00/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n2
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s01-d01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 1-minio-tenant-ss-0-1
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s01-d01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n2
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s01-d02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 2-minio-tenant-ss-0-1
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s01-d02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n2
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s01-d03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 3-minio-tenant-ss-0-1
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s01-d03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n2
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s02-d00
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 0-minio-tenant-ss-0-2
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s02-d00/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n3
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s02-d01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 1-minio-tenant-ss-0-2
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s02-d01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n3
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s02-d02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 2-minio-tenant-ss-0-2
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s02-d02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n3
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s02-d03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 3-minio-tenant-ss-0-2
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s02-d03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n3
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s03-d00
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 0-minio-tenant-ss-0-3
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s03-d00/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n4
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s03-d01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 1-minio-tenant-ss-0-3
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s03-d01/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n4
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s03-d02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 2-minio-tenant-ss-0-3
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s03-d02/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n4
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-tenant-s03-d03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: minio-tenant-storage
+  claimRef:
+    name: 3-minio-tenant-ss-0-3
+    namespace: minio-tenant
+  local:
+    path: /srv/minio-tenant-s03-d03/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n4

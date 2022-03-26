@@ -1,0 +1,34 @@
+#
+#   cskygen configuration values file
+#
+#   Copyright © 2021 cSkyLab.com
+#
+
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl-cskylab/k8s-minio-operator -d ../cs-mod/k8s-mod/minio-operator -f k8s-mod-minio-operator
+#
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: minio-operator
+
+publishing:
+  ## External url
+  url: minio-operator.cskylab.net
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub

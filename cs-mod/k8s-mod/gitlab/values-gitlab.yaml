@@ -1,0 +1,378 @@
+# Default values for gitlab/gitlab chart
+
+## NOTICE
+# Due to the scope and complexity of this chart, all possible values are
+# not documented in this file. Extensive documentation for these values
+# and more can be found at https://gitlab.com/gitlab-org/charts/gitlab/
+
+## Advanced Configuration
+# Documentation for advanced configuration can be found under doc/advanced
+# - external PostgreSQL
+# - external Gitaly
+# - external Redis
+# - external NGINX
+# - PersistentVolume configuration
+# - external Object Storage providers
+
+## The global properties are used to configure multiple charts at once.
+## Extended documentation at doc/charts/globals.md
+global:
+  ## doc/installation/deployment.md#deploy-the-community-edition
+  edition: ee
+  ## doc/charts/globals.md#configure-host-settings
+  hosts:
+    domain: cskylab.net
+    hostSuffix:
+    https: true
+    externalIP:
+    ssh: ~
+    gitlab:
+      name: gitlab.cskylab.net
+      https: true
+    minio:
+      name: minio-gitlab.cskylab.net
+      https: true
+    registry:
+      name: registry-gitlab.cskylab.net
+      https: true
+    tls: {}
+    smartcard:
+      name: smartcard-gitlab.cskylab.net
+    kas:
+      name: kas-gitlab.cskylab.net
+    pages:
+      name: pages-gitlab.cskylab.net
+      https: true
+
+  ## doc/charts/globals.md#configure-ingress-settings
+  ingress:
+    configureCertmanager: false
+    class: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: ca-test-internal
+    enabled: true
+    tls:
+      enabled: true
+      secretName: gitlab-tls
+
+  gitlab:
+    ## Enterprise license for this GitLab installation
+    ## Secret created according to doc/installation/secrets.md#initial-enterprise-license
+    ## If allowing shared-secrets generation, this is OPTIONAL.
+    license: {}
+      # secret: RELEASE-gitlab-license
+      # key: license
+
+  ## Initial root password for this GitLab installation
+  ## Secret created according to doc/installation/secrets.md#initial-root-password
+  ## If allowing shared-secrets generation, this is OPTIONAL.
+  initialRootPassword:
+    secret: gitlab-initial-root-password
+    key: password
+
+  ## doc/charts/globals.md#configure-postgresql-settings
+  psql:
+    # host: psql-gitlab.cskylab.net
+    serviceName: postgresql
+    port: 5432
+    database: gitlabhq_production
+    username: postgres
+    applicationName:
+    preparedStatements: false
+    connectTimeout:
+    password:
+      useSecret: true
+      secret: gitlab-postgresql-password
+      key: postgresql-password
+      file:
+
+  ## doc/charts/globals.md#configure-redis-settings
+  redis:
+    password:
+      enabled: true
+      secret: gitlab-redis-password
+      key: password
+    # host: redis.hostedsomewhere.else
+    # port: 6379
+    # sentinels:
+    #   - host:
+    #     port:
+
+  ## doc/charts/globals.md#configure-gitaly-settings
+  gitaly:
+    enabled: true
+    # authToken: {}
+    #   # secret:
+    #   # key:
+    # # serviceName:
+    # internal:
+    #   names: ['default']
+    # external: []
+    # service:
+    #   name: gitaly
+    #   type: ClusterIP
+    #   externalPort: 8075
+    #   internalPort: 8075
+    #   tls:
+    #     externalPort: 8076
+    #     internalPort: 8076
+    # persistence:
+    #   enabled: true
+    #   storageClass: gitlab-gitaly
+    #   accessMode: ReadWriteOnce
+    #   size: 8Gi
+
+  ## doc/charts/globals.md#configure-appconfig-settings
+  ## Rails based portions of this chart share many settings
+  appConfig:
+    ## doc/charts/globals.md#omniauth
+    omniauth:
+      ## OIDC
+      enabled: false
+      allowSingleSignOn: ['openid_connect']
+      autoSignInWithProvider: 
+      syncProfileFromProvider: ['openid_connect']
+      syncProfileAttributes: ['email']
+      blockAutoCreatedUsers: false
+      autoLinkLdapUser: false
+      autoLinkSamlUser: false
+      autoLinkUser: ['openid_connect']
+      externalProviders: []
+      allowBypassTwoFactor: true
+      providers:
+      - secret: gitlab-keycloak-secret
+        key: provider
+
+  ## doc/charts/globals.md#configure-gitlab-shell-settings
+  shell:
+    authToken: {}
+      # secret:
+      # key:
+    hostKeys: {}
+      # secret:
+
+  ## Rails application secrets
+  ## Secret created according to doc/installation/secrets.md#gitlab-rails-secret
+  ## If allowing shared-secrets generation, this is OPTIONAL.
+  railsSecrets: {}
+    # secret:
+
+  ## Rails generic setting, applicable to all Rails-based containers
+  rails:
+    bootsnap: # Enable / disable Shopify/Bootsnap cache
+      enabled: true
+
+  ## doc/charts/globals.md#configure-registry-settings
+  registry:
+    bucket: registry
+    certificate: {}
+      # secret:
+    httpSecret: {}
+      # secret:
+      # key:
+    # https://docs.docker.com/registry/notifications/#configuration
+    notifications: {}
+      # endpoints:
+      #   - name: FooListener
+      #     url: https://foolistener.com/event
+      #     timeout: 500ms
+      #     threshold: 10
+      #     backoff: 1s
+      #     headers:
+      #       FooBar: ['1', '2']
+      #       Authorization:
+      #         secret: gitlab-registry-authorization-header
+      #       SpecificPassword:
+      #         secret: gitlab-registry-specific-password
+      #         key: password
+      # events: {}
+
+  pages:
+    enabled: false
+    accessControl: false
+    path:
+    host:
+    port:
+    https: # default true
+    externalHttp: []
+    externalHttps: []
+    artifactsServer: true
+    objectStore:
+      enabled: true
+      bucket: gitlab-pages
+      # proxy_download: true
+      connection: {}
+        # secret:
+        # key:
+    apiSecret: {}
+      # secret:
+      # key:
+
+  ## GitLab Runner
+  ## Secret created according to doc/installation/secrets.md#gitlab-runner-secret
+  ## If allowing shared-secrets generation, this is OPTIONAL.
+  runner:
+    registrationToken: {}
+      # secret:
+
+  ## doc/installation/deployment.md#outgoing-email
+  ## Outgoing email server settings
+  smtp:
+    enabled: true
+    address: mail.cskylab.net
+    port: 25
+    authentication: ""
+
+  ## doc/installation/deployment.md#outgoing-email
+  ## Email persona used in email sent by GitLab
+  email:
+    from: gitlab@cskylab.net
+    reply_to: noreply@cskylab.net
+
+  ## Timezone for containers.
+  # time_zone: UTC
+  time_zone: 'Europe/Madrid'
+
+  ## doc/charts/globals.md#custom-certificate-authorities
+  # configuration of certificates container & custom CA injection
+  # NOTE: Only one secret with customCA
+  certificates:
+    customCAs:
+    - secret: customca-secret
+    # - secret: carootlestaging-secret
+    # - secret: carootleprod-secret
+
+  busybox:
+    image:
+      repository: harbor.cskylab.net/dockerhub/library/busybox
+      tag: latest
+
+## End of global
+
+upgradeCheck:
+  enabled: true
+  image: {}
+    # repository:
+    # tag:
+  securityContext:
+    # in alpine/debian/busybox based images, this is `nobody:nogroup`
+    runAsUser: 65534
+    fsGroup: 65534
+  tolerations: []
+  resources:
+    requests:
+      cpu: 50m
+
+nginx-ingress:
+  enabled: false
+
+cert-manager:
+  install: false
+
+certmanager:
+  install: false
+
+prometheus:
+  install: false
+
+## Configuration of Redis
+## doc/architecture/decisions.md#redis
+## doc/charts/redis
+redis:
+  ## Cluster settings
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      storageClass: gitlab-redis-master
+      accessModes:
+      - ReadWriteOnce
+      size: 8Gi
+
+minio:
+  ingress:
+    enabled: true
+    tls:
+      secretName: gitlab-minio-tls
+      enabled: true
+  persistence:
+    enabled: true
+    storageClass: gitlab-minio
+    accessMode: ReadWriteOnce
+    size: 8Gi
+
+## Installation & configuration of stable/prostgresql
+## See requirements.yaml for current version
+postgresql:
+  install: false
+
+## Installation & configuration charts/registry
+## doc/architecture/decisions.md#registry
+## doc/charts/registry/
+registry:
+  enabled: true
+  ingress:
+    tls:
+      secretName: gitlab-registry-tls
+
+
+## Automatic shared secret generation
+## doc/installation/secrets.md
+## doc/charts/shared-secrets
+shared-secrets:
+  enabled: true
+  rbac:
+    create: true
+
+## Installation & configuration of gitlab/gitlab-runner
+## See requirements.yaml for current version
+gitlab-runner:
+  install: false
+
+## Settings for individual sub-charts under GitLab
+## Note: Many of these settings are configurable via globals
+gitlab:
+  ## doc/charts/gitlab/toolbox
+  toolbox:
+    replicas: 1
+    antiAffinityLabels:
+      matchLabels:
+        app: 'gitaly'
+    backups:
+      cron:
+        enabled: true
+        concurrencyPolicy: Replace
+        failedJobsHistoryLimit: 1
+        # Backup every day at 23:55
+        schedule: "55 23 * * *"
+        successfulJobsHistoryLimit: 3
+        extraArgs: "-t daily"
+        persistence:
+          enabled: true
+          storageClass: gitlab-task-runner
+          accessMode: ReadWriteOnce
+          size: 8Gi
+
+## doc/charts/gitlab/migrations
+#   migrations:
+#     enabled: false
+## doc/charts/gitlab/webservice
+#   webservice:
+#     enabled: false
+## doc/charts/gitlab/sidekiq
+#   sidekiq:
+#     enabled: false
+## doc/charts/gitlab/gitaly
+  gitaly:
+    persistence:
+      enabled: true
+      storageClass: gitlab-gitaly
+      accessMode: ReadWriteOnce
+      size: 8Gi
+
+## doc/charts/gitlab/gitlab-shell
+#   gitlab-shell:
+#     enabled: false
+## doc/charts/gitlab/gitlab-grafana
+#   gitlab-grafana:

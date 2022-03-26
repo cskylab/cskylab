@@ -1,0 +1,8 @@
+_tpldescription: x509 certificate management for Kubernetes
+_tplname: k8s-cert-manager
+_tplversion: 22-03-23
+kubeconfig: config-k8s-pro
+letsencrypt:
+  email: certadmin@cskylab.net
+namespace:
+  name: cert-manager

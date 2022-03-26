@@ -1,0 +1,8 @@
+_tpldescription: Ingress nginx controller for Kubernetes.
+_tplname: k8s-ingress-nginx
+_tplversion: 22-03-23
+ingressnginx:
+  loadbalancerip: 192.168.82.20
+kubeconfig: config-k8s-mod
+namespace:
+  name: ingress-nginx

@@ -1,0 +1,23 @@
+_tpldescription: Kubernetes MinIO Tenant
+_tplname: k8s-minio-tenant
+_tplversion: 22-03-23
+certificate:
+  clusterissuer: ca-test-internal
+credentials:
+  minio_accesskey: admin
+  minio_secretkey: NoFear21
+kubeconfig: config-k8s-mod
+localpvnodes:
+  domain: cskylab.net
+  localadminusername: kos
+  srv00: k8s-mod-n1
+  srv01: k8s-mod-n2
+  srv02: k8s-mod-n3
+  srv03: k8s-mod-n4
+namespace:
+  name: minio-tenant
+publishing:
+  consoleurl: minio-tenant-console.cskylab.net
+  miniourl: minio-tenant.cskylab.net
+registry:
+  proxy: harbor.cskylab.net/dockerhub

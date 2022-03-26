@@ -1,0 +1,38 @@
+#
+#   cskygen configuration values file
+#
+#   Copyright © 2021 cSkyLab.com
+#
+
+# 
+#   Command:
+#
+#   cskygen create -t ../tpl-cskylab/k8s-hello -d ../cs-pro/k8s-pro/hello -f k8s-pro-hello
+#
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-pro
+
+namespace:
+  ## k8s namespace name
+  name: hello-pro
+    ## Service domain name
+  domain: cskylab.net
+
+publishing:
+  ## External url
+  url: "hello-pro.cskylab.net"
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+  # clusterissuer: letsencrypt-staging
+  # clusterissuer: letsencrypt
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub

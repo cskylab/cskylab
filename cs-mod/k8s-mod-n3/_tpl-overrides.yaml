@@ -1,0 +1,26 @@
+_tpldescription: Ubuntu server 20.04 kubernetes node
+_tplname: ubt2004srv-k8s
+_tplversion: 22-03-23
+k8s_version: 1.23.5-00
+machine:
+  domainname: cskylab.net
+  gateway4: 192.168.82.1
+  hostname: k8s-mod-n3
+  ipaddress: 192.168.82.13
+  localadminpassword: NoFear21
+  localadminusername: kos
+  nameservers:
+  - 192.168.82.1
+  netmask: 24
+  networkinterface: enp1s0
+  searchdomainnames:
+  - cskylab.net
+  setupdir: /etc/csky-setup
+  systemkeyboard: us
+  systemlocale: C.UTF-8
+  timezone: UTC
+restic:
+  aws_access: bucketname_rw
+  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
+  password: NoFear21
+  repo: s3:https://backup.cskylab.net/bucketname/restic

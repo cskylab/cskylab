@@ -1,0 +1,26 @@
+_tpldescription: Kubernetes Keycloak namespace
+_tplname: k8s-keycloak
+_tplversion: 22-03-23
+certificate:
+  clusterissuer: ca-test-internal
+kubeconfig: config-k8s-mod
+localpvnodes:
+  all_pv: k8s-mod-n1
+localrsyncnodes:
+  all_pv: k8s-mod-n2
+namespace:
+  domain: cskylab.net
+  name: keycloak
+publishing:
+  password: NoFear21
+  url: keycloak.cskylab.net
+registry:
+  password: NoFear21
+  private: harbor.cskylab.net/cskylab
+  proxy: harbor.cskylab.net/dockerhub
+  username: admin
+restic:
+  aws_access: bucketname_rw
+  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
+  password: NoFear21
+  repo: s3:https://backup.cskylab.net/bucketname/restic

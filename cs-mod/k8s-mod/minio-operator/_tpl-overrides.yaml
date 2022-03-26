@@ -1,0 +1,12 @@
+_tpldescription: Kubernetes MinIO Operator
+_tplname: k8s-minio-operator
+_tplversion: 22-03-23
+certificate:
+  clusterissuer: ca-test-internal
+kubeconfig: config-k8s-mod
+namespace:
+  name: minio-operator
+publishing:
+  url: minio-operator.cskylab.net
+registry:
+  proxy: harbor.cskylab.net/dockerhub
