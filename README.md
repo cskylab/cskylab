@@ -1,6 +1,6 @@
 # ![cSkyLab logo](./cskylab.png)
 
-## Virtual data center in a box
+## Virtual data center in-a-box
 
 **v22-03-23**
 
