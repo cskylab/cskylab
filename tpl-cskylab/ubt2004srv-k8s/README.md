@@ -457,7 +457,7 @@ sudo cs-k8init.sh -l
 
 ```bash
   # Create kubernetes credential directory for kubeconfig files
-  mkdir /${HOME}/.kube
+  mkdir ${HOME}/.kube
 ```
 
   This directory will contain kubeconfig credential files for each k8s cluster you need to operate with.
@@ -466,12 +466,12 @@ sudo cs-k8init.sh -l
 
 ```bash
   # Example: Download from host k8s-mod-master.cskylab.com, the kubeconfig file for cluster k8s-mod
-  scp kos@k8s-mod-master.cskylab.net:~/.kube/config /${HOME}/.kube/config-k8s-mod
+  scp kos@k8s-mod-master.cskylab.net:~/.kube/config ${HOME}/.kube/config-k8s-mod
 ```
 
 - **Edit kubeconfig file and customize names**: 
   
-  Edit the kubeconfig file `/${HOME}/.kube/config-<your_k8s_cluster_name>` and change all the entries named `kubernetes` to `your_k8s_cluster_name` in the following way:
+  Edit the kubeconfig file `${HOME}/.kube/config-<your_k8s_cluster_name>` and change all the entries named `kubernetes` to `your_k8s_cluster_name` in the following way:
   
   | Entry:       | Change to:                | Example                            |
   | ------------ | ------------------------- | ---------------------------------- |
@@ -486,7 +486,7 @@ sudo cs-k8init.sh -l
 
 - **Merging kubeconfig files**:
   
-  In addition to these single cluster kubeconfig files, you need to merge them into a global default kubeconfig file `/${HOME}/.kube/config`.
+  In addition to these single cluster kubeconfig files, you need to merge them into a global default kubeconfig file `${HOME}/.kube/config`.
   
   Since kubeconfig files are structured YAML files, you can’t just append them to get one file. You must use `kubectl` to merge these files.
 
@@ -494,13 +494,13 @@ sudo cs-k8init.sh -l
 
 ```bash
   # Backup your current default kubeconfig file
-  cp -av /${HOME}/.kube/config /${HOME}/.kube/config.bak
+  cp -av ${HOME}/.kube/config ${HOME}/.kube/config.bak
 
   # Merge kubeconfig files format
-  KUBECONFIG=file1:file2:file3 kubectl config view --merge --flatten > /${HOME}/.kube/config
+  KUBECONFIG=file1:file2:file3 kubectl config view --merge --flatten > ${HOME}/.kube/config
   
   # Merging example for files config-k8s-mod and config-k8s-pro
-  KUBECONFIG=/${HOME}/.kube/config-k8s-mod:/${HOME}/.kube/config-k8s-pro kubectl config view --merge --flatten > /${HOME}/.kube/config
+  KUBECONFIG=${HOME}/.kube/config-k8s-mod:${HOME}/.kube/config-k8s-pro kubectl config view --merge --flatten > ${HOME}/.kube/config
 ```  
 
 ### Add node to k8s cluster
