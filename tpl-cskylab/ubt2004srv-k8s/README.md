@@ -465,8 +465,8 @@ sudo cs-k8init.sh -l
 - **Copy kubeconfig file**: You must copy from every k8s master node its credentials file `.kube/config` to your computer. Use an SCP command and name the config file according to the k8s cluster name, in the following form:
 
 ```bash
-  # Example: Download from host kube-mod-master.cskylab.com, the kubeconfig file for cluster k8s-mod
-  scp kos@kube-mod-master.cskylab.net:~/.kube/config /${HOME}/.kube/config-k8s-mod
+  # Example: Download from host k8s-mod-master.cskylab.com, the kubeconfig file for cluster k8s-mod
+  scp kos@k8s-mod-master.cskylab.net:~/.kube/config /${HOME}/.kube/config-k8s-mod
 ```
 
 - **Edit kubeconfig file and customize names**: 
