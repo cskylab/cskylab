@@ -30,6 +30,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [Add node to k8s cluster](#add-node-to-k8s-cluster)
     - [Create a new token](#create-a-new-token)
     - [Join the new node to the cluster](#join-the-new-node-to-the-cluster)
+    - [Inject ssh keys between k8s nodes](#inject-ssh-keys-between-k8s-nodes)
   - [Remove node from k8s cluster](#remove-node-from-k8s-cluster)
     - [Drain the node](#drain-the-node)
     - [Delete the node](#delete-the-node)
@@ -545,6 +546,42 @@ From the k8s master node or any other kubectl console, list your cluster’s nod
 ```bash
 # List existing nodes
 kubectl get nodes
+```
+
+#### Inject ssh keys between k8s nodes
+
+In order to schedule cron-tab copies of local data services to other nodes, you must inject ssh keys from each node, to the other nodes in the cluster.
+
+>**Note:** You will be asked for the password of local admin user (See file `secrets/admin-password`).
+
+**Example: k8s-mod nodes**
+
+- Open terminals at each k8s node and connect inside the machine with `./csconnect.sh`:
+  - k8s-mod-n1
+  - k8s-mod-n2
+  - k8s-mod-n3
+  - k8s-mod-n4
+
+```bash
+# Inject ssh keys from k8s-mod-n1
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n2
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n3
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n4
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
 ```
 
 ### Remove node from k8s cluster

@@ -12,6 +12,8 @@ This service creates a X-node MinIO Tenant using MinIO for object storage.
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
+  ![ ](./images/minio-console-2022-03-31_11-38-35.png)
+
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
   - [Persistence](#persistence)

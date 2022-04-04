@@ -10,6 +10,8 @@ MinIO is a Kubernetes-native high performance object store with an S3-compatible
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
+  ![ ](./images/minio-op-2022-03-31_11-26-40.png)
+
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
 - [How-to guides](#how-to-guides)
