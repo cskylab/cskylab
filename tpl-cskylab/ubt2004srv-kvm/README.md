@@ -22,6 +22,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [Storage services](#storage-services)
     - [Manage disk volume groups](#manage-disk-volume-groups)
     - [Manage Thin Provisioning LVM data services](#manage-thin-provisioning-lvm-data-services)
+    - [Repair LVM thin-pool](#repair-lvm-thin-pool)
     - [Rsync data replication](#rsync-data-replication)
     - [Restic data backup and restore](#restic-data-backup-and-restore)
   - [Virtualization services](#virtualization-services)
@@ -288,6 +289,38 @@ Free space of unused blocks inside thin-pools:
   sudo cs-lvmserv.sh -m trim-space
 
 ```
+
+#### Repair LVM thin-pool
+
+1. Unmount all LVM in the volume group
+
+2. List LVM to see vg and lv names
+
+```bash
+sudo lvscan
+```
+
+3. Deactivate volume group
+
+```bash
+sudo lvchange -an vg
+```
+
+4. Repair thin-pool
+
+```bash
+sudo lvconvert --repair  vg/tpool
+```
+
+5. Activate volume group
+
+```bash
+sudo lvchange -ay vg
+```
+
+6. Mount LVM and check data
+
+To learn more see the following procedure: https://smileusd.github.io/2018/10/12/repair-thinpool/
 
 #### Rsync data replication
 
