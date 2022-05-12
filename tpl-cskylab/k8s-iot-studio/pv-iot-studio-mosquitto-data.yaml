@@ -13,7 +13,7 @@ metadata:
   name: {{ .namespace.name }}-mosquitto-data
 spec:
   capacity:
-    storage: 100Mi
+    storage: 10Gi
   volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce

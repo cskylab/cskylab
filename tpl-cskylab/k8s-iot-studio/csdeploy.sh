@@ -98,9 +98,9 @@ helm repo update
 
 ## Charts
 helm pull k8s-at-home/mosquitto --version 4.3.1 --untar
-# helm pull k8s-at-home/node-red --version 10.1.1 --untar
-# helm pull influxdata/influxdb2 --version 2.0.12 --untar
-# helm pull bitnami/grafana --version 7.6.33 --untar
+helm pull k8s-at-home/node-red --version 10.1.1 --untar
+helm pull influxdata/influxdb2 --version 2.0.12 --untar
+helm pull bitnami/grafana --version 7.6.33 --untar
 
 EOF
 )"

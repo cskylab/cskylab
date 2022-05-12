@@ -55,7 +55,7 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 
 ### Administrative tools
 
-- Install node-red admin tools in mcc
+- Install mosquitto and node-red admin tools in mcc
 
 ```bash
 echo \
@@ -64,6 +64,7 @@ echo \
 && curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
 && sudo apt-get install -y nodejs \
 && sudo npm install -g --unsafe-perm node-red-admin \
+&& sudo apt install -y mosquitto \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -285,7 +286,8 @@ echo \
 && echo \
 && echo "******** Customizing file mosquitto_passwd.txt" \
 && echo \
-&& mosquitto_passwd -b -c mosquitto_passwd.txt ${RB_MOSQUITTO_USER} ${RB_MOSQUITTO_PASSWORD}  \
+&& rm ./mosquitto_passwd.txt ; touch ./mosquitto_passwd.txt \
+&& mosquitto_passwd -b mosquitto_passwd.txt ${RB_MOSQUITTO_USER} ${RB_MOSQUITTO_PASSWORD}  \
 && echo \
 && echo "******** Injecting files in mosquitto configuration" \
 && echo \
