@@ -1,0 +1,81 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: k8s-iot-studio
+_tpldescription: Kubernetes IOT Studio
+_tplversion: 99-99-99
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: iot-studio
+  ## Service domain name
+  domain: cskylab.net
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub
+
+mosquitto:
+  ## LoadBanancer IP static address
+  ## Must be previously configured in MetalLB
+  loadbalancerip: 192.168.82.21
+  ## External url
+  url: mosquitto-iot.mod.cskylab.net
+  ## Credentials
+  user: "admin"
+  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
+
+nodered:
+  ## Container timezone
+  timezone: "UTC"
+  ## External url
+  url: node-red-iot.mod.cskylab.net
+  ## Credentials
+  user: "admin"
+  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
+
+influxdb:
+  # influxdb organization name
+  organization: "cskylab"
+  # influxdb bucket
+  bucket: "iot-studio"
+  # influxdb ui
+  url: influxdb-iot.mod.cskylab.net
+  ## Credentials
+  user: "admin"
+  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
+
+grafana:
+  # grafana ui access
+  url: grafana-iot.mod.cskylab.net
+  ## Credentials
+  user: "admin"
+  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
+
+## Local storage PV's node affinity (Configured in pv*.yaml)
+localpvnodes:    # (k8s node names)
+  all_pv: k8s-mod-n1
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
+localrsyncnodes: # (k8s node names)
+  all_pv: k8s-mod-n2
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
