@@ -13,6 +13,7 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
+  - [Administrative tools](#administrative-tools)
   - [LVM Data Services](#lvm-data-services)
     - [Persistent Volumes](#persistent-volumes)
   - [Configuration files](#configuration-files)
@@ -52,6 +53,22 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 - SSH keys deployed in kubernetes nodes.
 - Helm v3.
 
+### Administrative tools
+
+- Install node-red admin tools in mcc
+
+```bash
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
+&& sudo apt-get install -y nodejs \
+&& sudo npm install -g --unsafe-perm node-red-admin \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
 ### LVM Data Services
 
 Data services are supported by the following nodes:
@@ -74,30 +91,38 @@ To **create** the corresponding LVM data services, execute from your **mcc** man
 #
 # Create LVM data services in PV node
 #
-echo && echo "******** SOE - START of execution ********" && echo \
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-node-red" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-influxdb" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-grafana" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-mosquitto" \
 && mkdir "/srv/{{ .namespace.name }}-mosquitto/data/configinc" \
-&& mkdir "/srv/{{ .namespace.name }}-mosquitto/data/data" \
-&& echo && echo "******** EOE - END of execution ********" && echo
+&& mkdir "/srv/{{ .namespace.name }}-mosquitto/data/data"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
 ```
 
 ```bash
 #
 # Create LVM data services in RSync node
 #
-echo && echo "******** SOE - START of execution ********" && echo \
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
 && ssh {{ .localrsyncnodes.localadminusername }}@{{ .localrsyncnodes.all_pv }}.{{ .localrsyncnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-node-red" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-influxdb" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-grafana" \
 && sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}-mosquitto" \
 && mkdir "/srv/{{ .namespace.name }}-mosquitto/data/configinc" \
-&& mkdir "/srv/{{ .namespace.name }}-mosquitto/data/data" \
-&& echo && echo "******** EOE - END of execution ********" && echo
+&& mkdir "/srv/{{ .namespace.name }}-mosquitto/data/data"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
 ```
 
 
@@ -107,26 +132,34 @@ To **delete** the corresponding LVM data services, execute from your **mcc** man
 #
 # Delete LVM data services in PV node
 #
-echo && echo "******** SOE - START of execution ********" && echo \
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-node-red" \
 && sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-influxdb" \
 && sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-grafana" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-mosquitto" \
-&& echo && echo "******** EOE - END of execution ********" && echo
+&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-mosquitto"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
 ```
 
 ```bash
 #
 # Delete LVM data services in RSync node
 #
-echo && echo "******** SOE - START of execution ********" && echo \
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
 && ssh {{ .localrsyncnodes.localadminusername }}@{{ .localrsyncnodes.all_pv }}.{{ .localrsyncnodes.domain }} \
   'sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-node-red" \
 && sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-influxdb" \
 && sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-grafana" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-mosquitto" \
-&& echo && echo "******** EOE - END of execution ********" && echo
+&& sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}-mosquitto"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
 ```
 
 
@@ -198,7 +231,7 @@ echo \
 && echo \
 && echo "******** Customizing file node-red-settings.js" \
 && echo \
-&& export RB_NODERED_OBF_PASSWORD=$(echo ${RB_NODERED_PASSWORD} | node-red admin hash-pw | cut -c 11-)  \
+&& export RB_NODERED_OBF_PASSWORD=$(echo ${RB_NODERED_PASSWORD} | node-red-admin hash-pw | cut -c 11-)  \
 && cp -v ./tpl-node-red-settings.js ./node-red-settings.js \
 && find . -name "node-red-settings.js" | \
         xargs -n 1 sed -i "s#__node_red_obfuscated_password__#${RB_NODERED_OBF_PASSWORD}#g" \
