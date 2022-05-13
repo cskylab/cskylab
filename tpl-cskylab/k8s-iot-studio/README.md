@@ -1,6 +1,16 @@
 # Kubernetes IOT Studio<!-- omit in toc -->
 
-## `k8s-iot-studio` v99-99-99 <!-- omit in toc -->
+## k8s-iot-studio v99-99-99 <!-- omit in toc -->
+
+## Helm charts<!-- omit in toc -->
+
+| Repository/chart      |
+| --------------------- |
+| k8s-at-home/mosquitto |
+| k8s-at-home/node-red  |
+| influxdata/influxdb2  |
+| bitnami/grafana       |
+
 
 This namespace is intended to deploy an IOT service environment in Kubernetes with the following applications:
 
@@ -26,8 +36,6 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
   - [Remove](#remove)
   - [Display status](#display-status)
 - [Reference](#reference)
-  - [Helm charts](#helm-charts)
-  - [Application modules](#application-modules)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
 - [License](#license)
@@ -289,7 +297,7 @@ echo \
 && ls -lah ./mosquitto_* \
 && echo \
 && echo \
-&& rm ./mosquitto_passwd.txt ; touch ./mosquitto_passwd.txt \
+&& touch ./mosquitto_passwd.txt && rm ./mosquitto_passwd.txt && touch ./mosquitto_passwd.txt \
 && mosquitto_passwd -b mosquitto_passwd.txt ${RB_MOSQUITTO_USER} ${RB_MOSQUITTO_PASSWORD}  \
 && echo \
 && echo "******** Injecting files in mosquitto configuration" \
@@ -358,22 +366,6 @@ To display namespace status run:
 ```
 
 ## Reference
-
-### Helm charts
-
-| Repository/chart      |
-| --------------------- |
-| k8s-at-home/mosquitto |
-| k8s-at-home/node-red  |
-| influxdata/influxdb2  |
-| bitnami/grafana       |
-
-
-### Application modules
-
-| Module | Description |
-| ------ | ----------- |
-|        |             |
 
 ### Scripts
 
