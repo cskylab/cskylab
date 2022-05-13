@@ -95,13 +95,13 @@ grafana:
 
 ## Local storage PV's node affinity (Configured in pv*.yaml)
 localpvnodes:    # (k8s node names)
-  all_pv: k8s-mod-n1
+  all_pv: k8s-pro-n1
   # k8s nodes domain name
   domain: cskylab.net
   # k8s nodes local administrator
   localadminusername: kos
 localrsyncnodes: # (k8s node names)
-  all_pv: k8s-mod-n2
+  all_pv: k8s-pro-n2
   # k8s nodes domain name
   domain: cskylab.net
   # k8s nodes local administrator
