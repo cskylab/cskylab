@@ -286,13 +286,13 @@ echo \
 && echo \
 && echo "******** Customizing file mosquitto_passwd.txt" \
 && echo \
+&& ls -lah ./mosquitto_* \
+&& echo \
+&& echo \
 && rm ./mosquitto_passwd.txt ; touch ./mosquitto_passwd.txt \
 && mosquitto_passwd -b mosquitto_passwd.txt ${RB_MOSQUITTO_USER} ${RB_MOSQUITTO_PASSWORD}  \
 && echo \
 && echo "******** Injecting files in mosquitto configuration" \
-&& echo \
-&& ls -lah ./mosquitto_* \
-&& echo \
 && echo \
 && scp ./mosquitto_* {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }}:~ \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
