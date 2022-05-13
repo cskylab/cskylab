@@ -23,6 +23,7 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
+  - [MetalLB configuration](#metallb-configuration)
   - [Administrative tools](#administrative-tools)
   - [LVM Data Services](#lvm-data-services)
     - [Persistent Volumes](#persistent-volumes)
@@ -60,6 +61,33 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 - Administrative access to kubernetes cluster.
 - SSH keys deployed in kubernetes nodes.
 - Helm v3.
+
+### MetalLB configuration
+
+Review and deploy if necessary file `config.yaml` in MetalLB configuration for k8s-mod and k8s-pro cluster in order to include load balanced IP addresses for mosquitto service.
+
+Example:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+      - name: static-pool
+        auto-assign: false
+        protocol: layer2
+        addresses:
+        - 192.168.82.20/32  # k8s-ingress   
+        - 192.168.82.21/32  # mosquitto iot-studio
+      - name: dynamic-pool
+        protocol: layer2
+        addresses:
+        - 192.168.82.75-192.168.82.90
+```
 
 ### Administrative tools
 

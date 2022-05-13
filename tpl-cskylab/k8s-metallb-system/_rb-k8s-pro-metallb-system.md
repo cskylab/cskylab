@@ -1,4 +1,4 @@
-# k8s-metallb-system-mf
+# k8s-pro-metallb-system
 
 [MetalLB](https://metallb.universe.tf/) is a load-balancer implementation for bare metal Kubernetes clusters, using standard routing protocols.
 
@@ -20,9 +20,9 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory" \
-&& export RB_ZONE="cs-mod" \
-&& export RB_K8S_CLUSTER="k8s-mod" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-metallb-system-mf" \
+&& export RB_ZONE="cs-pro" \
+&& export RB_K8S_CLUSTER="k8s-pro" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-metallb-system" \
 && echo
 ```
 
@@ -40,19 +40,20 @@ echo \
 #
 
 ## k8s cluster credentials kubeconfig file
-kubeconfig: config-k8s-mod
+kubeconfig: config-k8s-pro
 
 namespace:
-  ## k8s namespace name must follow this name and be unique in cluster
-  name: metallb-system  # DO NOT CHANGE THIS NAME
+  ## k8s namespace name
+  name: metallb-system
 
 ## MetalLB static and dynamc ip addresses pools
 metallb:
   staticpooladdr: 
-    - 192.168.82.20/32  # k8s-ingress
+    - 192.168.83.20/32  # k8s-ingress
+    - 192.168.83.21/32  # mosquitto iot-studio
   dynamicpooladdr: 
-    - 192.168.82.75-192.168.82.90   # Auto assigned
-  
+    - 192.168.83.75-192.168.83.90   # Auto assigned
+   
 EOF
 )" \
 && echo "${CSKYGEN_TPL_OVERRIDES}" >/tmp/cskygen_tpl_overrides.yaml \
