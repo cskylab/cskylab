@@ -289,9 +289,17 @@ echo \
 
 #### mosquitto
 
-User authentication is defined on mosquitto configuration files `mosquitto_config.conf` and `mosquitto_passwd.txt`
+Mosquitto broker is configured to listen port 1883 for unencrypted MQTT and port 8883 for encrypted TLS over MQTT. You must provide a mosquitto certificate with the appropriate SAN's for your mosquitto server and customize the following files in your deployment:
 
-To customize `mosquitto_passwd.txt` and inject both configuration files, execute the following scripts in your configuration directory:
+- `mosquito_ca.crt`: Public certificate of the CA that issues the mosquitto certificate.
+- `mosquito_cert.crt`: Public certificate of the mosquitto certificate.
+- `mosquito_cert.key`: Private key of the mosquitto certificate.
+
+To can create this certificate with your opnsense server see section **Create and sign certificates** in your opnsense cluster documentation README.md file.
+
+User authentication is defined on mosquitto configuration files `mosquitto_config.conf` and `mosquitto_passwd.txt` with an obfuscated version of the password.
+
+To customize `mosquitto_passwd.txt` with obfuscated password and inject configuration and certificate files, execute the following scripts in your configuration directory:
 
 **Set ENV variables**:
 
@@ -330,6 +338,8 @@ echo \
 && echo \
 && echo "******** Injecting files in mosquitto configuration" \
 && echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo touch ${HOME}/mosquitto_config.conf && sudo rm -v ${HOME}/mosquitto_* ' \
 && scp ./mosquitto_* {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }}:~ \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cp -av ${HOME}/mosquitto_* /srv/{{ .namespace.name }}-mosquitto/data/configinc/ \

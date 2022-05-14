@@ -26,6 +26,9 @@ service:
       mqtt:
         enabled: true
         port: 1883
+      tls:
+        enabled: true
+        port: 8883
 
 auth:
   # -- By enabling this, `allow_anonymous` gets set to `false` in the mosquitto config.
