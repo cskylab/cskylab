@@ -19,7 +19,7 @@ image:
 service:
   main:
     type: LoadBalancer
-    loadBalancerIP: " {{ .mosquitto.loadbalancerip }}"
+    loadBalancerIP: "{{ .mosquitto.loadbalancerip }}"
     ports:
       http:
         enabled: false
