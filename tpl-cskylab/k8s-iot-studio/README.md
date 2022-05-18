@@ -12,7 +12,7 @@
 This namespace is intended to deploy an IOT service environment in Kubernetes with the following applications:
 
 - **Mosquitto MQTT broker**: Eclipse Mosquitto is an open source (EPL/EDL licensed) message broker that implements the MQTT protocol versions 5.0, 3.1.1 and 3.1. 
-- **Node-Red**: Node-RED is a programming tool for wiring together hardware devices.
+- **Node-Red**: Node-Red is a flow-based programming tool, originally developed by IBM's Emerging Technology Services team and now a part of the OpenJS Foundation.
 - **InfluxDB**: InfluxDB is a Time Series Data Platform where developers build IoT, analytics, and cloud applications.
 - **Grafana**: Grafana allows you to query, visualize, alert on and understand metrics.
 
