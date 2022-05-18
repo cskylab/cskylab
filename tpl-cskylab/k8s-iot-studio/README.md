@@ -428,7 +428,7 @@ echo \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-node-red \
-  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -443,7 +443,7 @@ echo \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-influxdb \
-  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -458,7 +458,7 @@ echo \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-grafana \
-  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -473,7 +473,7 @@ echo \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-mosquitto \
-  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -543,7 +543,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red -t {{ .namespace.name }}-node-red'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red -t {{ .namespace.name }}-node-red' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -557,7 +557,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb   -t {{ .namespace.name }}-influxdb'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb   -t {{ .namespace.name }}-influxdb' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -571,7 +571,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana   -t {{ .namespace.name }}-grafana'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana   -t {{ .namespace.name }}-grafana' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -585,7 +585,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto   -t {{ .namespace.name }}-mosquitto'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto   -t {{ .namespace.name }}-mosquitto' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -603,7 +603,7 @@ echo \
   {{ .namespace.name }}-influxdb, \
   {{ .namespace.name }}-grafana, \
   {{ .namespace.name }}-mosquitto, \
-  '
+  ' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
