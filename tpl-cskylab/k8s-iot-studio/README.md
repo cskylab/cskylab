@@ -543,7 +543,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red -r {{ .restic.repo }}  -t {{ .namespace.name }}-node-red'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red -t {{ .namespace.name }}-node-red'
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -557,7 +557,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb -r {{ .restic.repo }}  -t {{ .namespace.name }}-influxdb'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb   -t {{ .namespace.name }}-influxdb'
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -571,7 +571,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana -r {{ .restic.repo }}  -t {{ .namespace.name }}-grafana'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana   -t {{ .namespace.name }}-grafana'
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -585,7 +585,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto -r {{ .restic.repo }}  -t {{ .namespace.name }}-mosquitto'
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto   -t {{ .namespace.name }}-mosquitto'
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -598,7 +598,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
-  'sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} -t \
+  'sudo cs-restic.sh -q -m restic-list  -t \
   {{ .namespace.name }}-node-red, \
   {{ .namespace.name }}-influxdb, \
   {{ .namespace.name }}-grafana, \
@@ -620,8 +620,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## Data service:  /srv/{{ .namespace.name }}-node-red
 ## At minute 30 past every hour from 8 through 23.
-## Restic repo:   {{ .restic.repo }}
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-node-red >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red -r {{ .restic.repo }}  -t {{ .namespace.name }}-node-red  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-node-red  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-node-red >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red   -t {{ .namespace.name }}-node-red  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}-node-red  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ```bash
@@ -631,8 +630,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## Data service:  /srv/{{ .namespace.name }}-influxdb
 ## At minute 30 past every hour from 8 through 23.
-## Restic repo:   {{ .restic.repo }}
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-influxdb >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb -r {{ .restic.repo }}  -t {{ .namespace.name }}-influxdb  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-influxdb  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-influxdb >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb   -t {{ .namespace.name }}-influxdb  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}-influxdb  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ```bash
@@ -642,8 +640,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## Data service:  /srv/{{ .namespace.name }}-grafana
 ## At minute 30 past every hour from 8 through 23.
-## Restic repo:   {{ .restic.repo }}
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-grafana >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana -r {{ .restic.repo }}  -t {{ .namespace.name }}-grafana  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-grafana  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-grafana >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana   -t {{ .namespace.name }}-grafana  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}-grafana  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ```bash
@@ -653,8 +650,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## Data service:  /srv/{{ .namespace.name }}-mosquitto
 ## At minute 30 past every hour from 8 through 23.
-## Restic repo:   {{ .restic.repo }}
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-mosquitto >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto -r {{ .restic.repo }}  -t {{ .namespace.name }}-mosquitto  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-mosquitto  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-mosquitto >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto   -t {{ .namespace.name }}-mosquitto  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}-mosquitto  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ## Reference
