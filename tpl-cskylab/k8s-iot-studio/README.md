@@ -2,22 +2,19 @@
 
 ## k8s-iot-studio v99-99-99 <!-- omit in toc -->
 
-## Helm charts<!-- omit in toc -->
+## Helm charts:<!-- omit in toc -->
 
-| Repository/chart      |
-| --------------------- |
-| k8s-at-home/mosquitto |
-| k8s-at-home/node-red  |
-| influxdata/influxdb2  |
-| bitnami/grafana       |
-
+- k8s-at-home/mosquitto
+- k8s-at-home/node-red 
+- influxdata/influxdb2 
+- bitnami/grafana      
 
 This namespace is intended to deploy an IOT service environment in Kubernetes with the following applications:
 
-- Mosquitto MQTT broker
-- Node-Red
-- InfluxDB
-- Grafana
+- **Mosquitto MQTT broker**: Eclipse Mosquitto is an open source (EPL/EDL licensed) message broker that implements the MQTT protocol versions 5.0, 3.1.1 and 3.1. 
+- **Node-Red**: Node-RED is a programming tool for wiring together hardware devices.
+- **InfluxDB**: InfluxDB is a Time Series Data Platform where developers build IoT, analytics, and cloud applications.
+- **Grafana**: Grafana allows you to query, visualize, alert on and understand metrics.
 
 ---  
 
@@ -36,6 +33,9 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
+  - [Backup & data protection](#backup--data-protection)
+    - [RSync HA copies](#rsync-ha-copies)
+    - [Restic backup](#restic-backup)
 - [Reference](#reference)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
@@ -401,6 +401,260 @@ To display namespace status run:
 ```bash
   # Display namespace, status:
     ./csdeploy.sh -l
+```
+
+### Backup & data protection
+
+Backup & data protection must be configured on file `cs-cron_scripts` of the node that supports the data services.
+
+#### RSync HA copies
+
+Rsync cronjobs are used to achieve service HA for LVM data services that supports the persistent volumes. The script `cs-rsync.sh` perform the following actions:
+
+- Take a snapshot of LVM data service in the node that supports the service (PV node)
+- Copy and syncrhonize the data to the mirrored data service in the kubernetes node designed for HA (RSync node)
+- Remove snapshot in LVM data service
+
+To perform RSync manual copies on demand, execute from your **mcc** management machine the following commands:
+
+>**Warning:** You should not make two copies at the same time. You must check the scheduled jobs in `cs-cron-scripts` and disable them if necesary, in order to avoid conflicts.
+
+```bash
+#
+# RSync node-red data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-node-red \
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# RSync influxdb data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-influxdb \
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# RSync grafana data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-grafana \
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# RSync mosquitto data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-mosquitto \
+  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+**RSync cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` on the node that supports the service (PV node). Change time schedule as needed:
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-node-red - RSync LVM data services
+################################################################################
+##
+## RSync path:  /srv/{{ .namespace.name }}-node-red
+## To Node:     {{ .localrsyncnodes.all_pv }}
+## At minute 0 past every hour from 8 through 23.
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-node-red >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-node-red  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+```
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-influxdb - RSync LVM data services
+################################################################################
+##
+## RSync path:  /srv/{{ .namespace.name }}-influxdb
+## To Node:     {{ .localrsyncnodes.all_pv }}
+## At minute 0 past every hour from 8 through 23.
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-influxdb >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-influxdb  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+```
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-grafana - RSync LVM data services
+################################################################################
+##
+## RSync path:  /srv/{{ .namespace.name }}-grafana
+## To Node:     {{ .localrsyncnodes.all_pv }}
+## At minute 0 past every hour from 8 through 23.
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-grafana >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-grafana  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+```
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-mosquitto - RSync LVM data services
+################################################################################
+##
+## RSync path:  /srv/{{ .namespace.name }}-mosquitto
+## To Node:     {{ .localrsyncnodes.all_pv }}
+## At minute 0 past every hour from 8 through 23.
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-mosquitto >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }}-mosquitto  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+```
+
+#### Restic backup
+
+Restic can be configured to perform data backups to local USB disks, remote disk via sftp or cloud S3 storage.
+
+To perform on-demand restic backups execute from your **mcc** management machine the following commands:
+
+>**Warning:** You should not launch two backups at the same time. You must check the scheduled jobs in `cs-cron-scripts` and disable them if necesary, in order to avoid conflicts.
+
+```bash
+#
+# Restic backup node-red data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red -r {{ .restic.repo }}  -t {{ .namespace.name }}-node-red'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# Restic backup influxdb data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb -r {{ .restic.repo }}  -t {{ .namespace.name }}-influxdb'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# Restic backup grafana data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana -r {{ .restic.repo }}  -t {{ .namespace.name }}-grafana'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# Restic backup mosquitto data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto -r {{ .restic.repo }}  -t {{ .namespace.name }}-mosquitto'
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+To view available backups:
+
+```bash
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
+  'sudo cs-restic.sh -q -m restic-list -r {{ .restic.repo }} -t \
+  {{ .namespace.name }}-node-red, \
+  {{ .namespace.name }}-influxdb, \
+  {{ .namespace.name }}-grafana, \
+  {{ .namespace.name }}-mosquitto, \
+  '
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+**Restic cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` on the node that supports the service (PV node). Change time schedule as needed:
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-node-red - Restic backups
+################################################################################
+##
+## Data service:  /srv/{{ .namespace.name }}-node-red
+## At minute 30 past every hour from 8 through 23.
+## Restic repo:   {{ .restic.repo }}
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-node-red >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-node-red -r {{ .restic.repo }}  -t {{ .namespace.name }}-node-red  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-node-red  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+```
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-influxdb - Restic backups
+################################################################################
+##
+## Data service:  /srv/{{ .namespace.name }}-influxdb
+## At minute 30 past every hour from 8 through 23.
+## Restic repo:   {{ .restic.repo }}
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-influxdb >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-influxdb -r {{ .restic.repo }}  -t {{ .namespace.name }}-influxdb  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-influxdb  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+```
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-grafana - Restic backups
+################################################################################
+##
+## Data service:  /srv/{{ .namespace.name }}-grafana
+## At minute 30 past every hour from 8 through 23.
+## Restic repo:   {{ .restic.repo }}
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-grafana >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-grafana -r {{ .restic.repo }}  -t {{ .namespace.name }}-grafana  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-grafana  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+```
+
+```bash
+################################################################################
+# /srv/{{ .namespace.name }}-mosquitto - Restic backups
+################################################################################
+##
+## Data service:  /srv/{{ .namespace.name }}-mosquitto
+## At minute 30 past every hour from 8 through 23.
+## Restic repo:   {{ .restic.repo }}
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}-mosquitto >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}-mosquitto -r {{ .restic.repo }}  -t {{ .namespace.name }}-mosquitto  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }}  -t {{ .namespace.name }}-mosquitto  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ## Reference
