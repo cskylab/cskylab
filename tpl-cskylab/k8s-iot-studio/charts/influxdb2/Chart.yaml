@@ -10,4 +10,4 @@ maintainers:
   name: gitirabassi
 name: influxdb2
 type: application
-version: 2.0.12
+version: 2.1.0
