@@ -7,13 +7,14 @@
 - [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
-    - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts & update](#2--pull-charts--update)
+    - [1.- Change image section in values-keycloak.yaml](#1--change-image-section-in-values-keycloakyaml)
+    - [2.- Update script cs-deploy.sh](#2--update-script-cs-deploysh)
+    - [3.- Pull charts & update](#3--pull-charts--update)
   - [Reference](#reference)
 - [v22-01-05](#v22-01-05)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
-    - [1.- Update configuration files](#1--update-configuration-files-1)
+    - [1.- Update configuration files](#1--update-configuration-files)
     - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
   - [Reference](#reference-1)
 
@@ -23,13 +24,46 @@
 
 ### Background
 
-Keycloak chart 18.1.1 updates chart components in keycloak appVersion 17.0.1-legacy.
+Keycloak chart 18.1.1 updates chart components in keycloak appVersion 17.0.1-legacy (wildfly version).
+
+Regarding the version changes in keycloack application see:
+
+- <https://www.keycloak.org/2022/03/releases.html>
+
+Keycloak image repository has been migrated to `quay.io/keycloak/keycloak`. It is required to modify this parameter in file `values-keycloak.yaml`.
 
 This procedure updates Keycloak installation in k8s-mod cluster.
 
 ### How-to guides
 
-#### 1.- Update configuration files
+#### 1.- Change image section in values-keycloak.yaml
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` application folder repository.
+
+- Edit `values-keycloak.yaml` file
+- Look for the following section:
+
+```yaml
+image:
+  # The Keycloak image repository
+  repository: harbor.cskylab.net/dockerhub/jboss/keycloak
+```
+
+- Change values as follows:
+
+```yaml
+image:
+  # The Keycloak image repository
+  repository: quay.io/keycloak/keycloak
+  # Overrides the Keycloak image tag whose default is the chart appVersion
+  tag: ""
+  # The Keycloak image pull policy
+  pullPolicy: IfNotPresent
+```
+
+- Save the file
+
+#### 2.- Update script cs-deploy.sh
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` folder repository.
 
@@ -65,7 +99,7 @@ EOF
 
 - Save file
 
-#### 2.- Pull charts & update
+#### 3.- Pull charts & update
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloak` repository directory.
 
