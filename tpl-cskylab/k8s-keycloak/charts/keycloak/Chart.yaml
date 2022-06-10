@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 16.1.1
+appVersion: 17.0.1-legacy
 dependencies:
 - condition: postgresql.enabled
   name: postgresql
@@ -25,4 +25,4 @@ sources:
 - https://github.com/codecentric/helm-charts
 - https://github.com/jboss-dockerfiles/keycloak
 - https://github.com/bitnami/charts/tree/master/bitnami/postgresql
-version: 17.0.2
+version: 18.1.1

@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-03-23](#v22-03-23)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update configuration files](#1--update-configuration-files)
@@ -19,11 +19,11 @@
 
 ---
 
-## v22-03-23
+## v99-99-99
 
 ### Background
 
-Keycloak chart 17.0.2 updates chart components in keycloak appVersion 16.1.1.
+Keycloak chart 18.1.1 updates chart components in keycloak appVersion 17.0.1-legacy.
 
 This procedure updates Keycloak installation in k8s-mod cluster.
 
@@ -48,7 +48,7 @@ helm repo add codecentric https://codecentric.github.io/helm-charts
 helm repo update
 
 # Charts
-helm pull codecentric/keycloak --version 17.0.2 --untar
+helm pull codecentric/keycloak --version 18.1.1 --untar
 
 EOF
 )"
@@ -58,9 +58,9 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v22-03-23 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: `codecentric/keycloak` v17.0.2 <!-- omit in toc -->
+## Helm charts: `codecentric/keycloak` v18.1.1 <!-- omit in toc -->
 ```
 
 - Save file
