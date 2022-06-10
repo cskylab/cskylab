@@ -2,21 +2,58 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
-- [v22-03-23](#v22-03-23)
+- [v99-99-99](#v99-99-99)
   - [Release notes](#release-notes)
   - [Application updates](#application-updates)
-- [v22-01-05](#v22-01-05)
+- [v22-03-23](#v22-03-23)
   - [Release notes](#release-notes-1)
   - [Application updates](#application-updates-1)
-- [v21-12-06](#v21-12-06)
+- [v22-01-05](#v22-01-05)
   - [Release notes](#release-notes-2)
-  - [Patches](#patches)
   - [Application updates](#application-updates-2)
+- [v21-12-06](#v21-12-06)
+  - [Release notes](#release-notes-3)
+  - [Patches](#patches)
+  - [Application updates](#application-updates-3)
 - [v21-11-24](#v21-11-24)
   - [Baseline build AM](#baseline-build-am)
 
 ---
+## v99-99-99
 
+### Release notes
+
+Welcome to cSkyLab release of v99-99-99.
+
+A new service called `k8s-iot-studio` has been has been added to `tpl-cskylab` template library to support an IOT backend environment in Kubernetes with the following applications:
+
+- Mosquitto MQTT broker
+- Node-Red
+- InfluxDB
+- Grafana
+
+This release also includes updates for 8 applications and kubernetes version update to v1.23.5-00.
+
+All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments created with this release, will have all these updates applied. Only previously deployed applications and services should be updated.
+
+It is highly recommended to update zone `cs-mod`, before proceeding to update zones `cs-pro` and `cs-sys`.
+
+### Application updates
+
+Application update procedures in this release:
+
+| Procedures                                    |
+| --------------------------------------------- |
+| [k8s-ingress-nginx](./k8s-ingress-nginx.md)   |
+| [k8s-cert-manager](./k8s-cert-manager.md)     |
+| [k8s-harbor.md](./k8s-harbor.md)              |
+| [k8s-keycloak.md](./k8s-keycloak.md)          |
+| [k8s-gitlab.md](./k8s-gitlab.md)              |
+| [k8s-nextcloud.md](./k8s-nextcloud.md)        |
+| [k8s-miniostalone.md](./k8s-miniostalone.md)  |
+| [kubeadm-clusters.md](./kubeadm-clusters.md)  |
+
+---
 ## v22-03-23
 
 ### Release notes

@@ -1,4 +1,4 @@
-# k8s-ingress-nginx
+# k8s-pro-ingress-nginx
 
 `k8s-ingress-nginx` ingress controller uses NGINX as a reverse proxy and load balancer.
 
@@ -22,8 +22,8 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory" \
-&& export RB_ZONE="cs-mod" \
-&& export RB_K8S_CLUSTER="k8s-mod" \
+&& export RB_ZONE="cs-pro" \
+&& export RB_K8S_CLUSTER="k8s-pro" \
 && export RB_K8S_NAMESPACE="ingress-nginx" \
 && export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-ingress-nginx" \
 && echo
@@ -43,7 +43,7 @@ echo \
 #
 
 ## k8s cluster credentials kubeconfig file
-kubeconfig: config-k8s-mod
+kubeconfig: config-k8s-pro
 
 namespace:
   ## k8s namespace name
@@ -52,7 +52,7 @@ namespace:
 ingressnginx:
   ## LoadBanancer IP static address
   ## Must be previously configured in MetalLB
-  loadbalancerip: 192.168.82.20
+  loadbalancerip: 192.168.83.20
 
 EOF
 )" \
