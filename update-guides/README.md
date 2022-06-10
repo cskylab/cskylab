@@ -25,7 +25,7 @@
 
 Welcome to cSkyLab release of v99-99-99.
 
-A new service called `k8s-iot-studio` has been has been added to `tpl-cskylab` template library to support an IOT backend environment in Kubernetes with the following applications:
+A new service called `k8s-iot-studio` has been added to `tpl-cskylab` template library to support an IOT backend environment in Kubernetes with the following applications:
 
 - Mosquitto MQTT broker
 - Node-Red
