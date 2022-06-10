@@ -1,4 +1,4 @@
-# k8s-cert-manager
+# k8s-pro-cert-manager
 
 [cert-manager](https://cert-manager.io/docs/) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing key pair, or self signed.
 
@@ -21,8 +21,8 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory" \
-&& export RB_ZONE="cs-mod" \
-&& export RB_K8S_CLUSTER="k8s-mod" \
+&& export RB_ZONE="cs-pro" \
+&& export RB_K8S_CLUSTER="k8s-pro" \
 && export RB_K8S_NAMESPACE="cert-manager" \
 && export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-cert-manager" \
 && echo
@@ -42,7 +42,7 @@ echo \
 #
 
 ## k8s cluster credentials kubeconfig file
-kubeconfig: config-k8s-mod
+kubeconfig: config-k8s-pro
 
 namespace:
   ## k8s namespace name
