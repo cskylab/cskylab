@@ -140,3 +140,19 @@ test:
     # The image for the test Pod
     repository: {{ .registry.proxy }}/unguiculus/docker-python3-phantomjs-selenium
     # The tag for the test Pod image
+
+
+dbchecker:
+  enabled: true
+  image:
+    # Docker image used to check Database readiness at startup
+    repository: {{ .registry.proxy }}/library/busybox
+
+database:
+  # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
+  vendor: postgres
+  hostname: postgresql
+  port: 5432
+  database: keycloak
+  username: dbusername
+  password: {{ .publishing.password }}

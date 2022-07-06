@@ -91,10 +91,12 @@ source_charts="$(
 
 # Repositories
 helm repo add codecentric https://codecentric.github.io/helm-charts
+helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
 helm pull codecentric/keycloakx --version 1.3.2 --untar
+helm pull bitnami/postgresql --version 11.6.15 --untar
 
 EOF
 )"
