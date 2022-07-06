@@ -113,35 +113,6 @@ ingress:
         - '{{ .publishing.url }}'
       secretName: "tls-keycloak"
 
-pgchecker:
-  image:
-    # Docker image used to check Postgresql readiness at startup
-    repository: {{ .registry.proxy }}/library/busybox
-
-postgresql:
-  # If `true`, the Postgresql dependency is enabled
-  enabled: true
-  # PostgreSQL User to create
-  postgresqlUsername: keycloak
-  # PostgreSQL Password for the new user
-  postgresqlPassword: '{{ .publishing.password }}'
-  # PostgreSQL Database to create
-  postgresqlDatabase: keycloak
-  # Persistent Volume Storage configuration
-  persistence:
-    storageClass: {{ .namespace.name }}-postgresql
-    accessMode: ReadWriteOnce
-    size: 8Gi
-
-test:
-  # If `true`, test resources are created
-  enabled: false
-  image:
-    # The image for the test Pod
-    repository: {{ .registry.proxy }}/unguiculus/docker-python3-phantomjs-selenium
-    # The tag for the test Pod image
-
-
 dbchecker:
   enabled: true
   image:

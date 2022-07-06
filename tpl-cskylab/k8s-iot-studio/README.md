@@ -209,11 +209,11 @@ The following PersistentVolume & StorageClass manifests are applied:
 
 ```bash
 # PV manifests
-{{ .namespace.name }}-mosquitto-data
-{{ .namespace.name }}-mosquitto-configinc
-{{ .namespace.name }}-node-red
-{{ .namespace.name }}-influxdb
-{{ .namespace.name }}-grafana
+pv-iot-studio-mosquitto-data
+pv-iot-studio-mosquitto-configincº
+pv-iot-studio-node-red
+pv-iot-studioinfluxdb
+pv-iot-studio-grafana
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.
