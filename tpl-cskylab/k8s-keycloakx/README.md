@@ -63,7 +63,7 @@ Install namespace and charts:
 
 Run:
 
-- Published at: `{{ .publishing.url }}`
+- Published at: `{{ .publishing.url }}/auth`
 - Username: `keycloak`
 - Password: `{{ .publishing.password }}`
 
