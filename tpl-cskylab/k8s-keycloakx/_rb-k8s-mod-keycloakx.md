@@ -66,27 +66,19 @@ registry:
   username: admin
   password: 'NoFear21'
 
-restic:
-  ## Restic password is mandatory to access repository
-  password: 'NoFear21'
-
-  ## Restic repositories can be located in local paths, sftp paths and s3 buckets
-  ## Local path example:
-  # repo: '/srv/restic/keycloakx'
-  ## S3 example:
-  # repo: 's3:https://backup.cskylab.net/restic/keycloakx'
-  ## sftp example:
-  repo: 'sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloakx'
-  
-  ## S3 Bucket access and secret keys must be specified for S3 located repositories
-  aws_access: 'restic_rw'
-  aws_secret: 'iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr'
-
 ## Local storage PV's node affinity (Configured in pv*.yaml)
 localpvnodes:    # (k8s node names)
   all_pv: k8s-mod-n1
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
 localrsyncnodes: # (k8s node names)
   all_pv: k8s-mod-n2
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
 
 EOF
 )" \
