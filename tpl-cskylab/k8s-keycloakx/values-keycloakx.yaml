@@ -52,7 +52,7 @@ extraEnv: |
       -XX:+UseContainerSupport
       -XX:MaxRAMPercentage=50.0
       -Djava.awt.headless=true
-      -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+      -Djgroups.dns.query={{ .namespace.name }}-headless
   - name: KC_PROXY
     value: "passthrough"
 
@@ -121,7 +121,7 @@ ingress:
       host: '{{ .publishing.url }}'
       # Paths for the host
       paths:
-        - path: '{{ trimSuffix "/" .Values.http.relativePath}}/'
+        - path: /
           pathType: Prefix
   # TLS configuration
   tls:
