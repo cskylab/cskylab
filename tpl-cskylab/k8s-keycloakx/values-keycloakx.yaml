@@ -5,7 +5,7 @@ image:
   # The Keycloak image repository
   repository: quay.io/keycloak/keycloak
   # Overrides the Keycloak image tag whose default is the chart appVersion
-  tag: ""
+  tag: "17.0.1"
   # The Keycloak image pull policy
   pullPolicy: IfNotPresent
 
@@ -43,12 +43,18 @@ extraInitContainers: |
 
 # Additional environment variables for Keycloak
 extraEnv: |
-  - name: KEYCLOAK_USER
+  - name: KEYCLOAK_ADMIN
     value: keycloak
-  - name: KEYCLOAK_PASSWORD
+  - name: KEYCLOAK_ADMIN_PASSWORD
     value: "{{ .publishing.password }}"
-  - name: PROXY_ADDRESS_FORWARDING
-    value: "true"
+  - name: JAVA_OPTS_APPEND
+    value: >-
+      -XX:+UseContainerSupport
+      -XX:MaxRAMPercentage=50.0
+      -Djava.awt.headless=true
+      -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+  - name: KC_PROXY
+    value: "passthrough"
 
 # Add additional volumes, e. g. for custom themes
 extraVolumes: |
@@ -80,6 +86,19 @@ extraVolumeMounts: |
   - name: theme6
     mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-gitlab    
 
+## Overrides the default entrypoint of the Keycloak container
+command:
+  - "/opt/keycloak/bin/kc.sh"
+  - "--verbose"
+  - "start"
+  - "--auto-build"
+  - "--http-enabled=true"
+  - "--http-port=8080"
+  - "--hostname-strict=false"
+  - "--hostname-strict-https=false"
+  - "--spi-events-listener-jboss-logging-success-level=info"
+  - "--spi-events-listener-jboss-logging-error-level=warn"
+
 ingress:
   # If `true`, an Ingress is created
   enabled: true
@@ -100,12 +119,9 @@ ingress:
     -
       # Ingress host
       host: '{{ .publishing.url }}'
-      # Ingress paths (Before chart 14.0)
-      # paths:
-      #   - /
-      # Ingress paths (After chart 14.0)
+      # Paths for the host
       paths:
-        - path: /
+        - path: '{{ trimSuffix "/" .Values.http.relativePath}}/'
           pathType: Prefix
   # TLS configuration
   tls:

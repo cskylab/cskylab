@@ -136,11 +136,6 @@ echo \
 To **delete** the corresponding LVM data services, execute from your **mcc** management machine the following commands:
 
 ```bash
-# Delete LVM data service (Execute inside the node(s) that holds the local storage)
-sudo cs-lvmserv.sh -m delete -qd "/srv/{{ .namespace.name }}" 
-```
-
-```bash
 #
 # Delete LVM data services in PV node
 #
