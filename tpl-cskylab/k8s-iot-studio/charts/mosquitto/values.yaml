@@ -9,7 +9,8 @@ image:
   # -- image repository
   repository: eclipse-mosquitto
   # -- image tag
-  tag: 2.0.11
+  # @default -- chart.appVersion
+  tag:
   # -- image pull policy
   pullPolicy: IfNotPresent
 
@@ -27,6 +28,13 @@ service:
 auth:
   # -- By enabling this, `allow_anonymous` gets set to `false` in the mosquitto config.
   enabled: false
+
+# -- By enabling this, authentication and access control settings will be controlled on a per-listener basis
+perListenerSettings: false
+
+# -- When enabled, this adds the `listener` option to the mosquitto config.
+# Change this to false when using TLS.
+addListener: true
 
 persistence:
   # -- Configure a persistent volume to place mosquitto data in.

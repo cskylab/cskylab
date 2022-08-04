@@ -1,6 +1,6 @@
 # mosquitto
 
-![Version: 4.3.2](https://img.shields.io/badge/Version-4.3.2-informational?style=flat-square) ![AppVersion: 2.0.11](https://img.shields.io/badge/AppVersion-2.0.11-informational?style=flat-square)
+![Version: 4.7.0](https://img.shields.io/badge/Version-4.7.0-informational?style=flat-square) ![AppVersion: 2.0.14](https://img.shields.io/badge/AppVersion-2.0.14-informational?style=flat-square)
 
 Eclipse Mosquitto - An open source MQTT broker
 
@@ -18,7 +18,7 @@ Kubernetes: `>=1.16.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://library-charts.k8s-at-home.com | common | 4.4.2 |
+| https://library-charts.k8s-at-home.com | common | 4.5.0 |
 
 ## TL;DR
 
@@ -75,17 +75,19 @@ N/A
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| addListener | bool | `true` | When enabled, this adds the `listener` option to the mosquitto config. Change this to false when using TLS. |
 | auth.enabled | bool | `false` | By enabling this, `allow_anonymous` gets set to `false` in the mosquitto config. |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"eclipse-mosquitto"` | image repository |
-| image.tag | string | `"2.0.11"` | image tag |
+| image.tag | string | chart.appVersion | image tag |
+| perListenerSettings | bool | `false` | By enabling this, authentication and access control settings will be controlled on a per-listener basis |
 | persistence.configinc | object | See values.yaml | Configure a persistent volume to place *.conf mosquitto-config-files in. When enabled, this gets set as `include_dir` in the mosquitto config. |
 | persistence.data | object | See values.yaml | Configure a persistent volume to place mosquitto data in. When enabled, this enables `persistence` and `persistence_location` in the mosquitto config. |
 | service | object | See values.yaml | Configures service settings for the chart. Normally this does not need to be modified. |
 
 ## Changelog
 
-### Version 4.3.2
+### Version 4.7.0
 
 #### Added
 
@@ -93,7 +95,7 @@ N/A
 
 #### Changed
 
-* Upgraded `common` chart dependency to version 4.4.2
+* Upgraded `common` chart dependency to version 4.5.0
 
 #### Fixed
 

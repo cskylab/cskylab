@@ -8,7 +8,10 @@ metadata:
     {{- include "common.labels" . | nindent 4 }}
 data:
   mosquitto.conf: |
+    per_listener_settings {{ .Values.perListenerSettings }}
+    {{- if .Values.addListener }}
     listener {{ .Values.service.main.ports.mqtt.port }}
+    {{- end}}
     {{- if .Values.auth.enabled }}
     allow_anonymous false
     {{- else }}
