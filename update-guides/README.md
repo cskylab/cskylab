@@ -25,6 +25,16 @@
 
 Welcome to cSkyLab release of v99-99-99.
 
+To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
+
+```bash
+# Check your remote git repositories
+git remote -v
+
+# Update your repository from remote upstream
+git pull upstream master
+```
+
 A new service called `k8s-iot-studio` has been added to `tpl-cskylab` template library to support an IOT backend environment in Kubernetes with the following applications:
 
 - Mosquitto MQTT broker
@@ -32,7 +42,7 @@ A new service called `k8s-iot-studio` has been added to `tpl-cskylab` template l
 - InfluxDB
 - Grafana
 
-This release also includes updates for 8 applications and kubernetes version update to v1.23.5-00.
+This release also includes updates for 8 applications and kubernetes version update to v1.24.3-00.
 
 All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments created with this release, will have all these updates applied. Only previously deployed applications and services should be updated.
 
@@ -44,6 +54,7 @@ Application update procedures in this release:
 
 | Procedures                                    |
 | --------------------------------------------- |
+| [k8s-metallb-system](./k8s-metallb-system.md) |
 | [k8s-ingress-nginx](./k8s-ingress-nginx.md)   |
 | [k8s-cert-manager](./k8s-cert-manager.md)     |
 | [k8s-keycloak.md](./k8s-keycloak.md)          |

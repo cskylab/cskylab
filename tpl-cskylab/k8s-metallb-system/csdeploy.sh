@@ -3,7 +3,7 @@
 #
 #   csdeploy.sh
 #
-#       MetalLB v0.12.1 configuration.
+#       MetalLB v0.13.4 configuration.
 #
 #   Copyright © 2020 cSky.cloud authors
 #
@@ -34,7 +34,7 @@ usage_msg="$(
   cat <<EOF
 
 Purpose:
-  MetalLB v0.12.1 configuration.
+  MetalLB v0.13.4 configuration.
   Use this script to deploy and configure metallb-system namespace.
 
 Usage:
@@ -46,7 +46,7 @@ Execution modes:
 
       [install]         - Install metallb-system namespace and manifests.
       [remove]          - Remove manifests and metallb-system namespace.
-      [update]          - Update config-map with address pools and options.
+      [config]          - Configure resources.yaml with address pools and options.
 
 Options and arguments:  
   -h  Help
@@ -56,8 +56,8 @@ Examples:
   # Install namespace and mainfests:
     ./csdeploy.sh -m install
 
-  # Update config-map with address pools and options in file config.yaml:
-    ./csdeploy.sh -m update
+  # Configure address pools and options in file resources.yaml:
+    ./csdeploy.sh -m config
 
   # Remove manifests and metallb-system namespace
     ./csdeploy.sh -m remove
@@ -178,7 +178,7 @@ fi
 case "${execution_mode}" in
 "install") ;;
 "remove") ;;
-"update") ;;
+"config") ;;
 "list-status") ;;
 *)
   echo
@@ -236,14 +236,20 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo "${msg_info} Install ${namespace}"
   echo
 
+  # Enable strict ARP mode (https://metallb.universe.tf/installation/)
+  kubectl get configmap kube-proxy -n kube-system -o yaml |
+    sed -e "s/strictARP: false/strictARP: true/" |
+    kubectl apply -f - -n kube-system
+
+  # Namespace is created by manifest
   # Create namespace
-  kubectl create namespace "${namespace}"
+  # kubectl create namespace "${namespace}"
 
   # MetalLB installation manifests
   # https://metallb.universe.tf/installation/#installation-by-manifest
 
-  # Local manifest metallb.yaml is copied from
-  # https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+  ## Local manifest metallb.yaml is copied from
+  ## https://raw.githubusercontent.com/metallb/metallb/v0.13.4/config/manifests/metallb-native.yaml
   kubectl apply -f metallb.yaml
 
   # Create memberlist secret
@@ -253,17 +259,16 @@ if [[ "${execution_mode}" == "install" ]]; then
 fi
 
 ################################################################################
-# Update config-map
+# Configure resources.yaml
 ################################################################################
 
-if [[ "${execution_mode}" == "update" ]] ||
-  [[ "${execution_mode}" == "install" ]]; then
+if [[ "${execution_mode}" == "config" ]]; then
 
-  # Update configmap
+  # Configure resources.yaml configmap
   echo
-  echo "${msg_info} Update config-map"
+  echo "${msg_info} Configure resources.yaml"
   echo
-  kubectl apply -f config.yaml
+  kubectl apply -f resources.yaml
 fi
 
 ################################################################################
@@ -278,8 +283,10 @@ if [[ "${execution_mode}" == "remove" ]]; then
   echo
   # Remove manifests
   kubectl delete -f metallb.yaml
+  
+  # Namespace is deleted with manifest
   # Remove namespace
-  kubectl delete namespace "${namespace}"
+  #kubectl delete namespace "${namespace}"
 fi
 
 ################################################################################
@@ -288,7 +295,7 @@ fi
 
 if [[ "${execution_mode}" == "list-status" ]] ||
   [[ "${execution_mode}" == "install" ]] ||
-  [[ "${execution_mode}" == "update" ]]; then
+  [[ "${execution_mode}" == "config" ]]; then
 
   # Display namespace status
   echo
@@ -296,9 +303,9 @@ if [[ "${execution_mode}" == "list-status" ]] ||
   echo
   kubectl -n "${namespace}" get all
   echo
-  echo "${msg_info} Address pools and options configmap"
+  echo "${msg_info} Configured address pools"
   echo
-  kubectl -n "${namespace}" describe configmaps config
+  kubectl -n metallb-system get ipaddresspools.metallb.io
 fi
 
 #### END OF EXECUTION (EOE) ####################################################

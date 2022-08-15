@@ -6,7 +6,7 @@
 
 _tplname: k8s-metallb-system
 _tpldescription: MetalLB load-balancer for bare metal Kubernetes clusters
-_tplversion: 22-03-23
+_tplversion: 99-99-99
 
 #
 # Values to override
@@ -16,10 +16,10 @@ _tplversion: 22-03-23
 kubeconfig: config-k8s-mod
 
 namespace:
-  ## k8s namespace name
+  ## k8s namespace name (mandatory)
   name: metallb-system
 
-## MetalLB static and dynamc ip addresses pools
+## MetalLB static and dynamic ip addresses pools
 metallb:
   staticpooladdr: 
     - 192.168.82.20/32  # k8s-ingress

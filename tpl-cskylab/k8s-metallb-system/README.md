@@ -1,8 +1,8 @@
 # MetalLB Load-balancer for kubernetes<!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## MetalLB manifest version v0.12.1 <!-- omit in toc -->
+## MetalLB manifest version v0.13.4 <!-- omit in toc -->
 
 [MetalLB](https://metallb.universe.tf/) is a load-balancer implementation for bare metal Kubernetes clusters, using standard routing protocols.
 
@@ -14,15 +14,13 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
 - [How-to guides](#how-to-guides)
-  - [Configure IP Addresses pools](#configure-ip-addresses-pools)
   - [Install](#install)
-  - [Update](#update)
+  - [Configure IP Addresses pools](#configure-ip-addresses-pools)
   - [Remove](#remove)
   - [Display status](#display-status)
 - [Reference](#reference)
   - [Scripts](#scripts)
     - [csdeploy](#csdeploy)
-  - [Template values](#template-values)
 - [License](#license)
 
 ## TL;DR
@@ -34,6 +32,9 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
 # Install  
 ./csdeploy.sh -m install
 
+# Config IP address pools
+./csdeploy.sh -m config
+
 # Check status
 ./csdeploy.sh -l
 ```
@@ -43,19 +44,10 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
 ## Prerequisites
 
 - Administrative access to Kubernetes cluster.
-- Helm v3
 - No instance of MetalLB running on K8s cluster.
-- MetalLB IP Addresses pools configured in file `config.yaml`
+- MetalLB IP Addresses pools configured in file `resources.yaml`
 
 ## How-to guides
-
-### Configure IP Addresses pools
-
-MetalLB configures static and dynamic addresses pools. Initial addresses pools values are provided by the template. You must review or modify these values before installing.
-
-- To modify IP Addresses pools edit file `config.yaml` and configure addresses for static and dynamic pools.
-
-- After configuring the desired IP Addresses pools, you can install or update the service.
 
 ### Install
 
@@ -65,17 +57,21 @@ To Create namespace and apply manifest:
     ./csdeploy.sh -m install
 ```
 
-### Update
+- After installing you must configure the desired IP Addresses pools.
 
-To update IP Addresses pools, change values in file `config.yaml`.
+>**Note**: Be sure all metallb pods are running before configuring IP pools.
 
-Update namespace deployment by running:
+### Configure IP Addresses pools
+
+To modify IP Addresses pools edit file `resources.yaml` and configure addresses for static and dynamic pools.
+
+Configure IP pools by running:
 
 ```bash
-    ./csdeploy.sh -m update
+    ./csdeploy.sh -m config
 ```
 
->**Note**: Update deploy mode will only update IP addresses & configuration values in `config.yaml`. MetalLB manifest is only applied in install deploy mode.
+>**Note**: `config` deploy mode will only update IP addresses & configuration values in `resources.yaml`. MetalLB manifest is only applied in `install` deploy mode.
 
 ### Remove
 
@@ -105,7 +101,7 @@ To learn more see:
 #### csdeploy
 
 ```console
-  MetalLB v0.12.1 configuration.
+  MetalLB v0.13.4 configuration.
   Use this script to deploy and configure metallb-system namespace.
 
 Usage:
@@ -117,7 +113,7 @@ Execution modes:
 
       [install]         - Install metallb-system namespace and manifests.
       [remove]          - Remove manifests and metallb-system namespace.
-      [update]          - Update config-map with address pools and options.
+      [config]          - Configure resources.yaml with address pools and options.
 
 Options and arguments:  
   -h  Help
@@ -127,8 +123,8 @@ Examples:
   # Install namespace and mainfests:
     ./csdeploy.sh -m install
 
-  # Update config-map with address pools and options in file config.yaml:
-    ./csdeploy.sh -m update
+  # Configure address pools and options in file resources.yaml:
+    ./csdeploy.sh -m config
 
   # Remove manifests and metallb-system namespace
     ./csdeploy.sh -m remove
@@ -136,37 +132,6 @@ Examples:
   # Display namespace status:
     ./csdeploy.sh -l
 ```
-
-**Tasks performed:**
-
-| ${execution_mode}                | Tasks              | Block / Description                                            |
-| -------------------------------- | ------------------ | -------------------------------------------------------------- |
-| [install]                        |                    | **Install MetalLB**                                            |
-|                                  | Create namespace   | Namespace must be unique in cluster and named `metallb-system` |
-|                                  | Apply manifest     | Apply `metallb.yaml` manifest                                  |
-| [update] [install]               |                    | **Update config-map**                                           |
-|                                  | Apply config-map   | Apply address pool configuration in file `config.yaml`         |
-| [remove]                         |                    | **Remove namespace**                                           |
-|                                  | Remove namespace   | Remove namespace and all its objects.                          |
-| [install] [update] [list-status] |                    | **Display status information**                                 |
-|                                  | Display namespace  | Namespace and object status.                                   |
-|                                  | Display config-map | Status of addresses pools.                                     |
-|                                  | Display charts     | Charts releases history information.                           |
-|                                  |                    |                                                                |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                 | Description               | Values                                                   |
-| ------------------------- | ------------------------- | -------------------------------------------------------- |
-| `_tplname`                | template name             | `{{ ._tplname }}`                                        |
-| `_tpldescription`         | template description      | `{{ ._tpldescription }}`                                 |
-| `_tplversion`             | template version          | `{{ ._tplversion }}`                                     |
-| `kubeconfig`              | kubeconfig file           | `{{ .kubeconfig }}`                                      |
-| `namespace.name`          | namespace name            | `{{ .namespace.name }}`                                  |
-| `metallb.staticpooladdr`  | static pool IP addresses  | `{{ range .metallb.staticpooladdr }}{{ . }}, {{ end }}`  |
-| `metallb.dynamicpooladdr` | dynamic pool IP addresses | `{{ range .metallb.dynamicpooladdr }}{{ . }}, {{ end }}` |
 
 ## License
 

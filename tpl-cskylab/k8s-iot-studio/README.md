@@ -210,7 +210,7 @@ The following PersistentVolume & StorageClass manifests are applied:
 ```bash
 # PV manifests
 pv-iot-studio-mosquitto-data
-pv-iot-studio-mosquitto-configincº
+pv-iot-studio-mosquitto-configinc
 pv-iot-studio-node-red
 pv-iot-studioinfluxdb
 pv-iot-studio-grafana
