@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "harbor.core" . }}
+  namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
@@ -15,6 +16,9 @@ data:
     appname = Harbor
     runmode = prod
     enablegzip = true
+    {{- if .Values.core.sessionLifetime }}
+    sessiongcmaxlifetime = {{ .Values.core.sessionLifetime }}
+    {{- end }}
 
     [prod]
-    httpport = {{ include "harbor.core.containerPort" . | quote }}
+    httpport = {{ ternary .Values.core.containerPorts.https .Values.core.containerPorts.http .Values.internalTLS.enabled | quote }}
