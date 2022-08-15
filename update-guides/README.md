@@ -35,12 +35,14 @@ git remote -v
 git pull upstream master
 ```
 
-A new service called `k8s-iot-studio` has been added to `tpl-cskylab` template library to support an IOT backend environment in Kubernetes with the following applications:
+New services added to `tpl-cskylab` template library:
 
-- Mosquitto MQTT broker
-- Node-Red
-- InfluxDB
-- Grafana
+- `k8s-iot-studio` supports an IOT backend environment in Kubernetes with the following applications:
+  - Mosquitto MQTT broker
+  - Node-Red
+  - InfluxDB
+  - Grafana
+- `k8s-keycloakx` This service deploys the new default Keycloak distribution based on Quarkus. Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.
 
 This release also includes updates for 8 applications and kubernetes version update to v1.24.3-00.
 
