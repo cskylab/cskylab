@@ -23,9 +23,9 @@
 
 ### Background
 
-Jetstack chart cert-manager 1.8.0 updates components for appVersion 1.8.0.
+Jetstack chart cert-manager 1.9.1 updates components for appVersion 1.9.1.
 
-There are some considerations concerning to this specific migration that you can review at <https://cert-manager.io/docs/installation/upgrading/upgrading-1.7-1.8>
+There are some considerations concerning migrations that you can review at <https://cert-manager.io/docs/installation/upgrading/>
 
 
 This procedure updates cert-manager installation in k8s-mod cluster.
