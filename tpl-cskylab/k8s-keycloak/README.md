@@ -2,9 +2,7 @@
 
 ## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: `codecentric/keycloakx` v1.3.2 <!-- omit in toc -->
-
-Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.
+## Helm charts: `codecentric/keycloakx` v18.3.0 <!-- omit in toc -->
 
 [Keycloak](https://www.keycloak.org) is a high performance Java-based identity and access management solution. It lets developers add an authentication layer to their applications with minimum effort.
 

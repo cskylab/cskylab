@@ -94,7 +94,7 @@ helm repo add codecentric https://codecentric.github.io/helm-charts
 helm repo update
 
 # Charts
-helm pull codecentric/keycloak --version 18.1.1 --untar
+helm pull codecentric/keycloak --version 18.3.0 --untar
 
 EOF
 )"

@@ -24,7 +24,7 @@
 
 ### Background
 
-Keycloak chart 18.1.1 updates chart components in keycloak appVersion 17.0.1-legacy (wildfly version).
+Keycloak chart 18.3.0 updates chart components in keycloak appVersion 17.0.1-legacy (wildfly version).
 
 Regarding the version changes in keycloack application see:
 
@@ -82,7 +82,7 @@ helm repo add codecentric https://codecentric.github.io/helm-charts
 helm repo update
 
 # Charts
-helm pull codecentric/keycloak --version 18.1.1 --untar
+helm pull codecentric/keycloak --version 18.3.0 --untar
 
 EOF
 )"
@@ -94,7 +94,7 @@ EOF
 ``` bash
 ## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: `codecentric/keycloak` v18.1.1 <!-- omit in toc -->
+## Helm charts: `codecentric/keycloak` v18.3.0 <!-- omit in toc -->
 ```
 
 - Save file
