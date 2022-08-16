@@ -12,8 +12,20 @@ global:
 hpa:
   maxReplicas: 10
   minReplicas: 1
-  targetAverageValue: 100m
-  customMetrics: []
+  # targetAverageValue: 100m  # DEPRECATED: in favor of `hpa.cpu.targetAverageValue` below
+  cpu:
+    targetType: AverageValue  # Utilization or AverageValue
+    targetAverageValue: 100m
+    # targetAverageUtilization: 75
+  # memory:
+  #   targetType: Utilization  # Utilization or AverageValue
+  #   targetAverageValue: 1G
+  #   targetAverageUtilization: 75
+  # Note that the HPA is limited to autoscaling/v2beta1, autoscaling/v2beta2 and autoscaling/v2
+  customMetrics: []  # Overrides HPA metrics definition
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
 
 networkpolicy:
   enabled: false
@@ -41,6 +53,16 @@ service:
     nodePort: {}
       # http
       # https
+  # Set `sessionAffinity` to `ClientIP` to configure gitlab-pages with session affinity.
+  # Note that this setting only affects traffic originating within the cluster.
+  # To enable session affinity for traffic originating from outside the cluster
+  # when using NGINX, see the NGINX documentation on sticky sessions:
+  # https://kubernetes.github.io/ingress-nginx/examples/affinity/cookie/
+  sessionAffinity: None
+  sessionAffinityConfig: {}
+  # sessionAffinityConfig:
+  #  clientIP:
+  #    timeoutSeconds: 10800
 
 init:
   image: {}
@@ -110,7 +132,6 @@ priorityClassName: ""
 
 artifactsServerTimeout: 10
 artifactsServerUrl:
-domainConfigSource: 'gitlab'
 
 #  gitlabCache:
 #    cleanup:
@@ -146,16 +167,31 @@ tls:
   maxVersion:
 useHTTPProxy: false
 useProxyV2: false
-useHttp2: true
 
 # zipCache:
 #   cleanup:
 #   expiration:
 #   refresh:
 
+# zipHTTPClientTimeout:
+
+# serverReadTimeout:
+# serverReadHeaderTimeout:
+# serverWriteTimeout:
+# serverKeepAlive:
+
 metrics:
   enabled: true
   port: 9235
+  path: /metrics
+  tls:
+    enabled: false
+    # secretName:
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    endpointConfig: {}
+  # DEPRECATED
   annotations: {}
 
 workhorse: {}

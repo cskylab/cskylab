@@ -22,9 +22,6 @@ data:
 
     secret_file: /etc/gitlab-secrets/shell/.gitlab_shell_secret
 
-    http_settings:
-      self_signed_cert: false
-
     # File used as authorized_keys for gitlab user
     auth_file: "/home/git/.ssh/authorized_keys"
 
@@ -56,6 +53,28 @@ data:
       web_listen: "0.0.0.0:{{ .Values.metrics.port }}"
       # Maximum number of concurrent sessions allowed on a single SSH connection. Defaults to 100.
       concurrent_sessions_limit: {{ .Values.config.maxStartups.full }}
+      # PROXY protocol support for correct IP address detection
+      proxy_protocol: {{ .Values.config.proxyProtocol }}
+      # PROXY protocol policy ("use", "require", "reject", "ignore"), "use" is the default value
+      proxy_policy: {{ .Values.config.proxyPolicy }}
+      # The maximum duration to wait for the PROXY protocol header. Defaults to 500ms
+      proxy_header_timeout: {{ .Values.config.proxyHeaderTimeout }}
+      # The server waits for this time (in seconds) for the ongoing connections to complete before shutting down
+      # The period is 5 seconds smaller than the Kubernetes termination period in order to allow gitlab-sshd exit gracefully
+      grace_period: {{ sub .Values.deployment.terminationGracePeriodSeconds 5 }}
+      # Sets an interval after which server will send keepalive message to a client
+      client_alive_interval: {{ .Values.config.clientAliveInterval }}
+      # The ciphers allowed
+      ciphers:
+        {{- .Values.config.ciphers | toYaml | nindent 8 }}
+      # The key exchange (KEX) algorithms allowed
+      kex_algorithms:
+        {{- .Values.config.kexAlgorithms | toYaml | nindent 8 }}
+      # The message authentication code (MAC) algorithms allowed
+      macs:
+        {{- .Values.config.macs | toYaml | nindent 8 }}
+      # The server disconnects after this time if the user has not successfully logged in
+      login_grace_time: {{ .Values.config.loginGraceTime }}
       # SSH host key files.
       host_key_files:
       {%- range file.Walk "/etc/ssh" %}

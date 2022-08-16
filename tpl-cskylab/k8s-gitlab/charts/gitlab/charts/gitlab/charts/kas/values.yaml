@@ -6,7 +6,7 @@ annotations: {}
 global:
   ingress: {}
   kas:
-    enabled: false
+    enabled: true
   redis:
     # host: '0.0.0.0'
     password: {}
@@ -24,9 +24,23 @@ init:
       cpu: 50m
 
 hpa:
-  targetAverageValue: 100m
+  # targetAverageValue: 100m  # DEPRECATED: in favor of `hpa.cpu.targetAverageValue` below
+  cpu:
+    targetType: AverageValue  # Utilization or AverageValue
+    targetAverageValue: 100m
+    # targetAverageUtilization: 75
+  # memory:
+  #   targetType: Utilization  # Utilization or AverageValue
+  #   targetAverageValue: 1G
+  #   targetAverageUtilization: 75
+  # Note that the HPA is limited to autoscaling/v2beta1, autoscaling/v2beta2 and autoscaling/v2
+  customMetrics: []  # Overrides HPA metrics definition
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+
 image:
-  repository: registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/kas
+  repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-kas
   # tag: latest
   # pullPolicy: IfNotPresent
   # pullSecrets: []
@@ -60,6 +74,10 @@ metrics:
   enabled: true
   port: 8151
   path: /metrics
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    endpointConfig: {}
 serviceAccount:
   enabled: false
   create: false
@@ -81,6 +99,7 @@ privateApi: {}
 
 deployment:
   strategy: {}
+  # minReadySeconds: 0
 
 ## Allow to overwrite under which User and Group we're running.
 securityContext:

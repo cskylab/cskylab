@@ -17,7 +17,7 @@
 - secret:
     name: {{ template "gitlab.appConfig.serviceDeskEmail.authToken.secret" . }}
     items:
-      - key: {{ template "gitlab.appConfig.serviceDeskEmail.authToken.key" }}
+      - key: {{ template "gitlab.appConfig.serviceDeskEmail.authToken.key" . }}
         path: mailroom/service_desk_email_webhook_secret
 {{- end }}
 {{- end -}}{{/* "gitlab.appConfig.serviceDeskEmail.mountSecrets" "*/}}

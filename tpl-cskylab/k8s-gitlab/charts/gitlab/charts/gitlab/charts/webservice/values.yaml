@@ -34,6 +34,7 @@ shutdown:
   blackoutSeconds: 10
 
 extraEnv: {}
+extraEnvFrom: {}
 
 annotations: {}
 
@@ -57,13 +58,17 @@ sshHostKeys:
 
 metrics:
   enabled: true
-  annotations:
-    gitlab.com/prometheus_scrape: "true"
-    gitlab.com/prometheus_port: "8080"
-    gitlab.com/prometheus_path: "/-/metrics"
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "8080"
-    prometheus.io/path: "/-/metrics"
+  port: 8083
+  path: /metrics
+  tls:
+    enabled: false
+    # secretName:
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    endpointConfig: {}
+  # DEPRECATED
+  annotations: {}
 
 networkpolicy:
   enabled: false
@@ -75,12 +80,21 @@ networkpolicy:
     rules: []
   annotations: {}
 
+http:
+  enabled: true
+
+tls:
+  enabled: false
+
 service:
   type: ClusterIP
   externalPort: 8080
   internalPort: 8080
   workhorseExternalPort: 8181
   workhorseInternalPort: 8181
+  tls:
+    externalPort: 8081
+    internalPort: 8081
   # loadBalancerIP:
   # loadBalancerSourceRanges:
 enabled: true
@@ -103,15 +117,27 @@ ingress:
 workerProcesses: 2
 
 puma:
-  workerMaxMemory: 1024 # in MB units
   threads:
     min: 4
     max: 4
-  disableWorkerKiller: false
+  disableWorkerKiller: true
+  # workerMaxMemory: 1024 # in MB units
 
 hpa:
-  targetAverageValue: 1
-  customMetrics: # optional replacement of HPA metrics definition
+  # targetAverageValue: 1  # DEPRECATED: in favor of `hpa.cpu.targetAverageValue` below
+  cpu:
+    targetType: AverageValue  # Utilization or AverageValue
+    targetAverageValue: 1
+    # targetAverageUtilization: 75
+  # memory:
+  #   targetType: Utilization  # Utilization or AverageValue
+  #   targetAverageValue: 1G
+  #   targetAverageUtilization: 75
+  # Note that the HPA is limited to autoscaling/v2beta1, autoscaling/v2beta2 and autoscaling/v2
+  customMetrics: []  # Overrides HPA metrics definition
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
 
 deployment:
   # terminationGracePeriodSeconds: 30
@@ -123,10 +149,10 @@ deployment:
     failureThreshold: 3
   readinessProbe:
     initialDelaySeconds: 0
-    periodSeconds: 10
+    periodSeconds: 5
     timeoutSeconds: 2
     successThreshold: 1
-    failureThreshold: 3
+    failureThreshold: 2
 
   # strategy is used to configure the desired upgrade approach and
   # configuration for the deployment. See the Kubernetes documentation
@@ -163,9 +189,22 @@ workhorse:
     exporter:
       enabled: false
       port: 9229
+      tls: {}
+  metrics:
+    enabled: false
+    port: 9229
+    path: /metrics
+    serviceMonitor:
+      enabled: false
+      additionalLabels: {}
+      endpointConfig: {}
   imageScaler:
     maxProcs: 2 # aim for max(2, requested_cpus / 2)
     maxFileSizeBytes: 250000
+  tls: {}
+    # verify: true
+    # secretName:
+    # caSecretName:
 
 psql: {}
   # port: 5432
@@ -196,6 +235,7 @@ global:
     # database: 'gitlabhq_production'
     # username: 'gitlab'
     # preparedStatements: false
+    # databaseTasks: true
     # applicationName:
     # password:
     #   secret: gitlab-postgres
@@ -300,6 +340,9 @@ global:
       dsn:
       clientside_dsn:
       environment:
+    gitlab_docs:
+      enabled: false
+      host: ""
 
 redis:
   password: {}
@@ -329,6 +372,7 @@ extra: {}
   # matomo_disable_cookies: false
   # one_trust_id: '_your_one_trust_id'
   # google_tag_manager_nonce_id: '_your_google_tag_manager_id'
+  # bizible: false
 rack_attack:
   git_basic_auth:
     enabled: false

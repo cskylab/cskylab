@@ -60,6 +60,18 @@ registry:
     Disabling filesystem metadata requires the metadata database to be enabled.
     See https://docs.gitlab.com/charts/charts/registry#migration
 {{-   end -}}
+{{-   if and $.Values.registry.migration.importnotification.enabled (not $.Values.registry.migration.enabled) }}
+registry:
+    Enabling importnotification requires the migration mode to be enabled.
+    See https://docs.gitlab.com/charts/charts/registry#migration
+{{-   end -}}
+{{-   if and $.Values.registry.migration.enabled $.Values.registry.migration.importnotification.enabled }}
+{{-     if  and (kindIs "string" $.Values.registry.migration.importnotification.url) (empty $.Values.registry.migration.importnotification.url) }}
+registry:
+    Enabling importnotification requires the URL to not be empty.
+    See https://docs.gitlab.com/charts/charts/registry#migration
+{{-     end -}}
+{{-   end -}}
 {{- end -}}
 {{/* END gitlab.checkConfig.registry.migration */}}
 

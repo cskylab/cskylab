@@ -2,13 +2,14 @@
 {{- include "webservice.datamodel.prepare" $ -}}
 {{/* BEGIN range deployments */}}
 {{- range $.Values.deployments -}}
+{{- $hpaCfg := (dict "global" $.Values.global.hpa "local" .hpa "context" $) -}}
 {{/*
 From here on:
 - `.` is `.deployments.xyz` value
 - `.name` is the key (xyz)
 */}}
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "webservice.fullname.withSuffix" . }}
@@ -24,15 +25,8 @@ spec:
     name: {{ template "webservice.fullname.withSuffix" . }}
   minReplicas: {{ .hpa.minReplicas }}
   maxReplicas: {{ .hpa.maxReplicas }}
-  metrics:
-  {{- if not .hpa.customMetrics }}
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageValue: {{ .hpa.targetAverageValue }}
-  {{- else }}
-    {{- toYaml .hpa.customMetrics | nindent 4 -}}
-  {{- end }}
+  {{- include "gitlab.hpa.metrics" $hpaCfg | nindent 2 }}
+  {{- include "gitlab.hpa.behavior" $hpaCfg | nindent 2 }}
 {{- end }}
 {{/* END range deployments */}}
 {{- end }}

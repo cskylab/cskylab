@@ -330,6 +330,7 @@ controller:
   replicaCount: 1
 
   minAvailable: 1
+  # maxUnavailable:
 
   # Define requests resources to avoid probe issues due to CPU utilization in busy nodes
   # ref: https://github.com/kubernetes/ingress-nginx/issues/4735#issuecomment-551204903
@@ -782,6 +783,7 @@ defaultBackend:
   replicaCount: 1
 
   minAvailable: 1
+  # maxUnavailable:
 
   resources: {}
   # limits:
@@ -808,6 +810,7 @@ defaultBackend:
     maxReplicas: 2
     targetCPUUtilizationPercentage: 50
     targetMemoryUtilizationPercentage: 50
+    behavior: {}
 
   service:
     annotations: {}

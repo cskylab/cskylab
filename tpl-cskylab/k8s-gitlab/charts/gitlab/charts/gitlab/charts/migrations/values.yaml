@@ -49,6 +49,7 @@ global:
     # username: 'gitlab'
     # applicationName:
     # preparedStatements: false
+    # databaseTasks: true
     # password:
     #   secret: gitlab-postgres
     #   key: psql-password

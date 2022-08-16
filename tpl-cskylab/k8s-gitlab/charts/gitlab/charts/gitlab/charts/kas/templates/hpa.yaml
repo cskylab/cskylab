@@ -1,5 +1,7 @@
 {{- if .Values.global.kas.enabled -}}
-apiVersion: autoscaling/v2beta1
+{{- $hpaCfg := (dict "global" $.Values.global.hpa "local" .Values.hpa "context" $) -}}
+---
+apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "fullname" . }}
@@ -14,9 +16,6 @@ spec:
     name: {{ template "fullname" . }}
   minReplicas: {{ .Values.minReplicas }}
   maxReplicas: {{ .Values.maxReplicas }}
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageValue: {{ .Values.hpa.targetAverageValue }}
+  {{- include "gitlab.hpa.metrics" $hpaCfg | nindent 2 }}
+  {{- include "gitlab.hpa.behavior" $hpaCfg | nindent 2 }}
 {{- end -}}

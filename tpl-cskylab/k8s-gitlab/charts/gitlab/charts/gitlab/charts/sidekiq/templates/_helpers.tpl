@@ -48,3 +48,10 @@ Create a datamodel for our common labels
 {{- $default := dict "labels" (dict) -}}
 {{- $_ := set . "common" (merge (default (dict) .common) $default) -}}
 {{- end -}}
+
+{{/*
+Return the sidekiq-metrics TLS secret name
+*/}}
+{{- define "sidekiq-metrics.tls.secret" -}}
+{{- default (printf "%s-sidekiq-metrics-tls" .Release.Name) $.Values.metrics.tls.secretName | quote -}}
+{{- end -}}

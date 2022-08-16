@@ -64,6 +64,46 @@
           },
           "title": "Maximum number of concurrent unauthenticated connections to the SSH daemon",
           "type": "object"
+        },
+        "proxyProtocol": {
+          "title": "Enable PROXY support for gitlab-sshd",
+          "type": "boolean"
+        },
+        "proxyPolicy": {
+          "title": "The policy for handling PROXY protocol in gitlab-sshd",
+          "type": "string",
+          "enum": [
+            "use",
+            "require",
+            "ignore",
+            "reject"
+          ]
+        },
+        "proxyHeaderTimeout": {
+          "title": "The maximum duration gitlab-sshd will wait before giving up on reading the PROXY protocol header",
+          "pattern": "^[0-9]+(ms|s|m)$",
+          "type": "string"
+        },
+        "ciphers": {
+          "title": "The available ciphers in gitlab-sshd",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kexAlgorithms": {
+          "title": "The available KEX (Key Exchange) algorithms in gitlab-sshd",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "macs": {
+          "title": "The available MAC (message authentication code) algorithms in gitlab-sshd",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -95,7 +135,11 @@
           },
           "title": "Liveness probe settings",
           "type": "object"
-        }
+        },
+        "terminationGracePeriodSeconds": {
+          "type": "integer",
+          "minimum": 5
+	      }
       },
       "required": [
         "livenessProbe"
@@ -142,14 +186,47 @@
     },
     "hpa": {
       "properties": {
-        "targetAverageValue": {
-          "title": "Autoscaling target value",
-          "type": "string"
+        "cpu": {
+          "properties": {
+            "targetType": {
+              "title": "Autoscaling CPU target type",
+              "type": "string"
+            },
+            "targetAverageUtilization": {
+              "title": "Autoscaling CPU target utilization",
+              "type": "number"
+            },
+            "targetAverageValue": {
+              "title": "Autoscaling CPU target value",
+              "type": "string"
+            }
+          }
+        },
+        "memory": {
+          "properties": {
+            "targetType": {
+              "title": "Autoscaling memory target type",
+              "type": "string"
+            },
+            "targetAverageUtilization": {
+              "title": "Autoscaling memory target utilization",
+              "type": "number"
+            },
+            "targetAverageValue": {
+              "title": "Autoscaling memory target value",
+              "type": "string"
+            }
+          }
+        },
+        "customMetrics": {
+          "title": "Autoscaling custom metrics",
+          "type": "array"
+        },
+        "behavior": {
+          "title": "Autoscaling behavior definition",
+          "type": "object"
         }
       },
-      "required": [
-        "targetAverageValue"
-      ],
       "title": "Horizontal Pod Autoscaler settings",
       "type": "object"
     },
@@ -227,7 +304,10 @@
     },
     "maxUnavailable": {
       "title": "Maximum number of unavailable pods",
-      "type": "number"
+      "anyOf": [
+        { "type": "string" },
+        { "type": "number" }
+      ]
     },
     "minReplicas": {
       "title": "Minimum number of pod replicas",
@@ -236,16 +316,38 @@
     "metrics": {
       "properties": {
         "enabled": {
-          "title": "Enable generation of metrics annotations",
+          "title": "Enable generation of metrics via annotations or ServiceMonitor",
           "type": "boolean"
         },
         "port": {
           "title": "Metrics port",
           "type": "integer"
         },
+        "path": {
+          "title": "Metrics path",
+          "type": "string"
+        },
+        "serviceMonitor": {
+          "properties": {
+            "enabled": {
+              "title": "Create a ServiceMonitor",
+              "type": "boolean"
+            },
+            "additionalLabels": {
+              "title": "Additional labels",
+              "type": "object"
+            },
+            "endpointConfig": {
+              "title": "Endpoint config",
+              "type": "object"
+            }
+          },
+          "title": "ServiceMonitor",
+          "type": "object"
+        },
         "annotations": {
           "title": "Metrics annotations",
-          "type": "object" 
+          "type": "object"
         }
       }
     },

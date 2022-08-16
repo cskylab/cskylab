@@ -2,11 +2,13 @@
 Ensure that a valid object storage config secret is provided.
 */}}
 {{- define "gitlab.toolbox.backups.objectStorage.config.secret" -}}
-{{-   if or .Values.gitlab.toolbox.backups.objectStorage.config (not (or .Values.global.minio.enabled .Values.global.appConfig.object_store.enabled)) (eq .Values.gitlab.toolbox.backups.objectStorage.backend "gcs") }}
-{{-     if not .Values.gitlab.toolbox.backups.objectStorage.config.secret -}}
+{{-   if .Values.gitlab.toolbox.enabled -}}
+{{-     if or .Values.gitlab.toolbox.backups.objectStorage.config (not (or .Values.global.minio.enabled .Values.global.appConfig.object_store.enabled)) (eq .Values.gitlab.toolbox.backups.objectStorage.backend "gcs") }}
+{{-       if not .Values.gitlab.toolbox.backups.objectStorage.config.secret -}}
 toolbox:
     A valid object storage config secret is needed for backups.
     Please configure it via `gitlab.toolbox.backups.objectStorage.config.secret`.
+{{-       end -}}
 {{-     end -}}
 {{-   end -}}
 {{- end -}}

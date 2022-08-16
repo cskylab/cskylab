@@ -42,9 +42,10 @@ New services added to `tpl-cskylab` template library:
   - Node-Red
   - InfluxDB
   - Grafana
+  
 - `k8s-keycloakx` This service deploys the new default Keycloak distribution based on Quarkus. Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.
 
-This release also includes updates for 8 applications and kubernetes version update to v1.24.3-00.
+This release also includes updates for 9 applications and kubernetes version update to v1.24.3-00.
 
 All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments created with this release, will have all these updates applied. Only previously deployed applications and services should be updated.
 

@@ -100,6 +100,8 @@ workhorse:
   {{- .Values.workhorse | toYaml | nindent 2 }}
 extraEnv:
   {{- .Values.extraEnv | toYaml | nindent 2 }}
+extraEnvFrom:
+  {{- .Values.extraEnvFrom | toYaml | nindent 2 }}
 puma:
   {{- .Values.puma | toYaml | nindent 2 }}
 workerProcesses: {{ .Values.workerProcesses | int }}

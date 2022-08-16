@@ -20,14 +20,14 @@ spec:
 {{- end }}
   ports:
   - port: {{ .Values.service.externalPort }}
-    targetPort: {{ .Values.service.internalPort }}
+    targetPort: {{ .Values.tls.enabled | ternary "https" "http" }}
     protocol: TCP
     name: {{ .Values.service.name }}
-  {{- if eq .Values.debug.prometheus.enabled true }}
+  {{- if (or .Values.metrics.enabled .Values.debug.prometheus.enabled) }}
   - port: {{ .Values.debug.addr.port }}
-    targetPort: {{ .Values.debug.addr.port }}
+    targetPort: debug
     protocol: TCP
-    name: {{ .Values.service.name }}-prometheus
+    name: http-metrics
   {{- end }}
   selector:
     app: {{ template "name" . }}

@@ -28,8 +28,17 @@ spec:
         {{- include "gitlab.podLabels" . | nindent 8 }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      {{- if .Values.metrics.enabled }}
+      {{- if and .Values.metrics.enabled (not .Values.metrics.serviceMonitor.enabled) }}
+      {{- if .Values.metrics.annotations }}
         {{- toYaml .Values.metrics.annotations | nindent 8 }}
+      {{- else }}
+        gitlab.com/prometheus_scrape: "true"
+        gitlab.com/prometheus_port: {{ .Values.metrics.port | quote }}
+        gitlab.com/prometheus_path: {{ .Values.metrics.path }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+        prometheus.io/path: {{ .Values.metrics.path }}
+      {{- end }}
       {{- end }}
       {{- range $key, $value := .Values.annotations }}
         {{ $key }}: {{ $value | quote }}
@@ -71,6 +80,7 @@ spec:
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
           volumeMounts:
           {{- include "gitlab.extraVolumeMounts" . | nindent 10 }}
           {{- include "gitlab.psql.ssl.volumeMount" . | nindent 10 }}
@@ -97,9 +107,10 @@ spec:
             - name: CONFIG_DIRECTORY
               value: '/etc/gitlab-exporter'
             {{- include "gitlab.extraEnv" . | nindent 12 }}
+            {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
           ports:
           - containerPort: {{ .Values.service.internalPort }}
-            name: gitlab-exporter
+            name: http-metrics
           volumeMounts:
             - name: gitlab-exporter-config
               mountPath: /var/opt/gitlab-exporter/templates/gitlab-exporter.yml.erb
@@ -141,6 +152,16 @@ spec:
           {{-   include "gitlab.psql.secret" . | nindent 10 }}
           {{- end }}
           {{- include "gitlab.redis.secret" . | nindent 10 }}
+          {{ if .Values.tls.enabled }}
+          - secret:
+              name: {{ template "gitlab.gitlab-exporter.tls.secret" . }}
+              items:
+                - key: tls.crt
+                  path: "gitlab-exporter/tls.crt"
+                - key: tls.key
+                  path: "gitlab-exporter/tls.key"
+          {{- end }}
+
       - name: gitlab-exporter-secrets
         emptyDir:
           medium: "Memory"

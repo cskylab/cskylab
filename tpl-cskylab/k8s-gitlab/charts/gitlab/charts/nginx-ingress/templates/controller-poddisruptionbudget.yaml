@@ -15,5 +15,9 @@ spec:
     matchLabels:
       {{- include "ingress-nginx.selectorLabels" . | nindent 6 }}
       component: "{{ .Values.controller.name }}"
+  {{- if .Values.controller.maxUnavailable }}
+  maxUnavailable: {{ .Values.controller.maxUnavailable }}
+  {{- else }}
   minAvailable: {{ .Values.controller.minAvailable }}
+  {{- end }}
 {{- end }}

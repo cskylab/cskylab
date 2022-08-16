@@ -24,6 +24,16 @@ metadata:
     {{ include "ingress.class.annotation" $ingressCfg }}
     kubernetes.io/ingress.provider: "{{ template "gitlab.ingress.provider" $ingressCfg }}"
     {{- if eq "nginx" $.Values.global.ingress.provider }}
+    {{-   if $.Values.global.workhorse.tls.enabled }}
+    nginx.ingress.kubernetes.io/backend-protocol: https
+    {{-     if pluck "verify" .workhorse.tls (dict "verify" true) | first }}
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: 'on'
+    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "webservice.fullname.withSuffix" . }}.{{ $.Release.Namespace }}.svc
+    {{-       if .workhorse.tls.caSecretName }}
+    nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ $.Release.Namespace }}/{{ .workhorse.tls.caSecretName }}
+    {{-       end }}
+    {{-     end }}
+    {{-   end }}
     nginx.ingress.kubernetes.io/proxy-body-size: {{ $.Values.ingress.proxyBodySize | quote }}
     nginx.ingress.kubernetes.io/proxy-read-timeout: {{ $.Values.ingress.proxyReadTimeout | quote }}
     nginx.ingress.kubernetes.io/proxy-connect-timeout: {{ $.Values.ingress.proxyConnectTimeout | quote }}

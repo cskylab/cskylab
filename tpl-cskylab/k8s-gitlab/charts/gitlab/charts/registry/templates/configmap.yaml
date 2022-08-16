@@ -15,17 +15,28 @@ data:
     log:
       {{ toYaml .Values.log | nindent 6 | trim }}
     http:
+      addr: :{{ .Values.service.internalPort }}
+      # `host` is not configurable
+      # `prefix` is not configurable
+      {{- if .Values.tls.enabled }}
+      tls:
+        certificate: /etc/docker/registry/tls/tls.crt
+        key: /etc/docker/registry/tls/tls.key
+        {{- if kindIs "slice" .Values.tls.clientCAs }}
+        clientCAs: {{ toYaml .Values.tls.clientCAs | nindent 10 }}
+        {{- end }}
+        minimumTLS: {{ default "tls1.2" .Values.tls.minimumTLS | quote }}
+      {{- end }}
       {{- if .Values.debug }}
       debug:
         addr: ':{{ .Values.debug.addr.port | int }}'
         prometheus:
-          enabled: {{ eq true .Values.debug.prometheus.enabled }}
-          path: {{ .Values.debug.prometheus.path }}
+          enabled: {{ (or .Values.metrics.enabled .Values.debug.prometheus.enabled) }}
+          path: {{ default .Values.metrics.path .Values.debug.prometheus.path }}
       {{- end }}
       draintimeout: {{ .Values.draintimeout }}
       headers:
         X-Content-Type-Options: [nosniff]
-      addr: :{{ .Values.service.internalPort }}
       secret: "HTTP_SECRET"
       relativeurls: {{ .Values.relativeurls }}
     health:

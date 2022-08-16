@@ -75,6 +75,10 @@ global:
     path: /
     pathType: Prefix
 
+  # Override the API version to use for HorizontalPodAutoscaler
+  hpa:
+    apiVersion: ""
+
   gitlab:
     ## Enterprise license for this GitLab installation
     ## Secret created according to https://docs.gitlab.com/charts/installation/secrets#initial-enterprise-license
@@ -109,6 +113,7 @@ global:
     # database: gitlabhq_production
     # applicationName:
     # preparedStatements: false
+    # databaseTasks: true
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-redis-settings
   redis:
@@ -130,7 +135,7 @@ global:
       # key:
     # serviceName:
     internal:
-      names: ['default']
+      names: [default]
     external: []
     service:
       name: gitaly
@@ -155,7 +160,7 @@ global:
         gitalyReplicas: 3
         maxUnavailable: 1
     psql:
-      sslMode: 'disable'
+      sslMode: disable
     # serviceName:
     service:
       name: praefect
@@ -183,6 +188,7 @@ global:
   ## Rails based portions of this chart share many settings
   appConfig:
     ## https://docs.gitlab.com/charts/charts/globals#general-application-settings
+    # cdnHost:
     enableUsagePing: true
     enableSeatLink: true
     enableImpersonation:
@@ -223,11 +229,11 @@ global:
       ## Verify custom GitLab Pages domains
       # pages_domain_verification_cron_worker:
       #   cron: "*/15 * * * *"
-      ## Export pseudonymized data
-      # pseudonymizer_worker:
-      #   cron: "0 * * * *"
       # schedule_migrate_external_diffs_worker:
       #   cron: "15 * * * *"
+      ## Prune stale group runners on opted-in namespaces
+      # ci_runners_stale_group_runners_prune_worker_cron:
+      #   cron: "30 * * * *"
       ### GitLab Geo
       # Geo Primary only!
       # geo_prune_event_log_worker:
@@ -277,6 +283,7 @@ global:
       matomoDisableCookies:
       oneTrustId:
       googleTagManagerNonceId:
+      bizible:
 
     ## https://docs.gitlab.com/charts/charts/globals#lfs-artifacts-uploads-packages-external-mr-diffs-and-dependency-proxy
     object_store:
@@ -324,19 +331,16 @@ global:
       enabled: false
       bucket: gitlab-terraform-state
       connection: {}
+    ciSecureFiles:
+      enabled: false
+      bucket: gitlab-ci-secure-files
+      connection: {}
     dependencyProxy:
       enabled: false
       proxy_download: true
       bucket: gitlab-dependency-proxy
       connection: {}
 
-    ## https://docs.gitlab.com/charts/charts/globals#pseudonymizer-settings
-    pseudonymizer:
-      configMap:
-      bucket: gitlab-pseudo
-      connection: {}
-        # secret:
-        # key:
     backups:
       bucket: gitlab-backups
       tmpBucket: tmp
@@ -363,7 +367,7 @@ global:
       clientSecret:
         key: secret
       pollInterval: 60
-      deliveryMethod: sidekiq
+      deliveryMethod: webhook
       authToken: {}
         # secret:
         # key:
@@ -389,7 +393,7 @@ global:
       clientSecret:
         key: secret
       pollInterval: 60
-      deliveryMethod: sidekiq
+      deliveryMethod: webhook
       authToken: {}
         # secret:
         # key:
@@ -414,8 +418,8 @@ global:
       enabled: false
       autoSignInWithProvider:
       syncProfileFromProvider: []
-      syncProfileAttributes: ['email']
-      allowSingleSignOn: ['saml']
+      syncProfileAttributes: [email]
+      allowSingleSignOn: [saml]
       blockAutoCreatedUsers: true
       autoLinkLdapUser: false
       autoLinkSamlUser: false
@@ -431,6 +435,10 @@ global:
       dsn:
       clientside_dsn:
       environment:
+
+    gitlab_docs:
+      enabled: false
+      host: ""
 
     smartcard:
       enabled: false
@@ -453,6 +461,7 @@ global:
       # appIdKey:
       # appSecretKey:
       # redirectUri:
+      # authScope:
 
   ## https://docs.gitlab.com/charts/advanced/geo/
   geo:
@@ -465,17 +474,17 @@ global:
     # PostgreSQL connection details only needed for `secondary`
     psql:
       password: {}
-        # secret:
-        # key:
+      #   secret:
+      #   key:
       # host: postgresql.hostedsomewhere.else
       # port: 123
       # username: gitlab_replicator
       # database: gitlabhq_geo_production
       # ssl:
-        # secret:
-        # clientKey:
-        # clientCertificate:
-        # serverCA:
+      #   secret:
+      #   clientKey:
+      #   clientCertificate:
+      #   serverCA:
     registry:
       replication:
         enabled: false
@@ -484,15 +493,19 @@ global:
 
   ## https://docs.gitlab.com/charts/charts/gitlab/kas/
   kas:
-    enabled: false
+    enabled: true
     service:
       apiExternalPort: 8153 # port for connections from the GitLab backend
+
+  ## https://docs.gitlab.com/charts/charts/gitlab/spamcheck/
+  spamcheck:
+    enabled: false
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-gitlab-shell
   shell:
     authToken: {}
-      # secret:
-      # key:
+    # secret:
+    # key:
     hostKeys: {}
       # secret:
     ## https://docs.gitlab.com/charts/charts/globals#tcp-proxy-protocol
@@ -592,10 +605,10 @@ global:
   ## https://docs.gitlab.com/charts/installation/deployment#outgoing-email
   ## Email persona used in email sent by GitLab
   email:
-    from: ''
+    from: ""
     display_name: GitLab
-    reply_to: ''
-    subject_suffix: ''
+    reply_to: ""
+    subject_suffix: ""
     smime:
       enabled: false
       secretName: ""
@@ -629,6 +642,8 @@ global:
     ## https://docs.gitlab.com/charts/installation/secrets#gitlab-workhorse-secret
     # secret:
     # key:
+    tls: {}
+      # enabled: true
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-webservice
   webservice:
@@ -639,7 +654,11 @@ global:
   certificates:
     image:
       repository: registry.gitlab.com/gitlab-org/build/cng/alpine-certificates
-      tag: 20191127-r2
+      # The digest below comes from a given tag pipeline because they are mirrored to .com,
+      # ensuring that the image tag is available from both instances. The digest can be
+      # found in the 'sync_images' job.
+      #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
+      tag: 20191127-r2@sha256:367d437d024d7647432d67fb2442e3e5723af5930bad77d3535f4f8f4f8630d9
       # pullPolicy: IfNotPresent
       # pullSecrets: []
     customCAs: []
@@ -650,7 +669,11 @@ global:
   kubectl:
     image:
       repository: registry.gitlab.com/gitlab-org/build/cng/kubectl
-      tag: 1.16.15
+      # The digest below comes from a given tag pipeline because they are mirrored to .com,
+      # ensuring that the image tag is available from both instances. The digest can be
+      # found in the 'sync_images' job.
+      #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
+      tag: 1.18.20@sha256:8d27c191af306cafddba2f293c5613f8966363f779d79a5599ad0231e60069e4
       # pullPolicy: IfNotPresent
       # pullSecrets: []
     securityContext:
@@ -680,9 +703,28 @@ global:
 
   ## https://docs.gitlab.com/charts/charts/globals
   extraEnv: {}
-   # SOME_KEY: some_value
-   # SOME_OTHER_KEY: some_other_value
+  #   SOME_KEY: some_value
+  #   SOME_OTHER_KEY: some_other_value
 
+  ## https://docs.gitlab.com/charts/charts/globals
+  extraEnvFrom: {}
+  #   MY_NODE_NAME:
+  #     fieldRef:
+  #       fieldPath: spec.nodeName
+  #   MY_CPU_REQUEST:
+  #     resourceFieldRef:
+  #       containerName: test-container
+  #       resource: requests.cpu
+  #   SECRET_THING:
+  #     secretKeyRef:
+  #       name: special-secret
+  #       key: special_token
+  #       # optional: boolean
+  #   CONFIG_STRING:
+  #     configMapKeyRef:
+  #       name: useful-config
+  #       key: some-string
+  #       # optional: boolean
 ## End of global
 
 upgradeCheck:
@@ -697,6 +739,7 @@ upgradeCheck:
     runAsUser: 65534
     fsGroup: 65534
   tolerations: []
+  annotations: {}
   resources:
     requests:
       cpu: 50m
@@ -735,7 +778,7 @@ nginx-ingress:
       hsts-max-age: "63072000"
       server-name-hash-bucket-size: "256"
       use-http2: "true"
-      ssl-ciphers: "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4"
+      ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4"
       ssl-protocols: "TLSv1.3 TLSv1.2"
       server-tokens: "false"
     service:
@@ -807,8 +850,8 @@ prometheus:
         - job_name: prometheus
           static_configs:
             - targets:
-              - localhost:9090
-        - job_name: 'kubernetes-apiservers'
+                - localhost:9090
+        - job_name: kubernetes-apiservers
           kubernetes_sd_configs:
             - role: endpoints
           scheme: https
@@ -817,21 +860,37 @@ prometheus:
             insecure_skip_verify: true
           bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
           relabel_configs:
-            - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            - source_labels:
+                [
+                  __meta_kubernetes_namespace,
+                  __meta_kubernetes_service_name,
+                  __meta_kubernetes_endpoint_port_name,
+                ]
               action: keep
               regex: default;kubernetes;https
-        - job_name: 'kubernetes-pods'
+        - job_name: kubernetes-pods
           kubernetes_sd_configs:
             - role: pod
           relabel_configs:
-            - source_labels: [__meta_kubernetes_pod_annotation_gitlab_com_prometheus_scrape]
+            - source_labels:
+                [__meta_kubernetes_pod_annotation_gitlab_com_prometheus_scrape]
               action: keep
               regex: true
-            - source_labels: [__meta_kubernetes_pod_annotation_gitlab_com_prometheus_path]
+            - source_labels:
+                [__meta_kubernetes_pod_annotation_gitlab_com_prometheus_scheme]
+              action: replace
+              regex: (https?)
+              target_label: __scheme__
+            - source_labels:
+                [__meta_kubernetes_pod_annotation_gitlab_com_prometheus_path]
               action: replace
               target_label: __metrics_path__
               regex: (.+)
-            - source_labels: [__address__, __meta_kubernetes_pod_annotation_gitlab_com_prometheus_port]
+            - source_labels:
+                [
+                  __address__,
+                  __meta_kubernetes_pod_annotation_gitlab_com_prometheus_port,
+                ]
               action: replace
               regex: ([^:]+)(?::\d+)?;(\d+)
               replacement: $1:$2
@@ -844,7 +903,7 @@ prometheus:
             - source_labels: [__meta_kubernetes_pod_name]
               action: replace
               target_label: kubernetes_pod_name
-        - job_name: 'kubernetes-service-endpoints'
+        - job_name: kubernetes-service-endpoints
           kubernetes_sd_configs:
             - role: endpoints
           relabel_configs:
@@ -883,14 +942,17 @@ prometheus:
               source_labels:
                 - __meta_kubernetes_pod_node_name
               target_label: kubernetes_node
-        - job_name: 'kubernetes-services'
+        - job_name: kubernetes-services
           metrics_path: /probe
           params:
             module: [http_2xx]
           kubernetes_sd_configs:
             - role: service
           relabel_configs:
-            - source_labels: [__meta_kubernetes_service_annotation_gitlab_com_prometheus_probe]
+            - source_labels:
+                [
+                  __meta_kubernetes_service_annotation_gitlab_com_prometheus_probe,
+                ]
               action: keep
               regex: true
             - source_labels: [__address__]
@@ -930,8 +992,8 @@ postgresql:
   image:
     tag: 12.7.0
   usePasswordFile: true
-  existingSecret: 'bogus'
-  initdbScriptsConfigMap: 'bogus'
+  existingSecret: bogus
+  initdbScriptsConfigMap: bogus
   master:
     extraVolumeMounts:
       - name: custom-init-scripts
@@ -950,7 +1012,6 @@ postgresql:
 # registry:
 #   enabled: false
 
-
 ## Automatic shared secret generation
 ## https://docs.gitlab.com/charts/installation/secrets
 ## https://docs.gitlab.com/charts/charts/shared-secrets.html
@@ -963,7 +1024,11 @@ shared-secrets:
       # pullPolicy: IfNotPresent
       # pullSecrets: []
       repository: registry.gitlab.com/gitlab-org/build/cng/cfssl-self-sign
-      tag: 1.2
+      # The digest below comes from a given tag pipeline because they are mirrored to .com,
+      # ensuring that the image tag is available from both instances. The digest can be
+      # found in the 'sync_images' job.
+      #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
+      tag: 1.6.1@sha256:e89392e13b4ef12cd48ba8c30326aacd89a8d0161cb081ac8dfbb77200d5ebac
     keyAlgorithm: "rsa"
     keySize: "4096"
     expiry: "3650d"
@@ -1025,7 +1090,7 @@ grafana:
     GF_SECURITY_ADMIN_PASSWORD: bogus
   ## This override allows gitlab/gitlab-grafana to completely override the secret
   ##   handling behavior of the upstream chart in combination with the above.
-  command: [ "sh", "-x", "/tmp/scripts/import-secret.sh" ]
+  command: ["sh", "-x", "/tmp/scripts/import-secret.sh"]
   ## The following settings allow Grafana to dynamically create
   ## dashboards and datasources from configmaps. See
   ## https://artifacthub.io/packages/helm/grafana/grafana#sidecar-for-dashboards
@@ -1067,20 +1132,26 @@ gitlab:
     replicas: 1
     antiAffinityLabels:
       matchLabels:
-        app: 'gitaly'
-## https://docs.gitlab.com/charts/charts/gitlab/migrations
-#   migrations:
-#     enabled: false
-## https://docs.gitlab.com/charts/charts/gitlab/webservice
-#   webservice:
-#     enabled: false
-## https://docs.gitlab.com/charts/charts/gitlab/sidekiq
-#   sidekiq:
-#     enabled: false
-## https://docs.gitlab.com/charts/charts/gitlab/gitaly
-#   gitaly:
-## https://docs.gitlab.com/charts/charts/gitlab/gitlab-shell
-#   gitlab-shell:
-#     enabled: false
-## https://docs.gitlab.com/charts/charts/gitlab/gitlab-grafana
-#   gitlab-grafana:
+        app: gitaly
+  ## https://docs.gitlab.com/charts/charts/gitlab/migrations
+  #   migrations:
+  #     enabled: false
+  ## https://docs.gitlab.com/charts/charts/gitlab/webservice
+  #   webservice:
+  #     enabled: false
+  ## https://docs.gitlab.com/charts/charts/gitlab/sidekiq
+  #   sidekiq:
+  #     enabled: false
+  ## https://docs.gitlab.com/charts/charts/gitlab/gitaly
+  #   gitaly:
+  ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-shell
+  #   gitlab-shell:
+  #     enabled: false
+  ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-grafana
+  #   gitlab-grafana:
+  ## https://docs.gitlab.com/charts/charts/gitlab/gitlab-pages
+  #   gitlab-pages:
+  ## https://docs.gitlab.com/charts/charts/gitlab/kas
+  #   kas:
+  ## https://docs.gitlab.com/charts/charts/gitlab/praefect
+  #   praefect:

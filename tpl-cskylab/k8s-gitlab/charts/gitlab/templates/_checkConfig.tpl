@@ -76,6 +76,7 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $messages = append $messages (include "gitlab.checkConfig.sidekiq.queues" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.sidekiq.timeout" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.sidekiq.routingRules" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.sidekiq.server_ports" .) -}}
 
 {{/* _checkConfig_toolbox.tpl*/}}
 {{- $messages = append $messages (include "gitlab.toolbox.replicas" .) -}}
@@ -85,12 +86,19 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $messages = append $messages (include "gitlab.checkConfig.appConfig.maxRequestDurationSeconds" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.webservice.gracePeriod" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.webservice.loadBalancer" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.workhorse.tls" .) -}}
+
+{{/* _checkConfig_gitlab_shell.tpl*/}}
+{{- $messages = append $messages (include "gitlab.checkConfig.gitlabShell.proxyPolicy" .) -}}
+
+{{/* _checkConfig_gitlab_exporter.tpl*/}}
+{{- $messages = append $messages (include "gitlab.checkConfig.gitlabExporter.tls" .) -}}
 
 {{/* other checks */}}
-{{- $messages = append $messages (include "gitlab.checkConfig.contentSecurityPolicy" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.multipleRedis" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.hostWhenNoInstall" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.sentry" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.gitlab_docs" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.smtp.openssl_verify_mode" .) -}}
 {{- /* prepare output */}}
 {{- $messages = without $messages "" -}}
@@ -101,21 +109,6 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{-   printf "\nCONFIGURATION CHECKS:\n%s" $message | fail -}}
 {{- end -}}
 {{- end -}}
-
-{{/*
-Ensure that content_security_policy.directives is not empty
-*/}}
-{{- define "gitlab.checkConfig.contentSecurityPolicy" -}}
-{{-   if eq true $.Values.global.appConfig.contentSecurityPolicy.enabled }}
-{{-     if not (hasKey $.Values.global.appConfig.contentSecurityPolicy "directives") }}
-contentSecurityPolicy:
-    When configuring Content Security Policy, you must also configure its Directives.
-    set `global.appConfig.contentSecurityPolicy.directives`
-    See https://docs.gitlab.com/charts/charts/globals#content-security-policy
-{{-   end -}}
-{{- end -}}
-{{- end -}}
-{{/* END gitlab.checkConfig.contentSecurityPolicy */}}
 
 {{/*
 Ensure that `redis.install: false` if configuring multiple Redis instances
@@ -159,6 +152,22 @@ sentry:
 {{-   end -}}
 {{- end -}}
 {{/* END gitlab.checkConfig.sentry */}}
+
+{{/*
+Ensure that gitlab_docs has a host configured if enabled
+host mush be starts with https:// or http://, and not empty.
+*/}}
+{{- define "gitlab.checkConfig.gitlab_docs" -}}
+{{-   if $.Values.global.appConfig.gitlab_docs.enabled }}
+{{-     with $.Values.global.appConfig.gitlab_docs -}}
+{{-       if or (not .host) (and (not (hasPrefix "http://"  .host)) (not (hasPrefix "https://" .host))) }}
+gitlab_docs:
+    When enabling gitlab_docs, you must configure host, and it must start with `http://` or `https://`.
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end -}}
+{{/* END gitlab.checkConfig.gitlab_docs */}}
 
 {{/*
 Ensure that a correct value is provided for

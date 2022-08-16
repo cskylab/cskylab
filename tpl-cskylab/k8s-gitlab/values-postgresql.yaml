@@ -1,28 +1,31 @@
-## Global Docker image parameters
-## Please, note that this will override the image parameters, including dependencies, configured to use the global value
-## Current available global Docker image parameters: imageRegistry and imagePullSecrets
+## @section Global parameters
+## Please, note that this will override the parameters, including dependencies, configured to use the global value
 ##
 global:
+  ## @param global.imageRegistry Global Docker image registry
+  ##
+  imageRegistry: "{{ .registry.proxy }}"
+  ## @param global.storageClass Global StorageClass for Persistent Volume(s)
+  ##
+  storageClass: "{{ .namespace.name }}-postgresql"
   postgresql:
-    imageRegistry: {{ .registry.proxy }}
+    ## @param global.postgresql.auth.postgresPassword Password for the "postgres" admin user (overrides `auth.postgresPassword`)
+    ## @param global.postgresql.auth.username Name for a custom user to create (overrides `auth.username`)
+    ## @param global.postgresql.auth.password Password for the custom user to create (overrides `auth.password`)
+    ## @param global.postgresql.auth.database Name for a custom database to create (overrides `auth.database`)
+    ##
+    auth:
+      postgresPassword: "{{ .publishing.password }}"
+      username: "postgres"
+      password: "{{ .publishing.password }}"
+      database: "gitlabhq_production"
+
+## @section PostgreSQL common parameters
+##
 
 ## Bitnami PostgreSQL image version
 ## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
+## @param image.tag PostgreSQL image tag (immutable tags are recommended)
 ##
 image:
-  repository: bitnami/postgresql
-  tag: 12.7.0
-
-## PostgreSQL data Persistent Volume Storage Class
-persistence:
-  storageClass: {{ .namespace.name }}-postgresql
-  accessMode: ReadWriteOnce
-  size: 8Gi
-
-## PostgreSQL password using existing secret
-existingSecret: gitlab-postgresql-password
-
-## Create a database
-## ref: https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#creating-a-database-on-first-run
-##
-postgresqlDatabase: gitlabhq_production
+  tag: 12.12.0-debian-11-r1

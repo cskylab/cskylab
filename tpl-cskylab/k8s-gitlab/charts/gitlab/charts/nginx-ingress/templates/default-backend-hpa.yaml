@@ -1,5 +1,7 @@
 {{- if and .Values.defaultBackend.enabled .Values.defaultBackend.autoscaling.enabled }}
-apiVersion: autoscaling/v2beta1
+{{- $hpaCfg := (dict "global" $.Values.global.hpa "local" .Values.backendConfig.autoscaling "context" $) -}}
+---
+apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}
 kind: HorizontalPodAutoscaler
 metadata:
   labels:
@@ -18,16 +20,29 @@ spec:
   minReplicas: {{ .Values.defaultBackend.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.defaultBackend.autoscaling.maxReplicas }}
   metrics:
-{{- with .Values.defaultBackend.autoscaling.targetCPUUtilizationPercentage }}
+  {{- with .Values.defaultBackend.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
+        {{- if (include "gitlab.hpa.supportsV2MetricsSpec" $hpaCfg) }}
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+        {{- else }}
         targetAverageUtilization: {{ . }}
-{{- end }}
-{{- with .Values.defaultBackend.autoscaling.targetMemoryUtilizationPercentage }}
+        {{- end }}
+  {{- end }}
+  {{- with .Values.defaultBackend.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
+        {{- if (include "gitlab.hpa.supportsV2MetricsSpec" $hpaCfg) }}
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+        {{- else }}
         targetAverageUtilization: {{ . }}
-{{- end }}
+        {{- end }}
+  {{- end }}
+  {{- include "gitlab.hpa.behavior" $hpaCfg | nindent 2 }}
 {{- end }}

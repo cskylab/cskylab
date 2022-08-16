@@ -131,6 +131,9 @@ podAnnotations: {}
 # Additional pod labels
 podLabels: {}
 
+# Additional job annotations
+jobAnnotations: {}
+
 ## Create a buckets after minio install
 ## An array of items, with name, policy, and purge
 defaultBuckets:
@@ -142,9 +145,9 @@ defaultBuckets:
   - name: gitlab-backups
   - name: gitlab-packages
   - name: tmp
-  - name: gitlab-pseudo
   - name: gitlab-mr-diffs
   - name: gitlab-terraform-state
+  - name: gitlab-ci-secure-files
   - name: gitlab-dependency-proxy
   - name: gitlab-pages
   #

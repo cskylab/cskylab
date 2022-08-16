@@ -31,10 +31,10 @@ spec:
     targetPort: {{ include "gitlab.praefect.tls.internalPort" . }}
   {{- end }}
   {{- if .Values.metrics.enabled }}
-  - name: {{ coalesce .Values.service.name .Values.global.praefect.service.name }}-metrics
+  - name: http-metrics
     port: {{ .Values.metrics.port }}
     protocol: TCP
-    targetPort: {{ .Values.metrics.port }}
+    targetPort: http-metrics
   {{- end }}
   selector:
     app: {{ template "name" . }}

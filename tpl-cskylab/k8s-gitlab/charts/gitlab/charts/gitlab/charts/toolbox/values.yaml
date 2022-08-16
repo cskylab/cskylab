@@ -51,6 +51,7 @@ global:
     # username: 'gitlab'
     # applicationName:
     # preparedStatements: false
+    # databaseTasks: true
     # ssl:
     #   secret: gitlab-ssl-secret
     #   clientKey: client-key.pem
@@ -129,10 +130,6 @@ global:
       providers: []
       # - secret: gitlab-google-oauth2
       #   key: provider
-    pseudonymizer:
-      configMap:
-      bucket:
-      connection: {}
 backups:
   cron:
     enabled: false
@@ -142,6 +139,9 @@ backups:
     startingDeadlineSeconds: null
     successfulJobsHistoryLimit: 3
     suspend: false
+    backoffLimit: 6
+    # activeDeadlineSeconds:
+    restartPolicy: "OnFailure"
     extraArgs: ""
     resources:
       # limits:

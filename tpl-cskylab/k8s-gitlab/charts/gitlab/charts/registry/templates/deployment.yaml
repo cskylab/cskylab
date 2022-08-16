@@ -30,14 +30,14 @@ spec:
       annotations:
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-        {{- if .Values.debug.prometheus.enabled }}
+      {{- if and (or .Values.metrics.enabled .Values.debug.prometheus.enabled) (not .Values.metrics.serviceMonitor.enabled) }}
         gitlab.com/prometheus_scrape: "true"
-        gitlab.com/prometheus_path: {{ .Values.debug.prometheus.path | quote }}
         gitlab.com/prometheus_port: {{ .Values.debug.addr.port | quote }}
+        gitlab.com/prometheus_path: {{ default .Values.metrics.path .Values.debug.prometheus.path | quote }}
         prometheus.io/scrape: "true"
-        prometheus.io/path: {{ .Values.debug.prometheus.path | quote }}
         prometheus.io/port: {{ .Values.debug.addr.port | quote }}
-        {{- end }}
+        prometheus.io/path: {{ default .Values.metrics.path .Values.debug.prometheus.path | quote }}
+      {{- end }}
       {{- range $key, $value := .Values.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
@@ -90,6 +90,7 @@ spec:
             {{- toYaml .Values.init.resources | nindent 12 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
         {{- if .Values.database.enabled }}
         - name: dependencies
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -103,6 +104,7 @@ spec:
             {{- toYaml .Values.init.resources | nindent 12 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
         {{- end }}
       {{- include "gitlab.image.pullSecrets" $imageCfg | indent 6 }}
       containers:
@@ -111,35 +113,43 @@ spec:
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
           volumeMounts:
           - name: registry-server-config
             mountPath: /etc/docker/registry/
             readOnly: true
           {{- include "gitlab.certificates.volumeMount" . | nindent 10 }}
-{{- if .Values.deployment.livenessProbe.enabled }}
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+              name: {{ .Values.tls.enabled | ternary "https" "http" }}
+          {{- with .Values.debug }}
+            - containerPort: {{ .addr.port }}
+              name: debug
+          {{- end }}
+          {{- if .Values.deployment.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: {{ .Values.deployment.livenessProbe.path }}
-              port: {{ default .Values.debug.addr.port .Values.deployment.livenessProbe.port }}
+              port: {{ if .Values.deployment.livenessProbe.port }}{{ .Values.deployment.livenessProbe.port }}{{ else }}debug{{ end }}
               scheme: HTTP
             initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.livenessProbe.successThreshold }}
             failureThreshold: {{ .Values.deployment.livenessProbe.failureThreshold }}
-{{- end }}
-{{- if .Values.deployment.readinessProbe.enabled }}
+          {{- end }}
+          {{- if .Values.deployment.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: {{ .Values.deployment.readinessProbe.path }}
-              port: {{ default .Values.debug.addr.port .Values.deployment.livenessProbe.port }}
+              port: {{ if .Values.deployment.readinessProbe.port }}{{ .Values.deployment.readinessProbe.port }}{{ else }}debug{{ end }}
               scheme: HTTP
             initialDelaySeconds: {{ .Values.deployment.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.readinessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.readinessProbe.successThreshold }}
             failureThreshold: {{ .Values.deployment.readinessProbe.failureThreshold }}
-{{- end }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           lifecycle:
@@ -201,6 +211,19 @@ spec:
           {{- if .Values.database.enabled -}}
           {{-   include "gitlab.registry.database.password.projectedVolume" . | nindent 10 }}
           {{-   include "gitlab.registry.psql.ssl" . | nindent 10 }}
+          {{- end -}}
+          {{- if .Values.migration.enabled -}}
+          {{- include "gitlab.registry.notificationSecret.mount" $ | nindent 10 -}}
+          {{- end -}}
+          {{- if .Values.tls.enabled -}}
+          # TLS secret for HTTPS service
+          - secret:
+              name: {{ .Values.tls.secretName }}
+              items:
+                - key: tls.crt
+                  path: tls/tls.crt
+                - key: tls.key
+                  path: tls/tls.key
           {{- end -}}
       {{- include "gitlab.certificates.volumes" . | nindent 6 }}
 {{- end -}}

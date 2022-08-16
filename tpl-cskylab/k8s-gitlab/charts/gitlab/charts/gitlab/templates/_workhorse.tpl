@@ -8,7 +8,11 @@ Return the workhorse url
 {{- end -}}
 
 {{- define "gitlab.workhorse.scheme" -}}
-{{- coalesce .Values.workhorse.scheme .Values.global.workhorse.scheme "http" -}}
+{{- $scheme := "http" -}}
+{{- if .Values.global.workhorse.tls.enabled -}}
+{{-   $scheme = "https" -}}
+{{- end -}}
+{{- coalesce .Values.workhorse.scheme .Values.global.workhorse.scheme $scheme -}}
 {{- end -}}
 
 {{/*

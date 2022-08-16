@@ -14,6 +14,11 @@ WARNING: The Container Registry filesystem metadata has been disabled. Please no
 {{/* If the Container Registry migration mode is enabled, note it is not production ready */}}
 {{- if eq .Values.registry.migration.enabled true }}
 WARNING: The Container Registry migration mode has been enabled. Please note that it is an experimental feature and must not be used in production.
+
+{{- if ne .Values.registry.migration.testslowimport "0s" }}
+WARNING: The Container Registry test slow import has been enabled. Please note that it is an experimental feature used for testing purposes only and must not be used in production.
+{{- end }}
+
 {{- end }}
 
 {{/* If the Container Registry online garbage collection is enabled, note it is not production ready */}}

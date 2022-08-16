@@ -15,9 +15,9 @@ spec:
   ports:
     {{- if .Values.metrics.enabled }}
     - port: {{ .Values.metrics.port }}
-      targetPort: {{ .Values.metrics.port }}
+      targetPort: http-metrics
       protocol: TCP
-      name: metrics
+      name: http-metrics
     {{- end }}
     - port: {{ include "gitlab.shell.port" . | int }}
       targetPort: {{ .Values.service.internalPort }}

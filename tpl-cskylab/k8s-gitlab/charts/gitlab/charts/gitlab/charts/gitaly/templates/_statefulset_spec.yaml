@@ -39,11 +39,13 @@ spec:
       {{- range $key, $value := .Values.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
-      {{- if $.Values.metrics.enabled }}
+      {{- if and $.Values.metrics.enabled (not $.Values.metrics.serviceMonitor.enabled) }}
         gitlab.com/prometheus_scrape: "true"
-        gitlab.com/prometheus_port: "{{ $.Values.metrics.metricsPort }}"
+        gitlab.com/prometheus_port: {{ default $.Values.metrics.port $.Values.metrics.metricsPort | quote }}
+        gitlab.com/prometheus_path: {{ $.Values.metrics.path }}
         prometheus.io/scrape: "true"
-        prometheus.io/port: "{{ $.Values.metrics.metricsPort }}"
+        prometheus.io/port: {{ default $.Values.metrics.port $.Values.metrics.metricsPort | quote }}
+        prometheus.io/path: {{ $.Values.metrics.path }}
       {{- end }}
     spec:
       {{- if .Values.tolerations }}
@@ -63,6 +65,7 @@ spec:
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
           volumeMounts:
           {{- include "gitlab.extraVolumeMounts" . | nindent 10 }}
           - name: gitaly-config
@@ -122,10 +125,10 @@ spec:
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           ports:
             - containerPort: {{ coalesce .Values.service.internalPort .Values.global.gitaly.service.internalPort }}
-              name: grcp-gitaly
+              name: grpc-gitaly
            {{- if .Values.metrics.enabled }}
-            - containerPort: {{ .Values.metrics.metricsPort }}
-              name: metrics
+            - containerPort: {{ default $.Values.metrics.port $.Values.metrics.metricsPort }}
+              name: http-metrics
            {{- end }}
           env:
             - name: CONFIG_TEMPLATE_DIRECTORY
@@ -138,6 +141,7 @@ spec:
               value: '/etc/ssl/certs'
             {{- include "gitlab.tracing.env" . | nindent 12 }}
             {{- include "gitlab.extraEnv" . | nindent 12 }}
+            {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
           volumeMounts:
             {{- include "gitlab.extraVolumeMounts" . | nindent 12 }}
             {{- include "gitlab.certificates.volumeMount" . | nindent 12 }}

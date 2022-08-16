@@ -18,8 +18,6 @@ object_store:
   remote_directory: {{ .config.bucket }}
   {{- end }}
   {{- if ne .name "pages" }}
-  direct_upload: true
-  background_upload: false
   proxy_download: {{ or (not (kindIs "bool" .config.proxy_download)) .config.proxy_download }}
   {{- end }}
   {{- if and .config.enabled .config.storage_options }}
