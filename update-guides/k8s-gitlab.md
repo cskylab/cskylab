@@ -174,7 +174,7 @@ kubectl -n=gitlab create secret generic gitlab-rails-secret --from-file=secrets.
 # Restart the pods
 kubectl -n=gitlab delete pods -lapp=sidekiq \
 && kubectl -n=gitlab delete pods -lapp=webservice \
-&& kubectl -n=gitlab delete pods -lapp=task-runner
+&& kubectl -n=gitlab delete pods -lapp=toolbox
 ```
 
 Wait until all pods are running, and check the application is running properly with its data.
