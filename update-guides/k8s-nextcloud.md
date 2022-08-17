@@ -12,7 +12,7 @@
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
     - [4.- Prepare configuration files in the new directory](#4--prepare-configuration-files-in-the-new-directory)
-    - [5.- Install new nextcloud namespace](#5--install-new-nextcloud-namespace)
+    - [5.- Install nextcloud namespace and update mariadb](#5--install-nextcloud-namespace-and-update-mariadb)
     - [6.- Upgrade nextcloud to intermediate v23.0.3](#6--upgrade-nextcloud-to-intermediate-v2303)
     - [6.- Perform final nextcloud chart upgrade](#6--perform-final-nextcloud-chart-upgrade)
     - [8.- Update new restic backup and rsync procedures](#8--update-new-restic-backup-and-rsync-procedures)
@@ -88,8 +88,8 @@ From VS Code Remote connected to `mcc`, open  terminal at `_cfg-fabric` reposito
 
 #### 4.- Prepare configuration files in the new directory
 
-- Copy the file `values-nextcloud.yaml` from the old configuration directory to the new one (This file must retain the previously exisisting nextcloud configuration).
 - Copy the file `values-mariadb.yaml` from the old configuration directory to the new one (This file must retain the previously exisisting mariadb configuration).
+- Copy the file `values-nextcloud.yaml` from the old configuration directory to the new one (This file must retain the previously exisisting nextcloud configuration).
 
 - Edit `csdeploy.sh` file on the new directory and change the `source_charts` variable to the following values:
 
@@ -105,16 +105,16 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull nextcloud/nextcloud --version 2.14.6 --untar
+helm pull nextcloud/nextcloud --version 2.12.2 --untar
 helm pull bitnami/mariadb --version 11.1.8 --untar
 
 EOF
 )"
 ```
 
->**Note**: With this configuration, you will be ready to update mariadb chart and migrate nextcloud application to intermediate version 23.0.3.
+>**Note**: With this configuration, you will be ready to update mariadb chart without changing your actual nextcloud version.
 
-#### 5.- Install new nextcloud namespace
+#### 5.- Install nextcloud namespace and update mariadb
 
 From VS Code Remote connected to `mcc`, open  terminal at new `cs-mod/k8s-mod/nextcloud` repository directory.
 
@@ -137,11 +137,63 @@ Install nextcloud namespace by running:
 
 #### 6.- Upgrade nextcloud to intermediate v23.0.3
 
-This upgrade requires administrator confirmation via browser.
+- Edit file `values-nextcloud.yaml` and change the initial image section, commenting the `tag` and `pullPolicy` values in the following way:
 
-- Open browser at nextcloud url e.g., `nextcloud.cskylab.net`
-- Confirm upgrade when proposed
-- Login with admin account and check upgrade.
+```bash
+## Official nextcloud image version
+## ref: https://hub.docker.com/r/library/nextcloud/tags/
+##
+image:
+  repository: harbor.cskylab.net/dockerhub/library/nextcloud
+  # tag: 22-apache
+  # pullPolicy: IfNotPresent
+  # pullSecrets:
+  #   - myRegistrKeySecretName
+```
+
+>**Note**: Value image.tag must be commented to allow the chart to update nextcloud versions.
+
+
+- Edit `csdeploy.sh` file on the new directory and change the `source_charts` variable to the following values:
+
+```bash
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 2.14.6 --untar
+helm pull bitnami/mariadb --version 11.1.8 --untar
+
+EOF
+)"
+```
+
+>**Note**: This configuration will update nextcloud to intermediate version v23.0.3.
+
+
+- Update nextcloud namespace by running:
+
+```bash
+# Pull new chart versions
+./csdeploy.sh -m pull-charts
+
+# Redeploy upgraded chart.  
+./csdeploy.sh -m update
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
 
 #### 6.- Perform final nextcloud chart upgrade
 
@@ -197,7 +249,6 @@ EOF
 - <https://github.com/nextcloud/helm/tree/master/charts/nextcloud>
 
 ---
-
 
 ## v22-03-23
 

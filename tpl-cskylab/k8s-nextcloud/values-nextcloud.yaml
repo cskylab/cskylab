@@ -4,8 +4,8 @@
 ##
 image:
   repository: {{ .registry.proxy }}/library/nextcloud
-  tag: 22-apache
-  pullPolicy: IfNotPresent
+  # tag: 22-apache
+  # pullPolicy: IfNotPresent
   # pullSecrets:
   #   - myRegistrKeySecretName
 
