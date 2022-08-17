@@ -17,11 +17,11 @@ $ helm install my-release bitnami/mariadb
 
 ## Introduction
 
-This chart bootstraps a [MariaDB](https://github.com/bitnami/bitnami-docker-mariadb) replication cluster deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+This chart bootstraps a [MariaDB](https://github.com/bitnami/containers/tree/main/bitnami/mariadb) replication cluster deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
 MariaDB is developed as open source software and as a relational database it provides an SQL interface for accessing data. The latest versions of MariaDB also include GIS and JSON features.
 
-Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment and management of Helm Charts in clusters. This chart has been tested to work with NGINX Ingress, cert-manager, fluentd and Prometheus on top of the [BKPR](https://kubeprod.io/).
+Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in clusters.
 
 ## Prerequisites
 
@@ -81,33 +81,34 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### MariaDB common parameters
 
-| Name                       | Description                                                                                                                                                                                                                                                                   | Value                   |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `image.registry`           | MariaDB image registry                                                                                                                                                                                                                                                        | `docker.io`             |
-| `image.repository`         | MariaDB image repository                                                                                                                                                                                                                                                      | `bitnami/mariadb`       |
-| `image.tag`                | MariaDB image tag (immutable tags are recommended)                                                                                                                                                                                                                            | `10.5.13-debian-10-r58` |
-| `image.pullPolicy`         | MariaDB image pull policy                                                                                                                                                                                                                                                     | `IfNotPresent`          |
-| `image.pullSecrets`        | Specify docker-registry secret names as an array                                                                                                                                                                                                                              | `[]`                    |
-| `image.debug`              | Specify if debug logs should be enabled                                                                                                                                                                                                                                       | `false`                 |
-| `architecture`             | MariaDB architecture (`standalone` or `replication`)                                                                                                                                                                                                                          | `standalone`            |
-| `auth.rootPassword`        | Password for the `root` user. Ignored if existing secret is provided.                                                                                                                                                                                                         | `""`                    |
-| `auth.database`            | Name for a custom database to create                                                                                                                                                                                                                                          | `my_database`           |
-| `auth.username`            | Name for a custom user to create                                                                                                                                                                                                                                              | `""`                    |
-| `auth.password`            | Password for the new user. Ignored if existing secret is provided                                                                                                                                                                                                             | `""`                    |
-| `auth.replicationUser`     | MariaDB replication user                                                                                                                                                                                                                                                      | `replicator`            |
-| `auth.replicationPassword` | MariaDB replication user password. Ignored if existing secret is provided                                                                                                                                                                                                     | `""`                    |
-| `auth.existingSecret`      | Use existing secret for password details (`auth.rootPassword`, `auth.password`, `auth.replicationPassword` will be ignored and picked up from this secret). The secret has to contain the keys `mariadb-root-password`, `mariadb-replication-password` and `mariadb-password` | `""`                    |
-| `auth.forcePassword`       | Force users to specify required passwords                                                                                                                                                                                                                                     | `false`                 |
-| `auth.usePasswordFiles`    | Mount credentials as a files instead of using an environment variable                                                                                                                                                                                                         | `false`                 |
-| `auth.customPasswordFiles` | Use custom password files when `auth.usePasswordFiles` is set to `true`. Define path for keys `root` and `user`, also define `replicator` if `architecture` is set to `replication`                                                                                           | `{}`                    |
-| `initdbScripts`            | Dictionary of initdb scripts                                                                                                                                                                                                                                                  | `{}`                    |
-| `initdbScriptsConfigMap`   | ConfigMap with the initdb scripts (Note: Overrides `initdbScripts`)                                                                                                                                                                                                           | `""`                    |
+| Name                       | Description                                                                                                                                                                                                                                                                   | Value                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `image.registry`           | MariaDB image registry                                                                                                                                                                                                                                                        | `docker.io`           |
+| `image.repository`         | MariaDB image repository                                                                                                                                                                                                                                                      | `bitnami/mariadb`     |
+| `image.tag`                | MariaDB image tag (immutable tags are recommended)                                                                                                                                                                                                                            | `10.6.9-debian-11-r0` |
+| `image.pullPolicy`         | MariaDB image pull policy                                                                                                                                                                                                                                                     | `IfNotPresent`        |
+| `image.pullSecrets`        | Specify docker-registry secret names as an array                                                                                                                                                                                                                              | `[]`                  |
+| `image.debug`              | Specify if debug logs should be enabled                                                                                                                                                                                                                                       | `false`               |
+| `architecture`             | MariaDB architecture (`standalone` or `replication`)                                                                                                                                                                                                                          | `standalone`          |
+| `auth.rootPassword`        | Password for the `root` user. Ignored if existing secret is provided.                                                                                                                                                                                                         | `""`                  |
+| `auth.database`            | Name for a custom database to create                                                                                                                                                                                                                                          | `my_database`         |
+| `auth.username`            | Name for a custom user to create                                                                                                                                                                                                                                              | `""`                  |
+| `auth.password`            | Password for the new user. Ignored if existing secret is provided                                                                                                                                                                                                             | `""`                  |
+| `auth.replicationUser`     | MariaDB replication user                                                                                                                                                                                                                                                      | `replicator`          |
+| `auth.replicationPassword` | MariaDB replication user password. Ignored if existing secret is provided                                                                                                                                                                                                     | `""`                  |
+| `auth.existingSecret`      | Use existing secret for password details (`auth.rootPassword`, `auth.password`, `auth.replicationPassword` will be ignored and picked up from this secret). The secret has to contain the keys `mariadb-root-password`, `mariadb-replication-password` and `mariadb-password` | `""`                  |
+| `auth.forcePassword`       | Force users to specify required passwords                                                                                                                                                                                                                                     | `false`               |
+| `auth.usePasswordFiles`    | Mount credentials as files instead of using environment variables                                                                                                                                                                                                             | `false`               |
+| `auth.customPasswordFiles` | Use custom password files when `auth.usePasswordFiles` is set to `true`. Define path for keys `root` and `user`, also define `replicator` if `architecture` is set to `replication`                                                                                           | `{}`                  |
+| `initdbScripts`            | Dictionary of initdb scripts                                                                                                                                                                                                                                                  | `{}`                  |
+| `initdbScriptsConfigMap`   | ConfigMap with the initdb scripts (Note: Overrides `initdbScripts`)                                                                                                                                                                                                           | `""`                  |
 
 
 ### MariaDB Primary parameters
 
 | Name                                            | Description                                                                                                       | Value               |
 | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `primary.name`                                  | Name of the primary database (eg primary, master, leader, ...)                                                    | `primary`           |
 | `primary.command`                               | Override default container command on MariaDB Primary container(s) (useful when using custom images)              | `[]`                |
 | `primary.args`                                  | Override default container args on MariaDB Primary container(s) (useful when using custom images)                 | `[]`                |
 | `primary.lifecycleHooks`                        | for the MariaDB Primary container(s) to automate configuration before or after startup                            | `{}`                |
@@ -128,7 +129,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `primary.tolerations`                           | Tolerations for MariaDB primary pods assignment                                                                   | `[]`                |
 | `primary.schedulerName`                         | Name of the k8s scheduler (other than default)                                                                    | `""`                |
 | `primary.podManagementPolicy`                   | podManagementPolicy to manage scaling operation of MariaDB primary pods                                           | `""`                |
-| `primary.topologySpreadConstraints`             | Topology Spread Constraints for MariaDB primary pods assignment                                                   | `{}`                |
+| `primary.topologySpreadConstraints`             | Topology Spread Constraints for MariaDB primary pods assignment                                                   | `[]`                |
 | `primary.priorityClassName`                     | Priority class for MariaDB primary pods assignment                                                                | `""`                |
 | `primary.podSecurityContext.enabled`            | Enable security context for MariaDB primary pods                                                                  | `true`              |
 | `primary.podSecurityContext.fsGroup`            | Group ID for the mounted volumes' filesystem                                                                      | `1001`              |
@@ -196,6 +197,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 | Name                                              | Description                                                                                                           | Value               |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `secondary.name`                                  | Name of the secondary database (eg secondary, slave, ...)                                                             | `secondary`         |
 | `secondary.replicaCount`                          | Number of MariaDB secondary replicas                                                                                  | `1`                 |
 | `secondary.command`                               | Override default container command on MariaDB Secondary container(s) (useful when using custom images)                | `[]`                |
 | `secondary.args`                                  | Override default container args on MariaDB Secondary container(s) (useful when using custom images)                   | `[]`                |
@@ -215,7 +217,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `secondary.affinity`                              | Affinity for MariaDB secondary pods assignment                                                                        | `{}`                |
 | `secondary.nodeSelector`                          | Node labels for MariaDB secondary pods assignment                                                                     | `{}`                |
 | `secondary.tolerations`                           | Tolerations for MariaDB secondary pods assignment                                                                     | `[]`                |
-| `secondary.topologySpreadConstraints`             | Topology Spread Constraints for MariaDB secondary pods assignment                                                     | `{}`                |
+| `secondary.topologySpreadConstraints`             | Topology Spread Constraints for MariaDB secondary pods assignment                                                     | `[]`                |
 | `secondary.priorityClassName`                     | Priority class for MariaDB secondary pods assignment                                                                  | `""`                |
 | `secondary.schedulerName`                         | Name of the k8s scheduler (other than default)                                                                        | `""`                |
 | `secondary.podManagementPolicy`                   | podManagementPolicy to manage scaling operation of MariaDB secondary pods                                             | `""`                |
@@ -298,7 +300,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `volumePermissions.enabled`            | Enable init container that changes the owner and group of the persistent volume(s) mountpoint to `runAsUser:fsGroup` | `false`                 |
 | `volumePermissions.image.registry`     | Init container volume-permissions image registry                                                                     | `docker.io`             |
 | `volumePermissions.image.repository`   | Init container volume-permissions image repository                                                                   | `bitnami/bitnami-shell` |
-| `volumePermissions.image.tag`          | Init container volume-permissions image tag (immutable tags are recommended)                                         | `10-debian-10-r305`     |
+| `volumePermissions.image.tag`          | Init container volume-permissions image tag (immutable tags are recommended)                                         | `11-debian-11-r26`      |
 | `volumePermissions.image.pullPolicy`   | Init container volume-permissions image pull policy                                                                  | `IfNotPresent`          |
 | `volumePermissions.image.pullSecrets`  | Specify docker-registry secret names as an array                                                                     | `[]`                    |
 | `volumePermissions.resources.limits`   | Init container volume-permissions resource limits                                                                    | `{}`                    |
@@ -312,11 +314,12 @@ The command removes all the Kubernetes components associated with the chart and 
 | `metrics.enabled`                            | Start a side-car prometheus exporter                                                                                                      | `false`                   |
 | `metrics.image.registry`                     | Exporter image registry                                                                                                                   | `docker.io`               |
 | `metrics.image.repository`                   | Exporter image repository                                                                                                                 | `bitnami/mysqld-exporter` |
-| `metrics.image.tag`                          | Exporter image tag (immutable tags are recommended)                                                                                       | `0.13.0-debian-10-r209`   |
+| `metrics.image.tag`                          | Exporter image tag (immutable tags are recommended)                                                                                       | `0.14.0-debian-11-r26`    |
 | `metrics.image.pullPolicy`                   | Exporter image pull policy                                                                                                                | `IfNotPresent`            |
 | `metrics.image.pullSecrets`                  | Specify docker-registry secret names as an array                                                                                          | `[]`                      |
 | `metrics.annotations`                        | Annotations for the Exporter pod                                                                                                          | `{}`                      |
 | `metrics.extraArgs`                          | Extra args to be passed to mysqld_exporter                                                                                                | `{}`                      |
+| `metrics.extraVolumeMounts`                  | Optionally specify extra list of additional volumeMounts for the MariaDB metrics container(s)                                             | `{}`                      |
 | `metrics.containerSecurityContext.enabled`   | Enable security context for MariaDB metrics container                                                                                     | `false`                   |
 | `metrics.resources.limits`                   | The resources limits for MariaDB prometheus exporter containers                                                                           | `{}`                      |
 | `metrics.resources.requests`                 | The requested resources for MariaDB prometheus exporter containers                                                                        | `{}`                      |
@@ -368,7 +371,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `networkPolicy.egressRules.customRules`                                | Custom network policy rule                                                                                                             | `{}`    |
 
 
-The above parameters map to the env variables defined in [bitnami/mariadb](https://github.com/bitnami/bitnami-docker-mariadb). For more information please refer to the [bitnami/mariadb](https://github.com/bitnami/bitnami-docker-mariadb) image documentation.
+The above parameters map to the env variables defined in [bitnami/mariadb](https://github.com/bitnami/containers/tree/main/bitnami/mariadb). For more information please refer to the [bitnami/mariadb](https://github.com/bitnami/containers/tree/main/bitnami/mariadb) image documentation.
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -404,7 +407,7 @@ To modify the MariaDB version used in this chart you can specify a [valid image 
 
 ### Initialize a fresh instance
 
-The [Bitnami MariaDB](https://github.com/bitnami/bitnami-docker-mariadb) image allows you to use your custom scripts to initialize a fresh instance. Custom scripts may be specified using the `initdbScripts` parameter. Alternatively, an external ConfigMap may be created with all the initialization scripts and the ConfigMap passed to the chart via the `initdbScriptsConfigMap` parameter. Note that this will override the `initdbScripts` parameter.
+The [Bitnami MariaDB](https://github.com/bitnami/containers/tree/main/bitnami/mariadb) image allows you to use your custom scripts to initialize a fresh instance. Custom scripts may be specified using the `initdbScripts` parameter. Alternatively, an external ConfigMap may be created with all the initialization scripts and the ConfigMap passed to the chart via the `initdbScriptsConfigMap` parameter. Note that this will override the `initdbScripts` parameter.
 
 The allowed extensions are `.sh`, `.sql` and `.sql.gz`.
 
@@ -422,7 +425,7 @@ Similarly, additional containers can be added to MariaDB pods using the `initCon
 
 ## Persistence
 
-The [Bitnami MariaDB](https://github.com/bitnami/bitnami-docker-mariadb) image stores the MariaDB data and configurations at the `/bitnami/mariadb` path of the container.
+The [Bitnami MariaDB](https://github.com/bitnami/containers/tree/main/bitnami/mariadb) image stores the MariaDB data and configurations at the `/bitnami/mariadb` path of the container.
 
 The chart mounts a [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) volume at this location. The volume is created using dynamic volume provisioning, by default. An existing PersistentVolumeClaim can also be defined.
 
@@ -449,6 +452,12 @@ $ helm upgrade my-release bitnami/mariadb --set auth.rootPassword=[ROOT_PASSWORD
 ```
 
 | Note: you need to substitute the placeholder _[ROOT_PASSWORD]_ with the value obtained in the installation notes.
+
+### To 11.0.0
+
+This major release bumps default MariaDB branch to 10.6. Follow the [official instructions](https://mariadb.com/kb/en/upgrading-from-mariadb-105-to-mariadb-106/) from upgrading between 10.5 and 10.6.
+
+No major issues are expected during the upgrade.
 
 ### To 10.0.0
 

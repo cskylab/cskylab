@@ -205,8 +205,8 @@ helm pull gitlab/gitlab --version x.x.x --untar
 # Pull new chart versions
 ./csdeploy.sh -m pull-charts
 
-# Install chart and namespace.  
-./csdeploy.sh -m install
+# Redeploy upgraded chart.  
+./csdeploy.sh -m update
 ```
 
 - Check deployment status:

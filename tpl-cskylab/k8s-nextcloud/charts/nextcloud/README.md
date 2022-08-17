@@ -51,6 +51,7 @@ The following table lists the configurable parameters of the nextcloud chart and
 | Parameter                                                    | Description                                             | Default                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------- |
 | `image.repository`                                           | nextcloud Image name                                    | `nextcloud`                                 |
+| `image.flavor`                                               | nextcloud Image type                                    | `apache`                                    |
 | `image.tag`                                                  | nextcloud Image tag                                     | `{VERSION}`                                 |
 | `image.pullPolicy`                                           | Image pull policy                                       | `IfNotPresent`                              |
 | `image.pullSecrets`                                          | Specify image pull secrets                              | `nil`                                       |
@@ -95,6 +96,7 @@ The following table lists the configurable parameters of the nextcloud chart and
 | `nextcloud.defaultConfigs.smtp\.config\.php`                 | Default configuration for smtp                          | `true`                                      |
 | `nextcloud.strategy`                                         | specifies the strategy used to replace old Pods by new ones | `type: Recreate`                        |
 | `nextcloud.extraEnv`                                         | specify additional environment variables                | `{}`                                        |
+| `nextcloud.extraInitContainers`                              | specify additional init containers                      | `[]`                                        |
 | `nextcloud.extraVolumes`                                     | specify additional volumes for the NextCloud pod        | `{}`                                        |
 | `nextcloud.extraVolumeMounts`                                | specify additional volume mounts for the NextCloud pod  | `{}`                                        |
 | `nginx.enabled`                                              | Enable nginx (requires you use php-fpm image)           | `false`                                     |
@@ -123,6 +125,11 @@ The following table lists the configurable parameters of the nextcloud chart and
 | `mariadb.auth.password`                                      | Password for the database                               | `changeme`                                  |
 | `mariadb.auth.username`                                      | Database user to create                                 | `nextcloud`                                 |
 | `mariadb.auth.rootPassword`                                  | MariaDB admin password                                  | `nil`                                       |
+| `postgresql.enabled`                                         | Whether to use the PostgreSQL chart                     | `false`                                     |
+| `postgresql.global.postgresql.auth.username`                 | Database user to create                                 | `nextcloud`                                 |
+| `postgresql.global.postgresql.auth.password`                 | Password for the database                               | `changeme`                                  |
+| `postgresql.global.postgresql.auth.database`                 | Database name to create                                 | `nextcloud`                                 |
+| `postgresql.primary.persistence.enabled`                     | Whether or not to use PVC on PostgreSQL primary         | `false`                                     |
 | `redis.enabled`                                              | Whether to install/use redis for locking                | `false`                                     |
 | `redis.auth.enabled`                                         | Whether to enable password authentication with redis    | `true`                                      |
 | `redis.auth.password`                                        | The password redis uses                                 | `''`                                        |
@@ -151,10 +158,13 @@ The following table lists the configurable parameters of the nextcloud chart and
 | `persistence.nextcloudData.existingClaim`                    | see `persistence.existingClaim`                         | `nil` (uses alpha storage class annotation) |
 | `persistence.nextcloudData.accessMode`                       | see `persistence.accessMode`                            | `ReadWriteOnce`                             |
 | `persistence.nextcloudData.size`                             | see `persistence.size`                                  | `8Gi`                                       |
+| `phpClientHttpsFix.enabled`                                  | Sets OVERWRITEPROTOCOL for https ingress redirect       | `false`                                     |
+| `phpClientHttpsFix.protocol`                                 | Sets OVERWRITEPROTOCOL for https ingress redirect       | `https`                                     |
 | `resources`                                                  | CPU/Memory resource requests/limits                     | `{}`                                        |
 | `rbac.enabled`                                               | Enable Role and rolebinding for priveledged PSP         | `false`                                     |
 | `rbac.serviceaccount.create`                                 | Wether to create a serviceaccount or use an existing one (requires rbac) | `true`                     |
 | `rbac.serviceaccount.name`                                   | The name of the sevice account that the deployment will use (requires rbac) | `nextcloud-serviceaccount` |
+| `rbac.serviceaccount.annotations`                            | Serviceaccount annotations                              | `{}`                                        |
 | `livenessProbe.enabled`                                      | Turn on and off liveness probe                          | `true`                                      |
 | `livenessProbe.initialDelaySeconds`                          | Delay before liveness probe is initiated                | `10`                                        |
 | `livenessProbe.periodSeconds`                                | How often to perform the probe                          | `10`                                        |
@@ -186,7 +196,7 @@ The following table lists the configurable parameters of the nextcloud chart and
 | `metrics.token`                                              | Uses token for auth instead of username/password        | `""`                                        |
 | `metrics.timeout`                                            | When the scrape times out                               | `5s`                                        |
 | `metrics.image.repository`                                   | Nextcloud metrics exporter image name                   | `xperimental/nextcloud-exporter`            |
-| `metrics.image.tag`                                          | Nextcloud metrics exporter image tag                    | `v0.5.0`                                    |
+| `metrics.image.tag`                                          | Nextcloud metrics exporter image tag                    | `0.5.1`                                     |
 | `metrics.image.pullPolicy`                                   | Nextcloud metrics exporter image pull policy            | `IfNotPresent`                              |
 | `metrics.podAnnotations`                                     | Additional annotations for metrics exporter             | not set                                     |
 | `metrics.podLabels`                                          | Additional labels for metrics exporter                  | not set                                     |
@@ -195,6 +205,12 @@ The following table lists the configurable parameters of the nextcloud chart and
 | `metrics.service.nodePort`                                   | Metrics: NodePort for service type NodePort             | `nil`                                       |
 | `metrics.service.annotations`                                | Additional annotations for service metrics exporter     | `{prometheus.io/scrape: "true", prometheus.io/port: "9205"}` |
 | `metrics.service.labels`                                     | Additional labels for service metrics exporter          | `{}`                                        |
+| `metrics.serviceMonitor.enabled`                             | Create ServiceMonitor Resource for scraping metrics using PrometheusOperator | `false`                |
+| `metrics.serviceMonitor.namespace`                           | Namespace in which Prometheus is running                | ``                                          |
+| `metrics.serviceMonitor.jobLabel`                            | The name of the label on the target service to use as the job name in prometheus | ``                 |
+| `metrics.serviceMonitor.interval`                            | Interval at which metrics should be scraped             | `30s`                                       |
+| `metrics.serviceMonitor.scrapeTimeout`                       | Specify the timeout after which the scrape is ended     | ``                                          |
+| `metrics.serviceMonitor.labels`                              | Extra labels for the ServiceMonitor                     | `{}                                         |
 
 > **Note**:
 >

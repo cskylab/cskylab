@@ -4,28 +4,200 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-03-23](#v22-03-23)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
+    - [1.- Uninstall nextcloud namespace](#1--uninstall-nextcloud-namespace)
+    - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
+    - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
+    - [4.- Prepare configuration files in the new directory](#4--prepare-configuration-files-in-the-new-directory)
+    - [5.- Install new nextcloud namespace](#5--install-new-nextcloud-namespace)
+    - [6.- Upgrade nextcloud to intermediate v23.0.3](#6--upgrade-nextcloud-to-intermediate-v2303)
+    - [6.- Perform final nextcloud chart upgrade](#6--perform-final-nextcloud-chart-upgrade)
+    - [8.- Update new restic backup and rsync procedures](#8--update-new-restic-backup-and-rsync-procedures)
+  - [Reference](#reference)
+- [v22-03-23](#v22-03-23)
+  - [Background](#background-1)
+  - [Prerequisites](#prerequisites-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Update configuration files](#1--update-configuration-files)
     - [2.- Pull charts & update](#2--pull-charts--update)
-  - [Reference](#reference)
+  - [Reference](#reference-1)
 - [v22-01-05](#v22-01-05)
-  - [Background](#background-1)
-  - [How-to guides](#how-to-guides-1)
+  - [Background](#background-2)
+  - [How-to guides](#how-to-guides-2)
     - [1.- Change redis to standalone mode](#1--change-redis-to-standalone-mode)
     - [2.- Update configuration files](#2--update-configuration-files)
     - [3.- Pull charts & re-install application](#3--pull-charts--re-install-application)
-  - [Reference](#reference-1)
+  - [Reference](#reference-2)
 - [v21-12-06](#v21-12-06)
-  - [Background](#background-2)
-  - [How-to guides](#how-to-guides-2)
+  - [Background](#background-3)
+  - [How-to guides](#how-to-guides-3)
     - [1.- Update configuration files](#1--update-configuration-files-1)
     - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
-  - [Reference](#reference-2)
+  - [Reference](#reference-3)
 
 ---
+
+## v99-99-99
+
+### Background
+
+This update applies charts nextcloud/nextcloud v3.0.4 with Nextloud v24.0.2 and bitnami/mariadb v11.1.8. with MariaDB v10.6.9.
+
+Before applying the final update it is necessary to perform an intermediate update to nextcloud chart v2.14.6 with appVersion 23.0.3.
+
+This upgrade include new backup and rsync procedures and requires to uninstall and re-install the namespace. The Nextcloud LVM data service will preserve existing data.
+
+This procedure updates Nextcloud installation in k8s-mod cluster.
+
+### Prerequisites
+
+Before aplying this update it is mandatory to have the namespace updated to cSkyLab v22-03-23:
+
+- Nextcloud chart 2.12.2
+  
+### How-to guides
+
+#### 1.- Uninstall nextcloud namespace
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` repository directory.
+
+- Remove gitlab namespace by running:
+
+```bash
+# Uninstall chart and namespace.  
+./csdeploy.sh -m uninstall
+```
+
+#### 2.- Rename old configuration directory
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/` repository directory.
+
+- Rename `cs-mod/k8s-mod/nextcloud` directory to `cs-mod/k8s-mod/nextcloud-dep`
+
+#### 3.- Create new configuration from new template
+
+From VS Code Remote connected to `mcc`, open  terminal at `_cfg-fabric` repository directory.
+
+- Update configuration runbook models following instructions in `README.md` file.
+- Generate new configuration directory following instructions in runbook `_rb-k8s-mod-nextcloud.md` file.
+
+>**Note**: Configuration data must match with the used in the old deployment.
+
+#### 4.- Prepare configuration files in the new directory
+
+- Copy the file `values-nextcloud.yaml` from the old configuration directory to the new one (This file must retain the previously exisisting nextcloud configuration).
+- Copy the file `values-mariadb.yaml` from the old configuration directory to the new one (This file must retain the previously exisisting mariadb configuration).
+
+- Edit `csdeploy.sh` file on the new directory and change the `source_charts` variable to the following values:
+
+```bash
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 2.14.6 --untar
+helm pull bitnami/mariadb --version 11.1.8 --untar
+
+EOF
+)"
+```
+
+>**Note**: With this configuration, you will be ready to update mariadb chart and migrate nextcloud application to intermediate version 23.0.3.
+
+#### 5.- Install new nextcloud namespace
+
+From VS Code Remote connected to `mcc`, open  terminal at new `cs-mod/k8s-mod/nextcloud` repository directory.
+
+Install nextcloud namespace by running:
+
+```bash
+# Pull new chart versions
+./csdeploy.sh -m pull-charts
+
+# Install chart and namespace.  
+./csdeploy.sh -m install
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+#### 6.- Upgrade nextcloud to intermediate v23.0.3
+
+This upgrade requires administrator confirmation via browser.
+
+- Open browser at nextcloud url e.g., `nextcloud.cskylab.net`
+- Confirm upgrade when proposed
+- Login with admin account and check upgrade.
+
+#### 6.- Perform final nextcloud chart upgrade
+
+- Edit `csdeploy.sh` file on the new directory and change the `source_charts` variable to the following values:
+
+```bash
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 3.0.4 --untar
+helm pull bitnami/mariadb --version 11.1.8 --untar
+
+EOF
+)"
+```
+
+>**Note**: This configuration will update nextcloud to final version v24.0.2.
+
+- Update nextcloud namespace by running:
+
+```bash
+# Pull new chart versions
+./csdeploy.sh -m pull-charts
+
+# Redeploy upgraded chart.  
+./csdeploy.sh -m update
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+- After migration, remove old configuration directory `cs-mod/k8s-mod/nextcloud-dep`
+
+#### 8.- Update new restic backup and rsync procedures
+
+- Review the new restic backup and rsync procedures in file `README.md`
+- Update the cronjobs in kubernetes node and check the jobs are running properly.
+
+### Reference
+
+- <https://github.com/nextcloud/helm/tree/master/charts/nextcloud>
+
+---
+
 
 ## v22-03-23
 

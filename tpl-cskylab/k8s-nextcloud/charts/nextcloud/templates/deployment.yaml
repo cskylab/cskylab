@@ -36,10 +36,15 @@ spec:
         {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
         {{- end }}
-      {{- if .Values.podAnnotations }}
       annotations:
+        nextcloud-config-hash: {{ print (toJson .Values.nextcloud.defaultConfigs) "-" (toJson .Values.nextcloud.configs) | sha256sum }}
+        php-config-hash: {{ toJson .Values.nextcloud.phpConfigs | sha256sum }}
+        {{- if .Values.nginx.enabled }}
+        nginx-config-hash: {{ print .Values.nginx.config.default "-" .Values.nginx.config.custom | sha256sum }}
+        {{- end }}
+        {{- if .Values.podAnnotations }}
 {{ toYaml .Values.podAnnotations | indent 8 }}
-      {{- end }}
+        {{- end }}
     spec:
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
@@ -47,9 +52,13 @@ spec:
         - name: {{ . }}
       {{- end}}
       {{- end }}
+      {{- if .Values.nextcloud.extraInitContainers }}
+      initContainers:
+      {{- toYaml .Values.nextcloud.extraInitContainers | nindent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: {{ include "nextcloud.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.lifecycle }}
         lifecycle:
@@ -67,6 +76,10 @@ spec:
         {{-   end }}
         {{- end }}
         env:
+        {{- if .Values.phpClientHttpsFix.enabled }}
+        - name: OVERWRITEPROTOCOL
+          value: {{ .Values.phpClientHttpsFix.protocol | quote }}
+        {{- end }}
         {{- if .Values.internalDatabase.enabled }}
         - name: SQLITE_DATABASE
           value: {{ .Values.internalDatabase.name | quote }}
@@ -81,6 +94,25 @@ spec:
               name: {{ .Values.externalDatabase.existingSecret.secretName | default (printf "%s-%s" .Release.Name "db") }}
               key: {{ .Values.externalDatabase.existingSecret.usernameKey | default "db-username" }}
         - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.externalDatabase.existingSecret.secretName | default (printf "%s-%s" .Release.Name "db") }}
+              key: {{ .Values.externalDatabase.existingSecret.passwordKey | default "db-password" }}
+        {{- else if .Values.postgresql.enabled }}
+        - name: POSTGRES_HOST
+          value: {{ template "postgresql.primary.fullname" .Subcharts.postgresql }}
+        - name: POSTGRES_DB
+          {{- if .Values.postgresql.auth.database }}
+          value: {{ .Values.postgresql.auth.database | quote }}
+          {{ else }}
+          value: {{ .Values.postgresql.global.postgresql.auth.database | quote }}
+          {{- end }}
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.externalDatabase.existingSecret.secretName | default (printf "%s-%s" .Release.Name "db") }}
+              key: {{ .Values.externalDatabase.existingSecret.usernameKey | default "db-username" }}
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ .Values.externalDatabase.existingSecret.secretName | default (printf "%s-%s" .Release.Name "db") }}
@@ -164,7 +196,7 @@ spec:
         - name: REDIS_HOST
           value: {{ template "nextcloud.redis.fullname" . }}-master
         - name: REDIS_HOST_PORT
-          value: {{ .Values.redis.master.service.port | quote }}
+          value: {{ .Values.redis.master.service.ports.redis | quote }}
         {{- if and .Values.redis.auth.existingSecret .Values.redis.auth.existingSecretPasswordKey }}
         - name: REDIS_HOST_PASSWORD
           valueFrom:
@@ -358,7 +390,7 @@ spec:
       {{- if .Values.mariadb.enabled }}
       initContainers:
       - name: mariadb-isalive
-        image: {{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
+        image: {{ .Values.mariadb.image.registry }}/{{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
         env:
           - name: MYSQL_USER
             valueFrom:
