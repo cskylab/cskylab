@@ -433,7 +433,9 @@ kubectl -n={{ .namespace.name }} create secret generic gitlab-rails-secret --fro
 # Restart the pods
 kubectl -n={{ .namespace.name }} delete pods -lapp=sidekiq \
 && kubectl -n={{ .namespace.name }} delete pods -lapp=webservice \
-&& kubectl -n={{ .namespace.name }} delete pods -lapp=toolbox
+&& kubectl -n={{ .namespace.name }} delete pods -lapp=toolbox \
+&& kubectl -n={{ .namespace.name }} delete pods -lapp=migrations
+
 ```
 
 ### GitLab - Keycloak OpenID Connect OmniAuth provider
