@@ -1,4 +1,4 @@
-# k8s-miniostalone
+# k8s-mod-miniostalone
 
 [MinIO](https://min.io) is an object storage server, compatible with Amazon S3 cloud storage service, mainly used for storing unstructured data (such as photos, videos, log files, etc.)
 
@@ -50,7 +50,7 @@ namespace:
 
 publishing:
   ## API url
-  url: miniostalone.cskylab.net
+  url: miniostalone.mod.cskylab.net
   ## Console url
   console_url: miniostalone-console.cskylab.net
 
@@ -67,28 +67,19 @@ registry:
   ## Proxy Repository for Docker
   proxy: harbor.cskylab.net/dockerhub
 
-restic:
-  ## Restic password is mandatory to access repository
-  password: 'NoFear21'
-
-  ## Restic repositories can be located in local paths, sftp paths and s3 buckets
-  ## Local path example:
-  # repo: '/srv/restic/miniostalone'
-  ## S3 example:
-  # repo: 's3:https://backup.cskylab.net/restic/miniostalone'
-  ## sftp example:
-  repo: 'sftp:kos@kvm-main.cskylab.net:/media/data/restic/miniostalone'
-  
-  ## S3 Bucket access and secret keys must be specified for S3 located repositories
-  aws_access: 'restic_rw'
-  aws_secret: 'iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr'
-
-
 ## Local storage PV's node affinity (Configured in pv*.yaml)
 localpvnodes:    # (k8s node names)
   all_pv: k8s-mod-n1
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
 localrsyncnodes: # (k8s node names)
   all_pv: k8s-mod-n2
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
 
 EOF
 )" \
