@@ -1,8 +1,8 @@
 # Kubernetes MinIO Tenant <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Image: quay.io/minio/minio:RELEASE.2022-03-22T02-05-10Z <!-- omit in toc -->
+## Image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z <!-- omit in toc -->
 
 ---
 
@@ -191,7 +191,7 @@ Check versions and update if necesary, for the following image in `mod-tenant.ya
 
 ```yaml
   ## Registry location and Tag to download MinIO Server image
-  image: quay.io/minio/minio:RELEASE.2022-02-18T01-50-10Z
+  image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z
 ```
 
 To check for the latest image version see:

@@ -1,6 +1,6 @@
 # Kubernetes MinIO Operator <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
 ## Helm charts: minio/operator v4.4.28 <!-- omit in toc -->
 
@@ -28,7 +28,6 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Helm charts and values](#helm-charts-and-values)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -209,42 +208,6 @@ Examples:
   # Display namespace, persistence and charts status:
     ./csdeploy.sh -l
 ```
-
-**Tasks performed:**
-
-| ${execution_mode}                | Tasks                      | Block / Description                                                         |
-| -------------------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| [pull-charts]                    |                            | **Pull helm charts from repositories**                                      |
-|                                  | Clean `./charts` directory | Remove all contents in `./charts` directory.                                |
-|                                  | Pull helm charts           | Pull new charts according to sourced script in variable `source_charts`.    |
-|                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
-| [install]                        |                            | **Create namespace, config-maps, secrets and PV's**                         |
-|                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-| [update] [install]               |                            | **Deploy app mod's and charts**                                             |
-|                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
-| [uninstall]                      |                            | **Uninstall charts and app mod's**                                          |
-|                                  | Uninstall charts           | Uninstall all charts in `./charts` directory.                               |
-| [uninstall] [remove]             |                            | **Remove namespace and PV's**                                               |
-|                                  | Remove namespace           | Remove namespace and all its objects.                                       |
-| [install] [update] [list-status] |                            | **Display status information**                                              |
-|                                  | Display namespace          | Namespace and object status.                                                |
-|                                  | Display charts             | Charts releases history information.                                        |
-|                                  |                            |                                                                             |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                   | Description                | Values                             |
-| --------------------------- | -------------------------- | ---------------------------------- |
-| `_tplname`                  | template name              | `{{ ._tplname }}`                  |
-| `_tpldescription`           | template description       | `{{ ._tpldescription }}`           |
-| `_tplversion`               | template version           | `{{ ._tplversion }}`               |
-| `kubeconfig`                | kubeconfig file            | `{{ .kubeconfig }}`                |
-| `namespace.name`            | namespace name             | `{{ .namespace.name }}`            |
-| `publishing.url`            | external URL               | `{{ .publishing.url }}`            |
-| `certificate.clusterissuer` | cert-manager clusterissuer | `{{ .certificate.clusterissuer }}` |
-| `registry.proxy`            | docker private proxy URL   | `{{ .registry.proxy }}`            |
 
 ## License
 
