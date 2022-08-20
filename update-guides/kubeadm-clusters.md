@@ -93,13 +93,13 @@ sudo kubeadm upgrade plan
 
 ```bash
 # Apply upgrade
-sudo kubeadm upgrade apply v1.23.5
+sudo kubeadm upgrade apply v1.24.4
 ```
 
 - Once the command finishes you should see:
 
 ```bash
-[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.23.5". Enjoy!
+[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.24.4". Enjoy!
 ```
 
 Upgrade Weave Net CNI provider:
@@ -256,7 +256,7 @@ kubectl get nodes
 k8s_version="1.24.4-00"
 
 # Go version
-go_version="go1.17.8.linux-amd64.tar.gz"
+go_version="go1.19.linux-amd64.tar.gz"
 ```
 
 - Save the file, commit changes and synchronize repository with remote
