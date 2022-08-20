@@ -1,6 +1,8 @@
-# k8s-minio-tenant
+# k8s-mod-minio-operator
 
-[MinIO](https://min.io/) is a Kubernetes-native high performance object store with an S3-compatible API. The [MinIO Kubernetes Operator](https://github.com/minio/operator) supports deploying MinIO Tenants onto private and public cloud infrastructures ("Hybrid" Cloud). This service creates a X-node MinIO Tenant using MinIO for object storage.
+MinIO is a Kubernetes-native high performance object store with an S3-compatible API. The [MinIO Kubernetes Operator](https://github.com/minio/operator) supports deploying MinIO Tenants onto private and public cloud infrastructures ("Hybrid" Cloud). This namespace deploys a [MinIO Operator](https://github.com/minio/operator) in a Kubernetes cluster.
+
+> **Note**: `MinIO Operator` should be considered as cluster service. It is recommended to deploy it as a cluster singleton.
 
 ## Generate configuration files with cskygen
 
@@ -21,8 +23,8 @@ echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory" \
 && export RB_ZONE="cs-mod" \
 && export RB_K8S_CLUSTER="k8s-mod" \
-&& export RB_K8S_NAMESPACE="minio-tenant" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-minio-tenant" \
+&& export RB_K8S_NAMESPACE="minio-operator" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-minio-operator" \
 && echo
 ```
 
@@ -44,18 +46,11 @@ kubeconfig: config-k8s-mod
 
 namespace:
   ## k8s namespace name
-  name: minio-tenant
+  name: minio-operator
 
 publishing:
-  ## External api url used by mc
-  miniourl: minio-tenant.cskylab.net
-  ## External api url used by console
-  consoleurl: minio-tenant-console.cskylab.net
-
-credentials:
-  # MinIO root user credentials
-  minio_accesskey: "admin"
-  minio_secretkey: "NoFear21"
+  ## External url
+  url: minio-operator.mod.cskylab.net
 
 certificate:
   ## Cert-manager clusterissuer
@@ -64,16 +59,6 @@ certificate:
 registry:
   ## Proxy Repository for Docker
   proxy: harbor.cskylab.net/dockerhub
-
-localpvnodes:    # (k8s node names)
-  srv00: k8s-mod-n1
-  srv01: k8s-mod-n2
-  srv02: k8s-mod-n3
-  srv03: k8s-mod-n4
-  # k8s nodes domain name
-  domain: cskylab.net
-  # k8s nodes local administrator
-  localadminusername: kos
 
 EOF
 )" \
