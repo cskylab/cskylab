@@ -21,4 +21,12 @@ spec:
   selector:
     app: {{ template "name" . }}
     release: {{ .Release.Name }}
+  {{- if .Values.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- end }}
+  {{- if eq .Values.service.sessionAffinity "ClientIP" }}
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: {{ .Values.service.sessionAffinityConfig.clientIP.timeoutSeconds }}
+  {{- end }}
 {{- end }}

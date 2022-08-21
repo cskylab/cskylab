@@ -24,11 +24,6 @@ rules:
   resources: {{ (default (list "*") .Values.rbac.resources | toJson) }}
   verbs: {{ (default (list "*") .Values.rbac.verbs | toJson) }}
 {{- end -}}
-{{- if and (eq (default 1.0 .Values.replicas) 1.0) .Values.sessionServer .Values.sessionServer.enabled }}
-- apiGroups: [""]
-  resources: ["services"]
-  verbs: ["create", "get", "list"]
-{{- end -}}
 {{ range .Values.rbac.rules }}
 - apiGroups: {{ (default (list "") .apiGroups) | toJson }}
   resources: {{ (default (list "*") .resources) | toJson }}

@@ -59,22 +59,27 @@ data:
     log-format={{ .Values.logFormat }}
     log-verbose={{ eq .Values.logVerbose true }}
     redirect-http={{ eq .Values.redirectHttp true }}
-    use-http2={{ eq .Values.useHttp2 true }}
     insecure-ciphers={{ eq .Values.insecureCiphers true }}
     artifacts-server={{ template "gitlab.pages.artifactsServer" . }}
     artifacts-server-timeout={{ default 10 .Values.artifactsServerTimeout }}
     gitlab-server={{ template "gitlab.pages.gitlabServer" . }}
     internal-gitlab-server={{ template "gitlab.pages.internalGitlabServer" . }}
     api-secret-key=/etc/gitlab-secrets/pages/secret
-    domain-config-source={{ default "gitlab" .Values.domainConfigSource }}
     {{- if and .Values.metrics.enabled .Values.metrics.port }}
     metrics-address=:{{ .Values.metrics.port | int }}
+    {{-   if .Values.metrics.tls.enabled }}
+    metrics-certificate=/etc/gitlab-secrets/pages-metrics/pages-metrics.crt
+    metrics-key=/etc/gitlab-secrets/pages-metrics/pages-metrics.key
+    {{-   end }}
     {{- end }}
     {{- if .Values.maxConnections }}
     max-conns={{ .Values.maxConnections }}
     {{- end }}
     {{- if .Values.maxURILength }}
     max-uri-length={{ .Values.maxURILength }}
+    {{- end }}
+    {{- if .Values.serverShutdownTimeout }}
+    server-shutdown-timeout={{ .Values.serverShutdownTimeout }}
     {{- end }}
     {{- if .Values.gitlabClientHttpTimeout }}
     gitlab-client-http-timeout={{ .Values.gitlabClientHttpTimeout }}
@@ -103,7 +108,8 @@ data:
     auth-redirect-uri={{ template "oauth.gitlab-pages.authRedirectUri" . }}
     auth-client-id={% file.Read "/etc/gitlab-secrets/pages/gitlab_appid" %}
     auth-client-secret={% file.Read "/etc/gitlab-secrets/pages/gitlab_appsecret" %}
-    auth-secret={% file.Read "/etc/gitlab-secrets/pages/auth_secret" %} 
+    auth-secret={% file.Read "/etc/gitlab-secrets/pages/auth_secret" %}
+    auth-scope={{ template "oauth.gitlab-pages.authScope" . }}
     {{- end }}
     {{- with .Values.zipCache }}
     {{- if .cleanup }}
@@ -119,6 +125,9 @@ data:
     {{- if .Values.zipOpenTimeout }}
     zip-open-timeout={{ .Values.zipOpenTimeout }}
     {{- end }}
+    {{- if .Values.zipHTTPClientTimeout }}
+    zip-http-client-timeout={{ .Values.zipHTTPClientTimeout }}
+    {{- end }}
     {{- if .Values.rateLimitSourceIP }}
     rate-limit-source-ip={{ .Values.rateLimitSourceIP }}
     {{- end }}
@@ -131,5 +140,34 @@ data:
     {{- if .Values.rateLimitDomainBurst }}
     rate-limit-domain-burst={{ .Values.rateLimitDomainBurst }}
     {{- end }}
+    {{- if .Values.rateLimitTLSSourceIP }}
+    rate-limit-tls-source-ip={{ .Values.rateLimitTLSSourceIP }}
+    {{- end }}
+    {{- if .Values.rateLimitTLSSourceIPBurst }}
+    rate-limit-tls-source-ip-burst={{ .Values.rateLimitTLSSourceIPBurst }}
+    {{- end }}
+    {{- if .Values.rateLimitTLSDomain }}
+    rate-limit-tls-domain={{ .Values.rateLimitTLSDomain }}
+    {{- end }}
+    {{- if .Values.rateLimitTLSDomainBurst }}
+    rate-limit-tls-domain-burst={{ .Values.rateLimitTLSDomainBurst }}
+    {{- end }}
+    {{- if .Values.serverReadTimeout }}
+    server-read-timeout={{ .Values.serverReadTimeout }}
+    {{- end }}
+    {{- if .Values.serverReadHeaderTimeout }}
+    server-read-header-timeout={{ .Values.serverReadHeaderTimeout }}
+    {{- end }}
+    {{- if .Values.serverWriteTimeout }}
+    server-write-timeout={{ .Values.serverWriteTimeout }}
+    {{- end }}
+    {{- if .Values.serverKeepAlive }}
+    server-keep-alive={{ .Values.serverKeepAlive }}
+    {{- end }}
   configure: |
     {{- include "gitlab.scripts.configure.secrets" (dict "required" "pages" "optional" "pages") | nindent 4 -}}
+    {{- if $.Values.metrics.tls.enabled }}
+      mkdir -p /init-secrets/pages-metrics
+      cp -v -L /init-config/pages-metrics/pages-metrics.crt /init-secrets/pages-metrics/pages-metrics.crt
+      cp -v -L /init-config/pages-metrics/pages-metrics.key /init-secrets/pages-metrics/pages-metrics.key
+    {{- end }}

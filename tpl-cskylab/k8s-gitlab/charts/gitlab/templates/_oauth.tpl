@@ -10,6 +10,10 @@
 {{ default "appsecret" (index $.Values.global.oauth "gitlab-pages" "appSecretKey") }}
 {{- end -}}
 
+{{- define "oauth.gitlab-pages.authScope" -}}
+{{ default "api" (index $.Values.global.oauth "gitlab-pages" "authScope") }}
+{{- end -}}
+
 {{- define "oauth.gitlab-pages.authRedirectUri" -}}
 {{- if (index $.Values.global.oauth "gitlab-pages" "redirectUri") -}}
 {{   (index $.Values.global.oauth "gitlab-pages" "redirectUri") }}

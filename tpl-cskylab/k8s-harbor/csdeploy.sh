@@ -94,7 +94,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/harbor --version 11.2.4 --untar
+helm pull bitnami/harbor --version 15.0.5 --untar
 
 EOF
 )"
@@ -346,9 +346,6 @@ if [[ "${execution_mode}" == "install" ]]; then
 
   # Create namespace
   kubectl create namespace "${namespace}"
-
-  # Create harbor-certificate
-  kubectl -n "${namespace}" apply -f harbor-certificate.yaml
 
   # Create PV's
   shopt -s nullglob

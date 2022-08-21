@@ -32,6 +32,8 @@ data:
     prometheus_listen_addr = '0.0.0.0:{{ .Values.metrics.port  }}'
     {{- end }}
 
+    prometheus_exclude_database_from_default_metrics = {{ eq true .Values.metrics.separate_database_metrics }}
+
     {{- if $.Values.global.praefect.tls.enabled }}
     [tls]
     certificate_path = '/etc/gitlab-secrets/praefect/praefect.crt'

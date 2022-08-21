@@ -24,6 +24,12 @@ init:
 metrics:
   enabled: true
   port: 9236
+  separate_database_metrics: true
+  path: /metrics
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    endpointConfig: {}
 
 ## Allow to overwrite under which User and Group we're running.
 securityContext:
@@ -44,6 +50,8 @@ serviceAccount:
   enabled: false
   create: false
   annotations: {}
+  ## Name to be used for serviceAccount, otherwise defaults to chart fullname
+  # name:
 
 ## Support for tolerations for pod scheduling
 tolerations: []

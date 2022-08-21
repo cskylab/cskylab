@@ -97,19 +97,3 @@ cluster.
 http://{{ template "gitlab.workhorse.host" . }}:{{ template "gitlab.workhorse.port" . }}
 {{- end -}}
 {{- end -}}
-
-{{/*
-Return the metrics annotations for GitLab Pages
-*/}}
-{{- define "gitlab.pages.metricsAnnotations" -}}
-{{- if .Values.metrics.annotations -}}
-{{- toYaml .Values.metrics.annotations }}
-{{- else -}}
-gitlab.com/prometheus_scrape: "true"
-gitlab.com/prometheus_port: {{ .Values.metrics.port | quote }}
-gitlab.com/prometheus_path: "/metrics"
-prometheus.io/scrape: "true"
-prometheus.io/port: {{ .Values.metrics.port | quote }}
-prometheus.io/path: "/metrics"
-{{- end -}}
-{{- end -}}

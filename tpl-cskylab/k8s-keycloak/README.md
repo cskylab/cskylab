@@ -1,8 +1,8 @@
 # Keycloak identity and access management <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Helm charts: `codecentric/keycloak` v17.0.2 <!-- omit in toc -->
+## Helm charts: `codecentric/keycloakx` v18.3.0 <!-- omit in toc -->
 
 [Keycloak](https://www.keycloak.org) is a high performance Java-based identity and access management solution. It lets developers add an authentication layer to their applications with minimum effort.
 
@@ -451,7 +451,7 @@ To learn more see:
 
 | Chart                | Values                 |
 | -------------------- | ---------------------- |
-| codecentric/keycloak | `values-keycloak.yaml` |
+| codecentric/keycloakx | `values-keycloakx.yaml` |
 
 ### Scripts
 

@@ -37,7 +37,7 @@ Common labels
 {{- define "keycloak.labels" -}}
 helm.sh/chart: {{ include "keycloak.chart" . }}
 {{ include "keycloak.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | trunc 63 | quote }}
+app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -65,7 +65,7 @@ Create a default fully qualified app name for the postgres requirement.
 */}}
 {{- define "keycloak.postgresql.fullname" -}}
 {{- $postgresContext := dict "Values" .Values.postgresql "Release" .Release "Chart" (dict "Name" "postgresql") -}}
-{{ include "postgresql.primary.fullname" $postgresContext }}
+{{ include "keycloak.fullname" .}}-{{ include "postgresql.name" $postgresContext }}
 {{- end }}
 
 {{/*

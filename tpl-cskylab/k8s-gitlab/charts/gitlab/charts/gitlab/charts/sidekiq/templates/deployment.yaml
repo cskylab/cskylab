@@ -6,7 +6,7 @@
 {{- $name := default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- $releaseName := .Release.Name -}}
 {{- $releaseService := .Release.Service -}}
-{{- $fullname := printf "%s-%s" $releaseName $name | trunc 63 | trimSuffix "-" -}}
+{{- $fullname := include "fullname" . -}}
 {{- $image := printf "%s:%s" (coalesce .Values.image.repository (include "image.repository" .)) (coalesce .Values.image.tag (include "gitlab.versionTag" . ) | toString) -}}
 {{- $concurrency := .Values.concurrency -}}
 {{- $timeout := .Values.timeout -}}
@@ -17,8 +17,8 @@
 {{- $railsSecretName := include "gitlab.rails-secrets.secret" . -}}
 {{- $metricsEnabled := .Values.metrics.enabled -}}
 {{- $metricsPort := .Values.metrics.port -}}
-{{- $healthChecksPort := .Values.health_checks.port | default $metricsPort -}}
-{{- $metricsAnnotations := .Values.metrics.annotations -}}
+{{- $metricsPath := .Values.metrics.path -}}
+{{- $healthChecksPort := .Values.health_checks.port -}}
 {{- $configMapChecksum := include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
 {{- range .Values.pods -}}
 {{-   $queueName := printf "%s-%s" $fullname .name | trunc 63 }}
@@ -57,9 +57,22 @@ spec:
       {{- range $key, $value := $.Values.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
-{{- if $metricsEnabled }}
-        {{- toYaml $metricsAnnotations | nindent 8 }}
-{{- end }}
+      {{- if and $metricsEnabled (not $.Values.metrics.podMonitor.enabled) }}
+      {{- if $.Values.metrics.annotations }}
+        {{- toYaml $.Values.metrics.annotations | nindent 8 }}
+      {{- else }}
+        {{- if $.Values.metrics.tls.enabled }}
+        gitlab.com/prometheus_scheme: "https"
+        prometheus.io/scheme: "https"
+        {{- end }}
+        gitlab.com/prometheus_scrape: "true"
+        gitlab.com/prometheus_port: {{ $metricsPort | quote }}
+        gitlab.com/prometheus_path: {{ $metricsPath }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ $metricsPort | quote }}
+        prometheus.io/path: {{ $metricsPath }}
+      {{- end }}
+      {{- end }}
     spec:
       {{- if $.Values.tolerations }}
       tolerations:
@@ -105,6 +118,7 @@ spec:
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" $ | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" .) | nindent 10 }}
           volumeMounts:
           {{- tpl (default "" .extraVolumeMounts) $ | nindent 10 }}
           {{- include "gitlab.extraVolumeMounts" $ | nindent 10 }}
@@ -142,6 +156,7 @@ spec:
               value: "1"
             {{- end }}
             {{- include "gitlab.extraEnv" $ | nindent 12 }}
+            {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
           volumeMounts:
           {{- tpl (default "" .extraVolumeMounts) $ | nindent 10 }}
           {{- include "gitlab.extraVolumeMounts" $ | nindent 10 }}
@@ -165,10 +180,10 @@ spec:
           image: "{{ $image }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           env:
-{{- if $metricsEnabled }}
+          {{- if $metricsEnabled }}
             - name: prometheus_multiproc_dir
               value: /metrics
-{{- end }}
+          {{- end }}
             - name: GITALY_FEATURE_DEFAULT_ON
               value: "1"
             - name: CONFIG_TEMPLATE_DIRECTORY
@@ -207,18 +222,18 @@ spec:
             {{- end }}
             {{- include "gitlab.tracing.env" $ | nindent 12 }}
             {{- include "sidekiq.podExtraEnv" (dict "local" . "context" $) | nindent 12 }}
-{{- if $metricsEnabled }}
+        {{- if $metricsEnabled }}
           ports:
           - containerPort: {{ $metricsPort }}
-            name: metrics
-{{- end }}
+            name: http-metrics
+        {{- end }}
           volumeMounts:
           {{- tpl (default "" .extraVolumeMounts) $ | nindent 10 }}
           {{- include "gitlab.extraVolumeMounts" $ | nindent 10 }}
-{{- if $metricsEnabled }}
+        {{- if $metricsEnabled }}
           - name: sidekiq-metrics
             mountPath: '/metrics'
-{{- end }}
+        {{- end }}
           - name: sidekiq-config
             mountPath: '/var/opt/gitlab/templates'
             readOnly: true
@@ -269,20 +284,16 @@ spec:
       {{- include "gitlab.extraVolumes" $ | nindent 6 }}
       {{- include "gitlab.psql.ssl.volume" $ | nindent 6 }}
       {{- include "gitlab.geo.psql.ssl.volume" $ | nindent 6 }}
-{{- if $metricsEnabled }}
+    {{- if $metricsEnabled }}
       - name: sidekiq-metrics
         emptyDir:
           medium: "Memory"
-{{- end }}
+    {{- end }}
       - name: sidekiq-config
         projected:
           sources:
             - configMap:
                 name: {{ $fullname }}
-            {{- if $.Values.global.appConfig.pseudonymizer.configMap }}
-            - configMap:
-                name: {{ $.Values.global.appConfig.pseudonymizer.configMap }}
-            {{- end }}
       - name: init-sidekiq-secrets
         projected:
           defaultMode: 0400
@@ -292,6 +303,15 @@ spec:
               items:
                 - key: secrets.yml
                   path: rails-secrets/secrets.yml
+          {{- if $.Values.metrics.tls.enabled }}
+          - secret:
+              name: {{ template "sidekiq-metrics.tls.secret" $ }}
+              items:
+                - key: "tls.crt"
+                  path: "sidekiq-metrics/sidekiq-metrics.crt"
+                - key: "tls.key"
+                  path: "sidekiq-metrics/sidekiq-metrics.key"
+          {{- end }}
           {{- include "gitlab.gitaly.clientSecrets" $ | nindent 10 }}
           {{- include "gitlab.redis.secrets" $ | nindent 10 }}
           {{- range $.Values.local.psql }}
@@ -320,9 +340,9 @@ spec:
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "packages" "config" $.Values.global.appConfig.packages) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "external_diffs" "config" $.Values.global.appConfig.externalDiffs) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "terraform_state" "config" $.Values.global.appConfig.terraformState) | nindent 10 }}
+          {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "ci_secure_files" "config" $.Values.global.appConfig.ciSecureFiles) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "dependency_proxy" "config" $.Values.global.appConfig.dependencyProxy) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "pages" "config" $.Values.global.pages.objectStore) | nindent 10 }}
-          {{- include "gitlab.appConfig.pseudonymizer.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.ldap.servers.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.omniauth.mountSecrets" $ | nindent 10 }}
           {{- if and $.Values.global.smtp.enabled $.Values.global.smtp.authentication }}

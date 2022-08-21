@@ -73,3 +73,17 @@ sidekiq:
 {{- end -}}
 {{- end -}}
 {{/* END gitlab.checkConfig.sidekiq.routingRules */}}
+
+{{/*
+Ensure that metrics and health check servers bind different ports
+*/}}
+{{- define "gitlab.checkConfig.sidekiq.server_ports" -}}
+{{- $metricsEnabled := .Values.gitlab.sidekiq.metrics.enabled -}}
+{{- $portsMatch := eq (.Values.gitlab.sidekiq.metrics.port | int) (.Values.gitlab.sidekiq.health_checks.port | int) -}}
+{{- if and $metricsEnabled $portsMatch }}
+sidekiq:
+    metrics.port and health_checks.port must not be equal.
+    See https://docs.gitlab.com/charts/charts/gitlab/sidekiq/index.html#configuration
+{{- end -}}
+{{- end -}}
+{{/* END gitlab.checkConfig.sidekiq.server_ports */}}

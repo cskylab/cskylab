@@ -43,3 +43,32 @@ Template resource files must be developed according to [Go templates](https://go
 To avoid parsing images and helm charts, files below directories named `images` or `charts` will not be considered to be rendered by `cskygen`.
 
 > **NOTE**: All keys in override and template values files must be in lowercase. Files cannot have empty keys configured.
+
+## Kubernetes applications templates
+
+| Template           |                                                                       |
+| ------------------ | --------------------------------------------------------------------- |
+| k8s-metallb-system | Load-balancer implementation for bare metal                           |
+| k8s-ingress-nginx  | Ingress controller based on NGINX                                     |
+| k8s-cert-manager   | Native Kubernetes certificate management controller                   |
+| k8s-harbor         | Opensource registry                                                   |
+| k8s-keycloak       | Identity and access management                                        |
+| k8s-gitlab         | Open DevOps platform                                                  |
+| k8s-hello          | Hello-world application                                               |
+| k8s-nextcloud      | File sharing server                                                   |
+| k8s-miniostalone   | Object storage server, compatible with Amazon S3 - Standalone service |
+| k8s-minio-operator | Object storage server, compatible with Amazon S3 - Operator service   |
+| k8s-minio-tenant   | Object storage server, compatible with Amazon S3 - Tenantservice      |
+
+## Server templates
+
+| Template         |                                                                          |
+| ---------------- | ------------------------------------------------------------------------ |
+| ubt2004srv-naked | Basic installation of Ubuntu Server 20.04 LTS                            |
+| ubt2004srv-ca    | Certification Authority on Ubuntu Server 20.04 LTS                       |
+| ubt2004srv-dns   | Bind 9 DNS Services on Ubuntu Server 20.04 LTS                           |
+| ubt2004srv-lvm   | Basic installation of Ubuntu Server 20.04 LTS with LVM storage services  |
+| ubt2004srv-k8s   | Kubernetes node on Ubuntu Server 20.04 LTS                               |
+| ubt2004srv-kvm   | KVM host on Ubuntu Server 20.04 LTS                                      |
+| ubt2004srv-mcc   | Management host (mcc: Mission Control Center) on Ubuntu Server 20.04 LTS |
+| opnsense         | Firewall, networking infrastructure and security                         |

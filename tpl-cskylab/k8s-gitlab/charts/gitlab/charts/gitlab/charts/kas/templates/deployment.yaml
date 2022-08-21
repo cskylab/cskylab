@@ -17,6 +17,9 @@ spec:
   {{- if .Values.deployment.strategy }}
   strategy: {{ .Values.deployment.strategy | toYaml | nindent 4 }}
   {{- end }}
+  {{- if .Values.deployment.minReadySeconds }}
+  minReadySeconds: {{ .Values.deployment.minReadySeconds }}
+  {{- end }}
   template:
     metadata:
       labels:
@@ -24,15 +27,16 @@ spec:
         {{- include "gitlab.commonLabels" . | nindent 8 }}
         {{- include "gitlab.podLabels" . | nindent 8 }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-        {{- if .Values.metrics.enabled }}
+      {{- if and .Values.metrics.enabled (not .Values.metrics.serviceMonitor.enabled) }}
         gitlab.com/prometheus_scrape: "true"
-        gitlab.com/prometheus_path: {{ .Values.metrics.path | quote }}
         gitlab.com/prometheus_port: {{ .Values.metrics.port | quote }}
+        gitlab.com/prometheus_path: {{ .Values.metrics.path }}
         prometheus.io/scrape: "true"
-        prometheus.io/path: {{ .Values.metrics.path | quote }}
         prometheus.io/port: {{ .Values.metrics.port | quote }}
-        {{- end }}
+        prometheus.io/path: {{ .Values.metrics.path }}
+      {{- end }}
       {{- range $key, $value := .Values.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
@@ -44,8 +48,8 @@ spec:
       {{- end }}
       {{- if or .Values.serviceAccount.enabled .Values.global.serviceAccount.enabled }}
       serviceAccountName: {{ include "gitlab.serviceAccount.name" . }}
-      automountServiceAccountToken: false
       {{- end }}
+      automountServiceAccountToken: false
       {{- if eq (default .Values.global.antiAffinity .antiAffinity) "hard" }}
       affinity:
         podAntiAffinity:
@@ -89,12 +93,14 @@ spec:
           ports:
             - containerPort: {{ .Values.service.internalPort }}
               name: {{ template "name" . }}
-            - containerPort: {{ .Values.metrics.port }}
-              name: {{ template "name" . }}-metrics
             - containerPort: {{ .Values.service.kubernetesApiPort }}
               name: {{ template "name" . }}-k8s-api
             - containerPort: {{ .Values.service.privateApiPort }}
               name: {{ template "name" . }}-private-api
+          {{- if .Values.metrics.enabled }}
+            - containerPort: {{ .Values.metrics.port }}
+              name: http-metrics
+          {{- end }}
           readinessProbe:
             tcpSocket:
               port: {{ .Values.service.internalPort }}

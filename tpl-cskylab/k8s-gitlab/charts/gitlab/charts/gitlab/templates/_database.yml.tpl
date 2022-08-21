@@ -4,6 +4,7 @@ Returns the contents of the `database.yml` blob for Rails pods
 */}}
 {{- define "gitlab.database.yml" -}}
 {{- include "database.datamodel.prepare" . -}}
+{{- include "gitlab.database.setDefaultForDatabaseTasks" . -}}
 {{- if .Values.global.debugDatabaseDatamodel }}
 # global.debugDatabaseDatamodel=true
 # helm template . -f test_values.yml | yq -r '.data."database.yml.erb" | select(. != null)'
@@ -28,9 +29,34 @@ production:
     tcp_user_timeout: {{ template "gitlab.psql.tcpUserTimeout" $context }}
     application_name: {{ template "gitlab.psql.applicationName" $context }}
     prepared_statements: {{ template "gitlab.psql.preparedStatements" $context }}
+    database_tasks: {{ template "gitlab.psql.databaseTasks" $context }}
     {{- include "gitlab.database.loadBalancing" $context | nindent 4 }}
     {{- include "gitlab.psql.ssl.config" $context | nindent 4 }}
 {{- end }}
+{{- if include "gitlab.geo.secondary" . }}
+{{-   include "gitlab.geo.database.yml" . | nindent 2 }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Sets 'databaseTasks: false' if the additional database points to the same database
+as 'main:', where the db, host and port do match.
+*/}}
+{{- define "gitlab.database.setDefaultForDatabaseTasks" -}}
+{{-   $mainDB := include "gitlab.psql.database" $.Values.local.psql.main -}}
+{{-   $mainHost := include "gitlab.psql.host" $.Values.local.psql.main -}}
+{{-   $mainPort := include "gitlab.psql.port" $.Values.local.psql.main -}}
+{{-   range $database := without (keys $.Values.local.psql) "main" -}}
+{{-     $context := get $.Values.local.psql $database -}}
+{{-     $currentDB := include "gitlab.psql.database" $context -}}
+{{-     $currentHost := include "gitlab.psql.host" $context -}}
+{{-     $currentPort := include "gitlab.psql.port" $context -}}
+{{-     if and (not (hasKey $context.Values.psql "databaseTasks")) (not (hasKey $context.Values.global.psql "databaseTasks")) -}}
+{{-       if and (eq $currentDB $mainDB) (eq $currentHost $mainHost) (eq $currentPort $mainPort) -}}
+{{-         $_ := set $context.Values.global.psql "databaseTasks" false -}}
+{{-       end -}}
+{{-     end -}}
+{{-   end -}}
 {{- end -}}
 
 {{/*

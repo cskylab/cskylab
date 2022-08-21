@@ -67,6 +67,18 @@ image repository.
 {{ tpl (default "" .Values.extraVolumeMounts) . }}
 {{- end -}}
 
+{{- define "gitlab.extraEnvFrom" -}}
+{{- $global := deepCopy (get .root.Values.global "extraEnvFrom" | default (dict)) -}}
+{{- $values := deepCopy (get .root.Values "extraEnvFrom" | default (dict)) -}}
+{{- $local  := deepCopy (get .local "extraEnvFrom" | default (dict)) -}}
+{{- $allExtraEnvFrom := mergeOverwrite $global $values $local -}}
+{{- range $key, $value := $allExtraEnvFrom }}
+- name: {{ $key }}
+  valueFrom: 
+{{ toYaml $value | nindent 4 }}
+{{- end -}}
+{{- end -}}
+
 {{/*
 Returns the extraEnv keys and values to inject into containers.
 

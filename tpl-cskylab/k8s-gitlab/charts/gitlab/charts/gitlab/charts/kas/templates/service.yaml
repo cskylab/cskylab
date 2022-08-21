@@ -13,15 +13,15 @@ metadata:
 spec:
   type: {{ .Values.service.type | quote }}
   {{- if (eq .Values.service.type "LoadBalancer") }}
-  {{-   if .Values.service.loadBalancerIP }}
+  {{- if .Values.service.loadBalancerIP }}
   loadBalancerIP: {{ .Values.service.loadBalancerIP | quote }}
-  {{-   end }}
-  {{-   if .Values.service.loadBalancerSourceRanges }}
+  {{- end }}
+  {{- if .Values.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
-  {{-     range .Values.service.loadBalancerSourceRanges }}
+  {{- range .Values.service.loadBalancerSourceRanges }}
     - {{ . | quote }}
-  {{-     end }}
-  {{-   end }}
+  {{- end }}
+  {{- end }}
   {{- end }}
   ports:
     - port: {{ .Values.service.externalPort }}
@@ -36,6 +36,12 @@ spec:
       targetPort: {{ .Values.service.kubernetesApiPort }}
       protocol: TCP
       name: tcp-{{ template "name" . }}-k8s-api
+  {{- if .Values.metrics.enabled }}
+    - port: {{ .Values.metrics.port }}
+      targetPort: http-metrics
+      protocol: TCP
+      name: http-metrics
+  {{- end }}
   selector:
     app: {{ template "name" . }}
     release: {{ .Release.Name }}

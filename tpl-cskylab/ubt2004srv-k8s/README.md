@@ -20,6 +20,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [Storage services](#storage-services)
     - [Manage disk volume groups](#manage-disk-volume-groups)
     - [Manage Thin Provisioning LVM data services](#manage-thin-provisioning-lvm-data-services)
+    - [Repair LVM thin-pool](#repair-lvm-thin-pool)
     - [Rsync data replication](#rsync-data-replication)
     - [Restic data backup and restore](#restic-data-backup-and-restore)
   - [Initialize a new kubernetes cluster](#initialize-a-new-kubernetes-cluster)
@@ -30,6 +31,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [Add node to k8s cluster](#add-node-to-k8s-cluster)
     - [Create a new token](#create-a-new-token)
     - [Join the new node to the cluster](#join-the-new-node-to-the-cluster)
+    - [Inject ssh keys between k8s nodes](#inject-ssh-keys-between-k8s-nodes)
   - [Remove node from k8s cluster](#remove-node-from-k8s-cluster)
     - [Drain the node](#drain-the-node)
     - [Delete the node](#delete-the-node)
@@ -265,6 +267,38 @@ Free space of unused blocks inside thin-pools:
 
 ```
 
+#### Repair LVM thin-pool
+
+1. Unmount all LVM in the volume group
+
+2. List LVM to see vg and lv names
+
+```bash
+sudo lvscan
+```
+
+3. Deactivate volume group
+
+```bash
+sudo lvchange -an vg
+```
+
+4. Repair thin-pool
+
+```bash
+sudo lvconvert --repair  vg/tpool
+```
+
+5. Activate volume group
+
+```bash
+sudo lvchange -ay vg
+```
+
+6. Mount LVM and check data
+
+To learn more see the following procedure: https://smileusd.github.io/2018/10/12/repair-thinpool/
+
 #### Rsync data replication
 
 > **Note:** Prior to operate rsync with a remote host, you must insert the root public key for ssh authentication and passwordless login as sudoer user in the remote host. From a console inside the machine you must run `sudo ssh-copy-id {{ .machine.localadminusername }}@hostname.domain.com`
@@ -456,7 +490,7 @@ sudo cs-k8init.sh -l
 
 ```bash
   # Create kubernetes credential directory for kubeconfig files
-  mkdir /${HOME}/.kube
+  mkdir ${HOME}/.kube
 ```
 
   This directory will contain kubeconfig credential files for each k8s cluster you need to operate with.
@@ -464,13 +498,13 @@ sudo cs-k8init.sh -l
 - **Copy kubeconfig file**: You must copy from every k8s master node its credentials file `.kube/config` to your computer. Use an SCP command and name the config file according to the k8s cluster name, in the following form:
 
 ```bash
-  # Example: Download from host kube-mod-master.cskylab.com, the kubeconfig file for cluster k8s-mod
-  scp kos@kube-mod-master.cskylab.net:~/.kube/config /${HOME}/.kube/config-k8s-mod
+  # Example: Download from host k8s-mod-master.cskylab.com, the kubeconfig file for cluster k8s-mod
+  scp kos@k8s-mod-master.cskylab.net:~/.kube/config ${HOME}/.kube/config-k8s-mod
 ```
 
 - **Edit kubeconfig file and customize names**: 
   
-  Edit the kubeconfig file `/${HOME}/.kube/config-<your_k8s_cluster_name>` and change all the entries named `kubernetes` to `your_k8s_cluster_name` in the following way:
+  Edit the kubeconfig file `${HOME}/.kube/config-<your_k8s_cluster_name>` and change all the entries named `kubernetes` to `your_k8s_cluster_name` in the following way:
   
   | Entry:       | Change to:                | Example                            |
   | ------------ | ------------------------- | ---------------------------------- |
@@ -485,7 +519,7 @@ sudo cs-k8init.sh -l
 
 - **Merging kubeconfig files**:
   
-  In addition to these single cluster kubeconfig files, you need to merge them into a global default kubeconfig file `/${HOME}/.kube/config`.
+  In addition to these single cluster kubeconfig files, you need to merge them into a global default kubeconfig file `${HOME}/.kube/config`.
   
   Since kubeconfig files are structured YAML files, you can’t just append them to get one file. You must use `kubectl` to merge these files.
 
@@ -493,13 +527,13 @@ sudo cs-k8init.sh -l
 
 ```bash
   # Backup your current default kubeconfig file
-  cp -av /${HOME}/.kube/config /${HOME}/.kube/config.bak
+  cp -av ${HOME}/.kube/config ${HOME}/.kube/config.bak
 
   # Merge kubeconfig files format
-  KUBECONFIG=file1:file2:file3 kubectl config view --merge --flatten > /${HOME}/.kube/config
+  KUBECONFIG=file1:file2:file3 kubectl config view --merge --flatten > ${HOME}/.kube/config
   
   # Merging example for files config-k8s-mod and config-k8s-pro
-  KUBECONFIG=/${HOME}/.kube/config-k8s-mod:/${HOME}/.kube/config-k8s-pro kubectl config view --merge --flatten > /${HOME}/.kube/config
+  KUBECONFIG=${HOME}/.kube/config-k8s-mod:${HOME}/.kube/config-k8s-pro kubectl config view --merge --flatten > ${HOME}/.kube/config
 ```  
 
 ### Add node to k8s cluster
@@ -545,6 +579,42 @@ From the k8s master node or any other kubectl console, list your cluster’s nod
 ```bash
 # List existing nodes
 kubectl get nodes
+```
+
+#### Inject ssh keys between k8s nodes
+
+In order to schedule cron-tab copies of local data services to other nodes, you must inject ssh keys from each node, to the other nodes in the cluster.
+
+>**Note:** You will be asked for the password of local admin user (See file `secrets/admin-password`).
+
+**Example: k8s-mod nodes**
+
+- Open terminals at each k8s node and connect inside the machine with `./csconnect.sh`:
+  - k8s-mod-n1
+  - k8s-mod-n2
+  - k8s-mod-n3
+  - k8s-mod-n4
+
+```bash
+# Inject ssh keys from k8s-mod-n1
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n2
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n3
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n4
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
 ```
 
 ### Remove node from k8s cluster

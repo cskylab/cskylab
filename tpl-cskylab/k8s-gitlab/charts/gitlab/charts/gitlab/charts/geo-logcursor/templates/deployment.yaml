@@ -74,6 +74,7 @@ spec:
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
           volumeMounts:
           {{- include "gitlab.extraVolumeMounts" . | nindent 10 }}
           {{- include "gitlab.psql.ssl.volumeMount" . | nindent 10 }}
@@ -103,6 +104,7 @@ spec:
             - name: DB_SCHEMA_TARGET
               value: 'geo'
             {{- include "gitlab.extraEnv" . | nindent 12 }}
+            {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
           volumeMounts:
             {{- include "gitlab.extraVolumeMounts" . | nindent 12 }}
             - name: logcursor-config
@@ -130,6 +132,7 @@ spec:
             - name: CONFIG_DIRECTORY
               value: '/srv/gitlab/config'
             {{- include "gitlab.extraEnv" . | nindent 12 }}
+            {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
           volumeMounts:
             - name: logcursor-config
               mountPath: '/var/opt/gitlab/templates'

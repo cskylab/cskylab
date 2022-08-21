@@ -3,7 +3,11 @@ replicas: 1
 
 image:
   # The Keycloak image repository
-  repository: {{ .registry.proxy }}/jboss/keycloak
+  repository: quay.io/keycloak/keycloak
+  # Overrides the Keycloak image tag whose default is the chart appVersion
+  tag: ""
+  # The Keycloak image pull policy
+  pullPolicy: IfNotPresent
 
 # Additional init containers, e. g. for providing custom themes
 extraInitContainers: |

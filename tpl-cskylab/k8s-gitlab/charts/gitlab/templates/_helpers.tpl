@@ -271,6 +271,20 @@ Defaults to false
 {{- end -}}
 
 {{/*
+Return if database tasks should be used by GitLab Rails for a given configuration.
+Defaults to true
+*/}}
+{{- define "gitlab.psql.databaseTasks" -}}
+{{-   $local := pluck "psql" $.Values | first -}}
+{{-   $databaseTasks := pluck "databaseTasks" $local .Values.global.psql | first -}}
+{{-   if not ( kindIs "invalid" $databaseTasks ) -}}
+{{-     eq true $databaseTasks -}}
+{{-   else -}}
+{{-     true -}}
+{{-   end -}}
+{{- end -}}
+
+{{/*
 Return connect_timeout value
 Defaults to nil
 */}}

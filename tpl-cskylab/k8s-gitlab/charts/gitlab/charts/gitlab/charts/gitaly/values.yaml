@@ -53,6 +53,10 @@ logging:
   # sentryEnvironment:
 git: {}
   # catFileCacheSize:
+  ## Amend the default configuration Gitaly is using when spawning Git
+  ## commands. Accepts configuration as documented in git-config(1).
+  # config:
+  #   - {key: "pack.threads", value: 4}
 ruby: {}
   # maxRss:
   # gracefulRestartTimeout:
@@ -79,7 +83,14 @@ shell:
 ## container on.
 metrics:
   enabled: true
-  metricsPort: 9236
+  port: 9236
+  path: /metrics
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    endpointConfig: {}
+  # DEPRECATED in favor of `metrics.port` as seen above
+  metricsPort:
 
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
@@ -146,3 +157,10 @@ statefulset:
 affinity:
   podAntiAffinity:
     topologyKey:
+
+## Enable the Gitaly pack-objects cache
+## ref: https://docs.gitlab.com/ee/administration/gitaly/configure_gitaly.html#pack-objects-cache
+packObjectsCache: {}
+#  enabled: false
+#  dir: "/home/git/repositories/+gitaly/PackObjectsCache"
+#  max_age: 5m

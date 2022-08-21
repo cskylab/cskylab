@@ -31,8 +31,17 @@ spec:
       {{- range $key, $value := .Values.annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
-      {{- if .Values.metrics.enabled }}
-        {{- toYaml $.Values.metrics.annotations | nindent 8 }}
+      {{- if and .Values.metrics.enabled (not .Values.metrics.serviceMonitor.enabled) }}
+      {{- if .Values.metrics.annotations }}
+        {{- toYaml .Values.metrics.annotations | nindent 8 }}
+      {{- else }}
+        gitlab.com/prometheus_scrape: "true"
+        gitlab.com/prometheus_port: {{ .Values.metrics.port | quote }}
+        gitlab.com/prometheus_path: {{ .Values.metrics.path }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+        prometheus.io/path: {{ .Values.metrics.path }}
+      {{- end }}
       {{- end }}
     spec:
       {{- if .Values.tolerations }}
@@ -48,6 +57,7 @@ spec:
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
           volumeMounts:
           {{- include "gitlab.extraVolumeMounts" . | nindent 10 }}
           - name: shell-config
@@ -94,10 +104,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ coalesce .Values.image.tag (include "gitlab.parseAppVersion" (dict "appVersion" .Chart.AppVersion "prepend" "true")) }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           ports:
-            {{- if .Values.metrics.enabled }}
+          {{- if .Values.metrics.enabled }}
             - containerPort: {{ .Values.metrics.port }}
-              name: metrics
-            {{- end }}
+              name: http-metrics
+          {{- end }}
             - containerPort: {{ .Values.service.internalPort }}
               name: ssh
           env:
@@ -112,6 +122,7 @@ spec:
             - name: SSH_DAEMON
               value: {{ .Values.sshDaemon | quote }}
             {{- include "gitlab.extraEnv" . | nindent 12 }}
+            {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
           volumeMounts:
             - name: shell-config
               mountPath: '/etc/gitlab-shell'

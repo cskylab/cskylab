@@ -6,7 +6,7 @@
 
 _tplname: k8s-keycloak
 _tpldescription: Kubernetes Keycloak namespace
-_tplversion: 22-03-23
+_tplversion: 22-08-21
 
 #
 # Values to override
@@ -23,7 +23,7 @@ namespace:
 
 publishing:
   ## External url
-  url: keycloak.cskylab.net
+  url: keycloak.mod.cskylab.net
   ## Password for administrative user
   password: 'NoFear21'
 

@@ -48,3 +48,17 @@ webservice:
 {{-   end -}}
 {{- end -}}
 {{/* END gitlab.checkConfig.webservice.loadBalancer */}}
+
+{{/*
+Ensure that when Workhorse TLS is enabled the secret is provided.
+*/}}
+{{- define "gitlab.checkConfig.workhorse.tls" -}}
+{{-   if .Values.global.workhorse.tls.enabled -}}
+{{-     if or (not .Values.gitlab.webservice.workhorse.tls.secretName) (not .Values.global.certificates.customCAs) }}
+webservice:
+    When Workhorse TLS is enabled both `gitlab.webservice.workhorse.tls.secretName` and `global.certificates.customCAs` are required.
+    You must provide two Secrets, one contains the TLS certificate and key pair and the other only contains the CA certificate for Workhorse.
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+{{/* END gitlab.checkConfig.workhorse.tls */}}

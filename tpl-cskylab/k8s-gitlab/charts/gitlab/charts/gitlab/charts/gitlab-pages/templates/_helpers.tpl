@@ -12,3 +12,10 @@ if there is a shared tls secret for all ingresses.
 {{- end -}}
 {{- pluck "secretName" .Values.ingress.tls .Values.global.ingress.tls $defaultName | first -}}
 {{- end -}}
+
+{{/*
+Return the pages-metrics TLS secret name
+*/}}
+{{- define "pages-metrics.tls.secret" -}}
+{{- default (printf "%s-pages-metrics-tls" .Release.Name) $.Values.metrics.tls.secretName | quote -}}
+{{- end -}}

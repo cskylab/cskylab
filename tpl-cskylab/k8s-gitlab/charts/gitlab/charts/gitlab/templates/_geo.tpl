@@ -28,9 +28,10 @@ this should not be included _at all_ unless `gitlab.geo.secondary`. As
 such, we don't check that state here.
 */}}
 {{- define "gitlab.geo.database.yml" -}}
-production:
+geo:
   adapter: postgresql
   encoding: unicode
+  database_tasks: true
   database: {{ template "gitlab.geo.psql.database" . }}
   username: {{ template "gitlab.geo.psql.username" . }}
   password: <%= File.read("/etc/gitlab/postgres/geo-psql-password").strip.to_json %>

@@ -1,8 +1,8 @@
 # Kubernetes MinIO Tenant <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Image: quay.io/minio/minio:RELEASE.2022-03-22T02-05-10Z <!-- omit in toc -->
+## Image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z <!-- omit in toc -->
 
 ---
 
@@ -11,6 +11,8 @@
 This service creates a X-node MinIO Tenant using MinIO for object storage.
 
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
+
+  ![ ](./images/minio-console-2022-03-31_11-38-35.png)
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -189,7 +191,7 @@ Check versions and update if necesary, for the following image in `mod-tenant.ya
 
 ```yaml
   ## Registry location and Tag to download MinIO Server image
-  image: quay.io/minio/minio:RELEASE.2022-02-18T01-50-10Z
+  image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z
 ```
 
 To check for the latest image version see:

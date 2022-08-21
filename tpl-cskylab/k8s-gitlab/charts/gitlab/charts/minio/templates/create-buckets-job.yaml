@@ -19,6 +19,13 @@ spec:
         {{- include "gitlab.standardLabels" . | nindent 8 }}
         {{- include "gitlab.commonLabels" . | nindent 8 }}
         {{- include "gitlab.podLabels" . | nindent 8 }}
+      {{- if .Values.jobAnnotations }}
+      annotations:
+      {{-   range $key, $value := .Values.jobAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{-   end }}
+      {{- end }}
+
     spec:
       automountServiceAccountToken: false
       restartPolicy: OnFailure

@@ -25,7 +25,7 @@ data:
 
     # If metrics collection is enabled, inform gitaly about that
     {{- if .Values.metrics.enabled }}
-    prometheus_listen_addr = "0.0.0.0:{{ .Values.metrics.metricsPort }}"
+    prometheus_listen_addr = "0.0.0.0:{{ default .Values.metrics.port .Values.metrics.metricsPort }}"
     {{- end }}
 
     {{- if $.Values.global.gitaly.tls.enabled }}
@@ -103,9 +103,19 @@ data:
     token = <%= File.read('/etc/gitlab-secrets/gitaly/gitaly_token').strip.to_json %>
 
     [git]
+    use_bundled_binaries = true
+    ignore_gitconfig = true
     {{- with .Values.git }}
     {{-   if .catFileCacheSize }}
     catfile_cache_size = {{ .catFileCacheSize }}
+    {{-   end }}
+    {{- end }}
+    {{- if .Values.git.config }}
+    {{-   range .Values.git.config }}
+
+    [[git.config]]
+    key = "{{ .key }}"
+    value = "{{ .value }}"
     {{-   end }}
     {{- end }}
 
@@ -126,7 +136,6 @@ data:
     num_workers = {{ .numWorkers }}
     {{-   end }}
     {{- end }}
-    rugged_git_config_search_path = "/usr/local/etc"
 
     [gitlab-shell]
     # The directory where gitlab-shell is installed
@@ -144,7 +153,6 @@ data:
     # password = somepass
     # ca_file = /etc/ssl/cert.pem
     # ca_path = /etc/pki/tls/certs
-    self_signed_cert = false
 
     [hooks]
     # directory containing custom hooks
@@ -156,6 +164,19 @@ data:
     [[concurrency]]
     rpc = "{{ .rpc }}"
     max_per_repo = {{ .maxPerRepo }}
+    {{-     end }}
+    {{-   end }}
+    {{- end }}
+
+    {{- if .Values.packObjectsCache.enabled }}
+    [pack_objects_cache]
+    enabled = true
+    {{-   with .Values.packObjectsCache }}
+    {{-     if .dir }}
+    dir = {{ .dir | quote }}
+    {{-     end }}
+    {{-     if .max_age }}
+    max_age = {{ .max_age }}
     {{-     end }}
     {{-   end }}
     {{- end }}

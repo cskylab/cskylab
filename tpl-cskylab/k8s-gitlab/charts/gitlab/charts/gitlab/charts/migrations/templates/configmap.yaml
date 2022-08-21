@@ -14,10 +14,6 @@ data:
     gitlab-helm-chart
   database.yml.erb: |
     {{- include "gitlab.database.yml" . | nindent 4 }}
-  {{- if include "gitlab.geo.secondary" $ }}
-  database_geo.yml.erb: |
-    {{- include "gitlab.geo.database.yml" $ | nindent 4 }}
-  {{- end }}
   {{- include "gitlab.rails.redis.all" . | nindent 2 }}
   gitlab.yml.erb: |
     production: &base

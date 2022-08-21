@@ -4,10 +4,11 @@
 {{- $fullname := printf "%s-%s" $releaseName $name | trunc 63 | trimSuffix "-" -}}
 {{- range .Values.pods -}}
 {{-   $queueName := printf "%s-%s" $fullname .name | trunc 63 }}
-{{-   $hpa := default dict .hpa }}
+{{-   $hpa := merge (default dict .hpa) $.Values.hpa }}
+{{-   $hpaCfg := (dict "global" $.Values.global.hpa "local" $hpa "context" $) }}
 {{-   include "sidekiq.pod.common.labels" . }}
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ printf "%s-v2" ($queueName | trunc 60) }}
@@ -22,10 +23,7 @@ spec:
     name: {{ printf "%s-v2" ($queueName | trunc 60) }}
   minReplicas: {{ default $.Values.minReplicas .minReplicas }}
   maxReplicas: {{ default $.Values.maxReplicas .maxReplicas }}
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageValue: {{ default $.Values.hpa.targetAverageValue $hpa.targetAverageValue }}
+  {{- include "gitlab.hpa.metrics" $hpaCfg | nindent 2 }}
+  {{- include "gitlab.hpa.behavior" $hpaCfg | nindent 2 }}
 {{- end }}
 {{- end -}}

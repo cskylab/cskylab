@@ -38,26 +38,35 @@ spec:
     {{- end }}
   {{- end }}
   ports:
+    {{- if $.Values.http.enabled }}
     - port: {{ $.Values.service.externalPort }}
-      targetPort: {{ $.Values.service.internalPort }}
+      targetPort: http-webservice
       protocol: TCP
       name: http-webservice
+    {{- end }}
     - port: {{ $.Values.service.workhorseExternalPort }}
-      targetPort: {{ $.Values.service.workhorseInternalPort }}
+      targetPort: http-workhorse
       protocol: TCP
       name: http-workhorse
-    {{- if eq $.Values.monitoring.exporter.enabled true }}
+    {{- if $.Values.tls.enabled }}
+    - port: {{ $.Values.service.tls.externalPort }}
+      targetPort: https-ws
+      protocol: TCP
+      name: https-ws
+    {{- end }}
+
+  {{- if or $.Values.monitoring.exporter.enabled (and $.Values.metrics.enabled (eq $.Values.metrics.port $.Values.monitoring.exporter.port)) }}
     - port: {{ $.Values.monitoring.exporter.port }}
-      targetPort: {{ $.Values.monitoring.exporter.port }}
+      targetPort: http-metrics-ws
       protocol: TCP
-      name: http-exporter
-    {{- end }}
-    {{- if eq $.Values.workhorse.monitoring.exporter.enabled true }}
-    - port: {{ $.Values.workhorse.monitoring.exporter.port | int }}
-      targetPort: {{ $.Values.workhorse.monitoring.exporter.port | int }}
+      name: http-metrics-ws
+  {{- end }}
+  {{- if or $.Values.workhorse.monitoring.exporter.enabled $.Values.workhorse.metrics.enabled }}
+    - port: {{ $.Values.workhorse.monitoring.exporter.port }}
+      targetPort: http-metrics-wh
       protocol: TCP
-      name: http-workhorse-exporter
-    {{- end }}
+      name: http-metrics-wh
+  {{- end }}
   selector:
     app: {{ template "name" $ }}
     release: {{ $.Release.Name }}

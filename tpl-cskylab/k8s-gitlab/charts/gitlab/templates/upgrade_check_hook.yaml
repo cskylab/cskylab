@@ -35,6 +35,13 @@ spec:
       labels:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
+      {{- if .Values.upgradeCheck.annotations }}
+      {{-   range $key, $value := .Values.upgradeCheck.annotations }}
+      annotations:
+        {{ $key }}: {{ $value | quote }}
+      {{-   end }}
+      {{- end }}
+
     spec:
       {{- if .Values.upgradeCheck.nodeSelector }}
         nodeSelector: {{ toYaml .Values.upgradeCheck.nodeSelector | nindent 8 }}
