@@ -1,6 +1,6 @@
 # Kubernetes MinIO Tenant <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
 ## Image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z <!-- omit in toc -->
 

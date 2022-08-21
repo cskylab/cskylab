@@ -1,6 +1,6 @@
 # Keycloak identity and access management <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
 ## Helm charts: `codecentric/keycloakx` v18.3.0 <!-- omit in toc -->
 

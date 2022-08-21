@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v22-08-21](#v22-08-21)
   - [Background](#background)
     - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
@@ -53,7 +53,7 @@
 
 ---
 
-## v99-99-99
+## v22-08-21
 
 ### Background
 

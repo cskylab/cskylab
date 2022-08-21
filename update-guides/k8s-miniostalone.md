@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v22-08-21](#v22-08-21)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Uninstall miniostalone namespace](#1--uninstall-miniostalone-namespace)
@@ -36,7 +36,7 @@
 
 ---
 
-## v99-99-99
+## v22-08-21
 
 ### Background
 

@@ -6,7 +6,7 @@
 
 _tplname: k8s-gitlab
 _tpldescription: Gitlab DevOps platform
-_tplversion: 99-99-99
+_tplversion: 22-08-21
 
 #
 # Values to override

@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v22-08-21](#v22-08-21)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Change image section in values-keycloak.yaml](#1--change-image-section-in-values-keycloakyaml)
@@ -20,7 +20,7 @@
 
 ---
 
-## v99-99-99
+## v22-08-21
 
 ### Background
 
@@ -92,7 +92,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
 ## Helm charts: `codecentric/keycloak` v18.3.0 <!-- omit in toc -->
 ```

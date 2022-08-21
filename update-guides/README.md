@@ -2,7 +2,7 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v22-08-21](#v22-08-21)
   - [Release notes](#release-notes)
   - [Application updates](#application-updates)
 - [v22-03-23](#v22-03-23)
@@ -19,11 +19,11 @@
   - [Baseline build AM](#baseline-build-am)
 
 ---
-## v99-99-99
+## v22-08-21
 
 ### Release notes
 
-Welcome to cSkyLab release of v99-99-99.
+Welcome to cSkyLab release of v22-08-21.
 
 To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
 

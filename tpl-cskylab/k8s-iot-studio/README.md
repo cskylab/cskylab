@@ -1,6 +1,6 @@
 # Kubernetes IOT Studio<!-- omit in toc -->
 
-## k8s-iot-studio v99-99-99 <!-- omit in toc -->
+## k8s-iot-studio v22-08-21 <!-- omit in toc -->
 
 ## Helm charts:<!-- omit in toc -->
 

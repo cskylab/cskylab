@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v22-08-21](#v22-08-21)
   - [k8s version 1.24.4-00](#k8s-version-1244-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions)
   - [Upgrading k8s master node](#upgrading-k8s-master-node)
@@ -43,7 +43,7 @@
 
 ---
 
-## v99-99-99
+## v22-08-21
 
 ### k8s version 1.24.4-00
 
