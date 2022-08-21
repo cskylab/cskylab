@@ -1,0 +1,145 @@
+# The number of replicas to create (has no effect if autoscaling enabled)
+replicas: 1
+
+image:
+  # The Keycloak image repository
+  repository: quay.io/keycloak/keycloak
+  # Overrides the Keycloak image tag whose default is the chart appVersion
+  # tag: "18.0.0"
+  # The Keycloak image pull policy
+  pullPolicy: IfNotPresent
+
+# Additional init containers, e. g. for providing custom themes
+extraInitContainers: |
+  - name: keycloak-theme-provider
+    image: harbor.cskylab.net/cskylab/keycloak-theme-provider:stable
+    imagePullPolicy: Always
+    command:
+      - sh
+    args:
+      - -c
+      - |
+        echo "Copying themes..."
+        cp -R /themes/bootstrap-mod-keycloak theme1  
+        cp -R /themes/bootstrap-mod-nextcloud theme2 
+        cp -R /themes/bootstrap-mod-gitlab theme3
+        cp -R /themes/bootstrap-pub-keycloak theme4  
+        cp -R /themes/bootstrap-pub-nextcloud theme5 
+        cp -R /themes/bootstrap-pub-gitlab theme6     
+    volumeMounts:
+      - name: theme1
+        mountPath: /theme1/bootstrap-mod-keycloak
+      - name: theme2
+        mountPath: /theme2/bootstrap-mod-nextcloud
+      - name: theme3
+        mountPath: /theme3/bootstrap-mod-gitlab
+      - name: theme4
+        mountPath: /theme4/bootstrap-pub-keycloak
+      - name: theme5
+        mountPath: /theme5/bootstrap-pub-nextcloud
+      - name: theme6
+        mountPath: /theme6/bootstrap-pub-gitlab        
+
+
+# Additional environment variables for Keycloak
+extraEnv: |
+  - name: KEYCLOAK_ADMIN
+    value: keycloak
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    value: "NoFear21"
+  - name: JAVA_OPTS_APPEND
+    value: >-
+      -XX:+UseContainerSupport
+      -XX:MaxRAMPercentage=50.0
+      -Djava.awt.headless=true
+      -Djgroups.dns.query=keycloakx-headless
+  - name: KC_PROXY
+    value: "passthrough"
+
+# Add additional volumes, e. g. for custom themes
+extraVolumes: |
+  - name: theme1
+    emptyDir: {}
+  - name: theme2
+    emptyDir: {}
+  - name: theme3
+    emptyDir: {}
+  - name: theme4
+    emptyDir: {}
+  - name: theme5
+    emptyDir: {}
+  - name: theme6
+    emptyDir: {}
+
+# Add additional volumes mounts, e. g. for custom themes
+extraVolumeMounts: |
+  - name: theme1
+    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-keycloak
+  - name: theme2
+    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-nextcloud
+  - name: theme3
+    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-gitlab
+  - name: theme4
+    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-keycloak
+  - name: theme5
+    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-nextcloud
+  - name: theme6
+    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-gitlab    
+
+## Overrides the default entrypoint of the Keycloak container
+command:
+  - "/opt/keycloak/bin/kc.sh"
+  - "--verbose"
+  - "start"
+  - "--auto-build"
+  - "--http-enabled=true"
+  - "--http-port=8080"
+  - "--hostname-strict=false"
+  - "--hostname-strict-https=false"
+  - "--spi-events-listener-jboss-logging-success-level=info"
+  - "--spi-events-listener-jboss-logging-error-level=warn"
+
+ingress:
+  # If `true`, an Ingress is created
+  enabled: true
+  # The Service port targeted by the Ingress
+  servicePort: http
+  # Ingress annotations
+  annotations:
+    ## Resolve HTTP 502 error using ingress-nginx:
+    ## See https://www.ibm.com/support/pages/502-error-ingress-keycloak-response
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: trantortech
+
+  # Additional Ingress labels
+  labels: {}
+   # List of rules for the Ingress
+  rules:
+    -
+      # Ingress host
+      host: 'keycloakx.mod.cskylab.net'
+      # Paths for the host
+      paths:
+        - path: /
+          pathType: Prefix
+  # TLS configuration
+  tls:
+    - hosts:
+        - 'keycloakx.mod.cskylab.net'
+      secretName: "tls-keycloak"
+
+dbchecker:
+  enabled: true
+  image:
+    # Docker image used to check Database readiness at startup
+    repository: harbor.cskylab.net/dockerhub/library/busybox
+
+database:
+  # E.g. dev-file, dev-mem, mariadb, mssql, mysql, oracle or postgres
+  vendor: postgres
+  hostname: postgresql
+  port: 5432
+  database: keycloak
+  username: dbusername
+  password: NoFear21

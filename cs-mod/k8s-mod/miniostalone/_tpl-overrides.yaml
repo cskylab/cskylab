@@ -1,26 +1,25 @@
 _tpldescription: MinIO standalone
 _tplname: k8s-miniostalone
-_tplversion: 22-03-23
+_tplversion: 22-08-21
 certificate:
-  clusterissuer: ca-test-internal
+  clusterissuer: trantortech
 credentials:
   minio_accesskey: admin
   minio_secretkey: NoFear21
-kubeconfig: config-k8s-mod
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro
 localpvnodes:
   all_pv: k8s-mod-n1
+  domain: cskylab.net
+  localadminusername: kos
 localrsyncnodes:
   all_pv: k8s-mod-n2
+  domain: cskylab.net
+  localadminusername: kos
 namespace:
   domain: cskylab.net
   name: miniostalone
 publishing:
   console_url: miniostalone-console.cskylab.net
-  url: miniostalone.cskylab.net
+  url: miniostalone.mod.cskylab.net
 registry:
   proxy: harbor.cskylab.net/dockerhub
-restic:
-  aws_access: bucketname_rw
-  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
-  password: NoFear21
-  repo: s3:https://backup.cskylab.net/bucketname/restic

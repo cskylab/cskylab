@@ -4,15 +4,16 @@
 # global:
 #   imageRegistry: harbor.cskylab.net
 
-## The initial password of Harbor admin. Change it from portal after launching Harbor
-##
-harborAdminPassword: "NoFear21"
 
-
-## The custom ca bundle secret, the secret must contain key named "ca.crt"
-## which will be injected into the trust store for chartmuseum, clair, core, jobservice, registry, trivy components
+## @param adminPassword The initial password of Harbor admin. Change it from portal after launching Harbor
 ##
-caBundleSecretName: harbor-certificate-secret
+adminPassword: "NoFear21"
+
+## @param exposureType The way to expose Harbor. Allowed values are [ ingress \| proxy ]
+## Use "proxy" to use a deploy NGINX proxy in front of Harbor services
+## Use "ingress" to use an Ingress Controller as proxy
+##
+exposureType: ingress
 
 
 ## Service parameters
@@ -21,71 +22,87 @@ service:
   ## K8s service type
   ## Allowed values are "ClusterIP", "NodePort" or "LoadBalancer"
   ##
-  type: Ingress
+  type: ClusterIP
 
-  ## TLS parameters
-  ##
-  tls:
-    ## Enable TLS for external access
-    ## Note: When type is "Ingress" and TLS is disabled, the port must be included
-    ## in the command when pulling/pushing images.
-    ## ref: https://github.com/goharbor/harbor/issues/5291
-    ##
-    enabled: true
-    ##
-    ## Existing secret name containing your own TLS certificates.
-    ## The secret contains keys named:
-    ## "tls.crt" - the certificate (required)
-    ## "tls.key" - the private key (required)
-    ## "ca.crt" - the certificate of CA (optional)
-    ## Self-signed TLS certificates will be used otherwise.
-    ##
-    existingSecret: harbor-certificate-secret
-    ## By default, the Notary service will use the same certificate described above.
-    ## Fill the name of secret if you want to use a separated on for Notary.
-    ##
-    notaryExistingSecret: harbor-certificate-secret
-    ## The common name used to automatically generate the certificates.
-    ## Mandatory when "secretName" is not provided or type is not "Ingress".
-    ##
-    commonName: 'harbor.cskylab.net'
-
-    existingSecret: harbor-certificate-secret
-
-
-## Ingress parameters
-##
-ingress:
-  enabled: true
-  hosts:
-    core: harbor.cskylab.net
-    notary: notary.harbor.cskylab.net
-  ## Ingress annotations done as key:value pairs
-  ## For a full list of possible ingress annotations, please see
-  ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
-  ##
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    ingress.kubernetes.io/ssl-redirect: 'true'
-    ingress.kubernetes.io/proxy-body-size: '0'
-    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
-    nginx.ingress.kubernetes.io/proxy-body-size: '0'
-
-## The external URL for Harbor core service. It is used to
+## @param externalURL The external URL for Harbor Core service
+## It is used to
 ## 1) populate the docker/helm commands showed on portal
 ## 2) populate the token service URL returned to docker/notary client
 ##
 ## Format: protocol://domain[:port]. Usually:
-## 1) if "service.type" is "ingress", the "domain" should be
-## the value of "ingress.hosts.core"
-## 2) if "service.type" is "clusterIP", the "domain" should be
-## the value of "service.clusterIP.name"
-## 3) if "service.type" is "nodePort", the "domain" should be
-## the IP address of k8s node. If Harbor is deployed behind the proxy,
-## set it as the URL of proxy
+## 1) if "exposureType" is "ingress", the "domain" should be
+## the value of "ingress.hostname"
+## 2) if "exposureType" is "proxy" and "service.type" is "ClusterIP",
+## the "domain" should be the value of "service.clusterIP"
+## 3) if "exposureType" is "proxy" and "service.type" is "NodePort",
+## the "domain" should be the IP address of k8s node
+## 4) if "exposureType" is "proxy" and "service.type" is "LoadBalancer",
+## the "domain" should be the LoadBalancer IP
 ##
 externalURL: https://harbor.cskylab.net
 
+ingress:
+  ## Configure the ingress resource that allows you to access Harbor Core
+  ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  ##
+  core:
+    ## @param ingress.core.hostname Default host for the ingress record
+    ##
+    hostname: harbor.cskylab.net
+    ## @param ingress.core.annotations [object] Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+    ## Use this parameter to set the required annotations for cert-manager, see
+    ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+    ## e.g:
+    ## annotations:
+    ##   kubernetes.io/ingress.class: nginx
+    ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+    ##
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: trantortech
+      ingress.kubernetes.io/ssl-redirect: 'true'
+      ingress.kubernetes.io/proxy-body-size: '0'
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      nginx.ingress.kubernetes.io/proxy-body-size: '0'
+    ## @param ingress.core.tls Enable TLS configuration for the host defined at `ingress.core.hostname` parameter
+    ## TLS certificates will be retrieved from a TLS secret with name: `%!s(<nil>)-tls`
+    ## You can:
+    ##   - Use the `ingress.core.secrets` parameter to create this TLS secret
+    ##   - Rely on cert-manager to create it by setting the corresponding annotations
+    ##   - Rely on Helm to create self-signed certificates by setting `ingress.core.selfSigned=true`
+    ##
+    tls: true
+
+  ## Configure the ingress resource that allows you to access Notary
+  ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  ##
+  notary:
+    ## @param ingress.notary.hostname Default host for the ingress record
+    ##
+    hostname: notary.harbor.cskylab.net
+    ## @param ingress.notary.annotations [object] Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+    ## Use this parameter to set the required annotations for cert-manager, see
+    ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+    ## e.g:
+    ## annotations:
+    ##   kubernetes.io/ingress.class: nginx
+    ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+    ##
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: trantortech
+      ingress.kubernetes.io/ssl-redirect: 'true'
+      ingress.kubernetes.io/proxy-body-size: '0'
+      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+      nginx.ingress.kubernetes.io/proxy-body-size: '0'
+    ## @param ingress.notary.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+    ## TLS certificates will be retrieved from a TLS secret with name: `%!s(<nil>)-tls`
+    ## You can:
+    ##   - Use the `ingress.notary.secrets` parameter to create this TLS secret
+    ##   - Rely on cert-manager to create it by setting the corresponding annotations
+    ##   - Rely on Helm to create self-signed certificates by setting `ingress.notary.selfSigned=true`
+    ##
+    tls: true
 
 ## The persistence is enabled by default and a default StorageClass
 ## is needed in the k8s cluster to provision volumes dynamicly.
@@ -148,14 +165,40 @@ persistence:
 ##
 postgresql:
   enabled: true
-  postgresqlUsername: postgres
-  postgresqlPassword: "NoFear21"
-  persistence:
-    enabled: true
-    storageClass: harbor-postgresql
-    accessModes:
-      - ReadWriteOnce
-    size: 8Gi
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 11
+  auth:
+    enablePostgresUser: true
+    postgresPassword: "NoFear21"
+  architecture: standalone
+  primary:
+    extendedConfiguration: |
+      max_connections = 1024
+    initdb:
+      scripts:
+        initial-notaryserver.sql: |
+          CREATE DATABASE notaryserver;
+          CREATE USER server;
+          alter user server with encrypted password 'password';
+          GRANT ALL PRIVILEGES ON DATABASE notaryserver TO server;
+        initial-notarysigner.sql: |
+          CREATE DATABASE notarysigner;
+          CREATE USER signer;
+          alter user signer with encrypted password 'password';
+          GRANT ALL PRIVILEGES ON DATABASE notarysigner TO signer;
+        initial-registry.sql: |
+          CREATE DATABASE registry ENCODING 'UTF8';
+          \c registry;
+          CREATE TABLE schema_migrations(version bigint not null primary key, dirty boolean not null);
+    persistence:
+      enabled: true
+      storageClass: harbor-postgresql
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+
 
 ## Redis chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml

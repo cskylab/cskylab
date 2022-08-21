@@ -2,7 +2,7 @@
 
 ## Virtual data center in-a-box
 
-**v22-03-23**
+**v22-08-21**
 
 
 [cSkyLab](https://www.cskylab.com/) is a virtual data center model that allows fast application deployment and gives you the choice to scale up your services in any combination of private, public or hybrid cloud.
@@ -32,6 +32,7 @@ To help you to start fast, it bundles "out of the box" many popular open source 
 - [GitLab](https://gitlab.com/) Private DevOps platform
 - [Nextcloud](https://nextcloud.com/) Colaboration and file sharing
 - [MinIO](https://min.io) S3 compatible storage
+- IOTStudio: IOT service environment with Mosquitto, Node-red, InfluxDB and Grafana.
 
 And many more to come...
 

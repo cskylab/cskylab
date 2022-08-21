@@ -1,0 +1,80 @@
+#
+# IMPORTANT NOTE
+#
+# This chart inherits from our common library chart. You can check the default values/options here:
+# https://github.com/k8s-at-home/library-charts/tree/main/charts/stable/common/values.yaml
+#
+
+image:
+  # -- image repository
+  repository: harbor.cskylab.net/dockerhub/nodered/node-red
+  # -- image tag
+  tag: latest
+  # -- image pull policy
+  # pullPolicy: IfNotPresent
+
+# -- environment variables. See [image docs](https://nodered.org/docs/getting-started/docker) for more details.
+# @default -- See below
+env:
+  # -- Set the container timezone
+  TZ: "UTC"
+  # -- Node.js runtime arguments
+  NODE_OPTIONS:
+  # -- Setting to `true` starts Node-RED with the projects feature enabled
+  NODE_RED_ENABLE_PROJECTS: true
+  # -- Setting to `true` starts Node-RED in safe (not running) mode
+  NODE_RED_ENABLE_SAFE_MODE:
+  # -- Location of the flows configuration file.
+  # If you set `FLOWS: ""` then the flow file can be set via the `flowFile` property in the `settings.js` file.
+  FLOWS: flows.json
+
+# -- Configures service settings for the chart.
+# @default -- See values.yaml
+service:
+  main:
+    ports:
+      http:
+        port: 1880
+
+ingress:
+  # -- Enable and configure ingress settings for the chart under this key.
+  # @default -- See values.yaml
+  main:
+    enabled: true
+    primary: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: trantortech
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+      # cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      -  # -- Host address. Helm template can be passed.
+        host: node-red-iot.mod.cskylab.net
+        ## Configure the paths for the host
+        paths:
+          -  # -- Path.  Helm template can be passed.
+            path: /
+            # -- Ignored if not kubeVersion >= 1.14-0
+            pathType: Prefix
+            service:
+              # -- Overrides the service name reference for this path
+              name: node-red
+              # -- Overrides the service port reference for this path
+              port: 1880
+
+    # -- Configure TLS for the ingress. Both secretName and hosts can process a Helm template.
+    tls:
+      - secretName: node-red-tls
+        hosts:
+          - node-red-iot.mod.cskylab.net
+
+
+# -- Configure persistence settings for the chart under this key.
+# @default -- See values.yaml
+persistence:
+  data:
+    enabled: true
+    mountPath: /data
+    storageClass: "iot-studio-node-red"
+    accessMode: ReadWriteOnce
+    size: 1Gi

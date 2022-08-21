@@ -1,0 +1,22 @@
+# Default values for minio-operator.
+
+operator:
+  image:
+    repository: harbor.cskylab.net/dockerhub/minio/operator
+
+console:
+  image:
+    repository: harbor.cskylab.net/dockerhub/minio/console
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: trantortech
+    # cert-manager.io/cluster-issuer: letsencrypt-staging
+    # cert-manager.io/cluster-issuer: letsencrypt
+
+    host: minio-operator.pro.cskylab.net
+    tls:
+    - hosts:
+      - minio-operator.pro.cskylab.net
+      secretName: minio-operator-tls

@@ -1,14 +1,14 @@
 # Keycloak identity and access management <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Helm charts: `codecentric/keycloak` v17.0.2 <!-- omit in toc -->
+## Helm charts: `codecentric/keycloakx` v18.3.0 <!-- omit in toc -->
 
 [Keycloak](https://www.keycloak.org) is a high performance Java-based identity and access management solution. It lets developers add an authentication layer to their applications with minimum effort.
 
   ![ ](./images/keycloak-2021-07-16_10-02-54.png)
 
-Configuration files are deployed from template Kubernetes Keycloak namespace version 22-03-23.
+Configuration files are deployed from template Kubernetes Keycloak namespace version 22-08-21.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -58,7 +58,7 @@ Install namespace and charts:
 
 Run:
 
-- Published at: `keycloak.cskylab.net`
+- Published at: `keycloak.mod.cskylab.net`
 - Username: `keycloak`
 - Password: `NoFear21`
 
@@ -157,8 +157,8 @@ To perform on-demand restic backups:
 
 ```bash
 ## Data service:  /srv/keycloak
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-sudo cs-restic.sh -q -m restic-bck -d  /srv/keycloak -r s3:https://backup.cskylab.net/bucketname/restic  -t keycloak
+## Restic repo:   sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak
+sudo cs-restic.sh -q -m restic-bck -d  /srv/keycloak -r sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak  -t keycloak
 ```
 
 To view available backups:
@@ -166,12 +166,12 @@ To view available backups:
 ```bash
 ## Specific tag
 ## Data service: /srv/keycloak
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-sudo cs-restic.sh -q -m restic-list -r s3:https://backup.cskylab.net/bucketname/restic  -t keycloak
+## Restic repo:   sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak
+sudo cs-restic.sh -q -m restic-list -r sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak  -t keycloak
 
 ## All snapshots
 ## Remote restic repo
-sudo cs-restic.sh -q -m restic-list -r s3:https://backup.cskylab.net/bucketname/restic 
+sudo cs-restic.sh -q -m restic-list -r sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak 
 ```
 
 **Restic cronjobs:**
@@ -185,8 +185,8 @@ The following cron jobs should be added to file `cs-cron-scripts` of the appropr
 ##
 ## Data service:  /srv/keycloak
 ## At minute 30 past every hour from 8 through 23.
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloak >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/keycloak -r s3:https://backup.cskylab.net/bucketname/restic  -t keycloak  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://backup.cskylab.net/bucketname/restic  -t keycloak  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+## Restic repo:   sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloak >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/keycloak -r sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak  -t keycloak  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak  -t keycloak  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ## How-to guides
@@ -451,7 +451,7 @@ To learn more see:
 
 | Chart                | Values                 |
 | -------------------- | ---------------------- |
-| codecentric/keycloak | `values-keycloak.yaml` |
+| codecentric/keycloakx | `values-keycloakx.yaml` |
 
 ### Scripts
 
@@ -532,20 +532,20 @@ The following table lists template configuration parameters and their specified 
 | --------------------------- | ------------------------------------------------ | ---------------------------------- |
 | `_tplname`                  | template name                                    | `k8s-keycloak`                  |
 | `_tpldescription`           | template description                             | `Kubernetes Keycloak namespace`           |
-| `_tplversion`               | template version                                 | `22-03-23`               |
-| `kubeconfig`                | kubeconfig file                                  | `config-k8s-mod`                |
+| `_tplversion`               | template version                                 | `22-08-21`               |
+| `kubeconfig`                | kubeconfig file                                  | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro`                |
 | `namespace.name`            | namespace name                                   | `keycloak`            |
 | `namespace.domain`          | domain name                                      | `cskylab.net`          |
-| `publishing.url`            | external URL                                     | `keycloak.cskylab.net`            |
+| `publishing.url`            | external URL                                     | `keycloak.mod.cskylab.net`            |
 | `publishing.password`       | password                                         | `NoFear21`       |
-| `certificate.clusterissuer` | cert-manager clusterissuer                       | `ca-test-internal` |
+| `certificate.clusterissuer` | cert-manager clusterissuer                       | `trantortech` |
 | `registry.private`          | private registry URL                             | `harbor.cskylab.net/cskylab`          |
 | `registry.proxy`            | docker private proxy URL                         | `harbor.cskylab.net/dockerhub`            |
 | `registry.username`         | private registry username                        | `admin`         |
 | `registry.password`         | private registry password                        | `NoFear21`         |
 | `restic.password`           | password to access restic repository (mandatory) | `NoFear21`           |
-| `restic.repo`               | restic repository (mandatory)                    | `s3:https://backup.cskylab.net/bucketname/restic`               |
-| `restic.aws_access`         | S3 bucket access key (if used)                   | `bucketname_rw`         |
+| `restic.repo`               | restic repository (mandatory)                    | `sftp:kos@kvm-main.cskylab.net:/media/data/restic/keycloak`               |
+| `restic.aws_access`         | S3 bucket access key (if used)                   | `restic_rw`         |
 | `restic.aws_secret`         | S3 bucket secret key (if used)                   | `iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr`         |
 | `localpvnodes.all_pv`       | dataservice node                                 | `k8s-mod-n1`       |
 | `localrsyncnodes.all_pv`    | rsync node                                       | `k8s-mod-n2`    |

@@ -1,14 +1,16 @@
 # Kubernetes MinIO Operator <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Helm charts: minio/operator v4.4.10 <!-- omit in toc -->
+## Helm charts: minio/operator v4.4.28 <!-- omit in toc -->
 
 MinIO is a Kubernetes-native high performance object store with an S3-compatible API. The [MinIO Kubernetes Operator](https://github.com/minio/operator) supports deploying MinIO Tenants onto private and public cloud infrastructures ("Hybrid" Cloud). This namespace deploys a [MinIO Operator](https://github.com/minio/operator) in a Kubernetes cluster.
 
 > **Note**: `MinIO Operator` should be considered as cluster service. It is recommended to deploy it as a cluster singleton.
 
-Configuration files are deployed from template Kubernetes MinIO Operator version 22-03-23.
+Configuration files are deployed from template Kubernetes MinIO Operator version 22-08-21.
+
+  ![ ](./images/minio-op-2022-03-31_11-26-40.png)
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -26,7 +28,6 @@ Configuration files are deployed from template Kubernetes MinIO Operator version
   - [Helm charts and values](#helm-charts-and-values)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -46,7 +47,7 @@ Install namespace and charts:
 
 Run:
 
-- Published at: `minio-operator.cskylab.net`
+- Published at: `minio-operator.mod.cskylab.net`
 - Get the JWT for logging in to the console:
   
 ```bash
@@ -207,42 +208,6 @@ Examples:
   # Display namespace, persistence and charts status:
     ./csdeploy.sh -l
 ```
-
-**Tasks performed:**
-
-| ${execution_mode}                | Tasks                      | Block / Description                                                         |
-| -------------------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| [pull-charts]                    |                            | **Pull helm charts from repositories**                                      |
-|                                  | Clean `./charts` directory | Remove all contents in `./charts` directory.                                |
-|                                  | Pull helm charts           | Pull new charts according to sourced script in variable `source_charts`.    |
-|                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
-| [install]                        |                            | **Create namespace, config-maps, secrets and PV's**                         |
-|                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-| [update] [install]               |                            | **Deploy app mod's and charts**                                             |
-|                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
-| [uninstall]                      |                            | **Uninstall charts and app mod's**                                          |
-|                                  | Uninstall charts           | Uninstall all charts in `./charts` directory.                               |
-| [uninstall] [remove]             |                            | **Remove namespace and PV's**                                               |
-|                                  | Remove namespace           | Remove namespace and all its objects.                                       |
-| [install] [update] [list-status] |                            | **Display status information**                                              |
-|                                  | Display namespace          | Namespace and object status.                                                |
-|                                  | Display charts             | Charts releases history information.                                        |
-|                                  |                            |                                                                             |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                   | Description                | Values                             |
-| --------------------------- | -------------------------- | ---------------------------------- |
-| `_tplname`                  | template name              | `k8s-minio-operator`                  |
-| `_tpldescription`           | template description       | `Kubernetes MinIO Operator`           |
-| `_tplversion`               | template version           | `22-03-23`               |
-| `kubeconfig`                | kubeconfig file            | `config-k8s-mod`                |
-| `namespace.name`            | namespace name             | `minio-operator`            |
-| `publishing.url`            | external URL               | `minio-operator.cskylab.net`            |
-| `certificate.clusterissuer` | cert-manager clusterissuer | `ca-test-internal` |
-| `registry.proxy`            | docker private proxy URL   | `harbor.cskylab.net/dockerhub`            |
 
 ## License
 

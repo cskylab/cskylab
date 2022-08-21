@@ -4,8 +4,8 @@
 ##
 image:
   repository: harbor.cskylab.net/dockerhub/library/nextcloud
-  tag: 22-apache
-  pullPolicy: IfNotPresent
+  # tag: 22-apache
+  # pullPolicy: IfNotPresent
   # pullSecrets:
   #   - myRegistrKeySecretName
 
@@ -20,7 +20,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-body-size: 4G
-    cert-manager.io/cluster-issuer: ca-test-internal
+    cert-manager.io/cluster-issuer: trantortech
     nginx.ingress.kubernetes.io/server-snippet: |-
       server_tokens off;
       proxy_hide_header X-Powered-By;
@@ -47,12 +47,12 @@ ingress:
       }
   tls:
     - hosts:
-        - nextcloud.cskylab.net
+        - nextcloud.mod.cskylab.net
       secretName: nextcloud-tls
   labels: {}
 
 nextcloud:
-  host: nextcloud.cskylab.net
+  host: nextcloud.mod.cskylab.net
   username: admin
   password: NoFear21
 
@@ -106,7 +106,7 @@ nextcloud:
       <?php
       $CONFIG = array (
         'overwriteprotocol' => 'https',
-        'overwrite.cli.url' => 'https://nextcloud.cskylab.net',
+        'overwrite.cli.url' => 'https://nextcloud.mod.cskylab.net',
         'allow_user_to_change_display_name' => false,
         'lost_password_link' => 'disabled',
       );

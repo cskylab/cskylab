@@ -1,14 +1,14 @@
 # Ingress nginx controller for kubernetes <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Helm charts: ingress-nginx/ingress-nginx v4.0.18 <!-- omit in toc -->
+## Helm charts: ingress-nginx/ingress-nginx v4.2.1 <!-- omit in toc -->
 
 `k8s-ingress-nginx` ingress controller uses NGINX as a reverse proxy and load balancer.
 
 To use in your deployments, add the `kubernetes.io/ingress.class: nginx` annotation to your Ingress resources.
 
-Configuration files are deployed from template Ingress nginx controller for Kubernetes. version 22-03-23.
+Configuration files are deployed from template Ingress nginx controller for Kubernetes. version 22-08-21.
 
 > **Note**: `k8s-ingress-nginx` should be considered as cluster service. It is recommended to deploy it as a cluster singleton.
 
@@ -220,8 +220,8 @@ The following table lists template configuration parameters and their specified 
 | ----------------------------- | ------------------------ | ------------------------------------ |
 | `_tplname`                    | template name            | `k8s-ingress-nginx`                    |
 | `_tpldescription`             | template description     | `Ingress nginx controller for Kubernetes.`             |
-| `_tplversion`                 | template version         | `22-03-23`                 |
-| `kubeconfig`                  | kubeconfig file          | `config-k8s-pro`                  |
+| `_tplversion`                 | template version         | `22-08-21`                 |
+| `kubeconfig`                  | kubeconfig file          | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro`                  |
 | `namespace.name`              | namespace name           | `ingress-nginx`              |
 | `ingressnginx.loadbalancerip` | load-balancer IP Address | `192.168.83.20` |
 

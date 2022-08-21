@@ -1,8 +1,8 @@
 # Kubernetes MinIO Tenant <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Image: quay.io/minio/minio:RELEASE.2022-03-22T02-05-10Z <!-- omit in toc -->
+## Image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z <!-- omit in toc -->
 
 ---
 
@@ -10,7 +10,9 @@
 
 This service creates a X-node MinIO Tenant using MinIO for object storage.
 
-Configuration files are deployed from template Kubernetes MinIO Tenant version 22-03-23.
+Configuration files are deployed from template Kubernetes MinIO Tenant version 22-08-21.
+
+  ![ ](./images/minio-console-2022-03-31_11-38-35.png)
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -57,8 +59,8 @@ Install namespace and charts:
 
 Access:
 
-- Console URL: `minio-tenant-console.cskylab.net`
-- MinIO URL: `minio-tenant.cskylab.net`
+- Console URL: `minio-tenant-console.mod.cskylab.net`
+- MinIO URL: `minio-tenant.mod.cskylab.net`
 - AccessKey: `admin`
 - SecretKey: `NoFear21`
 
@@ -189,7 +191,7 @@ Check versions and update if necesary, for the following image in `mod-tenant.ya
 
 ```yaml
   ## Registry location and Tag to download MinIO Server image
-  image: quay.io/minio/minio:RELEASE.2022-02-18T01-50-10Z
+  image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z
 ```
 
 To check for the latest image version see:
@@ -296,7 +298,7 @@ To list current bucket, users and policies:
 
 To acces MinIO console throug web utility:
 
-- Console URL: `minio-tenant-console.cskylab.net`
+- Console URL: `minio-tenant-console.mod.cskylab.net`
 - AccessKey: `<no value>`
 - SecretKey: `<no value>`
 
@@ -308,7 +310,7 @@ File `.envrc` export automatically through "direnv" the environment variable nee
 
 ```bash
 # MinIO host environment variable
-export MC_HOST_minio="https://admin:NoFear21@minio-tenant.cskylab.net"
+export MC_HOST_minio="https://admin:NoFear21@minio-tenant.mod.cskylab.net"
 ```
 
 You can run `mc` commands to operate from console with buckets and files: Ex `mc tree minio`.
@@ -443,14 +445,14 @@ The following table lists template configuration parameters and their specified 
 | --------------------------------- | ---------------------------------- | ---------------------------------------- |
 | `_tplname`                        | template name                      | `k8s-minio-tenant`                        |
 | `_tpldescription`                 | template description               | `Kubernetes MinIO Tenant`                 |
-| `_tplversion`                     | template version                   | `22-03-23`                     |
-| `kubeconfig`                      | kubeconfig file                    | `config-k8s-mod`                      |
+| `_tplversion`                     | template version                   | `22-08-21`                     |
+| `kubeconfig`                      | kubeconfig file                    | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro`                      |
 | `namespace.name`                  | namespace name                     | `minio-tenant`                  |
-| `publishing.miniourl`             | publishing url                     | `minio-tenant.cskylab.net`             |
-| `publishing.consoleurl`           | console url                        | `minio-tenant-console.cskylab.net`           |
+| `publishing.miniourl`             | publishing url                     | `minio-tenant.mod.cskylab.net`             |
+| `publishing.consoleurl`           | console url                        | `minio-tenant-console.mod.cskylab.net`           |
 | `credentials.minio_accesskey`     | access key                         | `admin`     |
 | `credentials.minio_secretkey`     | secret key                         | `NoFear21`     |
-| `certificate.clusterissuer`       | cert-manager clusterissuer         | `ca-test-internal`       |
+| `certificate.clusterissuer`       | cert-manager clusterissuer         | `trantortech`       |
 | `registry.proxy`                  | docker private proxy URL           | `harbor.cskylab.net/dockerhub`                  |
 | `localpvnodes.srv00`              | local persistent volume node       | `k8s-mod-n1`              |
 | `localpvnodes.srv01`              | local persistent volume node       | `k8s-mod-n2`              |

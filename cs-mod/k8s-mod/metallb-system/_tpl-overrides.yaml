@@ -1,11 +1,12 @@
 _tpldescription: MetalLB load-balancer for bare metal Kubernetes clusters
 _tplname: k8s-metallb-system
-_tplversion: 22-03-23
-kubeconfig: config-k8s-mod
+_tplversion: 22-08-21
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro
 metallb:
   dynamicpooladdr:
   - 192.168.82.75-192.168.82.90
   staticpooladdr:
   - 192.168.82.20/32
+  - 192.168.82.21/32
 namespace:
   name: metallb-system

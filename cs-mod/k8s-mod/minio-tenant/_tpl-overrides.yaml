@@ -1,12 +1,12 @@
 _tpldescription: Kubernetes MinIO Tenant
 _tplname: k8s-minio-tenant
-_tplversion: 22-03-23
+_tplversion: 22-08-21
 certificate:
-  clusterissuer: ca-test-internal
+  clusterissuer: trantortech
 credentials:
   minio_accesskey: admin
   minio_secretkey: NoFear21
-kubeconfig: config-k8s-mod
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro
 localpvnodes:
   domain: cskylab.net
   localadminusername: kos
@@ -17,7 +17,7 @@ localpvnodes:
 namespace:
   name: minio-tenant
 publishing:
-  consoleurl: minio-tenant-console.cskylab.net
-  miniourl: minio-tenant.cskylab.net
+  consoleurl: minio-tenant-console.mod.cskylab.net
+  miniourl: minio-tenant.mod.cskylab.net
 registry:
   proxy: harbor.cskylab.net/dockerhub

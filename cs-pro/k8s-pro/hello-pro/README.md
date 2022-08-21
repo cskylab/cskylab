@@ -192,7 +192,7 @@ The following table lists template configuration parameters and their specified 
 | `namespace.name`            | namespace name                                   | `hello-pro`            |
 | `namespace.domain`          | domain name                                      | `cskylab.net`          |
 | `publishing.url`            | external URL                                     | `hello-pro.cskylab.net`            |
-| `certificate.clusterissuer` | cert-manager clusterissuer                       | `ca-test-internal` |
+| `certificate.clusterissuer` | cert-manager clusterissuer                       | `trantortech` |
 | `registry.proxy`            | docker private proxy URL                         | `harbor.cskylab.net/dockerhub`            |
 
 ## License

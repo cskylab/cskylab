@@ -13,6 +13,6 @@ args:
   client_options: {
     identifier: 'gitlab',
     secret: 5edffd1e-c3ab-47d3-a32e-b38a4977d6d3,
-    redirect_uri: 'https://gitlab.cskylab.net/users/auth/openid_connect/callback',
+    redirect_uri: 'https://gitlab.mod.cskylab.net/users/auth/openid_connect/callback',
   }
   

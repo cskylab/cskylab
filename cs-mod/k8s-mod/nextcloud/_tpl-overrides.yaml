@@ -1,23 +1,22 @@
 _tpldescription: Kubernetes nextcloud namespace
 _tplname: k8s-nextcloud
-_tplversion: 22-03-23
+_tplversion: 22-08-21
 certificate:
-  clusterissuer: ca-test-internal
-kubeconfig: config-k8s-mod
+  clusterissuer: trantortech
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro
 localpvnodes:
   all_pv: k8s-mod-n1
+  domain: cskylab.net
+  localadminusername: kos
 localrsyncnodes:
   all_pv: k8s-mod-n2
+  domain: cskylab.net
+  localadminusername: kos
 namespace:
   domain: cskylab.net
   name: nextcloud
 publishing:
   password: NoFear21
-  url: nextcloud.cskylab.net
+  url: nextcloud.mod.cskylab.net
 registry:
   proxy: harbor.cskylab.net/dockerhub
-restic:
-  aws_access: bucketname_rw
-  aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
-  password: NoFear21
-  repo: s3:https://backup.cskylab.net/bucketname/restic

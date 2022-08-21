@@ -27,21 +27,21 @@ global:
     externalIP:
     ssh: ~
     gitlab:
-      name: gitlab.cskylab.net
+      name: gitlab.mod.cskylab.net
       https: true
     minio:
-      name: minio-gitlab.cskylab.net
+      name: minio-gitlab.mod.cskylab.net
       https: true
     registry:
-      name: registry-gitlab.cskylab.net
+      name: registry-gitlab.mod.cskylab.net
       https: true
     tls: {}
     smartcard:
-      name: smartcard-gitlab.cskylab.net
+      name: smartcard-gitlab.mod.cskylab.net
     kas:
-      name: kas-gitlab.cskylab.net
+      name: kas-gitlab.mod.cskylab.net
     pages:
-      name: pages-gitlab.cskylab.net
+      name: pages-gitlab.mod.cskylab.net
       https: true
 
   ## doc/charts/globals.md#configure-ingress-settings
@@ -49,7 +49,7 @@ global:
     configureCertmanager: false
     class: nginx
     annotations:
-      cert-manager.io/cluster-issuer: ca-test-internal
+      cert-manager.io/cluster-issuer: trantortech
     enabled: true
     tls:
       enabled: true
@@ -72,7 +72,7 @@ global:
 
   ## doc/charts/globals.md#configure-postgresql-settings
   psql:
-    # host: psql-gitlab.cskylab.net
+    # host: psql-gitlab.mod.cskylab.net
     serviceName: postgresql
     port: 5432
     database: gitlabhq_production

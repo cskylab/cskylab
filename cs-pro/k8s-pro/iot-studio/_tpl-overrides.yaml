@@ -1,0 +1,39 @@
+_tpldescription: Kubernetes IOT Studio
+_tplname: k8s-iot-studio
+_tplversion: 22-08-21
+certificate:
+  clusterissuer: trantortech
+grafana:
+  password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
+  url: grafana-iot.pro.cskylab.net
+  user: admin
+influxdb:
+  bucket: iot-studio
+  organization: cskylab
+  password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
+  url: influxdb-iot.pro.cskylab.net
+  user: admin
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro
+localpvnodes:
+  all_pv: k8s-pro-n1
+  domain: cskylab.net
+  localadminusername: kos
+localrsyncnodes:
+  all_pv: k8s-pro-n2
+  domain: cskylab.net
+  localadminusername: kos
+mosquitto:
+  loadbalancerip: 192.168.83.21
+  password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
+  url: mosquitto-iot.pro.cskylab.net
+  user: admin
+namespace:
+  domain: cskylab.net
+  name: iot-studio
+nodered:
+  password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
+  timezone: UTC
+  url: node-red-iot.pro.cskylab.net
+  user: admin
+registry:
+  proxy: harbor.cskylab.net/dockerhub

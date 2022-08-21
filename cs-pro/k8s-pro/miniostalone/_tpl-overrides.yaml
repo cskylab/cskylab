@@ -1,0 +1,25 @@
+_tpldescription: MinIO standalone
+_tplname: k8s-miniostalone
+_tplversion: 22-08-21
+certificate:
+  clusterissuer: trantortech
+credentials:
+  minio_accesskey: admin
+  minio_secretkey: NoFear21
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro
+localpvnodes:
+  all_pv: k8s-pro-n1
+  domain: cskylab.net
+  localadminusername: kos
+localrsyncnodes:
+  all_pv: k8s-pro-n2
+  domain: cskylab.net
+  localadminusername: kos
+namespace:
+  domain: cskylab.net
+  name: miniostalone
+publishing:
+  console_url: miniostalone-console.cskylab.net
+  url: miniostalone.pro.cskylab.net
+registry:
+  proxy: harbor.cskylab.net/dockerhub

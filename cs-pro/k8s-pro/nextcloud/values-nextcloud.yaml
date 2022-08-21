@@ -1,0 +1,287 @@
+
+## Official nextcloud image version
+## ref: https://hub.docker.com/r/library/nextcloud/tags/
+##
+image:
+  repository: harbor.cskylab.net/dockerhub/library/nextcloud
+  # tag: 22-apache
+  # pullPolicy: IfNotPresent
+  # pullSecrets:
+  #   - myRegistrKeySecretName
+
+# Number of replicas to be deployed
+replicaCount: 1
+
+## Allowing use of ingress controllers
+## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 4G
+    cert-manager.io/cluster-issuer: trantortech
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      server_tokens off;
+      proxy_hide_header X-Powered-By;
+
+      rewrite ^/.well-known/webfinger /public.php?service=webfinger last;
+      rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
+      rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json;
+      location = /.well-known/carddav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
+      location = /.well-known/caldav {
+        return 301 $scheme://$host/remote.php/dav;
+      }
+      location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+      }
+      location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/ {
+        deny all;
+      }
+      location ~ ^/(?:autotest|occ|issue|indie|db_|console) {
+        deny all;
+      }
+  tls:
+    - hosts:
+        - nextcloud.pro.cskylab.net
+      secretName: nextcloud-tls
+  labels: {}
+
+nextcloud:
+  host: nextcloud.pro.cskylab.net
+  username: admin
+  password: NoFear21
+
+  ## Use an existing secret
+  existingSecret:
+    enabled: false
+    # secretName: nameofsecret
+    # usernameKey: username
+    # passwordKey: password
+  update: 0
+  datadir: /var/www/html/data
+  tableprefix:
+  persistence:
+    subPath:
+  mail:
+    enabled: false
+    fromAddress: user
+    domain: domain.com
+    smtp:
+      host: domain.com
+      secure: ssl
+      port: 465
+      authtype: LOGIN
+      name: user
+      password: pass
+  # PHP Configuration files
+  # Will be injected in /usr/local/etc/php/conf.d
+  phpConfigs: {}
+  # Default config files
+  # IMPORTANT: Will be used only if you put extra configs, otherwise default will come from nextcloud itself
+  # Default confgurations can be found here: https://github.com/nextcloud/docker/tree/master/16.0/apache/config
+  defaultConfigs:
+    # To protect /var/www/html/config
+    .htaccess: true
+    # Redis default configuration
+    redis.config.php: false
+    # Apache configuration for rewrite urls
+    apache-pretty-urls.config.php: true
+    # Define APCu as local cache
+    apcu.config.php: true
+    # Apps directory configs
+    apps.config.php: true
+    # Used for auto configure database
+    autoconfig.php: true
+    # SMTP default configuration
+    smtp.config.php: true
+  # Extra config files created in /var/www/html/config/
+  # ref: https://docs.nextcloud.com/server/15/admin_manual/configuration_server/config_sample_php_parameters.html#multiple-config-php-file
+  configs:
+    cskylab.config.php: |-
+      <?php
+      $CONFIG = array (
+        'overwriteprotocol' => 'https',
+        'overwrite.cli.url' => 'https://nextcloud.pro.cskylab.net',
+        'allow_user_to_change_display_name' => false,
+        'lost_password_link' => 'disabled',
+      );
+    cskylab.redis.config.php: |-
+      <?php
+      if (getenv('REDIS_HOST')) {
+        $CONFIG = array (
+          'memcache.distributed' => '\OC\Memcache\Redis',
+          'memcache.locking' => '\OC\Memcache\Redis',
+          'redis' => array(
+            'host' => getenv('REDIS_HOST'),
+            'port' => getenv('REDIS_HOST_PORT') ?: 6379,
+            'password' => getenv('REDIS_HOST_PASSWORD'),
+          ),
+        );
+      }
+    cskylab.social-login.config.php: |-
+      <?php
+      $CONFIG = array (
+        'social_login_auto_redirect' => false
+      );      
+
+  # For example, to use S3 as primary storage
+  # ref: https://docs.nextcloud.com/server/13/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3
+  #
+  #  configs:
+  #    s3.config.php: |-
+  #      <?php
+  #      $CONFIG = array (
+  #        'objectstore' => array(
+  #          'class' => '\\OC\\Files\\ObjectStore\\S3',
+  #          'arguments' => array(
+  #            'bucket'     => 'my-bucket',
+  #            'autocreate' => true,
+  #            'key'        => 'xxx',
+  #            'secret'     => 'xxx',
+  #            'region'     => 'us-east-1',
+  #            'use_ssl'    => true
+  #          )
+  #        )
+  #      );
+
+  # Extra environment variables
+  extraEnv:
+   - name: REDIS_HOST_PASSWORD
+     value: NoFear21
+
+  # Extra mounts for the pods. Example shown is for connecting a legacy NFS volume
+  # to NextCloud pods in Kubernetes. This can then be configured in External Storage
+  extraVolumes:
+  #  - name: nfs
+  #    nfs:
+  #      server: "10.0.0.1"
+  #      path: "/nextcloud_data"
+  #      readOnly: false
+  extraVolumeMounts:
+  #  - name: nfs
+  #    mountPath: "/legacy_data"
+
+
+internalDatabase:
+  enabled: false
+
+##
+## External database configuration
+##
+externalDatabase:
+  enabled: true
+
+  ## Supported database engines: mysql or postgresql
+  type: mysql
+
+  ## Database host
+  host: mariadb
+
+  ## Database user
+  user: nextcloud
+
+  ## Database password
+  password: NoFear21
+
+  ## Database name
+  database: nextcloud
+
+  ## Use a existing secret
+  existingSecret:
+    enabled: false
+    # secretName: nameofsecret
+    # usernameKey: username
+    # passwordKey: password
+
+##
+## MariaDB chart configuration
+##
+mariadb:
+  ## Whether to deploy a mariadb server to satisfy the applications database requirements. To use an external database set this to false and configure the externalDatabase parameters
+  enabled: false
+
+##
+## Redis chart configuration
+## for more options see https://github.com/bitnami/charts/tree/master/bitnami/redis
+##
+
+redis:
+  enabled: true
+  ## @param architecture Redis&trade; architecture. Allowed values: `standalone` or `replication`
+  ##
+  architecture: standalone
+  auth:
+    enabled: true
+    password: 'NoFear21'
+
+  global:
+    imageRegistry: harbor.cskylab.net/dockerhub
+
+  ## Cluster settings
+  cluster:
+    enabled: false
+
+  ##
+  ## Redis Master parameters
+  ##
+  master:
+    ## Enable persistence using Persistent Volume Claims
+    ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+    ##
+    persistence:
+      enabled: true
+      ## The path the volume will be mounted at, useful when using different
+      ## Redis images.
+      path: /data
+      ## The subdirectory of the volume to mount to, useful in dev environments
+      ## and one PV for multiple services.
+      subPath: ""
+      ## redis data Persistent Volume Storage Class
+      ## If defined, storageClassName: <storageClass>
+      ## If set to "-", storageClassName: "", which disables dynamic provisioning
+      ## If undefined (the default) or set to null, no storageClassName spec is
+      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+      ##   GKE, AWS & OpenStack)
+      ##
+      storageClass: nextcloud-redis-master
+      accessModes:
+      - ReadWriteOnce
+      size: 8Gi
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+persistence:
+  # Nextcloud Data (/var/www/html)
+  enabled: true
+  annotations: {}
+  ## nextcloud data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  storageClass: nextcloud-ncdata
+
+  ## A manually managed Persistent Volume and Claim
+  ## Requires persistence.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  # existingClaim:
+
+  accessMode: ReadWriteOnce
+  size: 8Gi
+
+## Liveness and readiness probe values
+## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes
+##
+
+# WAIT 180 seconds to ensure MariaDB pod is Running and Ready
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 180

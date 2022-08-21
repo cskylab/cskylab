@@ -1,20 +1,19 @@
 # [Harbor](https://goharbor.io/) registry <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v11.2.4 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v15.0.5 <!-- omit in toc -->
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
-Configuration files are deployed from template Harbor opensource registry version 22-03-23.
+Configuration files are deployed from template Harbor opensource registry version 22-08-21.
 
   ![ ](./images/harbor-sample-2021-11-07_19-32-56.png)
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
-  - [Persistent Volumes](#persistent-volumes)
   - [LVM Data Services](#lvm-data-services)
-    - [Backup & data protection](#backup--data-protection)
+    - [Persistent Volumes](#persistent-volumes)
 - [How-to guides](#how-to-guides)
   - [Pull Charts](#pull-charts)
   - [Install](#install)
@@ -22,6 +21,9 @@ Configuration files are deployed from template Harbor opensource registry versio
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
+  - [Backup & data protection](#backup--data-protection)
+    - [RSync HA copies](#rsync-ha-copies)
+    - [Restic backup](#restic-backup)
   - [Create private registry](#create-private-registry)
   - [Create dockerhub proxy](#create-dockerhub-proxy)
   - [Utilities](#utilities)
@@ -30,7 +32,6 @@ Configuration files are deployed from template Harbor opensource registry versio
   - [Helm charts and values](#helm-charts-and-values)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -64,7 +65,92 @@ Run:
 - Administrative access to Kubernetes cluster.
 - Helm v3.
 
-### Persistent Volumes
+
+### LVM Data Services
+
+Data services are supported by the following nodes:
+
+| Data service                 | Kubernetes PV node           | Kubernetes RSync node           |
+| ---------------------------- | ---------------------------- | ------------------------------- |
+| `/srv/harbor` | `k8s-mod-n1` | `k8s-mod-n2` |
+
+`PV node` is the node that supports the data service in normal operation.
+
+`RSync node` is the node that receives data service copies synchronized by cron-jobs for HA.
+
+To **create** the corresponding LVM data services, execute from your **mcc** management machine the following commands:
+
+```bash
+#
+# Create LVM data services in PV node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-lvmserv.sh -m create -qd "/srv/harbor" \
+&& mkdir "/srv/harbor/data/chartmuseum" \
+&& mkdir "/srv/harbor/data/jobservice" \
+&& mkdir "/srv/harbor/data/postgresql" \
+&& mkdir "/srv/harbor/data/redis" \
+&& mkdir "/srv/harbor/data/registry" \
+&& mkdir "/srv/harbor/data/trivy"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# Create LVM data services in RSync node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n2.cskylab.net \
+  'sudo cs-lvmserv.sh -m create -qd "/srv/harbor" \
+&& mkdir "/srv/harbor/data/chartmuseum" \
+&& mkdir "/srv/harbor/data/jobservice" \
+&& mkdir "/srv/harbor/data/postgresql" \
+&& mkdir "/srv/harbor/data/redis" \
+&& mkdir "/srv/harbor/data/registry" \
+&& mkdir "/srv/harbor/data/trivy"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+To **delete** the corresponding LVM data services, execute from your **mcc** management machine the following commands:
+
+```bash
+#
+# Delete LVM data services in PV node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-lvmserv.sh -m delete -qd "/srv/harbor"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# Delete LVM data services in RSync node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n2.cskylab.net \
+  'sudo cs-lvmserv.sh -m delete -qd "/srv/harbor"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+#### Persistent Volumes
 
 Review values in all Persistent volume manifests with the name format `./pv-*.yaml`.
 
@@ -81,105 +167,6 @@ pv-trivy.yaml
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.
-
-### LVM Data Services
-
-Data services are supported by the following nodes:
-
-| Data service                 | Kubernetes PV node           | Kubernetes RSync node           |
-| ---------------------------- | ---------------------------- | ------------------------------- |
-| `/srv/harbor` | `k8s-mod-n1` | `k8s-mod-n2` |
-
-To **create** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
-
-```bash
-# Create LVM data service (Execute inside the node(s) that holds the local storage)
-sudo cs-lvmserv.sh -m create -qd "/srv/harbor" \
-&& mkdir "/srv/harbor/data/chartmuseum" \
-&& mkdir "/srv/harbor/data/jobservice" \
-&& mkdir "/srv/harbor/data/postgresql" \
-&& mkdir "/srv/harbor/data/redis" \
-&& mkdir "/srv/harbor/data/registry" \
-&& mkdir "/srv/harbor/data/trivy"
-```
-
-To **delete** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
-
-```bash
-# Delete LVM data service (Execute inside the node(s) that holds the local storage)
-sudo cs-lvmserv.sh -m delete -qd "/srv/harbor"
-```
-
-#### Backup & data protection
-
-Backup & data protection must be configured in file `cs-cron_scripts` of the node that holds the local storage.
-
-**RSync:**
-
-When more than one kubernetes node is present in the cluster, rsync cronjobs are used to achieve service HA for LVM data services that supports the persistent volumes.
-
-To perform RSync manual copies on demand, connecto to the node that holds the local storage and execute:
-
-```bash
-## RSync path:  /srv/harbor
-## To Node:     k8s-mod-n2
-sudo cs-rsync.sh -q -m rsync-to -d /srv/harbor  -t k8s-mod-n2.cskylab.net
-```
-
-**RSync cronjobs:**
-
-The following cron jobs should be added to file `cs-cron-scripts` of the appropriate node (Change time schedule as needed):
-
-```bash
-################################################################################
-# harbor - RSync LVM data services
-################################################################################
-##
-## RSync path:  /srv/harbor
-## To Node:     k8s-mod-n2
-## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/harbor >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/harbor  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
-```
-
-**Restic:**
-
-Restic is configured to perform data backups to local USB disks, remote disk via sftp or remote S3 storage.
-
-To perform on-demand restic backups:
-
-```bash
-## Data service:  /srv/harbor
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-sudo cs-restic.sh -q -m restic-bck -d  /srv/harbor -r s3:https://backup.cskylab.net/bucketname/restic  -t harbor
-```
-
-To view available backups:
-
-```bash
-## Specific tag
-## Data service: /srv/harbor
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-sudo cs-restic.sh -q -m restic-list -r s3:https://backup.cskylab.net/bucketname/restic  -t harbor
-
-## All snapshots
-## Remote restic repo
-sudo cs-restic.sh -q -m restic-list -r s3:https://backup.cskylab.net/bucketname/restic 
-```
-
-**Restic cronjobs:**
-
-The following cron jobs should be added to file `cs-cron-scripts` of the appropriate node (Change time schedule as needed):
-
-```bash
-################################################################################
-# harbor - Restic backups
-################################################################################
-##
-## Data service:  /srv/harbor
-## At minute 30 past every hour from 8 through 23.
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/harbor >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/harbor -r s3:https://backup.cskylab.net/bucketname/restic  -t harbor  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://backup.cskylab.net/bucketname/restic  -t harbor  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
-```
 
 ## How-to guides
 
@@ -245,6 +232,101 @@ To display namespace, persistence and chart status run:
 ```bash
   # Display namespace, persistence and chart status:
     ./csdeploy.sh -l
+```
+
+### Backup & data protection
+
+Backup & data protection must be configured on file `cs-cron_scripts` of the node that supports the data services.
+
+#### RSync HA copies
+
+Rsync cronjobs are used to achieve service HA for LVM data services that supports the persistent volumes. The script `cs-rsync.sh` perform the following actions:
+
+- Take a snapshot of LVM data service in the node that supports the service (PV node)
+- Copy and syncrhonize the data to the mirrored data service in the kubernetes node designed for HA (RSync node)
+- Remove snapshot in LVM data service
+
+To perform RSync manual copies on demand, execute from your **mcc** management machine the following commands:
+
+>**Warning:** You should not make two copies at the same time. You must check the scheduled jobs in `cs-cron-scripts` and disable them if necesary, in order to avoid conflicts.
+
+```bash
+#
+# RSync data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-rsync.sh -q -m rsync-to -d /srv/harbor \
+  -t k8s-mod-n2.cskylab.net' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+**RSync cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` on the node that supports the service (PV node). Change time schedule as needed:
+
+```bash
+################################################################################
+# /srv/harbor - RSync LVM data services
+################################################################################
+##
+## RSync path:  /srv/harbor
+## To Node:     k8s-mod-n2
+## At minute 0 past every hour from 8 through 23.
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/harbor>> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/harbor -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+```
+
+#### Restic backup
+
+Restic can be configured to perform data backups to local USB disks, remote disk via sftp or cloud S3 storage.
+
+To perform on-demand restic backups execute from your **mcc** management machine the following commands:
+
+>**Warning:** You should not launch two backups at the same time. You must check the scheduled jobs in `cs-cron-scripts` and disable them if necesary, in order to avoid conflicts.
+
+```bash
+#
+# Restic backup data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/harbor -t harbor' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+To view available backups:
+
+```bash
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-restic.sh -q -m restic-list  -t harbor' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+**Restic cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` on the node that supports the service (PV node). Change time schedule as needed:
+
+```bash
+################################################################################
+# /srv/harbor- Restic backups
+################################################################################
+##
+## Data service:  /srv/harbor
+## At minute 30 past every hour from 8 through 23.
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/harbor>> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/harbor  -t harbor  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t harbor  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ### Create private registry
@@ -369,55 +451,6 @@ Examples:
   # Display namespace, persistence and charts status:
     ./csdeploy.sh -l
 ```
-
-**Tasks performed:**
-
-| ${execution_mode}                | Tasks                      | Block / Description                                                         |
-| -------------------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| [pull-charts]                    |                            | **Pull helm charts from repositories**                                      |
-|                                  | Clean `./charts` directory | Remove all contents in `./charts` directory.                                |
-|                                  | Pull helm charts           | Pull new charts according to sourced script in variable `source_charts`.    |
-|                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
-| [install]                        |                            | **Create namespace, certificate and PV's**                                  |
-|                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-|                                  | Create harbor-certificate  | Apply certificate from file `harbor-certificate.yaml`.                      |
-|                                  | Create PV's                | Apply all persistent volume manifests in the form `pv-*.yaml`.              |
-| [update] [install]               |                            | **Deploy charts**                                                           |
-|                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
-| [uninstall]                      |                            | **Uninstall charts**                                                        |
-|                                  | Uninstall charts           | Uninstall all charts in `./charts` directory.                               |
-| [uninstall] [remove]             |                            | **Remove namespace and PV's**                                               |
-|                                  | Remove namespace           | Remove namespace and all its objects.                                       |
-|                                  | Delete PV's                | Delete all persistent volume manifests in the form `pv-*.yaml`.             |
-| [install] [update] [list-status] |                            | **Display status information**                                              |
-|                                  | Display namespace          | Namespace and object status.                                                |
-|                                  | Display certificates       | Certificate status information.                                             |
-|                                  | Display persistence        | Persistence status information.                                             |
-|                                  | Display charts             | Charts releases history information.                                        |
-|                                  |                            |                                                                             |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                   | Description                | Values                             |
-| --------------------------- | -------------------------- | ---------------------------------- |
-| `_tplname`                  | template name              | `k8s-harbor`                  |
-| `_tpldescription`           | template description       | `Harbor opensource registry`           |
-| `_tplversion`               | template version           | `22-03-23`               |
-| `kubeconfig`                | kubeconfig file            | `config-k8s-mod`                |
-| `namespace.name`            | namespace name             | `harbor`            |
-| `namespace.domain`          | domain name                | `cskylab.net`          |
-| `publishing.url`            | external URL               | `harbor.cskylab.net`            |
-| `publishing.password`       | password                   | `NoFear21`       |
-| `certificate.clusterissuer` | cert-manager clusterissuer | `ca-test-internal` |
-| `registry.proxy`            | docker private proxy URL                         | `<no value>`            |
-| `restic.password`           | password to access restic repository (mandatory) | `NoFear21`           |
-| `restic.repo`               | restic repository (mandatory)                    | `s3:https://backup.cskylab.net/bucketname/restic`               |
-| `restic.aws_access`         | S3 bucket access key (if used)                   | `bucketname_rw`         |
-| `restic.aws_secret`         | S3 bucket secret key (if used)                   | `iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr`         |
-| `localpvnodes.all_pv`       | dataservice node                                 | `k8s-mod-n1`       |
-| `localrsyncnodes.all_pv`    | rsync node                                       | `k8s-mod-n2`    |
 
 ## License
 

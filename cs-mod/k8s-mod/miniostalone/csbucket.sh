@@ -65,7 +65,7 @@ EOF
 ################################################################################
 
 ## MinIO Root Credentials
-minio_host="miniostalone.cskylab.net"
+minio_host="miniostalone.mod.cskylab.net"
 minio_accesskey="admin"
 minio_secretkey="NoFear21"
 

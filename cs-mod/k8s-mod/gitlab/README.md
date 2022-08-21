@@ -1,20 +1,19 @@
 # Gitlab open DevOps platform <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-08-21 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v5.8.4 bitnami/postgresql v10.16.2<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v6.2.2 bitnami/postgresql v11.7.1<!-- omit in toc -->
 
 [Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.
 
-Configuration files are deployed from template Gitlab DevOps platform version 22-03-23.
+Configuration files are deployed from template Gitlab DevOps platform version 22-08-21.
 
   ![ ](./images/gitlab-2021-11-08_15-24-36.png)
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
-  - [Persistent Volumes](#persistent-volumes)
   - [LVM Data Services](#lvm-data-services)
-    - [Backup & data protection](#backup--data-protection)
+    - [Persistent Volumes](#persistent-volumes)
 - [How-to guides](#how-to-guides)
   - [Pull Charts](#pull-charts)
   - [Install](#install)
@@ -22,6 +21,9 @@ Configuration files are deployed from template Gitlab DevOps platform version 22
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
+  - [Backup & data protection](#backup--data-protection)
+    - [RSync HA copies](#rsync-ha-copies)
+    - [Restic backup](#restic-backup)
   - [Gitlab Application Backup & Restore](#gitlab-application-backup--restore)
     - [Rails-Secret Backup](#rails-secret-backup)
     - [Cron based backups](#cron-based-backups)
@@ -41,7 +43,6 @@ Configuration files are deployed from template Gitlab DevOps platform version 22
   - [Helm charts and values](#helm-charts-and-values)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -67,7 +68,7 @@ kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.y
 
 Run:
 
-- Published at: `gitlab.cskylab.net`
+- Published at: `gitlab.mod.cskylab.net`
 - Username: `root`
 - Password: `NoFear21`
 
@@ -76,7 +77,89 @@ Run:
 - Administrative access to Kubernetes cluster.
 - Helm v3.
 
-### Persistent Volumes
+### LVM Data Services
+
+Data services are supported by the following nodes:
+
+| Data service                 | Kubernetes PV node           | Kubernetes RSync node           |
+| ---------------------------- | ---------------------------- | ------------------------------- |
+| `/srv/gitlab` | `k8s-mod-n1` | `k8s-mod-n2` |
+
+`PV node` is the node that supports the data service in normal operation.
+
+`RSync node` is the node that receives data service copies synchronized by cron-jobs for HA.
+
+To **create** the corresponding LVM data services, execute from your **mcc** management machine the following commands:
+
+```bash
+#
+# Create LVM data services in PV node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-lvmserv.sh -m create -qd "/srv/gitlab" \
+&& mkdir "/srv/gitlab/data/postgresql" \
+&& mkdir "/srv/gitlab/data/minio" \
+&& mkdir "/srv/gitlab/data/redis-master" \
+&& mkdir "/srv/gitlab/data/gitaly" \
+&& mkdir "/srv/gitlab/data/task-runner"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# Create LVM data services in RSync node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n2.cskylab.net \
+  'sudo cs-lvmserv.sh -m create -qd "/srv/gitlab" \
+&& mkdir "/srv/gitlab/data/postgresql" \
+&& mkdir "/srv/gitlab/data/minio" \
+&& mkdir "/srv/gitlab/data/redis-master" \
+&& mkdir "/srv/gitlab/data/gitaly" \
+&& mkdir "/srv/gitlab/data/task-runner"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+To **delete** the corresponding LVM data services, execute from your **mcc** management machine the following commands:
+
+```bash
+#
+# Delete LVM data services in PV node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-lvmserv.sh -m delete -qd "/srv/gitlab"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+```bash
+#
+# Delete LVM data services in RSync node
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n2.cskylab.net \
+  'sudo cs-lvmserv.sh -m delete -qd "/srv/gitlab"' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+#### Persistent Volumes
 
 The following PersistentVolume & StorageClass manifests are applied:
 
@@ -90,104 +173,6 @@ pv-task-runner.yaml
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.
-
-### LVM Data Services
-
-Data services are supported by the following nodes:
-
-| Data service                 | Kubernetes PV node           | Kubernetes RSync node           |
-| ---------------------------- | ---------------------------- | ------------------------------- |
-| `/srv/gitlab` | `k8s-mod-n1` | `k8s-mod-n2` |
-
-To **create** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
-
-```bash
-# Create LVM data service (Execute inside the node(s) that holds the local storage)
-sudo cs-lvmserv.sh -m create -qd "/srv/gitlab" \
-&& mkdir "/srv/gitlab/data/postgresql" \
-&& mkdir "/srv/gitlab/data/minio" \
-&& mkdir "/srv/gitlab/data/redis-master" \
-&& mkdir "/srv/gitlab/data/gitaly" \
-&& mkdir "/srv/gitlab/data/task-runner"
-```
-
-To **delete** the corresponding LVM data services, execute inside the appropriate node in your cluster the following commands:
-
-```bash
-# Delete LVM data service (Execute inside the node(s) that holds the local storage)
-sudo cs-lvmserv.sh -m delete -qd "/srv/gitlab"
-```
-
-#### Backup & data protection
-
-Backup & data protection must be configured in file `cs-cron_scripts` of the node that holds the local storage.
-
-**RSync:**
-
-When more than one kubernetes node is present in the cluster, rsync cronjobs are used to achieve service HA for LVM data services that supports the persistent volumes.
-
-To perform RSync manual copies on demand, connecto to the node that holds the local storage and execute:
-
-```bash
-## RSync path:  /srv/gitlab
-## To Node:     k8s-mod-n2
-sudo cs-rsync.sh -q -m rsync-to -d /srv/gitlab  -t k8s-mod-n2.cskylab.net
-```
-
-**RSync cronjobs:**
-
-The following cron jobs should be added to file `cs-cron-scripts` of the appropriate node (Change time schedule as needed):
-
-```bash
-################################################################################
-# gitlab - RSync LVM data services
-################################################################################
-##
-## RSync path:  /srv/gitlab
-## To Node:     k8s-mod-n2
-## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/gitlab >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/gitlab  -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
-```
-
-**Restic:**
-
-Restic is configured to perform data backups to local USB disks, remote disk via sftp or remote S3 storage.
-
-To perform on-demand restic backups:
-
-```bash
-## Data service:  /srv/gitlab
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-sudo cs-restic.sh -q -m restic-bck -d  /srv/gitlab -r s3:https://backup.cskylab.net/bucketname/restic  -t gitlab
-```
-
-To view available backups:
-
-```bash
-## Specific tag
-## Data service: /srv/gitlab
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-sudo cs-restic.sh -q -m restic-list -r s3:https://backup.cskylab.net/bucketname/restic  -t gitlab
-
-## All snapshots
-## Remote restic repo
-sudo cs-restic.sh -q -m restic-list -r s3:https://backup.cskylab.net/bucketname/restic 
-```
-
-**Restic cronjobs:**
-
-The following cron jobs should be added to file `cs-cron-scripts` of the appropriate node (Change time schedule as needed):
-
-```bash
-################################################################################
-# gitlab - Restic backups
-################################################################################
-##
-## Data service:  /srv/gitlab
-## At minute 30 past every hour from 8 through 23.
-## Restic repo:   s3:https://backup.cskylab.net/bucketname/restic
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/gitlab >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/gitlab -r s3:https://backup.cskylab.net/bucketname/restic  -t gitlab  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r s3:https://backup.cskylab.net/bucketname/restic  -t gitlab  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
-```
 
 ## How-to guides
 
@@ -257,6 +242,101 @@ To display namespace, persistence and chart status run:
     ./csdeploy.sh -l
 ```
 
+### Backup & data protection
+
+Backup & data protection must be configured on file `cs-cron_scripts` of the node that supports the data services.
+
+#### RSync HA copies
+
+Rsync cronjobs are used to achieve service HA for LVM data services that supports the persistent volumes. The script `cs-rsync.sh` perform the following actions:
+
+- Take a snapshot of LVM data service in the node that supports the service (PV node)
+- Copy and syncrhonize the data to the mirrored data service in the kubernetes node designed for HA (RSync node)
+- Remove snapshot in LVM data service
+
+To perform RSync manual copies on demand, execute from your **mcc** management machine the following commands:
+
+>**Warning:** You should not make two copies at the same time. You must check the scheduled jobs in `cs-cron-scripts` and disable them if necesary, in order to avoid conflicts.
+
+```bash
+#
+# RSync data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-rsync.sh -q -m rsync-to -d /srv/gitlab \
+  -t k8s-mod-n2.cskylab.net' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+**RSync cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` on the node that supports the service (PV node). Change time schedule as needed:
+
+```bash
+################################################################################
+# /srv/gitlab - RSync LVM data services
+################################################################################
+##
+## RSync path:  /srv/gitlab
+## To Node:     k8s-mod-n2
+## At minute 0 past every hour from 8 through 23.
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/gitlab>> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/gitlab -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+```
+
+#### Restic backup
+
+Restic can be configured to perform data backups to local USB disks, remote disk via sftp or cloud S3 storage.
+
+To perform on-demand restic backups execute from your **mcc** management machine the following commands:
+
+>**Warning:** You should not launch two backups at the same time. You must check the scheduled jobs in `cs-cron-scripts` and disable them if necesary, in order to avoid conflicts.
+
+```bash
+#
+# Restic backup data services
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/gitlab -t gitlab' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+To view available backups:
+
+```bash
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo cs-restic.sh -q -m restic-list  -t gitlab' \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+**Restic cronjobs:**
+
+The following cron jobs should be added to file `cs-cron-scripts` on the node that supports the service (PV node). Change time schedule as needed:
+
+```bash
+################################################################################
+# /srv/gitlab- Restic backups
+################################################################################
+##
+## Data service:  /srv/gitlab
+## At minute 30 past every hour from 8 through 23.
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/gitlab>> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/gitlab  -t gitlab  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t gitlab  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+```
+
 ### Gitlab Application Backup & Restore
 
 #### Rails-Secret Backup
@@ -320,7 +400,7 @@ kubectl -n=gitlab exec $(kubectl -n=gitlab get pods --field-selector=status.phas
 
 #### Access to backup tar files
 
-To access the backup `*.tar` files, log in to the minio service in <https://minio-gitlab.cskylab.net> and navigate to `gitlab-backups` bucket.
+To access the backup `*.tar` files, log in to the minio service in <https://minio-gitlab.mod.cskylab.net> and navigate to `gitlab-backups` bucket.
 
 You can obtain `Access Key` and `Secret Key` by running:
 
@@ -353,7 +433,9 @@ kubectl -n=gitlab create secret generic gitlab-rails-secret --from-file=secrets.
 # Restart the pods
 kubectl -n=gitlab delete pods -lapp=sidekiq \
 && kubectl -n=gitlab delete pods -lapp=webservice \
-&& kubectl -n=gitlab delete pods -lapp=task-runner
+&& kubectl -n=gitlab delete pods -lapp=toolbox \
+&& kubectl -n=gitlab delete pods -lapp=migrations
+
 ```
 
 ### GitLab - Keycloak OpenID Connect OmniAuth provider
@@ -372,7 +454,7 @@ Go to **Clients page** and **Create** a new client with the following settings:
 
 - Client ID: gitlab
 - Client Protocol: openid-connect
-- Root URL: https://gitlab.cskylab.net
+- Root URL: https://gitlab.mod.cskylab.net
 - Save
   
 #### Step 2 - Configure OIDC Client in Keycloak
@@ -387,9 +469,9 @@ Configure the new client with the following settings (use the appropriate url an
 - Direct Access Grants Enabled: ON
 - Service Accounts Enabled: OFF
 - Authorization Enabled: OFF
-- Root URL: https://gitlab.cskylab.net
+- Root URL: https://gitlab.mod.cskylab.net
 - Valid Redirect URIs: *
-- Web Origins: https://gitlab.cskylab.net/*
+- Web Origins: https://gitlab.mod.cskylab.net/*
 - Save
 
 Save and go to **Credentials** tab. Copy the **Secret** field to use later.
@@ -425,7 +507,7 @@ args:
   client_options: {
     identifier: 'gitlab',
     secret: 5edffd1e-c3ab-47d3-a32e-b38a4977d6d3,
-    redirect_uri: 'https://gitlab.cskylab.net/users/auth/openid_connect/callback'
+    redirect_uri: 'https://gitlab.mod.cskylab.net/users/auth/openid_connect/callback'
   }
 ```
 
@@ -537,59 +619,6 @@ Examples:
   # Display namespace, persistence and charts status:
     ./csdeploy.sh -l
 ```
-
-**Tasks performed:**
-
-| ${execution_mode}                | Tasks                      | Block / Description                                                         |
-| -------------------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| [pull-charts]                    |                            | **Pull helm charts from repositories**                                      |
-|                                  | Clean `./charts` directory | Remove all contents in `./charts` directory.                                |
-|                                  | Pull helm charts           | Pull new charts according to sourced script in variable `source_charts`.    |
-|                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
-| [install]                        |                            | **Create namespace, certificate, secrets and PV's**                         |
-|                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-|                                  | Create certificates        | Apply all certificate manifests in the form `cert-*.yaml`.                  |
-|                                  | Create secrets             | Create secrets containing usernames, passwords... etc.                      |
-|                                  | Create PV's                | Apply all persistent volume manifests in the form `pv-*.yaml`.              |
-| [update] [install]               |                            | **Deploy charts**                                                           |
-|                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
-| [uninstall]                      |                            | **Uninstall charts**                                                        |
-|                                  | Uninstall charts           | Uninstall all charts in `./charts` directory.                               |
-| [uninstall] [remove]             |                            | **Remove namespace and PV's**                                               |
-|                                  | Remove namespace           | Remove namespace and all its objects.                                       |
-|                                  | Delete PV's                | Delete all persistent volume manifests in the form `pv-*.yaml`.             |
-| [install] [update] [list-status] |                            | **Display status information**                                              |
-|                                  | Display namespace          | Namespace and object status.                                                |
-|                                  | Display certificates       | Certificate status information.                                             |
-|                                  | Display secrets            | Secret status information.                                                  |
-|                                  | Display persistence        | Persistence status information.                                             |
-|                                  | Display charts             | Charts releases history information.                                        |
-|                                  |                            |                                                                             |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                   | Description                                      | Values                             |
-| --------------------------- | ------------------------------------------------ | ---------------------------------- |
-| `_tplname`                  | template name                                    | `k8s-gitlab`                  |
-| `_tpldescription`           | template description                             | `Gitlab DevOps platform`           |
-| `_tplversion`               | template version                                 | `22-03-23`               |
-| `kubeconfig`                | kubeconfig file                                  | `config-k8s-mod`                |
-| `namespace.name`            | namespace name                                   | `gitlab`            |
-| `namespace.domain`          | domain name                                      | `cskylab.net`          |
-| `publishing.url`            | external URL                                     | `gitlab.cskylab.net`            |
-| `publishing.password`       | password                                         | `NoFear21`       |
-| `certificate.clusterissuer` | cert-manager clusterissuer                       | `ca-test-internal` |
-| `keycloak.issuer`           | keycloak issuer url                              | `https://keycloak.cskylab.net/auth/realms/cskylab`           |
-| `keycloak.secret`           | keycloak secret                                  | `5edffd1e-c3ab-47d3-a32e-b38a4977d6d3`           |
-| `registry.proxy`            | docker private proxy URL                         | `harbor.cskylab.net/dockerhub`            |
-| `restic.password`           | password to access restic repository (mandatory) | `NoFear21`           |
-| `restic.repo`               | restic repository (mandatory)                    | `s3:https://backup.cskylab.net/bucketname/restic`               |
-| `restic.aws_access`         | S3 bucket access key (if used)                   | `bucketname_rw`         |
-| `restic.aws_secret`         | S3 bucket secret key (if used)                   | `iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr`         |
-| `localpvnodes.all_pv`       | dataservice node                                 | `k8s-mod-n1`       |
-| `localrsyncnodes.all_pv`    | rsync node                                       | `k8s-mod-n2`    |
 
 ## License
 

@@ -1,0 +1,13 @@
+_tpldescription: Kubernetes hellow world app
+_tplname: k8s-hello
+_tplversion: 22-03-23
+certificate:
+  clusterissuer: trantortech
+kubeconfig: config-k8s-mod
+namespace:
+  domain: cskylab.net
+  name: hello-mod
+publishing:
+  url: hello-mod.cskylab.net
+registry:
+  proxy: harbor.cskylab.net/dockerhub

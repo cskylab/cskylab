@@ -1,0 +1,31 @@
+#
+# MinIO tenant external certificate
+#
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-tenant-certificate
+  namespace: minio-tenant
+spec:
+  commonName: minio-tenant.pro.cskylab.net
+  secretName: minio-tenant-tenant-tls
+  dnsNames:
+    # Ingress domain
+    - minio-tenant.pro.cskylab.net
+    - minio-tenant-console.pro.cskylab.net
+    # Internal
+    - minio-tenant-hl
+    - minio-tenant-hl.minio-tenant.svc.cluster.local
+    - '*.minio-tenant-hl'
+    - '*.minio-tenant-hl.minio-tenant.svc.cluster.local'
+    - minio
+    - minio.minio-tenant.svc.cluster.local
+    - minio-tenant-console
+    - minio-tenant-console.minio-tenant.svc.cluster.local
+  issuerRef:
+    name: trantortech
+    # We can reference ClusterIssuers by changing the kind here.
+    # The default value is Issuer (i.e. a locally namespaced Issuer)
+    kind: ClusterIssuer
+    group: cert-manager.io
