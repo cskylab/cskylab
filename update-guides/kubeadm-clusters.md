@@ -218,10 +218,10 @@ sudo apt-get update \
   && sudo apt-get autoremove -y
 ```
 
-- To reboot the master node:
+- To reboot the node:
 
 ```bash
-# Reboot master node
+# Reboot node
 sudo reboot
 ```
 
