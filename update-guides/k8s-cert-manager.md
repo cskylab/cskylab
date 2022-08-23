@@ -51,7 +51,7 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 # Charts
-helm pull jetstack/cert-manager --version 1.8.0 --untar
+helm pull jetstack/cert-manager --version 1.9.1 --untar
 
 EOF
 )"
@@ -63,14 +63,14 @@ EOF
 ``` bash
 ## v22-08-21 <!-- omit in toc -->
 
-## Helm charts: `jetstack/cert-manager v1.8.0` <!-- omit in toc -->
+## Helm charts: `jetstack/cert-manager v1.9.1` <!-- omit in toc -->
 ```
 
 - Save file
 
 #### 2.- Pull charts & update namespace
 
-From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` repository directory.
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/cert-manager` repository directory.
 
 Execute the following commands to pull charts and update namespace:
 
@@ -140,7 +140,7 @@ EOF
 
 #### 2.- Pull charts & update namespace
 
-From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` repository directory.
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/cert-manager` repository directory.
 
 Execute the following commands to pull charts and update namespace:
 
