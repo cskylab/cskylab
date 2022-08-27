@@ -33,7 +33,6 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Helm charts and values](#helm-charts-and-values)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -497,58 +496,6 @@ Examples:
   # Display namespace, persistence and charts status:
     ./csdeploy.sh -l
 ```
-
-**Tasks performed:**
-
-| ${execution_mode}                | Tasks                      | Block / Description                                                         |
-| -------------------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| [pull-charts]                    |                            | **Pull helm charts from repositories**                                      |
-|                                  | Clean `./charts` directory | Remove all contents in `./charts` directory.                                |
-|                                  | Pull helm charts           | Pull new charts according to sourced script in variable `source_charts`.    |
-|                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
-| [install]                        |                            | **Create namespace, certificate, secrets and PV's**                         |
-|                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-|                                  | Create PV's                | Apply all persistent volume manifests in the form `pv-*.yaml`.              |
-| [update] [install]               |                            | **Deploy charts**                                                           |
-|                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
-| [uninstall]                      |                            | **Uninstall charts**                                                        |
-|                                  | Uninstall charts           | Uninstall all charts in `./charts` directory.                               |
-| [uninstall] [remove]             |                            | **Remove namespace and PV's**                                               |
-|                                  | Remove namespace           | Remove namespace and all its objects.                                       |
-|                                  | Delete PV's                | Delete all persistent volume manifests in the form `pv-*.yaml`.             |
-| [install] [update] [list-status] |                            | **Display status information**                                              |
-|                                  | Display namespace          | Namespace and object status.                                                |
-|                                  | Display certificates       | Certificate status information.                                             |
-|                                  | Display secrets            | Secret status information.                                                  |
-|                                  | Display persistence        | Persistence status information.                                             |
-|                                  | Display charts             | Charts releases history information.                                        |
-|                                  |                            |                                                                             |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                   | Description                                      | Values                             |
-| --------------------------- | ------------------------------------------------ | ---------------------------------- |
-| `_tplname`                  | template name                                    | `{{ ._tplname }}`                  |
-| `_tpldescription`           | template description                             | `{{ ._tpldescription }}`           |
-| `_tplversion`               | template version                                 | `{{ ._tplversion }}`               |
-| `kubeconfig`                | kubeconfig file                                  | `{{ .kubeconfig }}`                |
-| `namespace.name`            | namespace name                                   | `{{ .namespace.name }}`            |
-| `namespace.domain`          | domain name                                      | `{{ .namespace.domain }}`          |
-| `publishing.url`            | external URL                                     | `{{ .publishing.url }}`            |
-| `publishing.password`       | password                                         | `{{ .publishing.password }}`       |
-| `certificate.clusterissuer` | cert-manager clusterissuer                       | `{{ .certificate.clusterissuer }}` |
-| `registry.private`          | private registry URL                             | `{{ .registry.private }}`          |
-| `registry.proxy`            | docker private proxy URL                         | `{{ .registry.proxy }}`            |
-| `registry.username`         | private registry username                        | `{{ .registry.username }}`         |
-| `registry.password`         | private registry password                        | `{{ .registry.password }}`         |
-| `restic.password`           | password to access restic repository (mandatory) | `{{ .restic.password }}`           |
-| `restic.repo`               | restic repository (mandatory)                    | `{{ .restic.repo }}`               |
-| `restic.aws_access`         | S3 bucket access key (if used)                   | `{{ .restic.aws_access }}`         |
-| `restic.aws_secret`         | S3 bucket secret key (if used)                   | `{{ .restic.aws_secret }}`         |
-| `localpvnodes.all_pv`       | dataservice node                                 | `{{ .localpvnodes.all_pv }}`       |
-| `localrsyncnodes.all_pv`    | rsync node                                       | `{{ .localrsyncnodes.all_pv }}`    |
 
 ## License
 
