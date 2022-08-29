@@ -51,7 +51,7 @@ This procedure updates the installation in k8s-mod cluster.
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/miniostalone` repository directory.
 
-- Remove gitlab namespace by running:
+- Remove namespace by running:
 
 ```bash
 # Uninstall chart and namespace.  
