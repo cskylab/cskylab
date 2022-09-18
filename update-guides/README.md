@@ -2,21 +2,33 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
+- [v99-99-99](#v99-99-99)
+  - [Application updates](#application-updates)
 - [v22-08-21](#v22-08-21)
   - [Release notes](#release-notes)
-  - [Application updates](#application-updates)
+  - [Application updates](#application-updates-1)
 - [v22-03-23](#v22-03-23)
   - [Release notes](#release-notes-1)
-  - [Application updates](#application-updates-1)
+  - [Application updates](#application-updates-2)
 - [v22-01-05](#v22-01-05)
   - [Release notes](#release-notes-2)
-  - [Application updates](#application-updates-2)
+  - [Application updates](#application-updates-3)
 - [v21-12-06](#v21-12-06)
   - [Release notes](#release-notes-3)
   - [Patches](#patches)
-  - [Application updates](#application-updates-3)
+  - [Application updates](#application-updates-4)
 - [v21-11-24](#v21-11-24)
   - [Baseline build AM](#baseline-build-am)
+
+---
+## v99-99-99
+
+### Application updates
+
+Application update procedures in this release:
+
+| Procedures                                       |
+| ------------------------------------------------ |
 
 ---
 ## v22-08-21
