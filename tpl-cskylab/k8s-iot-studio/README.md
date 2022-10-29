@@ -2,6 +2,8 @@
 
 ## k8s-iot-studio v22-08-21 <!-- omit in toc -->
 
+  ![ ](./images/nr-image-1.png)
+
 ## Helm charts:<!-- omit in toc -->
 
 - k8s-at-home/mosquitto
