@@ -62,8 +62,7 @@ From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/metall
 - Remove metallb-system namespace by running:
 
 ```bash
-# Uninstall chart and namespace.  
-./csdeploy.sh -m uninstall
+./csdeploy.sh -m remove
 ```
 
 #### 2.- Rename old configuration directory
