@@ -3,18 +3,19 @@
 # cSkyLab Update Guides <!-- omit in toc -->
 
 - [v99-99-99](#v99-99-99)
+  - [Release notes](#release-notes)
   - [Application updates](#application-updates)
 - [v22-08-21](#v22-08-21)
-  - [Release notes](#release-notes)
+  - [Release notes](#release-notes-1)
   - [Application updates](#application-updates-1)
 - [v22-03-23](#v22-03-23)
-  - [Release notes](#release-notes-1)
+  - [Release notes](#release-notes-2)
   - [Application updates](#application-updates-2)
 - [v22-01-05](#v22-01-05)
-  - [Release notes](#release-notes-2)
+  - [Release notes](#release-notes-3)
   - [Application updates](#application-updates-3)
 - [v21-12-06](#v21-12-06)
-  - [Release notes](#release-notes-3)
+  - [Release notes](#release-notes-4)
   - [Patches](#patches)
   - [Application updates](#application-updates-4)
 - [v21-11-24](#v21-11-24)
@@ -23,12 +24,31 @@
 ---
 ## v99-99-99
 
+### Release notes
+
+Welcome to cSkyLab release of v99-99-99.
+
+To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
+
+```bash
+# Check your remote git repositories
+git remote -v
+
+# Update your repository from remote upstream
+git pull upstream master
+```
+
+All changes have been incorporated to templates library `tpl-cskylab`. New services and applications deployments created with this release, will have all these updates applied. Only previously deployed applications and services should be updated.
+
+It is highly recommended to update zone `cs-mod`, before proceeding to update zones `cs-pro` and `cs-sys`.
+
 ### Application updates
 
 Application update procedures in this release:
 
 | Procedures                                       |
 | ------------------------------------------------ |
+| [k8s-metallb-system](./k8s-metallb-system.md)    |
 
 ---
 ## v22-08-21
