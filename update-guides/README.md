@@ -50,6 +50,7 @@ Application update procedures in this release:
 | ------------------------------------------------ |
 | [k8s-metallb-system](./k8s-metallb-system.md)    |
 | [k8s-ingress-nginx](./k8s-ingress-nginx.md)      |
+| [k8s-cert-manager](./k8s-cert-manager.md)        |
 
 ---
 ## v22-08-21
