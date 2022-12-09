@@ -1,8 +1,8 @@
 # [Harbor](https://goharbor.io/) registry <!-- omit in toc -->
 
-## v22-08-21 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v15.0.5 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v16.0.4 <!-- omit in toc -->
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
@@ -21,7 +21,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Backup & data protection](#backup--data-protection)
+  - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
   - [Create private registry](#create-private-registry)

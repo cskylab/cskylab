@@ -4,32 +4,108 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-08-21](#v22-08-21)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
+    - [1.- Update configuration files](#1--update-configuration-files)
+    - [2.- Pull charts \& update](#2--pull-charts--update)
+  - [Reference](#reference)
+- [v22-08-21](#v22-08-21)
+  - [Background](#background-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Uninstall harbor namespace](#1--uninstall-harbor-namespace)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
     - [4.- Install new harbor namespace](#4--install-new-harbor-namespace)
-  - [Reference](#reference)
-- [v22-03-23](#v22-03-23)
-  - [Background](#background-1)
-  - [How-to guides](#how-to-guides-1)
-    - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts & update](#2--pull-charts--update)
   - [Reference](#reference-1)
-- [v22-01-05](#v22-01-05)
+- [v22-03-23](#v22-03-23)
   - [Background](#background-2)
   - [How-to guides](#how-to-guides-2)
     - [1.- Update configuration files](#1--update-configuration-files-1)
-    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
+    - [2.- Pull charts \& update](#2--pull-charts--update-1)
   - [Reference](#reference-2)
-- [v21-12-06](#v21-12-06)
+- [v22-01-05](#v22-01-05)
   - [Background](#background-3)
   - [How-to guides](#how-to-guides-3)
     - [1.- Update configuration files](#1--update-configuration-files-2)
-    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade-1)
+    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade)
   - [Reference](#reference-3)
+- [v21-12-06](#v21-12-06)
+  - [Background](#background-4)
+  - [How-to guides](#how-to-guides-4)
+    - [1.- Update configuration files](#1--update-configuration-files-3)
+    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade-1)
+  - [Reference](#reference-4)
+
+---
+
+
+## v99-99-99
+
+### Background
+
+Harbor chart 16.0.4 updates components versions in Harbor appVersion 2.6.2.
+
+This procedure updates Harbor installation in k8s-mod cluster.
+
+### How-to guides
+
+#### 1.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull bitnami/harbor --version 16.0.4 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v99-99-99 <!-- omit in toc -->
+
+## Helm charts: bitnami/harbor v16.0.4 <!-- omit in toc -->
+```
+
+- Save file
+
+#### 2.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` repository directory.
+
+Execute the following commands to pull charts and upgrade:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+```
+
+### Reference
+
+- <https://github.com/bitnami/charts/tree/master/bitnami/harbor>
 
 ---
 
