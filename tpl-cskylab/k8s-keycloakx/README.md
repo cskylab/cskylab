@@ -1,11 +1,11 @@
 # Keycloak identity and access management <!-- omit in toc -->
 
-## v22-08-21 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts:<!-- omit in toc -->
+## Helm charts: <!-- omit in toc -->
 
-- codecentric/keycloakx v1.6.0 appVersion 18.0.0 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
-- bitnami/postgresql 11.7.1 appVersion 14.5.0      
+- codecentric/keycloakx v2.0.0 appVersion 20.0.1 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
+- bitnami/postgresql 12.1.3 appVersion 14.x      
 
 [Keycloak](https://www.keycloak.org) is a high performance Java-based identity and access management solution. It lets developers add an authentication layer to their applications with minimum effort.
 
@@ -25,7 +25,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Backup & data protection](#backup--data-protection)
+  - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
   - [Customize Keycloak Themes](#customize-keycloak-themes)
