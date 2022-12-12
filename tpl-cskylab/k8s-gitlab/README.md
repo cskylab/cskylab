@@ -1,8 +1,8 @@
 # Gitlab open DevOps platform <!-- omit in toc -->
 
-## v22-08-21 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v6.2.2 bitnami/postgresql v11.7.1<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v6.6.2 bitnami/postgresql v12.1.3<!-- omit in toc -->
 
 [Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.
 
@@ -21,10 +21,10 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Backup & data protection](#backup--data-protection)
+  - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
-  - [Gitlab Application Backup & Restore](#gitlab-application-backup--restore)
+  - [Gitlab Application Backup \& Restore](#gitlab-application-backup--restore)
     - [Rails-Secret Backup](#rails-secret-backup)
     - [Cron based backups](#cron-based-backups)
     - [Manual Backup](#manual-backup)

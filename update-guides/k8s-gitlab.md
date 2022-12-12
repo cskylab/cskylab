@@ -4,10 +4,18 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-08-21](#v22-08-21)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
     - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
+    - [1.- Change image section in values-postgresql.yaml](#1--change-image-section-in-values-postgresqlyaml)
+    - [2.- Perform all intermediate gitlab charts upgrades](#2--perform-all-intermediate-gitlab-charts-upgrades)
+    - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade)
+  - [Reference](#reference)
+- [v22-08-21](#v22-08-21)
+  - [Background](#background-1)
+    - [Prerequisites](#prerequisites-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Uninstall gitlab namespace](#1--uninstall-gitlab-namespace)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
@@ -17,39 +25,165 @@
     - [7.- Perform all intermediate gitlab charts upgrades](#7--perform-all-intermediate-gitlab-charts-upgrades)
     - [8.- Perform final configuration steps after upgrade](#8--perform-final-configuration-steps-after-upgrade)
     - [9.- Update new restic backup and rsync procedures](#9--update-new-restic-backup-and-rsync-procedures)
-  - [Reference](#reference)
-- [v22-03-23](#v22-03-23)
-  - [Background](#background-1)
-    - [Prerequisites](#prerequisites-1)
-  - [How-to guides](#how-to-guides-1)
-    - [1.- Intermediate update to gitlab chart 5.6.6](#1--intermediate-update-to-gitlab-chart-566)
-      - [1a.- Update configuration files](#1a--update-configuration-files)
-      - [1b.- Pull charts & update](#1b--pull-charts--update)
-    - [2.- Intermediate update to gitlab chart 5.7.5](#2--intermediate-update-to-gitlab-chart-575)
-      - [2a.- Update configuration files](#2a--update-configuration-files)
-      - [2b.- Pull charts & update](#2b--pull-charts--update)
-    - [3.- Final update to gitlab chart 5.8.4](#3--final-update-to-gitlab-chart-584)
-      - [3a.- Update configuration files](#3a--update-configuration-files)
-      - [3b.- Pull charts & update](#3b--pull-charts--update)
   - [Reference](#reference-1)
-- [v22-01-05](#v22-01-05)
+- [v22-03-23](#v22-03-23)
   - [Background](#background-2)
     - [Prerequisites](#prerequisites-2)
   - [How-to guides](#how-to-guides-2)
+    - [1.- Intermediate update to gitlab chart 5.6.6](#1--intermediate-update-to-gitlab-chart-566)
+      - [1a.- Update configuration files](#1a--update-configuration-files)
+      - [1b.- Pull charts \& update](#1b--pull-charts--update)
+    - [2.- Intermediate update to gitlab chart 5.7.5](#2--intermediate-update-to-gitlab-chart-575)
+      - [2a.- Update configuration files](#2a--update-configuration-files)
+      - [2b.- Pull charts \& update](#2b--pull-charts--update)
+    - [3.- Final update to gitlab chart 5.8.4](#3--final-update-to-gitlab-chart-584)
+      - [3a.- Update configuration files](#3a--update-configuration-files)
+      - [3b.- Pull charts \& update](#3b--pull-charts--update)
+  - [Reference](#reference-2)
+- [v22-01-05](#v22-01-05)
+  - [Background](#background-3)
+    - [Prerequisites](#prerequisites-3)
+  - [How-to guides](#how-to-guides-3)
     - [1.- Intermediate update to gitlab chart 5.5.2](#1--intermediate-update-to-gitlab-chart-552)
       - [1a.- Update configuration files](#1a--update-configuration-files-1)
-      - [1b.- Pull charts & upgrade](#1b--pull-charts--upgrade)
+      - [1b.- Pull charts \& upgrade](#1b--pull-charts--upgrade)
     - [2.- Update to gitlab chart 5.6.0](#2--update-to-gitlab-chart-560)
       - [2a.- Update configuration files](#2a--update-configuration-files-1)
-      - [2b.- Pull charts & upgrade](#2b--pull-charts--upgrade)
-  - [Reference](#reference-2)
+      - [2b.- Pull charts \& upgrade](#2b--pull-charts--upgrade)
+  - [Reference](#reference-3)
 - [v21-12-06](#v21-12-06)
-  - [Background](#background-3)
-  - [How-to guides](#how-to-guides-3)
+  - [Background](#background-4)
+  - [How-to guides](#how-to-guides-4)
     - [1.- Rename section in values-gitlab.yaml](#1--rename-section-in-values-gitlabyaml)
     - [2.- Update configuration files](#2--update-configuration-files)
-    - [3.- Pull charts & upgrade](#3--pull-charts--upgrade)
-  - [Reference](#reference-3)
+    - [3.- Pull charts \& upgrade](#3--pull-charts--upgrade)
+  - [Reference](#reference-4)
+
+---
+
+
+## v99-99-99
+
+### Background
+
+This procedure updates GitLab chart to version 6.6.2 with appVersion 15.6.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous.
+
+Postgresql chart is also updated to version 12.1.3, but application must be maintained in version 12.x.
+
+This procedure updates gitlab installation in k8s-mod cluster.
+
+#### Prerequisites
+
+You must be running at least chart 6.2.2 (Updated or deployed from cSkyLab v22-08-21)
+
+### How-to guides
+
+#### 1.- Change image section in values-postgresql.yaml
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/gitlab` application folder repository.
+
+- Edit `values-postgresql.yaml` file
+- Look for the following section, and change values as follows:
+
+```yaml
+## Bitnami PostgreSQL image version
+## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
+## @param image.tag PostgreSQL image tag (immutable tags are recommended)
+##
+image:
+  # tag: 12.12.0-debian-11-r1
+  tag: 12
+```
+
+- Save the file
+
+- Edit `csdeploy.sh` file and change the gitlab chart version on `source_charts` variable with the appropriate values:
+
+```bash
+# Command to paste
+...
+...
+helm pull bitnami/postgresql --version 12.1.3 --untar
+...
+...
+```
+
+- Update gitlab namespace by running:
+
+```bash
+# Pull new chart versions
+./csdeploy.sh -m pull-charts
+
+# Redeploy upgraded chart.  
+./csdeploy.sh -m update
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+#### 2.- Perform all intermediate gitlab charts upgrades
+
+Gitlab charts updates must be made one at a time from the latest minor version of the previous.
+
+To do so, repeat the following steps for every intermediate chart version:
+
+
+- Edit `csdeploy.sh` file and change the gitlab chart version on `source_charts` variable with the appropriate values:
+
+```bash
+# Command to paste
+...
+...
+helm pull gitlab/gitlab --version x.x.x --untar
+...
+...
+```
+
+- Update gitlab namespace by running:
+
+```bash
+# Pull new chart versions
+./csdeploy.sh -m pull-charts
+
+# Redeploy upgraded chart.  
+./csdeploy.sh -m update
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+>**Note**: In every upgrade, you must wait at least 10 minutes until pod `gitlab-migrations-X-xxxxx` status is **COMPLETED**. Before to perform the next one, check the application is running properly with its data.
+
+You must perform all intermediate gitlab chart upgrades for every of these chart versions:
+
+| Version                         | Command to paste                                |
+| ------------------------------- | ----------------------------------------------- |
+| From chart 6.2.x to chart 6.2.5 | helm pull gitlab/gitlab --version 6.2.5 --untar |
+| From chart 6.2.5 to chart 6.3.5 | helm pull gitlab/gitlab --version 6.3.5 --untar |
+| From chart 6.3.5 to chart 6.4.6 | helm pull gitlab/gitlab --version 6.4.6 --untar |
+| From chart 6.4.6 to chart 6.5.7 | helm pull gitlab/gitlab --version 6.5.7 --untar |
+| From chart 6.5.7 to chart 6.6.2 | helm pull gitlab/gitlab --version 6.6.2 --untar |
+
+#### 3.- Perform final configuration steps after upgrade
+
+- After migration, you must save rail secrets to rail-secrets.yaml
+
+```bash
+# Save rail secrets to rail-secrets.yaml
+kubectl -n=namespace get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
+```
+
+### Reference
+
+- <https://docs.gitlab.com/charts/>
 
 ---
 
