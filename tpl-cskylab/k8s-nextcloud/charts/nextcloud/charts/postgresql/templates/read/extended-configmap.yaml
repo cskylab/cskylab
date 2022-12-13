@@ -1,10 +1,11 @@
-{{- if and .Values.metrics.enabled .Values.metrics.customMetrics (eq .Values.architecture "replication") }}
+{{- if (include "postgresql.readReplicas.createExtendedConfigmap" .) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ printf "%s-metrics" (include "postgresql.readReplica.fullname" .) }}
+  name: {{ printf "%s-extended-configuration" (include "postgresql.readReplica.fullname" .) }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: read
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -12,5 +13,6 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  custom-metrics.yaml: {{ toYaml .Values.metrics.customMetrics | quote }}
+  override.conf: |-
+    {{- include "common.tplvalues.render" ( dict "value" .Values.readReplicas.extendedConfiguration "context" $ ) | nindent 4 }}
 {{- end }}

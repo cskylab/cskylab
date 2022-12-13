@@ -4,10 +4,17 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-08-21](#v22-08-21)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
+    - [1.- Update configuration files](#1--update-configuration-files)
+    - [2.- Pull charts \& update](#2--pull-charts--update)
+  - [Reference](#reference)
+- [v22-08-21](#v22-08-21)
+  - [Background](#background-1)
+  - [Prerequisites](#prerequisites-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Uninstall nextcloud namespace](#1--uninstall-nextcloud-namespace)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
@@ -16,27 +23,102 @@
     - [6.- Upgrade nextcloud to intermediate v23.0.3](#6--upgrade-nextcloud-to-intermediate-v2303)
     - [6.- Perform final nextcloud chart upgrade](#6--perform-final-nextcloud-chart-upgrade)
     - [8.- Update new restic backup and rsync procedures](#8--update-new-restic-backup-and-rsync-procedures)
-  - [Reference](#reference)
-- [v22-03-23](#v22-03-23)
-  - [Background](#background-1)
-  - [Prerequisites](#prerequisites-1)
-  - [How-to guides](#how-to-guides-1)
-    - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts & update](#2--pull-charts--update)
   - [Reference](#reference-1)
-- [v22-01-05](#v22-01-05)
+- [v22-03-23](#v22-03-23)
   - [Background](#background-2)
+  - [Prerequisites](#prerequisites-2)
   - [How-to guides](#how-to-guides-2)
-    - [1.- Change redis to standalone mode](#1--change-redis-to-standalone-mode)
-    - [2.- Update configuration files](#2--update-configuration-files)
-    - [3.- Pull charts & re-install application](#3--pull-charts--re-install-application)
+    - [1.- Update configuration files](#1--update-configuration-files-1)
+    - [2.- Pull charts \& update](#2--pull-charts--update-1)
   - [Reference](#reference-2)
-- [v21-12-06](#v21-12-06)
+- [v22-01-05](#v22-01-05)
   - [Background](#background-3)
   - [How-to guides](#how-to-guides-3)
-    - [1.- Update configuration files](#1--update-configuration-files-1)
-    - [2.- Pull charts & upgrade](#2--pull-charts--upgrade)
+    - [1.- Change redis to standalone mode](#1--change-redis-to-standalone-mode)
+    - [2.- Update configuration files](#2--update-configuration-files)
+    - [3.- Pull charts \& re-install application](#3--pull-charts--re-install-application)
   - [Reference](#reference-3)
+- [v21-12-06](#v21-12-06)
+  - [Background](#background-4)
+  - [How-to guides](#how-to-guides-4)
+    - [1.- Update configuration files](#1--update-configuration-files-2)
+    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade)
+  - [Reference](#reference-4)
+
+---
+
+## v99-99-99
+
+### Background
+
+Nextcloud chart 3.3.4 updates chart parameters in Nextcloud appVersion 25.0.2.
+
+This procedure updates Nextcloud installation in k8s-mod cluster.
+
+### Prerequisites
+
+Previous v22-08-21 deployment of the namespace is needed.
+
+### How-to guides
+
+#### 1.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 3.3.4 --untar
+helm pull bitnami/mariadb --version 11.4.1 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v99-99-99 <!-- omit in toc -->
+
+## Helm charts: nextcloud/nextcloud v3.3.4 bitnami/mariadb v11.4.1 <!-- omit in toc -->
+```
+
+- Save file
+
+#### 2.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` repository directory.
+
+Execute the following commands to pull charts and update:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+```
+
+### Reference
+
+- <https://github.com/nextcloud/helm/tree/master/charts/nextcloud>
 
 ---
 
