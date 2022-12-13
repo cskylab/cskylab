@@ -178,7 +178,7 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 
 ```bash
 # Save rail secrets to rail-secrets.yaml
-kubectl -n=namespace get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
+kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
 ```
 
 ### Reference
