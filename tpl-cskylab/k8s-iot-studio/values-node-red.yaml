@@ -9,7 +9,7 @@ image:
   # -- image repository
   repository: {{ .registry.proxy }}/nodered/node-red
   # -- image tag
-  tag: latest
+  tag: 3.0.2
   # -- image pull policy
   # pullPolicy: IfNotPresent
 

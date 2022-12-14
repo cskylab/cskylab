@@ -1,6 +1,6 @@
 # Kubernetes IOT Studio<!-- omit in toc -->
 
-## k8s-iot-studio v22-08-21 <!-- omit in toc -->
+## k8s-iot-studio v99-99-99 <!-- omit in toc -->
 
   ![ ](./images/nr-image-1.png)
 
@@ -35,7 +35,7 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Backup & data protection](#backup--data-protection)
+  - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
 - [Reference](#reference)

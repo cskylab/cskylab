@@ -97,10 +97,10 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 ## Charts
-helm pull k8s-at-home/mosquitto --version 4.7.0 --untar
-helm pull k8s-at-home/node-red --version 10.3.0 --untar
-helm pull influxdata/influxdb2 --version 2.1.0 --untar
-helm pull bitnami/grafana --version 8.0.4 --untar
+helm pull k8s-at-home/mosquitto --version 4.8.2 --untar
+helm pull k8s-at-home/node-red --version 10.3.2 --untar
+helm pull influxdata/influxdb2 --version 2.1.1 --untar
+helm pull bitnami/grafana --version 8.2.20 --untar
 
 EOF
 )"
