@@ -11,7 +11,7 @@ operator:
   #     value: ""
   image:
     repository: minio/operator
-    tag: v4.4.8
+    tag: v4.5.5
     pullPolicy: IfNotPresent
   imagePullSecrets: [ ]
   initcontainers: [ ]
@@ -22,7 +22,16 @@ operator:
     runAsNonRoot: true
     fsGroup: 1000
   nodeSelector: { }
-  affinity: { }
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: name
+                operator: In
+                values:
+                  - minio-operator
+          topologyKey: kubernetes.io/hostname
   tolerations: [ ]
   topologySpreadConstraints: [ ]
   resources:
@@ -34,7 +43,7 @@ operator:
 console:
   image:
     repository: minio/console
-    tag: v0.14.7
+    tag: v0.22.1
     pullPolicy: IfNotPresent
   imagePullSecrets: [ ]
   initcontainers: [ ]
@@ -55,6 +64,6 @@ console:
     tls: [ ]
     host: console.local
     path: /
+    pathType: Prefix
   volumes: [ ]
   volumeMounts: [ ]
-
