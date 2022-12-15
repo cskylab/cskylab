@@ -59,7 +59,7 @@
 
 ### k8s version 1.25.5-00
 
-This page explains how to upgrade a Kubernetes cluster created with kubeadm from version 1.22.x to version 1.23.x, and from version 1.23.x to 1.23.y (where y > x). Skipping MINOR versions when upgrading is unsupported.
+This page explains how to upgrade a Kubernetes cluster created with kubeadm from version 1.24.x to version 1.25.x, and from version 1.25.x to 1.25.y (where y > x). Skipping MINOR versions when upgrading is unsupported.
 
 The complete procedures to upgrade kubeadm kubernetes clusters are covered in: <https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade>
 
@@ -105,23 +105,21 @@ sudo kubeadm upgrade plan
 
 ```bash
 # Apply upgrade
-sudo kubeadm upgrade apply v1.24.4
+kubeadm upgrade apply v1.25.5
 ```
 
 - Once the command finishes you should see:
 
 ```bash
-[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.24.4". Enjoy!
+[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.25.5". Enjoy!
 ```
 
 Upgrade Weave Net CNI provider:
 
 ```bash
 # Update Weave Net
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.NO_MASQ_LOCAL=1"
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 ```
-
->**Note**: Environment variable **NO_MASQ_LOCAL=1** explanations can be found at: <https://metallb.universe.tf/configuration/weave/> and <https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#configuration-options>
 
 - Upgrade kubelet and kubectl:
 
