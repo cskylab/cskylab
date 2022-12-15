@@ -279,7 +279,7 @@ kubectl get nodes
 k8s_version="1.26.0-00"
 
 # Go version
-go_version="go1.19.linux-amd64.tar.gz"
+go_version="go1.19.4.linux-amd64.tar.gz"
 ```
 
 - Save the file, commit changes and synchronize repository with remote
@@ -535,7 +535,7 @@ kubectl get nodes
 k8s_version="1.25.5-00"
 
 # Go version
-go_version="go1.19.linux-amd64.tar.gz"
+go_version="go1.19.4.linux-amd64.tar.gz"
 ```
 
 - Save the file, commit changes and synchronize repository with remote
