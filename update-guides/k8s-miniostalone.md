@@ -47,7 +47,7 @@
 
 ### Background
 
-MinIO chart 11.10.23 updates components versions in MinIO appVersion 2022.12.12.
+MinIO chart 11.10.24 updates components versions in MinIO appVersion 2022.12.12.
 
 This procedure updates MinIO installation in k8s-mod cluster.
 
@@ -72,7 +72,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/minio --version 11.10.23 --untar
+helm pull bitnami/minio --version 11.10.24 --untar
 
 EOF
 )"
@@ -84,7 +84,7 @@ EOF
 ``` bash
 ## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: bitnami/minio v11.10.23<!-- omit in toc -->
+## Helm charts: bitnami/minio v11.10.24<!-- omit in toc -->
 ```
 
 - Save file

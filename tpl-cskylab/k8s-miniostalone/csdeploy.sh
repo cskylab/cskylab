@@ -95,7 +95,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/minio --version 11.10.23 --untar
+helm pull bitnami/minio --version 11.10.24 --untar
 
 EOF
 )"
