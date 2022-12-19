@@ -58,7 +58,7 @@ Application update procedures in this release:
 | [k8s-miniostalone](./k8s-miniostalone.md)            |
 | [k8s-minio-operator/tenant](./k8s-minio-operator.md) |
 | [k8s-iot-studio.md](./k8s-iot-studio.md)             |
-
+| [kubeadm-clusters.md](./kubeadm-clusters.md)     |
 
 ---
 ## v22-08-21
