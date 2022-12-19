@@ -23,7 +23,7 @@ This update covers the following charts upgrades:
 - **k8s-at-home/mosquitto v4.8.2**
 - **k8s-at-home/node-red v10.3.2**: appVersion v3.0.2
 - **influxdata/influxdb2 v2.1.1**: appVersion v2.5.1
-- **bitnami/grafana v8.2.20**: appVersion v2.5.1
+- **bitnami/grafana v8.2.21**: appVersion v9.3.2
 
 This procedure updates iot-studio installation in k8s-mod cluster.
 
@@ -81,7 +81,7 @@ helm repo update
 helm pull k8s-at-home/mosquitto --version 4.8.2 --untar
 helm pull k8s-at-home/node-red --version 10.3.2 --untar
 helm pull influxdata/influxdb2 --version 2.1.1 --untar
-helm pull bitnami/grafana --version 8.2.20 --untar
+helm pull bitnami/grafana --version 8.2.21 --untar
 
 EOF
 )"
