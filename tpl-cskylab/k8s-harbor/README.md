@@ -1,8 +1,8 @@
 # [Harbor](https://goharbor.io/) registry <!-- omit in toc -->
 
-## v22-08-21 <!-- omit in toc -->
+## v22-12-19 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v15.0.5 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v16.1.1 <!-- omit in toc -->
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
@@ -21,7 +21,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Backup & data protection](#backup--data-protection)
+  - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
   - [Create private registry](#create-private-registry)
@@ -277,7 +277,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ## RSync path:  /srv/{{ .namespace.name }}
 ## To Node:     {{ .localrsyncnodes.all_pv }}
 ## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}>> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }} -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }} >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }} -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
 ```
 
 #### Restic backup
@@ -326,7 +326,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## Data service:  /srv/{{ .namespace.name }}
 ## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}>> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }} >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ### Create private registry

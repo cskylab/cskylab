@@ -1,8 +1,8 @@
 # Gitlab open DevOps platform <!-- omit in toc -->
 
-## v22-08-21 <!-- omit in toc -->
+## v22-12-19 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v6.2.2 bitnami/postgresql v11.7.1<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v6.6.2 bitnami/postgresql v12.1.3<!-- omit in toc -->
 
 [Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.
 
@@ -21,10 +21,10 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Backup & data protection](#backup--data-protection)
+  - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
-  - [Gitlab Application Backup & Restore](#gitlab-application-backup--restore)
+  - [Gitlab Application Backup \& Restore](#gitlab-application-backup--restore)
     - [Rails-Secret Backup](#rails-secret-backup)
     - [Cron based backups](#cron-based-backups)
     - [Manual Backup](#manual-backup)
@@ -285,7 +285,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ## RSync path:  /srv/{{ .namespace.name }}
 ## To Node:     {{ .localrsyncnodes.all_pv }}
 ## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}>> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }} -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }} >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .namespace.name }} -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
 ```
 
 #### Restic backup
@@ -334,7 +334,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## Data service:  /srv/{{ .namespace.name }}
 ## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }}>> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }} >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ### Gitlab Application Backup & Restore

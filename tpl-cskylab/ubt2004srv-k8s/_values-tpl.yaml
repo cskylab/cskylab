@@ -6,14 +6,14 @@
 
 _tplname: ubt2004srv-k8s
 _tpldescription: Ubuntu server 20.04 kubernetes node
-_tplversion: 22-03-23
+_tplversion: 22-12-19
 
 #
 # Values to override
 #
 
 ## Kubernetes version to install
-k8s_version: "1.23.5-00"
+k8s_version: "1.25.5-00"
 
 ## Machine related configuration values
 machine:

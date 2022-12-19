@@ -1,7 +1,7 @@
 annotations:
   category: Infrastructure
 apiVersion: v2
-appVersion: 2.5.3
+appVersion: 2.7.0
 dependencies:
 - condition: redis.enabled
   name: redis
@@ -10,14 +10,16 @@ dependencies:
 - condition: postgresql.enabled
   name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 11.x.x
+  version: 12.x.x
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 1.x.x
+  tags:
+  - bitnami-common
+  version: 2.x.x
 description: Harbor is an open source trusted cloud-native registry to store, sign,
   and scan content. It adds functionalities like security, identity, and management
   to the open source Docker distribution.
-home: https://github.com/bitnami/charts/tree/master/bitnami/harbor
+home: https://github.com/bitnami/charts/tree/main/bitnami/harbor
 icon: https://bitnami.com/assets/stacks/harbor-core/img/harbor-core-stack-220x234.png
 keywords:
 - docker
@@ -35,4 +37,4 @@ sources:
 - https://github.com/bitnami/containers/tree/main/bitnami/harbor-registry
 - https://github.com/bitnami/containers/tree/main/bitnami/harbor-registryctl
 - https://goharbor.io/
-version: 15.0.5
+version: 16.1.1

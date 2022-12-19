@@ -6,17 +6,17 @@
 
 _tplname: ubt2004srv-mcc
 _tpldescription: Ubuntu server 20.04 Mission Control Center
-_tplversion: 22-03-23
+_tplversion: 22-12-19
 
 #
 # Values to override
 #
 
-## Kubernetes version for kubectl
-k8s_version: "1.23.5-00"
+# Kubernetes version for kubectl
+k8s_version: "1.25.5-00"
 
-## Go version
-go_version: "go1.17.8.linux-amd64.tar.gz"
+# Go version
+go_version: "go1.19.4.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:
