@@ -44,7 +44,7 @@
 
 ### Background
 
-Harbor chart 16.0.4 updates components versions in Harbor appVersion 2.6.2.
+Harbor chart 16.1.1 updates components versions in Harbor appVersion 2.7.0.
 
 This procedure updates Harbor installation in k8s-mod cluster.
 
@@ -69,7 +69,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/harbor --version 16.0.4 --untar
+helm pull bitnami/harbor --version 16.1.1 --untar
 
 EOF
 )"
@@ -81,7 +81,7 @@ EOF
 ``` bash
 ## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v16.0.4 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v16.1.1 <!-- omit in toc -->
 ```
 
 - Save file

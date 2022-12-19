@@ -4,8 +4,8 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
-  - [k8s version 1.25.5-00](#k8s-version-1255-00)
+- [v99-99-99-b](#v99-99-99-b)
+  - [k8s version 1.26.0-00](#k8s-version-1260-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions)
   - [Upgrading k8s master node](#upgrading-k8s-master-node)
   - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes)
@@ -16,8 +16,8 @@
     - [Update mcc configuration](#update-mcc-configuration)
     - [Connect with mcc](#connect-with-mcc)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc)
-- [v22-08-21](#v22-08-21)
-  - [k8s version 1.24.4-00](#k8s-version-1244-00)
+- [v99-99-99-a](#v99-99-99-a)
+  - [k8s version 1.25.5-00](#k8s-version-1255-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions-1)
   - [Upgrading k8s master node](#upgrading-k8s-master-node-1)
   - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes-1)
@@ -28,8 +28,8 @@
     - [Update mcc configuration](#update-mcc-configuration-1)
     - [Connect with mcc](#connect-with-mcc-1)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc-1)
-- [v22-03-23](#v22-03-23)
-  - [k8s version 1.23.5-00](#k8s-version-1235-00)
+- [v22-08-21](#v22-08-21)
+  - [k8s version 1.24.4-00](#k8s-version-1244-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions-2)
   - [Upgrading k8s master node](#upgrading-k8s-master-node-2)
   - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes-2)
@@ -40,8 +40,8 @@
     - [Update mcc configuration](#update-mcc-configuration-2)
     - [Connect with mcc](#connect-with-mcc-2)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc-2)
-- [v22-01-05](#v22-01-05)
-  - [k8s version 1.23.1-00](#k8s-version-1231-00)
+- [v22-03-23](#v22-03-23)
+  - [k8s version 1.23.5-00](#k8s-version-1235-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions-3)
   - [Upgrading k8s master node](#upgrading-k8s-master-node-3)
   - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes-3)
@@ -52,10 +52,279 @@
     - [Update mcc configuration](#update-mcc-configuration-3)
     - [Connect with mcc](#connect-with-mcc-3)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc-3)
+- [v22-01-05](#v22-01-05)
+  - [k8s version 1.23.1-00](#k8s-version-1231-00)
+  - [List available kubeadm versions](#list-available-kubeadm-versions-4)
+  - [Upgrading k8s master node](#upgrading-k8s-master-node-4)
+  - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes-4)
+    - [Drain the node](#drain-the-node-4)
+    - [Upgrade the node](#upgrade-the-node-4)
+    - [Uncordon the node](#uncordon-the-node-4)
+  - [Upgrade mcc management station](#upgrade-mcc-management-station-4)
+    - [Update mcc configuration](#update-mcc-configuration-4)
+    - [Connect with mcc](#connect-with-mcc-4)
+    - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc-4)
 
 ---
 
-## v99-99-99
+
+## v99-99-99-b 
+
+### k8s version 1.26.0-00
+
+This page explains how to upgrade a Kubernetes cluster created with kubeadm from version 1.25.x to version 1.26.x, and from version 1.26.x to 1.26.y (where y > x). Skipping MINOR versions when upgrading is unsupported.
+
+The complete procedures to upgrade kubeadm kubernetes clusters are covered in: <https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade>
+
+### List available kubeadm versions
+
+To view all available kubeadm versions:
+
+```bash
+# List available kubeadm versions
+sudo apt update && sudo apt-cache madison kubeadm
+```
+
+### Upgrading k8s master node
+
+Connect to k8s master machine and follow the next steps:
+
+- Upgrade kubeadm:
+
+```bash
+# Kubeadm upgrade
+sudo apt-mark unhold kubeadm \
+  && sudo apt-get update \
+  && sudo apt-get install -y kubeadm=1.26.0-00 \
+  && sudo apt-mark hold kubeadm \
+  && sudo apt-mark showhold
+```
+
+- Verify kubeadm version:
+
+```bash
+# Verify kubeadm version
+sudo kubeadm version
+```
+
+- Verify upgrade plan:
+
+```bash
+# Verify upgrade plan
+sudo kubeadm upgrade plan
+```
+
+- To apply k8s master upgrade:
+
+```bash
+# Apply upgrade
+sudo kubeadm upgrade apply v1.26.0
+```
+
+- Once the command finishes you should see:
+
+```bash
+[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.26.0". Enjoy!
+```
+
+Upgrade Weave Net CNI provider:
+
+```bash
+# Update Weave Net
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+```
+
+- Upgrade kubelet and kubectl:
+
+```bash
+# Upgrade kubelet and kubectl
+sudo apt-mark unhold kubelet kubectl \
+  && sudo apt-get update \
+  && sudo apt-get install -y kubelet=1.26.0-00 kubectl=1.26.0-00 \
+  && sudo apt-mark hold kubelet kubectl \
+  && sudo apt-mark showhold
+```
+
+- Restart the kubelet:
+
+```bash
+# Restart the kubelet
+sudo systemctl daemon-reload && sudo systemctl restart kubelet
+```
+
+- If needed, upgrade other packages and reboot:
+
+```bash
+# Distribution upgrade
+sudo apt-get update \
+  && sudo apt-get dist-upgrade -y \
+  && sudo apt-get autoremove -y
+```
+
+- To reboot the master node:
+
+```bash
+# Reboot master node
+sudo reboot
+```
+
+### Upgrading k8s worker nodes
+
+#### Drain the node
+
+Prepare the node for maintenance by marking it unschedulable and evicting the workloads. From computer management machine run:
+
+```bash
+# replace <node-to-drain> with the name of your node you are draining
+kubectl drain <node-to-drain> --ignore-daemonsets --delete-emptydir-data --disable-eviction --force
+```
+
+#### Upgrade the node
+
+Connect to k8s worker node machine and follow the next steps:
+
+- Install kubeadm upgrade:
+
+```bash
+# Kubeadm upgrade
+sudo apt-mark unhold kubeadm \
+  && sudo apt-get update \
+  && sudo apt-get install -y kubeadm=1.26.0-00 \
+  && sudo apt-mark hold kubeadm \
+  && sudo apt-mark showhold
+```
+
+- Verify kubeadm version:
+
+```bash
+# Verify kubeadm version
+sudo kubeadm version
+```
+
+- To apply k8s worker node upgrade:
+
+```bash
+# Apply upgrade
+sudo kubeadm upgrade node
+```
+
+- Once the command finishes you should see:
+
+```bash
+[upgrade] The configuration for this node was successfully updated!
+```
+
+- Upgrade kubelet and kubectl:
+
+```bash
+# Upgrade kubelet and kubectl
+sudo apt-mark unhold kubelet kubectl \
+  && sudo apt-get update \
+  && sudo apt-get install -y kubelet=1.26.0-00 kubectl=1.26.0-00 \
+  && sudo apt-mark hold kubelet kubectl \
+  && sudo apt-mark showhold
+```
+
+- Restart the kubelet:
+
+```bash
+# Restart the kubelet
+sudo systemctl daemon-reload && sudo systemctl restart kubelet
+```
+
+- If needed, upgrade other packages and reboot:
+
+```bash
+# Distribution upgrade
+sudo apt-get update \
+  && sudo apt-get dist-upgrade -y \
+  && sudo apt-get autoremove -y
+```
+
+- To reboot the node:
+
+```bash
+# Reboot node
+sudo reboot
+```
+
+#### Uncordon the node
+
+Bring the node back online by marking it schedulable. From computer management machine run:
+
+```bash
+# replace <node-to-uncordon> with the name of the node
+kubectl uncordon <node-to-uncordon>
+```
+
+Verify the cluster status:
+
+```bash
+# Verify node status and version number
+kubectl get nodes
+```
+
+### Upgrade mcc management station
+
+#### Update mcc configuration
+
+>**Note:** You must have pre-deployed in your computer your ssh keys.
+
+- Open your **cSkLab installation locally cloned repository** and sychronize changes with remote
+- Open console in **cs-sys -> mcc** folder
+- Edit `cs-deploy.sh` script deployment file, and change values for variables **k8s_version** and **go_version** in the following way:
+
+```bash
+# Kubernetes version for kubectl
+k8s_version="1.26.0-00"
+
+# Go version
+go_version="go1.19.4.linux-amd64.tar.gz"
+```
+
+- Save the file, commit changes and synchronize repository with remote
+
+#### Connect with mcc
+
+- Connect to your cSkyLab installation in one of the following ways:
+  - **VPN**: Establish vpn session with `vpn_mgt` profile
+  - **Local**: Connect to physical `sys` network in your `kvm-main/aux` machines
+
+- Check conectivity with `mcc`:
+  
+```bash
+# mcc connectivity
+dig mcc.cskylab.net
+ping mcc.cskylab.net
+```
+
+- Edit your `.ssh/config` and add the check for the following configuration lines to disable HostKeyChecking for `mcc` (if not previously done):
+
+```bash
+# Disable HostKeyChecking for mcc
+Host mcc.cskylab.net
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null
+```
+
+>**Note:** Delete records for mcc.cskylab.net & 192.168.80.5 in your `$HOME/.ssh/known_hosts` file if needed.
+
+#### Inject & Deploy configuration to mcc
+
+- Perform installation procedure:
+
+```bash
+# Run csinject.sh in [ssh-sudoers] execution mode (if not previously executed)
+./csinject.sh -k
+
+
+# Run csinject.sh to inject & deploy configuration in [install] deploy mode
+./csinject.sh -qdm install
+```
+
+---
+
+## v99-99-99-a 
 
 ### k8s version 1.25.5-00
 
