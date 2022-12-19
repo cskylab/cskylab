@@ -1,6 +1,6 @@
 # Gitlab open DevOps platform <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v22-12-19 <!-- omit in toc -->
 
 ## Helm charts: gitlab/gitlab v6.6.2 bitnami/postgresql v12.1.3<!-- omit in toc -->
 

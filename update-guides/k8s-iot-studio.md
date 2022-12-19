@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v22-12-19](#v22-12-19)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Change image section in values-node-red.yaml](#1--change-image-section-in-values-node-redyaml)
@@ -14,7 +14,7 @@
 
 ---
 
-## v99-99-99
+## v22-12-19
 
 ### Background
 
@@ -91,7 +91,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## k8s-iot-studio v99-99-99 <!-- omit in toc -->
+## k8s-iot-studio v22-12-19 <!-- omit in toc -->
 ```
 
 - Save file

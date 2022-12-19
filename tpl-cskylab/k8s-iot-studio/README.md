@@ -1,6 +1,6 @@
 # Kubernetes IOT Studio<!-- omit in toc -->
 
-## k8s-iot-studio v99-99-99 <!-- omit in toc -->
+## k8s-iot-studio v22-12-19 <!-- omit in toc -->
 
   ![ ](./images/nr-image-1.png)
 

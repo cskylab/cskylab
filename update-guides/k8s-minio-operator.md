@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v22-12-19](#v22-12-19)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update minio-tenant manifest](#1--update-minio-tenant-manifest)
@@ -26,7 +26,7 @@
 
 ---
 
-## v99-99-99
+## v22-12-19
 
 ### Background
 
@@ -75,7 +75,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v22-12-19 <!-- omit in toc -->
 
 ## Helm charts: minio/operator v4.5.5 <!-- omit in toc -->
 ```
