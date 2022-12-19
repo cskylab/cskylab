@@ -22,11 +22,11 @@ This update covers the following charts upgrades:
 
 - **codecentric/keycloakx** (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.):
   - From v1.6.0 with appVersion 18.0.0
-  - To v2.0.0 with appVersion 20.0.1
+  - To v2.1.0 with appVersion 20.0.1
   
 - **bitnami/postgresql**:
   - From 11.7.1 appVersion 14.5.0
-  - To 12.1.3 appVersion 14.x (PostgreSQL versions > 14 should not be used without database migration)
+  - To 12.1.5 appVersion 14.x (PostgreSQL versions > 14 should not be used without database migration)
 
 Regarding the version changes in keycloack application see:
 
@@ -77,8 +77,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull codecentric/keycloakx --version 2.0.0 --untar
-helm pull bitnami/postgresql --version 12.1.3 --untar
+helm pull codecentric/keycloakx --version 2.1.0 --untar
+helm pull bitnami/postgresql --version 12.1.5 --untar
 
 EOF
 )"
@@ -92,8 +92,8 @@ EOF
 
 ## Helm charts: <!-- omit in toc -->
 
-- codecentric/keycloakx v2.0.0 appVersion 20.0.1 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
-- bitnami/postgresql 12.1.3 appVersion 14.x      
+- codecentric/keycloakx v2.1.0 appVersion 20.0.1 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
+- bitnami/postgresql 12.1.5 appVersion 14.x      
 ```
 
 - Save file
