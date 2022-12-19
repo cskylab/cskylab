@@ -24,7 +24,7 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="${HOME}/git/cskylab-github"  \
-&& export RB_CERT_MANAGER_PRIVATE_CLUSTERISSUER="trantortech"  \
+&& export RB_CERT_MANAGER_PRIVATE_CLUSTERISSUER="ca-test-internal"  \
 && export RB_REPO_CFG_FABRIC_DIR="${RB_REPO_DIR}/_cfg-fabric" \
 && export RB_REPO_TPL_DIR="${RB_REPO_DIR}/tpl-cskylab" \
 && echo

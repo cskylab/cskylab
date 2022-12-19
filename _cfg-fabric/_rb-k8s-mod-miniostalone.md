@@ -56,7 +56,7 @@ publishing:
 
 certificate:
   ## Cert-manager clusterissuer
-  clusterissuer: trantortech
+  clusterissuer: ca-test-internal
 
 credentials:
   # MinIO root user credentials

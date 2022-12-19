@@ -1,17 +1,17 @@
 # Keycloak identity and access management <!-- omit in toc -->
 
-## v22-08-21 <!-- omit in toc -->
+## v22-12-19 <!-- omit in toc -->
 
-## Helm charts:<!-- omit in toc -->
+## Helm charts: <!-- omit in toc -->
 
-- codecentric/keycloakx v1.6.0 appVersion 18.0.0 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
-- bitnami/postgresql 11.7.1 appVersion 14.5.0      
+- codecentric/keycloakx v2.1.0 appVersion 20.0.1 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
+- bitnami/postgresql 12.1.5 appVersion 14.x      
 
 [Keycloak](https://www.keycloak.org) is a high performance Java-based identity and access management solution. It lets developers add an authentication layer to their applications with minimum effort.
 
   ![ ](./images/keycloak-2021-07-16_10-02-54.png)
 
-Configuration files are deployed from template Kubernetes Keycloak namespace version 22-08-21.
+Configuration files are deployed from template Kubernetes Keycloak namespace version 22-12-19.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -25,7 +25,7 @@ Configuration files are deployed from template Kubernetes Keycloak namespace ver
   - [Uninstall](#uninstall)
   - [Remove](#remove)
   - [Display status](#display-status)
-  - [Backup & data protection](#backup--data-protection)
+  - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
   - [Customize Keycloak Themes](#customize-keycloak-themes)
@@ -38,7 +38,6 @@ Configuration files are deployed from template Kubernetes Keycloak namespace ver
   - [Helm charts and values](#helm-charts-and-values)
   - [Scripts](#scripts)
     - [cs-deploy](#cs-deploy)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -286,7 +285,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ## RSync path:  /srv/keycloakx
 ## To Node:     k8s-mod-n2
 ## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloakx>> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/keycloakx -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloakx >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/keycloakx -t k8s-mod-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
 ```
 
 #### Restic backup
@@ -335,7 +334,7 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## Data service:  /srv/keycloakx
 ## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloakx>> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/keycloakx  -t keycloakx  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t keycloakx  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/keycloakx >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/keycloakx  -t keycloakx  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t keycloakx  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
 
 ### Customize Keycloak Themes
@@ -581,58 +580,6 @@ Examples:
   # Display namespace, persistence and charts status:
     ./csdeploy.sh -l
 ```
-
-**Tasks performed:**
-
-| ${execution_mode}                | Tasks                      | Block / Description                                                         |
-| -------------------------------- | -------------------------- | --------------------------------------------------------------------------- |
-| [pull-charts]                    |                            | **Pull helm charts from repositories**                                      |
-|                                  | Clean `./charts` directory | Remove all contents in `./charts` directory.                                |
-|                                  | Pull helm charts           | Pull new charts according to sourced script in variable `source_charts`.    |
-|                                  | Show charts                | Show Helm charts pulled into `./charts` directory.                          |
-| [install]                        |                            | **Create namespace, certificate, secrets and PV's**                         |
-|                                  | Create namespace           | Namespace must be unique in cluster.                                        |
-|                                  | Create PV's                | Apply all persistent volume manifests in the form `pv-*.yaml`.              |
-| [update] [install]               |                            | **Deploy charts**                                                           |
-|                                  | Deploy charts              | Deploy all charts in `./charts` directory with `upgrade --install` options. |
-| [uninstall]                      |                            | **Uninstall charts**                                                        |
-|                                  | Uninstall charts           | Uninstall all charts in `./charts` directory.                               |
-| [uninstall] [remove]             |                            | **Remove namespace and PV's**                                               |
-|                                  | Remove namespace           | Remove namespace and all its objects.                                       |
-|                                  | Delete PV's                | Delete all persistent volume manifests in the form `pv-*.yaml`.             |
-| [install] [update] [list-status] |                            | **Display status information**                                              |
-|                                  | Display namespace          | Namespace and object status.                                                |
-|                                  | Display certificates       | Certificate status information.                                             |
-|                                  | Display secrets            | Secret status information.                                                  |
-|                                  | Display persistence        | Persistence status information.                                             |
-|                                  | Display charts             | Charts releases history information.                                        |
-|                                  |                            |                                                                             |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                   | Description                                      | Values                             |
-| --------------------------- | ------------------------------------------------ | ---------------------------------- |
-| `_tplname`                  | template name                                    | `k8s-keycloakx`                  |
-| `_tpldescription`           | template description                             | `Kubernetes Keycloak namespace`           |
-| `_tplversion`               | template version                                 | `22-08-21`               |
-| `kubeconfig`                | kubeconfig file                                  | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro`                |
-| `namespace.name`            | namespace name                                   | `keycloakx`            |
-| `namespace.domain`          | domain name                                      | `cskylab.net`          |
-| `publishing.url`            | external URL                                     | `keycloakx.mod.cskylab.net`            |
-| `publishing.password`       | password                                         | `NoFear21`       |
-| `certificate.clusterissuer` | cert-manager clusterissuer                       | `trantortech` |
-| `registry.private`          | private registry URL                             | `harbor.cskylab.net/cskylab`          |
-| `registry.proxy`            | docker private proxy URL                         | `harbor.cskylab.net/dockerhub`            |
-| `registry.username`         | private registry username                        | `admin`         |
-| `registry.password`         | private registry password                        | `NoFear21`         |
-| `restic.password`           | password to access restic repository (mandatory) | `<no value>`           |
-| `restic.repo`               | restic repository (mandatory)                    | `<no value>`               |
-| `restic.aws_access`         | S3 bucket access key (if used)                   | `<no value>`         |
-| `restic.aws_secret`         | S3 bucket secret key (if used)                   | `<no value>`         |
-| `localpvnodes.all_pv`       | dataservice node                                 | `k8s-mod-n1`       |
-| `localrsyncnodes.all_pv`    | rsync node                                       | `k8s-mod-n2`    |
 
 ## License
 

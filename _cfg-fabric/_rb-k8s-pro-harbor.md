@@ -56,7 +56,7 @@ publishing:
 
 certificate:
   ## Cert-manager clusterissuer
-  clusterissuer: trantortech
+  clusterissuer: ca-test-internal
 
 ## Local storage PV's node affinity (Configured in pv*.yaml)
 localpvnodes:    # (k8s node names)

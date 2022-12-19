@@ -1,14 +1,14 @@
 # x509 Certificate management for Kubernetes <!-- omit in toc -->
 
-## v22-03-23 <!-- omit in toc -->
+## v22-12-19 <!-- omit in toc -->
 
-## Helm charts: `jetstack/cert-manager v1.9.1` <!-- omit in toc -->
+## Helm charts: jetstack/cert-manager v1.10.1 <!-- omit in toc -->
 
 [cert-manager](https://cert-manager.io/docs/) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing key pair, or self signed.
 
 > **Warning**: You should not install multiple instances of cert-manager on a single cluster. This will lead to undefined behavior and you may be banned from providers such as Let’s Encrypt.
 
-Configuration files are deployed from template x509 certificate management for Kubernetes version 22-08-21.
+Configuration files are deployed from template x509 certificate management for Kubernetes version 22-12-19.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -286,7 +286,7 @@ The following table lists template configuration parameters and their specified 
 | ------------------- | --------------------------- | -------------------------- |
 | `_tplname`          | template name               | `k8s-cert-manager`          |
 | `_tpldescription`   | template description        | `x509 certificate management for Kubernetes`   |
-| `_tplversion`       | template version            | `22-08-21`       |
+| `_tplversion`       | template version            | `22-12-19`       |
 | `kubeconfig`        | kubeconfig file             | `config-k8s-pro`        |
 | `namespace.name`    | namespace name              | `cert-manager`    |
 | `letsencrypt.email` | Let's Encrypt contact email | `certadmin@cskylab.net` |

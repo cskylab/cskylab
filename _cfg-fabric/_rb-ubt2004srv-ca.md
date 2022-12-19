@@ -57,8 +57,8 @@ machine:
   systemkeyboard: "us"
 ## ca name and subject
 ca:
-  caname: trantortech
-  basesubject: /C=ES/ST=Spain/L=Madrid/O=Organization/OU=OrganizationalUnit/CN=trantortech
+  caname: ca-test-internal
+  basesubject: /C=ES/ST=Spain/L=Madrid/O=Organization/OU=OrganizationalUnit/CN=ca-test-internal
 
 EOF
 )" \

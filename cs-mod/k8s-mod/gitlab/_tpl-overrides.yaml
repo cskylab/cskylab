@@ -1,12 +1,12 @@
 _tpldescription: Gitlab DevOps platform
 _tplname: k8s-gitlab
-_tplversion: 22-08-21
+_tplversion: 22-12-19
 certificate:
-  clusterissuer: trantortech
+  clusterissuer: ca-test-internal
 keycloak:
   issuer: https://keycloak.cskylab.net/auth/realms/cskylab
   secret: 5edffd1e-c3ab-47d3-a32e-b38a4977d6d3
-kubeconfig: /Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro
+kubeconfig: config-k8s-mod
 localpvnodes:
   all_pv: k8s-mod-n1
   domain: cskylab.net

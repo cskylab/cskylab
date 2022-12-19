@@ -94,10 +94,10 @@ system_keyboard="us"
 netplan_timeout="30"
 
 # Kubernetes version for kubectl
-k8s_version="1.24.4-00"
+k8s_version="1.25.5-00"
 
 # Go version
-go_version="go1.19.linux-amd64.tar.gz"
+go_version="go1.19.4.linux-amd64.tar.gz"
 
 # Color code for messages
 # https://robotmoon.com/256-colors/

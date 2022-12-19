@@ -24,7 +24,7 @@ spec:
     - minio-tenant-console
     - minio-tenant-console.minio-tenant.svc.cluster.local
   issuerRef:
-    name: trantortech
+    name: ca-test-internal
     # We can reference ClusterIssuers by changing the kind here.
     # The default value is Issuer (i.e. a locally namespaced Issuer)
     kind: ClusterIssuer

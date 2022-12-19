@@ -81,7 +81,7 @@ ingress:
   ## e.g:
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: trantortech
+    cert-manager.io/cluster-issuer: ca-test-internal
   ## @param ingress.tls Enable TLS configuration for the hostname defined at ingress.hostname parameter
   ## TLS certificates will be retrieved from a TLS secret with name:%!s(<nil>)-tls
   ## You can use the ingress.secrets parameter to create this TLS secret or relay on cert-manager to create it

@@ -49,7 +49,7 @@ global:
     configureCertmanager: false
     class: nginx
     annotations:
-      cert-manager.io/cluster-issuer: trantortech
+      cert-manager.io/cluster-issuer: ca-test-internal
     enabled: true
     tls:
       enabled: true

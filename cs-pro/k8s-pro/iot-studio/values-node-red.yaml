@@ -9,7 +9,7 @@ image:
   # -- image repository
   repository: harbor.cskylab.net/dockerhub/nodered/node-red
   # -- image tag
-  tag: latest
+  tag: 3.0.2
   # -- image pull policy
   # pullPolicy: IfNotPresent
 
@@ -44,7 +44,7 @@ ingress:
     primary: true
     annotations:
       kubernetes.io/ingress.class: nginx
-      cert-manager.io/cluster-issuer: trantortech
+      cert-manager.io/cluster-issuer: ca-test-internal
       # cert-manager.io/cluster-issuer: letsencrypt-staging
       # cert-manager.io/cluster-issuer: letsencrypt
     hosts:

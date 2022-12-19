@@ -1,8 +1,8 @@
 # Kubernetes MinIO Tenant <!-- omit in toc -->
 
-## v22-08-21 <!-- omit in toc -->
+## v22-12-19 <!-- omit in toc -->
 
-## Image: quay.io/minio/minio:RELEASE.2022-08-13T21-54-44Z <!-- omit in toc -->
+## Image: quay.io/minio/minio:RELEASE.2022-12-12T19-27-27Z <!-- omit in toc -->
 
 ---
 
@@ -10,7 +10,7 @@
 
 This service creates a X-node MinIO Tenant using MinIO for object storage.
 
-Configuration files are deployed from template Kubernetes MinIO Tenant version 22-08-21.
+Configuration files are deployed from template Kubernetes MinIO Tenant version 22-12-19.
 
   ![ ](./images/minio-console-2022-03-31_11-38-35.png)
 
@@ -445,14 +445,14 @@ The following table lists template configuration parameters and their specified 
 | --------------------------------- | ---------------------------------- | ---------------------------------------- |
 | `_tplname`                        | template name                      | `k8s-minio-tenant`                        |
 | `_tpldescription`                 | template description               | `Kubernetes MinIO Tenant`                 |
-| `_tplversion`                     | template version                   | `22-08-21`                     |
-| `kubeconfig`                      | kubeconfig file                    | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-pro`                      |
+| `_tplversion`                     | template version                   | `22-12-19`                     |
+| `kubeconfig`                      | kubeconfig file                    | `config-k8s-pro`                      |
 | `namespace.name`                  | namespace name                     | `minio-tenant`                  |
 | `publishing.miniourl`             | publishing url                     | `minio-tenant.pro.cskylab.net`             |
 | `publishing.consoleurl`           | console url                        | `minio-tenant-console.pro.cskylab.net`           |
 | `credentials.minio_accesskey`     | access key                         | `admin`     |
 | `credentials.minio_secretkey`     | secret key                         | `NoFear21`     |
-| `certificate.clusterissuer`       | cert-manager clusterissuer         | `trantortech`       |
+| `certificate.clusterissuer`       | cert-manager clusterissuer         | `ca-test-internal`       |
 | `registry.proxy`                  | docker private proxy URL           | `harbor.cskylab.net/dockerhub`                  |
 | `localpvnodes.srv00`              | local persistent volume node       | `k8s-pro-n1`              |
 | `localpvnodes.srv01`              | local persistent volume node       | `k8s-pro-n2`              |

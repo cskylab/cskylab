@@ -2,7 +2,7 @@ _tpldescription: Kubernetes hellow world app
 _tplname: k8s-hello
 _tplversion: 22-03-23
 certificate:
-  clusterissuer: trantortech
+  clusterissuer: ca-test-internal
 kubeconfig: config-k8s-mod
 namespace:
   domain: cskylab.net

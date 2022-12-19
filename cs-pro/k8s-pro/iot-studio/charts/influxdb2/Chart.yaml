@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 2.2.0
+appVersion: 2.3.0
 description: A Helm chart for InfluxDB v2
 home: https://www.influxdata.com/products/influxdb/
 icon: https://avatars0.githubusercontent.com/u/5713248?s=200&v=4
@@ -10,4 +10,4 @@ maintainers:
   name: gitirabassi
 name: influxdb2
 type: application
-version: 2.1.0
+version: 2.1.1

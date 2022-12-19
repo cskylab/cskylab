@@ -95,8 +95,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull codecentric/keycloakx --version 1.6.0 --untar
-helm pull bitnami/postgresql --version 11.7.1 --untar
+helm pull codecentric/keycloakx --version 2.1.0 --untar
+helm pull bitnami/postgresql --version 12.1.5 --untar
 
 EOF
 )"

@@ -97,7 +97,7 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 # Charts
-helm pull jetstack/cert-manager --version 1.9.1 --untar
+helm pull jetstack/cert-manager --version 1.10.1 --untar
 
 EOF
 )"

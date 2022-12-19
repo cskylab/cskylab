@@ -1,6 +1,6 @@
 # common
 
-![Version: 4.5.0](https://img.shields.io/badge/Version-4.5.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 4.5.2](https://img.shields.io/badge/Version-4.5.2-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
 Function library for k8s-at-home charts
 
@@ -29,7 +29,7 @@ Include this chart as a dependency in your `Chart.yaml` e.g.
 # Chart.yaml
 dependencies:
 - name: common
-  version: 3.0.0
+  version: 4.5.1
   repository: https://k8s-at-home.com/charts/
 ```
 
@@ -236,6 +236,18 @@ All notable changes to this library Helm chart will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+### [4.5.2]
+
+#### Fixed
+
+- Fixed environment variable processing logic for main container when initContainers or additionalContainers were set.
+
+### [4.5.1]
+
+#### Fixed
+
+- Fixed environment variable processing logic for initContainers and additionalContainers.
 
 ### [4.5.0]
 

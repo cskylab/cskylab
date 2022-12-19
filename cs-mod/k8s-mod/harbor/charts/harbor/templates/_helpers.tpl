@@ -208,7 +208,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{- define "harbor.redis.host" -}}
-{{- ternary (printf "%s-master" (include "harbor.redis.fullname" .)) (ternary (printf "%s/%s" .Values.externalRedis.sentinel.hosts .Values.externalRedis.sentinel.masterSet) .Values.externalRedis.host .Values.externalRedis.sentinel.enabled) .Values.redis.enabled -}}
+{{- ternary (ternary (printf "%s/%s" (printf "%s-headless:%d" (include "harbor.redis.fullname" .) (int64 .Values.redis.sentinel.service.ports.sentinel)) .Values.redis.sentinel.masterSet) (printf "%s-master" (include "harbor.redis.fullname" .)) .Values.redis.sentinel.enabled) (ternary (printf "%s/%s" .Values.externalRedis.sentinel.hosts .Values.externalRedis.sentinel.masterSet) .Values.externalRedis.host .Values.externalRedis.sentinel.enabled) .Values.redis.enabled -}}
 {{- end -}}
 
 {{- define "harbor.redis.port" -}}
@@ -261,7 +261,7 @@ Return whether Redis&reg; uses password authentication or not
 
 {{/*the username redis is used for a placeholder as no username needed in redis*/}}
 {{- define "harbor.redisForJobservice" -}}
-  {{- if eq .Values.externalRedis.sentinel.enabled false -}}
+  {{- if and (eq .Values.externalRedis.sentinel.enabled false) (eq .Values.redis.sentinel.enabled false) -}}
     {{- if (include "harbor.redis.escapedRawPassword" . ) -}}
       {{- printf "redis://redis:%s@%s:%s/%s" (include "harbor.redis.escapedRawPassword" . ) (include "harbor.redis.host" . ) (include "harbor.redis.port" . ) (include "harbor.redis.jobserviceDatabaseIndex" . ) -}}
     {{- else -}}
@@ -278,7 +278,7 @@ Return whether Redis&reg; uses password authentication or not
 
 {{/*the username redis is used for a placeholder as no username needed in redis*/}}
 {{- define "harbor.redisForGC" -}}
-  {{- if eq .Values.externalRedis.sentinel.enabled false -}}
+  {{- if and (eq .Values.externalRedis.sentinel.enabled false) (eq .Values.redis.sentinel.enabled false) -}}
     {{- if (include "harbor.redis.escapedRawPassword" . ) -}}
       {{- printf "redis://redis:%s@%s:%s/%s" (include "harbor.redis.escapedRawPassword" . ) (include "harbor.redis.host" . ) (include "harbor.redis.port" . ) (include "harbor.redis.registryDatabaseIndex" . ) -}}
     {{- else -}}
@@ -294,7 +294,7 @@ Return whether Redis&reg; uses password authentication or not
 {{- end -}}
 
 {{- define "harbor.redisForTrivyAdapter" -}}
-  {{- if eq .Values.externalRedis.sentinel.enabled false -}}
+  {{- if and (eq .Values.externalRedis.sentinel.enabled false) (eq .Values.redis.sentinel.enabled false) -}}
     {{- if (include "harbor.redis.escapedRawPassword" . ) -}}
       {{- printf "redis://redis:%s@%s:%s/%s" (include "harbor.redis.escapedRawPassword" . ) (include "harbor.redis.host" . ) (include "harbor.redis.port" . ) (include "harbor.redis.trivyAdapterDatabaseIndex" . ) -}}
     {{- else -}}
@@ -310,7 +310,7 @@ Return whether Redis&reg; uses password authentication or not
 {{- end -}}
 
 {{- define "harbor.redisForCore" -}}
-  {{- if eq .Values.externalRedis.sentinel.enabled false -}}
+  {{- if and (eq .Values.externalRedis.sentinel.enabled false) (eq .Values.redis.sentinel.enabled false) -}}
     {{- if (include "harbor.redis.escapedRawPassword" . ) -}}
       {{- printf "redis://redis:%s@%s:%s/%s" (include "harbor.redis.escapedRawPassword" . ) (include "harbor.redis.host" . ) (include "harbor.redis.port" . ) (include "harbor.redis.coreDatabaseIndex" . ) -}}
     {{- else -}}
@@ -527,4 +527,26 @@ harbor: exposureType
     Invalid exposureType selected. Valid values are "ingress" and
     "proxy". Please set a valid exposureType (--set exposureType="xxxx")
 {{- end -}}
+{{- end -}}
+
+{{/* lists all tracing related environment variables except for TRACE_SERVICE_NAME, which should be set separately */}}
+{{- define "harbor.tracing.envvars" -}}
+TRACE_ENABLE: {{ .Values.tracing.enabled | quote }}
+TRACE_SAMPLE_RATE: {{ .Values.tracing.sampleRate | quote }}
+TRACE_NAMESPACE: {{ .Values.tracing.namespace | quote }}
+TRACE_ATTRIBUTES: {{ .Values.tracing.attributes | toJson }}
+{{- if .Values.tracing.jaeger.enabled }}
+TRACE_JAEGER_ENDPOINT: {{ .Values.tracing.jaeger.endpoint | quote }}
+TRACE_JAEGER_USERNAME: {{ .Values.tracing.jaeger.username | quote }}
+TRACE_JAEGER_PASSWORD: {{ .Values.tracing.jaeger.password | quote }}
+TRACE_JAEGER_AGENT_HOSTNAME: {{ .Values.tracing.jaeger.agentHost | quote }}
+TRACE_JAEGER_AGENT_PORT: {{ .Values.tracing.jaeger.agentPort | quote }}
+{{- end }}
+{{- if .Values.tracing.otel.enabled }}
+TRACE_OTEL_ENDPOINT: {{ .Values.tracing.otel.endpoint | quote }}
+TRACE_OTEL_URL_PATH: {{ .Values.tracing.otel.urlpath | quote }}
+TRACE_OTEL_COMPRESSION: {{ .Values.tracing.otel.compression | quote }}
+TRACE_OTEL_TIMEOUT: {{ .Values.tracing.otel.timeout | quote }}
+TRACE_OTEL_INSECURE: {{ .Values.tracing.otel.insecure | quote }}
+{{- end }}
 {{- end -}}

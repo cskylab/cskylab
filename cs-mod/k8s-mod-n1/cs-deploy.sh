@@ -95,7 +95,7 @@ system_keyboard="us"
 netplan_timeout="30"
 
 # Kubernetes version to install
-k8s_version="1.23.5-00"
+k8s_version="1.25.5-00"
 
 # Color code for messages
 # https://robotmoon.com/256-colors/

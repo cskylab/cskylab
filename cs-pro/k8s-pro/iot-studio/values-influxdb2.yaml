@@ -1,6 +1,6 @@
 image:
   repository: "harbor.cskylab.net/dockerhub/library/influxdb"
-  tag: 2.2.0
+  tag: 2.5.1
   pullPolicy: IfNotPresent
 
 podAnnotations: {}
@@ -150,7 +150,7 @@ ingress:
   hostname: influxdb-iot.pro.cskylab.net
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: trantortech
+    cert-manager.io/cluster-issuer: ca-test-internal
   path: /
 
 ## Pod disruption budget configuration

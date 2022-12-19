@@ -54,7 +54,7 @@ publishing:
 
 certificate:
   ## Cert-manager clusterissuer
-  clusterissuer: trantortech
+  clusterissuer: ca-test-internal
 
 registry:
   ## Proxy Repository for Docker

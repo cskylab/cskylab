@@ -56,7 +56,7 @@ publishing:
 
 certificate:
   ## Cert-manager clusterissuer
-  clusterissuer: trantortech
+  clusterissuer: ca-test-internal
 
 ## Keycloak issuer and secret must be previously configured in Keycloak
 keycloak:
