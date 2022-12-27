@@ -1,11 +1,11 @@
 # Keycloak identity and access management <!-- omit in toc -->
 
-## v22-12-19 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
 ## Helm charts: <!-- omit in toc -->
 
-- codecentric/keycloakx v2.1.0 appVersion 20.0.1 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
-- bitnami/postgresql 12.1.5 appVersion 14.x      
+- codecentric/keycloakx v2.1.0 appVersion 20.0.1 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart).
+- bitnami/postgresql 12.1.6 appVersion 14.x (image selected in values-posgresql.yaml).
 
 [Keycloak](https://www.keycloak.org) is a high performance Java-based identity and access management solution. It lets developers add an authentication layer to their applications with minimum effort.
 
@@ -445,17 +445,17 @@ extraInitContainers: |
 
 extraVolumeMounts: |
   - name: theme1
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-keycloak
+    mountPath: /opt/keycloak/themes/bootstrap-mod-keycloak
   - name: theme2
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-nextcloud
+    mountPath: /opt/keycloak/themes/bootstrap-mod-nextcloud
   - name: theme3
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-gitlab
+    mountPath: /opt/keycloak/themes/bootstrap-mod-gitlab
   - name: theme4
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-keycloak
+    mountPath: /opt/keycloak/themes/bootstrap-pub-keycloak
   - name: theme5
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-nextcloud
+    mountPath: /opt/keycloak/themes/bootstrap-pub-nextcloud
   - name: theme6
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-gitlab    
+    mountPath: /opt/keycloak/themes/bootstrap-pub-gitlab    
 
 extraVolumes: |
   - name: theme1
@@ -498,6 +498,9 @@ Theme configuration can take place at **Realm** scope (all clients) or for each 
   - Go to **Realm Settings**
   - Go to **Themes** tab
   - Choose the appropiate theme in  **Login Theme** box
+  - Go to **Login** tab
+  - Choose the appropiate options in  **Login screen customization** section
+
 - For **Client** scope configuration
   - Go to **Clients** and choose the client application
   - Choose the appropiate theme in **Login Theme** box

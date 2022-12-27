@@ -4,13 +4,89 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-12-19](#v22-12-19)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
+    - [1.- Uninstall keycloakx namespace](#1--uninstall-keycloakx-namespace)
+    - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
+    - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
+    - [4.- Install new keycloakx namespace](#4--install-new-keycloakx-namespace)
+  - [Reference](#reference)
+- [v22-12-19](#v22-12-19)
+  - [Background](#background-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Change image section in values-postgresql.yaml](#1--change-image-section-in-values-postgresqlyaml)
     - [2.- Update script cs-deploy.sh](#2--update-script-cs-deploysh)
     - [3.- Pull charts \& update](#3--pull-charts--update)
-  - [Reference](#reference)
+  - [Reference](#reference-1)
+
+---
+
+## v99-99-99
+
+### Background
+
+Chart codecentric/keycloakx 2.1.0 updates chart components in keycloak appVersion 20.0.1
+Chart bitnami/postgresql 12.1.16 updates chart components in postgresql appVersion 14.x (image selected in values-posgresql.yaml)   
+
+This upgrade covers changes in customizing theme providers and requires to uninstall and re-install the namespace. The keycloakx postresql LVM data service will preserve existing data.
+
+This procedure updates Harbor installation in k8s-mod cluster.
+
+### How-to guides
+
+#### 1.- Uninstall keycloakx namespace
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/keycloakx` repository directory.
+
+- Remove keycloakx namespace by running:
+
+```bash
+# Uninstall chart and namespace.  
+./csdeploy.sh -m uninstall
+```
+
+#### 2.- Rename old configuration directory
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/` repository directory.
+
+- Rename `cs-mod/k8s-mod/keycloakx` directory to `cs-mod/k8s-mod/keycloakx-dep`
+
+>**Note**: This configuration directory can be reused to reinstall the namespace in case the migration procedure fails.
+
+#### 3.- Create new configuration from new template
+
+From VS Code Remote connected to `mcc`, open  terminal at `_cfg-fabric` repository directory.
+
+- Update configuration runbook models following instructions in `README.md` file.
+- Generate new configuration directory following instructions in runbook `_rb-k8s-mod-keycloakx.md` file.
+
+>**Note**: Configuration data must match with the used in the old deployment.
+
+#### 4.- Install new keycloakx namespace
+
+From VS Code Remote connected to `mcc`, open  terminal at new `cs-mod/k8s-mod/keycloakx` repository directory.
+
+Install keycloakx namespace by running:
+
+```bash
+# Install chart and namespace.  
+./csdeploy.sh -m install
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+- After migration, remove old configuration directory `cs-mod/k8s-mod/keycloakx-dep`
+
+### Reference
+
+- <https://github.com/codecentric/helm-charts/tree/master/charts/keycloak>
+- <https://www.keycloak.org/>
 
 ---
 
