@@ -6,7 +6,7 @@
 
 _tplname: k8s-hello
 _tpldescription: Kubernetes hellow world app
-_tplversion: 22-03-23
+_tplversion: 99-99-99
 
 #
 # Values to override
@@ -23,7 +23,7 @@ namespace:
 
 publishing:
   ## External url
-  url: hello.cskylab.net
+  url: hello.mod.cskylab.net
 
 certificate:
   ## Cert-manager clusterissuer
