@@ -1,4 +1,4 @@
-# k8s-hello-oaut2
+# k8s-hello-oauth2
 
 This namespace is intended to deploy a simple Hello World application in Kubernetes for testing purposes.
 
