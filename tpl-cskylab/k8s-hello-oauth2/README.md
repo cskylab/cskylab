@@ -53,6 +53,8 @@ Run:
 - Helm v3.
 - k8s-keycloakx namespace deployed
 
+>**Note**: For OpenID authentication, Keycloack issuer URL must be published with a public trusted certificate (e.g., lets-encrypt).
+
 ### Keycloak OpenID Connection to OAuth2 Proxy
 
 This procedure creates an OpenID client for OAuth2-Proxy in Keycloak. You can find documentation in: <https://www.talkingquickly.co.uk/webapp-authentication-keycloak-OAuth2-proxy-nginx-ingress-kubernetes>
