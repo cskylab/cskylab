@@ -20,8 +20,8 @@ config:
     email_domains = [ "*" ]
     allowed_groups = ["/{{ .namespace.name }}"]
     scope = "openid profile email"
-    cookie_domains = ".{{ .namespace.domain }}"
-    whitelist_domains = ".{{ .namespace.domain }}"
+    cookie_domains = ".{{ .publishing.url }}"
+    whitelist_domains = ".{{ .publishing.url }}"
     pass_authorization_header = true
     pass_access_token = true
     pass_user_headers = true
