@@ -4,8 +4,8 @@
 #   cskygen template default values file
 #
 
-_tplname: k8s-hello
-_tpldescription: Kubernetes hello world app
+_tplname: k8s-hello-oauth2
+_tpldescription: Kubernetes oauth2-proxy example app
 _tplversion: 99-99-99
 
 #
@@ -17,13 +17,13 @@ kubeconfig: config-k8s-mod
 
 namespace:
   ## k8s namespace name
-  name: hello
+  name: hello-oauth2
     ## Service domain name
   domain: cskylab.net
 
 publishing:
   ## External url
-  url: hello.mod.cskylab.net
+  url: hello-oauth2.mod.cskylab.net
 
 certificate:
   ## Cert-manager clusterissuer
