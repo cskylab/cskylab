@@ -22,7 +22,7 @@ echo \
 && export RB_ZONE="cs-pro" \
 && export RB_K8S_CLUSTER="k8s-pro" \
 && export RB_K8S_NAMESPACE="hello-oauth2" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-hello" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-hello-oauth2" \
 && echo
 ```
 
