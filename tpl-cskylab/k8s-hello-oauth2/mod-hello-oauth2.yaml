@@ -17,8 +17,8 @@ metadata:
     # cert-manager.io/cluster-issuer: letsencrypt
     #
     ## Ingress annotations for oauth2-proxy
-    nginx.ingress.kubernetes.io/auth-url: "https://{{ .publishing.url }}/oauth2/auth"
-    nginx.ingress.kubernetes.io/auth-signin: "https://{{ .publishing.url }}/oauth2/start?rd=$scheme://$best_http_host$request_uri"
+    nginx.ingress.kubernetes.io/auth-url: "https://oauth.{{ .publishing.url }}/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://oauth.{{ .publishing.url }}/oauth2/start?rd=$scheme://$best_http_host$request_uri"
     nginx.ingress.kubernetes.io/auth-response-headers: "x-auth-request-user, x-auth-request-email, x-auth-request-access-token"
     acme.cert-manager.io/http01-edit-in-place: "true"
     nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
