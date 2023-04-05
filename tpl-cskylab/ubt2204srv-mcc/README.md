@@ -10,7 +10,7 @@ It is intended to host VS Code Remote Server and to be accessed with VS Code Rem
 
 - [Prerequisites](#prerequisites)
 - [How-to guides](#how-to-guides)
-  - [Inject & Deploy configuration](#inject--deploy-configuration)
+  - [Inject \& Deploy configuration](#inject--deploy-configuration)
     - [1. SSH Authentication and sudoers file](#1-ssh-authentication-and-sudoers-file)
     - [2. Network configuration](#2-network-configuration)
     - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
@@ -24,7 +24,6 @@ It is intended to host VS Code Remote Server and to be accessed with VS Code Rem
     - [cs-inject](#cs-inject)
     - [cs-connect](#cs-connect)
     - [cs-helloworld](#cs-helloworld)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -356,30 +355,6 @@ Examples:
 | [list-status] [install] [update] [remove] |                                | **Display status information**                           |
 |                                           | Display hostname and variables | Show hostame and content of variables used in the script |
 |                                           | Display report message         | Display report message with "some surprise"              |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                    | Description                                 | Values                                                     |
-| ---------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
-| `_tplname`                   | template name                               | `{{ ._tplname }}`                                          |
-| `_tpldescription`            | template description                        | `{{ ._tpldescription }}`                                   |
-| `_tplversion`                | template version                            | `{{ ._tplversion }}`                                       |
-| `machine.hostname`           | hostname                                    | `{{ .machine.hostname }}`                                  |
-| `machine.domainname`         | domain name                                 | `{{ .machine.domainname }}`                                |
-| `machine.localadminusername` | local admin username                        | `{{ .machine.localadminusername }}`                        |
-| `machine.localadminpassword` | local admin password                        | `{{ .machine.localadminpassword }}`                        |
-| `machine.timezone`           | timezone                                    | `{{ .machine.timezone }}`                                  |
-| `machine.networkinterface`   | main network interface name                 | `{{ .machine.networkinterface }}`                          |
-| `machine.ipaddress`          | main IP address                             | `{{ .machine.ipaddress }}`                                 |
-| `machine.netmask`            | netmask                                     | `{{ .machine.netmask }}`                                   |
-| `machine.gateway4`           | default gateway                             | `{{ .machine.gateway4 }}`                                  |
-| `machine.searchdomainnames`  | search domain names                         | `{{ range .machine.searchdomainnames }}{{ . }}, {{ end }}` |
-| `machine.nameservers`        | name servers IP addresses                   | `{{ range .machine.nameservers }}{{ . }}, {{ end }}`       |
-| `machine.setupdir`           | inject directory for setup and config files | `{{ .machine.setupdir }}`                                  |
-| `machine.systemlocale`       | language configuration                      | `{{ .machine.systemlocale }}`                              |
-| `machine.systemkeyboard`     | keyboard layout configuration               | `{{ .machine.systemkeyboard }}`                            |
 
 ## License
 

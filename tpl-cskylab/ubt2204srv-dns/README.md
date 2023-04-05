@@ -9,7 +9,7 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
 - [Prerequisites](#prerequisites)
   - [Bind9 configuration files](#bind9-configuration-files)
 - [How-to guides](#how-to-guides)
-  - [Inject & Deploy configuration](#inject--deploy-configuration)
+  - [Inject \& Deploy configuration](#inject--deploy-configuration)
     - [1. SSH Authentication and sudoers file](#1-ssh-authentication-and-sudoers-file)
     - [2. Network configuration](#2-network-configuration)
     - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
@@ -25,7 +25,6 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
     - [cs-connect](#cs-connect)
     - [cs-helloworld](#cs-helloworld)
   - [DNS Security guides](#dns-security-guides)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -397,30 +396,6 @@ Examples:
 DNS Security recomendations can be found at:
 
 - <https://www.incibe-cert.es/sites/default/files/contenidos/guias/doc/dns_security_guide.pdf>
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                    | Description                                 | Values                                                     |
-| ---------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
-| `_tplname`                   | template name                               | `{{ ._tplname }}`                                          |
-| `_tpldescription`            | template description                        | `{{ ._tpldescription }}`                                   |
-| `_tplversion`                | template version                            | `{{ ._tplversion }}`                                       |
-| `machine.hostname`           | hostname                                    | `{{ .machine.hostname }}`                                  |
-| `machine.domainname`         | domain name                                 | `{{ .machine.domainname }}`                                |
-| `machine.localadminusername` | local admin username                        | `{{ .machine.localadminusername }}`                        |
-| `machine.localadminpassword` | local admin password                        | `{{ .machine.localadminpassword }}`                        |
-| `machine.timezone`           | timezone                                    | `{{ .machine.timezone }}`                                  |
-| `machine.networkinterface`   | main network interface name                 | `{{ .machine.networkinterface }}`                          |
-| `machine.ipaddress`          | main IP address                             | `{{ .machine.ipaddress }}`                                 |
-| `machine.netmask`            | netmask                                     | `{{ .machine.netmask }}`                                   |
-| `machine.gateway4`           | default gateway                             | `{{ .machine.gateway4 }}`                                  |
-| `machine.searchdomainnames`  | search domain names                         | `{{ range .machine.searchdomainnames }}{{ . }}, {{ end }}` |
-| `machine.nameservers`        | name servers IP addresses                   | `{{ range .machine.nameservers }}{{ . }}, {{ end }}`       |
-| `machine.setupdir`           | inject directory for setup and config files | `{{ .machine.setupdir }}`                                  |
-| `machine.systemlocale`       | language configuration                      | `{{ .machine.systemlocale }}`                              |
-| `machine.systemkeyboard`     | keyboard layout configuration               | `{{ .machine.systemkeyboard }}`                            |
 
 ## License
 
