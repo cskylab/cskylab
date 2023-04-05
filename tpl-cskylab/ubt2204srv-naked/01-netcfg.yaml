@@ -15,7 +15,9 @@ network:
       dhcp4: no
       dhcp6: no
       addresses: [{{ .machine.ipaddress }}/{{ .machine.netmask }}]
-      gateway4: {{ .machine.gateway4 }}
+      routes:
+        - to: default
+          via: {{ .machine.gateway4 }}
       nameservers:
         search:
           {{- range .machine.searchdomainnames }}
