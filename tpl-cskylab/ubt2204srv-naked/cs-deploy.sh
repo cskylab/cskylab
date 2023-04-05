@@ -3,7 +3,7 @@
 #
 #   cs-deploy.sh
 #
-#       Ubuntu 20.04 server naked installation
+#       Ubuntu 22.04 server naked installation
 #
 #   Copyright © 2021 cSkyLab.com
 #
@@ -34,7 +34,7 @@ usage_msg="$(
   cat <<EOF
 
 Purpose:
-  Ubuntu 20.04 server naked installation.
+  Ubuntu 22.04 server naked installation.
   This script is usually called by csinject.sh when executing Inject & Deploy
   operations. Exceptionally, it can also be run manually from inside the machine.
 
@@ -212,7 +212,7 @@ if [[ ${quiet_mode} == false ]]; then
   echo
   echo "      ${command_line}"
   echo
-  echo "  Ubuntu 20.04 server naked installation"
+  echo "  Ubuntu 22.04 server naked installation"
   echo
   echo "      Execution mode:     ${execution_mode}"
   if [[ "${execution_mode}" = "net-config" ]]; then
