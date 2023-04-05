@@ -1,0 +1,44 @@
+//
+// 	named.conf.local for INTERNAL dns cache forwarder
+//
+// 	Copyright © 2021 cSkyLab.com
+//
+
+//
+// 	Forwarders:	{ 192.168.82.72; 192.168.82.73; };
+//
+// 		dns1.cskylab.net (AuthSlave):	192.168.82.72
+// 		dns2.cskylab.net (AuthSlave):	192.168.82.73
+// 
+
+//
+// Reverse Zones
+//
+// include "/etc/bind/zones.rfc1918";
+zone "10.in-addr.arpa"      { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+ 
+zone "16.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "17.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "18.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "19.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "20.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "21.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "22.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "23.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "24.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "25.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "26.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "27.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "28.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "29.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "30.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+zone "31.172.in-addr.arpa"  { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+
+zone "168.192.in-addr.arpa" { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+
+//
+// Direct Zones
+//
+zone "cskylab.net" { type forward; forward only; forwarders { 192.168.82.72; 192.168.82.73; }; };
+
+// EOF (This line is required)

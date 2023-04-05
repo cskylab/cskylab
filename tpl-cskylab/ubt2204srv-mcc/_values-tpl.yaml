@@ -1,0 +1,39 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: ubt2204srv-mcc
+_tpldescription: Ubuntu server 22.04 Mission Control Center
+_tplversion: 99-99-99
+
+#
+# Values to override
+#
+
+# Kubernetes version for kubectl
+k8s_version: "1.26.3-00"
+
+# Go version
+go_version: "go1.20.3.linux-amd64.tar.gz"
+
+## Machine related configuration values
+machine:
+  hostname: ubt2204srv-mcc
+  domainname: cskylab.net
+  localadminusername: kos
+  localadminpassword: "NoFear21"
+  timezone: "UTC"
+  networkinterface: enp1s0
+  ipaddress: 192.168.82.9
+  netmask: 24
+  gateway4: 192.168.82.1
+  searchdomainnames:
+    - cskylab.net
+  nameservers:
+    - 192.168.82.1
+  ## Setup directory where configuration files will be injected
+  setupdir: "/etc/csky-setup"
+  systemlocale: "C.UTF-8"
+  systemkeyboard: "us"

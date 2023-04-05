@@ -1,0 +1,15 @@
+## Static IP template for batch machine list creation
+version: 2
+ethernets:
+  enp1s0:
+    dhcp4: no
+    dhcp6: no
+    addresses: [IPADDRESS.0000/24]
+    routes:
+      - to: default
+        via: 192.168.82.1
+    nameservers:
+      search:
+        - cskylab.net
+      addresses:
+        - 192.168.82.1

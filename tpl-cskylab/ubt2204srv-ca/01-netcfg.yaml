@@ -1,0 +1,29 @@
+#
+#   /etc/netplan/01-netcfg.yaml
+#   
+#     This file describes the network interfaces available on your system
+#     For more information, see https://netplan.io/
+#               
+#   Copyright © 2021 cSkyLab.com
+#
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    {{ .machine.networkinterface }}:
+      dhcp4: no
+      dhcp6: no
+      addresses: [{{ .machine.ipaddress }}/{{ .machine.netmask }}]
+      routes:
+        - to: default
+          via: {{ .machine.gateway4 }}
+      nameservers:
+        search:
+          {{- range .machine.searchdomainnames }}
+          - {{ . }}
+          {{- end }}
+        addresses:
+          {{- range .machine.nameservers }}
+          - {{ . }}
+          {{- end }}
