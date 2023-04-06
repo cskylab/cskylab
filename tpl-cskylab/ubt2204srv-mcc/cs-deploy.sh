@@ -354,16 +354,20 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo "${msg_info} Install Docker-ce"
   echo
 
-  apt-get -y install \
+  apt -y install \
     apt-transport-https \
     ca-certificates \
+    software-properties-common \
     curl \
     gnupg \
     lsb-release
 
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+  apt update
   apt -y install docker-ce
+
   # Add user to docker administration group
   usermod -aG docker "${sudo_username}"
 
@@ -422,17 +426,14 @@ if [[ "${execution_mode}" == "install" ]]; then
   # shellcheck disable=SC2016
   echo 'eval "$(direnv hook bash)"' | sudo tee -a ./.bashrc
 
-
   # Install kubectl
   echo
   echo "${msg_info} Install kubectl"
   echo
 
-  apt-get install -y apt-transport-https curl
-  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-  cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
+  apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
+  curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
   apt-get update
 
@@ -440,7 +441,7 @@ EOF
   apt-mark unhold kubectl
   set -e
   apt-get install -y kubectl="${k8s_version}"
-  kubectl completion bash |sudo tee /etc/bash_completion.d/kubectl
+  kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
   apt-mark hold kubectl
 
   # Install helm
