@@ -300,11 +300,15 @@ echo
 if [[ "${execution_mode}" == "ssh-sudoers" ]]; then
 
   # Clean known_host file from previous entries
-  echo
-  echo "${msg_info} Cleaning ${HOME}/.ssh/known_host file entries"
-  echo
-  ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${remote_machine}"
-  ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${ip_address}"
+  if ! [[ -f ${HOME}/.ssh/known_hosts ]]; then
+
+    echo
+    echo "${msg_info} Cleaning ${HOME}/.ssh/known_hosts file entries"
+    echo
+    ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${remote_machine}"
+    ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${ip_address}"
+
+  fi
 
   # Perform ssh-copy-id
   echo
