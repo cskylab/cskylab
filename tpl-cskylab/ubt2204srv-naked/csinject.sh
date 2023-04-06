@@ -91,8 +91,10 @@ sudo_username="{{ .machine.localadminusername }}"
 # shellcheck disable=SC2034
 setup_dir="{{ .machine.setupdir }}"
 
-# Host FQDN or IP address
+# Host FQDN
 remote_machine="{{ .machine.hostname }}.{{ .machine.domainname }}"
+# IP address
+ip_address="{{ .machine.ipaddress }}"
 
 # Color code for messages
 # https://robotmoon.com/256-colors/
@@ -296,6 +298,13 @@ echo
 ################################################################################
 
 if [[ "${execution_mode}" == "ssh-sudoers" ]]; then
+
+  # Clean known_host file from previous entries
+  echo
+  echo "${msg_info} Cleaning ${HOME}/.ssh/known_host file entries"
+  echo
+  ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${remote_machine}"
+  ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${ip_address}"
 
   # Perform ssh-copy-id
   echo
