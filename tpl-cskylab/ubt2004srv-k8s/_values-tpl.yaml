@@ -6,7 +6,7 @@
 
 _tplname: ubt2004srv-k8s
 _tpldescription: Ubuntu server 20.04 kubernetes node
-_tplversion: 22-12-19
+_tplversion: 99-99-99
 
 #
 # Values to override

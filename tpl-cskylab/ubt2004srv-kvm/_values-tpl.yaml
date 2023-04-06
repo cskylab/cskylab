@@ -6,7 +6,7 @@
 
 _tplname: ubt2004srv-kvm
 _tpldescription: Ubuntu server 20.04 kvm base installation
-_tplversion: 22-01-05
+_tplversion: 99-99-99
 
 #
 # Values to override
