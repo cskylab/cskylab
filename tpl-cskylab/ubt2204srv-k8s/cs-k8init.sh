@@ -308,7 +308,7 @@ if [[ "${execution_mode}" == "init-master" ]] ||
   echo "${msg_info} Initialize weave Pod Network"
   echo
   # kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.NO_MASQ_LOCAL=1"
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+  kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 fi
 
 ################################################################################
@@ -321,7 +321,8 @@ if [[ "${execution_mode}" == "init-kubestalone" ]]; then
   echo
   echo "${msg_info} Set KubeStalone mode (run pods at master node)."
   echo
-  kubectl taint nodes --all node-role.kubernetes.io/master-
+  # kubectl taint nodes --all node-role.kubernetes.io/master-
+  kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 fi
 
 ################################################################################

@@ -355,7 +355,7 @@ if [[ "${execution_mode}" == "install" ]]; then
   #
 
   echo
-  echo "${msg_info} Install ContainerD and Kubernetes node"
+  echo "${msg_info} Install ContainerD and Kubernetes"
   echo
 
   # Disable swap
@@ -376,10 +376,10 @@ EOF
   modprobe br_netfilter
 
   # Setup required sysctl params, these persist across reboots.
-  cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+  cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-iptables  = 1
-net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
 EOF
 
   # Apply sysctl params without reboot
@@ -393,19 +393,20 @@ EOF
     mkdir -p /etc/containerd
   fi
 
-  # containerd config default >/etc/containerd/config.toml
-  cp -v "${setup_dir}"/config.toml /etc/containerd/config.toml
+  containerd config default >/etc/containerd/config.toml
+
+  # Update /etc/containerd/config.toml (space needed behind variable ${lv_dev_name})
+  sed -i "s/SystemdCgroup = false/SystemdCgroup = true/g" /etc/containerd/config.toml
 
   # Restart containerd
   systemctl restart containerd
 
   # Install kubeadm, kubelet and kubectl
   # Ref.: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
-  apt-get update && sudo apt-get install -y apt-transport-https curl
-  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-  cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
+  apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
+  curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
   apt-get update
   apt-get install -y kubelet="${k8s_version}" kubeadm="${k8s_version}" kubectl="${k8s_version}"
   apt-mark hold kubelet kubeadm kubectl
@@ -468,20 +469,24 @@ if [[ "${execution_mode}" == "install" ]] ||
   echo
   ufw allow ssh
 
+  ##
   ## Kubernetes ufw required ports
+  ##
+  
   ## Required ports on master node
-  # ufw allow 6443/tcp  # Kubernetes API server
-  # ufw allow 2379/tcp  # etcd server client API
-  # ufw allow 2380/tcp  # etcd server client API
-  # ufw allow 10250/tcp # Kubelet API
-  # ufw allow 10251/tcp # kube-scheduler
-  # ufw allow 10252/tcp # kube-controller-manager
-  ## Required ports on master node
-  # ufw allow 10250/tcp       # Kubelet API
-  # ufw allow 30000-32767/tcp # NodePort Services
+  ufw allow 6443/tcp  # Kubernetes API server
+  ufw allow 2379/tcp  # etcd server client API
+  ufw allow 2380/tcp  # etcd server client API
+  ufw allow 10250/tcp # Kubelet API
+  ufw allow 10259/tcp # kube-scheduler
+  ufw allow 10257/tcp # kube-controller-manager
 
-  ufw disable
-  # ufw --force enable
+  ## Required ports on worker nodes
+  ufw allow 10250/tcp       # Kubelet API
+  ufw allow 30000:32767/tcp # NodePort Services
+
+  # ufw disable
+  ufw --force enable
   ufw status
 
   # Change local passwords
