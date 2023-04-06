@@ -164,7 +164,7 @@ dir_pool_tpl_file="${setup_dir}/dirpool.0000.xml"
 # Virtual machine name
 vmachine_name=
 # Default cloud image full path name
-cloud_image="/srv/setup/focal-server-cloudimg-amd64.img"
+cloud_image="/srv/setup/jammy-server-cloudimg-amd64.img"
 # DVD iso file at startup
 dvd_iso_file="/srv/setup/ubuntu-22.04-live-server-amd64.iso"
 # Default vmachines path
