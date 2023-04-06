@@ -300,7 +300,7 @@ echo
 if [[ "${execution_mode}" == "ssh-sudoers" ]]; then
 
   # Clean known_host file from previous entries
-  if ! [[ -f ${HOME}/.ssh/known_hosts ]]; then
+  if [[ -f ${HOME}/.ssh/known_hosts ]]; then
 
     echo
     echo "${msg_info} Cleaning ${HOME}/.ssh/known_hosts file entries"
