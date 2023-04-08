@@ -4,6 +4,7 @@
 
 - [v99-99-99](#v99-99-99)
   - [Release notes](#release-notes)
+  - [Ubuntu 22.04 Servers](#ubuntu-2204-servers)
   - [Application updates](#application-updates)
 - [v22-12-19](#v22-12-19)
   - [Release notes](#release-notes-1)
@@ -31,6 +32,24 @@
 
 Welcome to cSkyLab release of v99-99-99.
 
+This release incorporate templates for Ubuntu 22.40 server machines. It is highly recommended to develop the new operating system from a clean installation and new configuration files, migrating configuration and data services as needed.
+
+Regarding to kubernetes services, it is also recommended to generate new clusters with new nodes based on Ubuntu 22.04, restoring data services from old Ubuntu 20.04 nodes. 
+
+### Ubuntu 22.04 Servers
+
+New server templates in this release:
+
+| Template         |                                                                          |
+| ---------------- | ------------------------------------------------------------------------ |
+| ubt2204srv-naked | Basic installation of Ubuntu Server 22.04 LTS                            |
+| ubt2204srv-ca    | Certification Authority on Ubuntu Server 22.04 LTS                       |
+| ubt2204srv-dns   | Bind 9 DNS Services on Ubuntu Server 22.04 LTS                           |
+| ubt2204srv-lvm   | Basic installation of Ubuntu Server 22.04 LTS with LVM storage services  |
+| ubt2204srv-k8s   | Kubernetes master / node on Ubuntu Server 22.04 LTS                      |
+| ubt2204srv-kvm   | KVM host on Ubuntu Server 22.04 LTS                                      |
+| ubt2204srv-mcc   | Management host (mcc: Mission Control Center) on Ubuntu Server 22.04 LTS |
+
 To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
 
 ```bash
@@ -49,9 +68,10 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 Application update procedures in this release:
 
-| Procedures                                           |
-| ---------------------------------------------------- |
-| [k8s-keycloakx](./k8s-keycloakx.md)                  |
+| Procedures                                   |
+| -------------------------------------------- |
+| [kubeadm-clusters.md](./kubeadm-clusters.md) |
+| [k8s-keycloakx](./k8s-keycloakx.md)          |
 
 ---
 
@@ -91,7 +111,7 @@ Application update procedures in this release:
 | [k8s-miniostalone](./k8s-miniostalone.md)            |
 | [k8s-minio-operator/tenant](./k8s-minio-operator.md) |
 | [k8s-iot-studio.md](./k8s-iot-studio.md)             |
-| [kubeadm-clusters.md](./kubeadm-clusters.md)     |
+| [kubeadm-clusters.md](./kubeadm-clusters.md)         |
 
 ---
 ## v22-08-21

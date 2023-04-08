@@ -395,7 +395,7 @@ EOF
 
   containerd config default >/etc/containerd/config.toml
 
-  # Update /etc/containerd/config.toml (space needed behind variable ${lv_dev_name})
+  # Update /etc/containerd/config.toml
   sed -i "s/SystemdCgroup = false/SystemdCgroup = true/g" /etc/containerd/config.toml
 
   # Restart containerd
