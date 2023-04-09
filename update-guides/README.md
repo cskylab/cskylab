@@ -68,10 +68,11 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 Application update procedures in this release:
 
-| Procedures                                   |
-| -------------------------------------------- |
-| [kubeadm-clusters.md](./kubeadm-clusters.md) |
-| [k8s-keycloakx](./k8s-keycloakx.md)          |
+| Procedures                                    |
+| --------------------------------------------- |
+| [kubeadm-clusters.md](./kubeadm-clusters.md)  |
+| [k8s-metallb-system](./k8s-metallb-system.md) |
+| [k8s-keycloakx](./k8s-keycloakx.md)           |
 
 ---
 
