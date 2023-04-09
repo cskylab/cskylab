@@ -485,6 +485,13 @@ if [[ "${execution_mode}" == "install" ]] ||
   ufw allow 10250/tcp       # Kubelet API
   ufw allow 30000:32767/tcp # NodePort Services
 
+  ## Required ports for MetalLB
+  ## https://metallb.universe.tf
+  ufw allow 7472/tcp  # MetalLB
+  ufw allow 7472/udp  # MetalLB
+  ufw allow 7946/tcp  # MetalLB
+  ufw allow 7946/udp  # MetalLB
+
   # ufw disable
   ufw --force enable
   ufw status
