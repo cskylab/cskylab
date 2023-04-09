@@ -473,27 +473,27 @@ if [[ "${execution_mode}" == "install" ]] ||
   ## Kubernetes ufw required ports
   ##
   
-  ## Required ports on master node
-  ufw allow 6443/tcp  # Kubernetes API server
-  ufw allow 2379/tcp  # etcd server client API
-  ufw allow 2380/tcp  # etcd server client API
-  ufw allow 10250/tcp # Kubelet API
-  ufw allow 10259/tcp # kube-scheduler
-  ufw allow 10257/tcp # kube-controller-manager
+  # ## Required ports on master node
+  # ufw allow 6443/tcp  # Kubernetes API server
+  # ufw allow 2379/tcp  # etcd server client API
+  # ufw allow 2380/tcp  # etcd server client API
+  # ufw allow 10250/tcp # Kubelet API
+  # ufw allow 10259/tcp # kube-scheduler
+  # ufw allow 10257/tcp # kube-controller-manager
 
-  ## Required ports on worker nodes
-  ufw allow 10250/tcp       # Kubelet API
-  ufw allow 30000:32767/tcp # NodePort Services
+  # ## Required ports on worker nodes
+  # ufw allow 10250/tcp       # Kubelet API
+  # ufw allow 30000:32767/tcp # NodePort Services
 
-  ## Required ports for MetalLB
-  ## https://metallb.universe.tf
-  ufw allow 7472/tcp  # MetalLB
-  ufw allow 7472/udp  # MetalLB
-  ufw allow 7946/tcp  # MetalLB
-  ufw allow 7946/udp  # MetalLB
+  # ## Required ports for MetalLB
+  # ## https://metallb.universe.tf
+  # ufw allow 7472/tcp  # MetalLB
+  # ufw allow 7472/udp  # MetalLB
+  # ufw allow 7946/tcp  # MetalLB
+  # ufw allow 7946/udp  # MetalLB
 
-  # ufw disable
-  ufw --force enable
+  ufw disable
+  # ufw --force enable
   ufw status
 
   # Change local passwords
