@@ -32,7 +32,7 @@
 
 Welcome to cSkyLab release of v99-99-99.
 
-This release incorporate templates for Ubuntu 22.40 server machines. It is highly recommended to develop the new operating system from a clean installation and new configuration files, migrating configuration and data services as needed.
+This release features templates for Ubuntu 22.40 server machines. It is highly recommended to develop the new operating system from a clean installation and new configuration files, migrating configuration and data services as needed.
 
 Regarding to kubernetes services, it is also recommended to generate new clusters with new nodes based on Ubuntu 22.04, restoring data services from old Ubuntu 20.04 nodes. 
 
