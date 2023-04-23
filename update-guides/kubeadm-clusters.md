@@ -300,16 +300,12 @@ sudo apt-get update \
 
 ```bash
 sudo -i
-# Generate containterd default configuration
-containerd config default >/etc/containerd/config.toml
 
-# Update /etc/containerd/config.toml
-sed -i "s/SystemdCgroup = false/SystemdCgroup = true/g" /etc/containerd/config.toml
-
-# Restart containerd
-systemctl restart containerd
+# Generate & update containterd default configuration
+containerd config default >/etc/containerd/config.toml \
+  && sed -i "s/SystemdCgroup = false/SystemdCgroup = true/g" /etc/containerd/config.toml \
+  && systemctl restart containerd
 ```
-
 
 - Reboot the node:
 
