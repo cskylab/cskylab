@@ -26,8 +26,8 @@
 
 ### Background
 
-Chart codecentric/keycloakx 2.1.0 updates chart components in keycloak appVersion 20.0.1
-Chart bitnami/postgresql 12.1.16 updates chart components in postgresql appVersion 14.x (image selected in values-posgresql.yaml)   
+Chart codecentric/keycloakx 2.1.1 updates chart components in keycloak appVersion 20.0.3
+Chart bitnami/postgresql 12.3.1 updates chart components in postgresql appVersion 14.x (image selected in values-posgresql.yaml)   
 
 This upgrade covers changes in customizing theme providers and requires to uninstall and re-install the namespace. The keycloakx postresql LVM data service will preserve existing data.
 

@@ -4,8 +4,8 @@
 
 ## Helm charts: <!-- omit in toc -->
 
-- codecentric/keycloakx v2.1.0 appVersion 20.0.1 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart).
-- bitnami/postgresql 12.1.6 appVersion 14.x (image selected in values-posgresql.yaml).
+- codecentric/keycloakx v2.1.1 appVersion 20.0.3 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart).
+- bitnami/postgresql 12.3.1 appVersion 14.x (image selected in values-posgresql.yaml).
 
 [Keycloak](https://www.keycloak.org) is a high performance Java-based identity and access management solution. It lets developers add an authentication layer to their applications with minimum effort.
 
