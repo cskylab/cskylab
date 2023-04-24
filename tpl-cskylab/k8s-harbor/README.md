@@ -91,6 +91,7 @@ echo \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
 && mkdir "/srv/{{ .namespace.name }}/data/chartmuseum" \
 && mkdir "/srv/{{ .namespace.name }}/data/jobservice" \
+&& mkdir "/srv/{{ .namespace.name }}/data/scandata" \
 && mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
 && mkdir "/srv/{{ .namespace.name }}/data/redis" \
 && mkdir "/srv/{{ .namespace.name }}/data/registry" \
@@ -111,6 +112,7 @@ echo \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
 && mkdir "/srv/{{ .namespace.name }}/data/chartmuseum" \
 && mkdir "/srv/{{ .namespace.name }}/data/jobservice" \
+&& mkdir "/srv/{{ .namespace.name }}/data/scandata" \
 && mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
 && mkdir "/srv/{{ .namespace.name }}/data/redis" \
 && mkdir "/srv/{{ .namespace.name }}/data/registry" \
