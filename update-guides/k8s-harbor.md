@@ -130,7 +130,7 @@ Edit file `values-harbor.yaml` and find the property tree called `persistentVolu
 Replace the entire tree with the following values (keeping the appropriate identation of the whole tree):
 
 ```yaml
-persistentVolumeClaim:
+  persistentVolumeClaim:
     ## @param persistence.persistentVolumeClaim.registry.existingClaim Name of an existing PVC to use
     ## @param persistence.persistentVolumeClaim.registry.storageClass PVC Storage Class for Harbor Registry data volume
     ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
