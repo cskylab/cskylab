@@ -4,17 +4,20 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99.99.99](#v999999)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
-    - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts \& update](#2--pull-charts--update)
+    - [1.- Create new data service directory on k8s-mod-n1](#1--create-new-data-service-directory-on-k8s-mod-n1)
+    - [2.- Create new PV manifest](#2--create-new-pv-manifest)
+    - [3.- Update harbor chart values file](#3--update-harbor-chart-values-file)
+    - [4.- Update configuration files](#4--update-configuration-files)
+    - [5.- Pull charts \& update](#5--pull-charts--update)
   - [Reference](#reference)
 - [v22-12-19](#v22-12-19)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
-    - [1.- Update configuration files](#1--update-configuration-files-1)
-    - [2.- Pull charts \& update](#2--pull-charts--update-1)
+    - [1.- Update configuration files](#1--update-configuration-files)
+    - [2.- Pull charts \& update](#2--pull-charts--update)
   - [Reference](#reference-1)
 - [v22-08-21](#v22-08-21)
   - [Background](#background-2)
@@ -27,35 +30,198 @@
 - [v22-03-23](#v22-03-23)
   - [Background](#background-3)
   - [How-to guides](#how-to-guides-3)
-    - [1.- Update configuration files](#1--update-configuration-files-2)
-    - [2.- Pull charts \& update](#2--pull-charts--update-2)
+    - [1.- Update configuration files](#1--update-configuration-files-1)
+    - [2.- Pull charts \& update](#2--pull-charts--update-1)
   - [Reference](#reference-3)
 - [v22-01-05](#v22-01-05)
   - [Background](#background-4)
   - [How-to guides](#how-to-guides-4)
-    - [1.- Update configuration files](#1--update-configuration-files-3)
+    - [1.- Update configuration files](#1--update-configuration-files-2)
     - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade)
   - [Reference](#reference-4)
 - [v21-12-06](#v21-12-06)
   - [Background](#background-5)
   - [How-to guides](#how-to-guides-5)
-    - [1.- Update configuration files](#1--update-configuration-files-4)
+    - [1.- Update configuration files](#1--update-configuration-files-3)
     - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade-1)
   - [Reference](#reference-5)
 
 ---
 
-## v99.99.99
+## v99-99-99
 
 ### Background
 
-Harbor chart 16.4.10 updates components versions in Harbor appVersion 2.7.0.
+Harbor chart 16.4.10 updates components versions in Harbor appVersion 2.7.0. This version requires the addition of a new data service and persistent volume for `harbor-scandata`.
 
 This procedure updates Harbor installation in k8s-mod cluster.
 
 ### How-to guides
 
-#### 1.- Update configuration files
+#### 1.- Create new data service directory on k8s-mod-n1
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` folder repository.
+
+Asuming that your PV is supported by node k8s-mod-n1, execute the following command to create the new directory needed for `harbor-scandata`:
+
+```bash
+#
+# Create directory for harbor-scandata
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& ssh kos@k8s-mod-n1.cskylab.net \
+  'sudo mkdir -v "/srv/harbor/data/scandata" \
+  ; ls -lah /srv/harbor/data/' \
+;  echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+>**Note:** Directory must be created only in k8s node that supports the service, also called "PV node". "RSync node" will get data by synchronizing with PV node.
+
+#### 2.- Create new PV manifest
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` folder repository.
+
+Create a new PV manifest file called `pv-scandata.yaml` with the following content:
+
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: 'harbor-scandata'
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: 'harbor-scandata'
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: 'harbor-scandata'
+  local:
+    path: '/srv/harbor/data/scandata'
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-mod-n1
+```
+
+#### 3.- Update harbor chart values file
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` folder repository.
+
+Edit file `values-harbor.yaml` and find the property tree called `persistentVolumeClaim:`
+
+Replace the entire tree with the following values (keeping the appropriate identation of the whole tree):
+
+```yaml
+persistentVolumeClaim:
+    ## @param persistence.persistentVolumeClaim.registry.existingClaim Name of an existing PVC to use
+    ## @param persistence.persistentVolumeClaim.registry.storageClass PVC Storage Class for Harbor Registry data volume
+    ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+    ## @param persistence.persistentVolumeClaim.registry.subPath The sub path used in the volume
+    ## @param persistence.persistentVolumeClaim.registry.accessModes The access mode of the volume
+    ## @param persistence.persistentVolumeClaim.registry.size The size of the volume
+    ## @param persistence.persistentVolumeClaim.registry.annotations Annotations for the PVC
+    ## @param persistence.persistentVolumeClaim.registry.selector Selector to match an existing Persistent Volume
+    ##
+    registry:
+      existingClaim: ""
+      storageClass: "harbor-registry"
+      subPath: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 5Gi
+      annotations: {}
+      selector: {}
+    ## @param persistence.persistentVolumeClaim.jobservice.existingClaim Name of an existing PVC to use
+    ## @param persistence.persistentVolumeClaim.jobservice.storageClass PVC Storage Class for Harbor Jobservice data volume
+    ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+    ## @param persistence.persistentVolumeClaim.jobservice.subPath The sub path used in the volume
+    ## @param persistence.persistentVolumeClaim.jobservice.accessModes The access mode of the volume
+    ## @param persistence.persistentVolumeClaim.jobservice.size The size of the volume
+    ## @param persistence.persistentVolumeClaim.jobservice.annotations Annotations for the PVC
+    ## @param persistence.persistentVolumeClaim.jobservice.selector Selector to match an existing Persistent Volume
+    ##
+    jobservice:
+      existingClaim: ""
+      storageClass: "harbor-jobservice"
+      subPath: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+      annotations: {}
+      selector: {}
+      ## @param persistence.persistentVolumeClaim.jobservice.scanData.existingClaim Name of an existing PVC to use
+      ## @param persistence.persistentVolumeClaim.jobservice.scanData.storageClass PVC Storage Class for Harbor Jobservice scan data volume
+      ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+      ## @param persistence.persistentVolumeClaim.jobservice.scanData.subPath The sub path used in the volume
+      ## @param persistence.persistentVolumeClaim.jobservice.scanData.accessModes The access mode of the volume
+      ## @param persistence.persistentVolumeClaim.jobservice.scanData.size The size of the volume
+      ## @param persistence.persistentVolumeClaim.jobservice.scanData.annotations Annotations for the PVC
+      ## @param persistence.persistentVolumeClaim.jobservice.scanData.selector Selector to match an existing Persistent Volume
+      ##
+      scanData:
+        existingClaim: ""
+        storageClass: "harbor-scandata"
+        subPath: ""
+        accessModes:
+          - ReadWriteOnce
+        size: 1Gi
+        annotations: {}
+        selector: {}
+    ## @param persistence.persistentVolumeClaim.chartmuseum.existingClaim Name of an existing PVC to use
+    ## @param persistence.persistentVolumeClaim.chartmuseum.storageClass PVC Storage Class for Chartmuseum data volume
+    ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+    ## @param persistence.persistentVolumeClaim.chartmuseum.subPath The sub path used in the volume
+    ## @param persistence.persistentVolumeClaim.chartmuseum.accessModes The access mode of the volume
+    ## @param persistence.persistentVolumeClaim.chartmuseum.size The size of the volume
+    ## @param persistence.persistentVolumeClaim.chartmuseum.annotations Annotations for the PVC
+    ## @param persistence.persistentVolumeClaim.chartmuseum.selector Selector to match an existing Persistent Volume
+    ##
+    chartmuseum:
+      existingClaim: ""
+      storageClass: "harbor-chartmuseum"
+      subPath: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 5Gi
+      annotations: {}
+      selector: {}
+    ## @param persistence.persistentVolumeClaim.trivy.storageClass PVC Storage Class for Trivy data volume
+    ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+    ## @param persistence.persistentVolumeClaim.trivy.accessModes The access mode of the volume
+    ## @param persistence.persistentVolumeClaim.trivy.size The size of the volume
+    ## @param persistence.persistentVolumeClaim.trivy.annotations Annotations for the PVC
+    ## @param persistence.persistentVolumeClaim.trivy.selector Selector to match an existing Persistent Volume
+    ##
+    trivy:
+      storageClass: "harbor-trivy"
+      accessModes:
+        - ReadWriteOnce
+      size: 5Gi
+      annotations: {}
+      selector: {}
+```
+
+Save the modified file `values-harbor.yaml`.
+
+#### 4.- Update configuration files
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` folder repository.
 
@@ -91,7 +257,7 @@ EOF
 
 - Save file
 
-#### 2.- Pull charts & update
+#### 5.- Pull charts & update
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` repository directory.
 

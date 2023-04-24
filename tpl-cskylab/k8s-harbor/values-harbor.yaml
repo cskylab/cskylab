@@ -119,46 +119,92 @@ persistence:
   ##
   resourcePolicy: 'keep'
   persistentVolumeClaim:
-    registry:
-      ## If you want to reuse an existing claim, you can pass the name of the PVC using
-      ## the existingClaim variable
+      ## @param persistence.persistentVolumeClaim.registry.existingClaim Name of an existing PVC to use
+      ## @param persistence.persistentVolumeClaim.registry.storageClass PVC Storage Class for Harbor Registry data volume
+      ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+      ## @param persistence.persistentVolumeClaim.registry.subPath The sub path used in the volume
+      ## @param persistence.persistentVolumeClaim.registry.accessModes The access mode of the volume
+      ## @param persistence.persistentVolumeClaim.registry.size The size of the volume
+      ## @param persistence.persistentVolumeClaim.registry.annotations Annotations for the PVC
+      ## @param persistence.persistentVolumeClaim.registry.selector Selector to match an existing Persistent Volume
       ##
-      existingClaim: ''
-      ## Specify the "storageClass" used to provision the volume.
-      ## Set it to "-" to disable dynamic provisioning
+      registry:
+        existingClaim: ""
+        storageClass: "{{ .namespace.name }}-registry"
+        subPath: ""
+        accessModes:
+          - ReadWriteOnce
+        size: 5Gi
+        annotations: {}
+        selector: {}
+      ## @param persistence.persistentVolumeClaim.jobservice.existingClaim Name of an existing PVC to use
+      ## @param persistence.persistentVolumeClaim.jobservice.storageClass PVC Storage Class for Harbor Jobservice data volume
+      ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+      ## @param persistence.persistentVolumeClaim.jobservice.subPath The sub path used in the volume
+      ## @param persistence.persistentVolumeClaim.jobservice.accessModes The access mode of the volume
+      ## @param persistence.persistentVolumeClaim.jobservice.size The size of the volume
+      ## @param persistence.persistentVolumeClaim.jobservice.annotations Annotations for the PVC
+      ## @param persistence.persistentVolumeClaim.jobservice.selector Selector to match an existing Persistent Volume
       ##
-      storageClass: {{ .namespace.name }}-registry
-      subPath: ''
-      accessMode: ReadWriteOnce
-      size: 5Gi
-    jobservice:
-      ## If you want to reuse an existing claim, you can pass the name of the PVC using
-      ## the existingClaim variable
+      jobservice:
+        existingClaim: ""
+        storageClass: "{{ .namespace.name }}-jobservice"
+        subPath: ""
+        accessModes:
+          - ReadWriteOnce
+        size: 1Gi
+        annotations: {}
+        selector: {}
+        ## @param persistence.persistentVolumeClaim.jobservice.scanData.existingClaim Name of an existing PVC to use
+        ## @param persistence.persistentVolumeClaim.jobservice.scanData.storageClass PVC Storage Class for Harbor Jobservice scan data volume
+        ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+        ## @param persistence.persistentVolumeClaim.jobservice.scanData.subPath The sub path used in the volume
+        ## @param persistence.persistentVolumeClaim.jobservice.scanData.accessModes The access mode of the volume
+        ## @param persistence.persistentVolumeClaim.jobservice.scanData.size The size of the volume
+        ## @param persistence.persistentVolumeClaim.jobservice.scanData.annotations Annotations for the PVC
+        ## @param persistence.persistentVolumeClaim.jobservice.scanData.selector Selector to match an existing Persistent Volume
+        ##
+        scanData:
+          existingClaim: ""
+          storageClass: "{{ .namespace.name }}-scandata"
+          subPath: ""
+          accessModes:
+            - ReadWriteOnce
+          size: 1Gi
+          annotations: {}
+          selector: {}
+      ## @param persistence.persistentVolumeClaim.chartmuseum.existingClaim Name of an existing PVC to use
+      ## @param persistence.persistentVolumeClaim.chartmuseum.storageClass PVC Storage Class for Chartmuseum data volume
+      ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+      ## @param persistence.persistentVolumeClaim.chartmuseum.subPath The sub path used in the volume
+      ## @param persistence.persistentVolumeClaim.chartmuseum.accessModes The access mode of the volume
+      ## @param persistence.persistentVolumeClaim.chartmuseum.size The size of the volume
+      ## @param persistence.persistentVolumeClaim.chartmuseum.annotations Annotations for the PVC
+      ## @param persistence.persistentVolumeClaim.chartmuseum.selector Selector to match an existing Persistent Volume
       ##
-      existingClaim: ''
-      ## Specify the "storageClass" used to provision the volume.
-      ## Set it to "-" to disable dynamic provisioning
+      chartmuseum:
+        existingClaim: ""
+        storageClass: "{{ .namespace.name }}-chartmuseum"
+        subPath: ""
+        accessModes:
+          - ReadWriteOnce
+        size: 5Gi
+        annotations: {}
+        selector: {}
+      ## @param persistence.persistentVolumeClaim.trivy.storageClass PVC Storage Class for Trivy data volume
+      ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+      ## @param persistence.persistentVolumeClaim.trivy.accessModes The access mode of the volume
+      ## @param persistence.persistentVolumeClaim.trivy.size The size of the volume
+      ## @param persistence.persistentVolumeClaim.trivy.annotations Annotations for the PVC
+      ## @param persistence.persistentVolumeClaim.trivy.selector Selector to match an existing Persistent Volume
       ##
-      storageClass: {{ .namespace.name }}-jobservice
-      subPath: ''
-      accessMode: ReadWriteOnce
-      size: 1Gi
-    chartmuseum:
-      ## If you want to reuse an existing claim, you can pass the name of the PVC using
-      ## the existingClaim variable
-      ##
-      existingClaim: ''
-      ## Specify the "storageClass" used to provision the volume.
-      ## Set it to "-" to disable dynamic provisioning
-      ##
-      storageClass: {{ .namespace.name }}-chartmuseum
-      subPath: ''
-      accessMode: ReadWriteOnce
-      size: 5Gi
-    trivy:
-      storageClass: {{ .namespace.name }}-trivy
-      accessMode: ReadWriteOnce
-      size: 5Gi
+      trivy:
+        storageClass: "{{ .namespace.name }}-trivy"
+        accessModes:
+          - ReadWriteOnce
+        size: 5Gi
+        annotations: {}
+        selector: {}
 
 ## PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml

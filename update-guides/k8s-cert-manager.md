@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v299-99-99](#v299-99-99)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update configuration files](#1--update-configuration-files)
@@ -31,7 +31,7 @@
 
 ---
 
-## v299-99-99
+## v99-99-99
 
 ### Background
 
