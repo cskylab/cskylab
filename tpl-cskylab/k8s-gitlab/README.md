@@ -14,6 +14,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
 - [Prerequisites](#prerequisites)
   - [LVM Data Services](#lvm-data-services)
     - [Persistent Volumes](#persistent-volumes)
+  - [Custom CA certificate](#custom-ca-certificate)
 - [How-to guides](#how-to-guides)
   - [Pull Charts](#pull-charts)
   - [Install](#install)
@@ -173,6 +174,17 @@ pv-task-runner.yaml
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.
+
+### Custom CA certificate
+
+A custom private CA certificate is injected in pods. 
+
+To change the CA certificate, you must add the appropriate pem certificate file, edit script `csdeploy.sh` and change the following variable as needed:
+
+```bash
+# Custom CA file.pem
+custom_ca_file="ca-test-internal.pem"
+```
 
 ## How-to guides
 

@@ -16,7 +16,7 @@ spec:
     - port: {{ .Values.service.externalPort }}
       targetPort: http-metrics
       protocol: TCP
-      name: http-metrics
+      name: {{ .Values.tls.enabled | ternary "https" "http" }}-metrics
   selector:
     {{- include "gitlab.selectorLabels" . | nindent 4 }}
 {{- end }}

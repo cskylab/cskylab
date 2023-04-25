@@ -94,6 +94,6 @@ cluster.
 {{- if .Values.internalGitlabServer -}}
 {{ .Values.internalGitlabServer }}
 {{- else -}}
-http://{{ template "gitlab.workhorse.host" . }}:{{ template "gitlab.workhorse.port" . }}
+{{ template "gitlab.workhorse.url" . }}
 {{- end -}}
 {{- end -}}

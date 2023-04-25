@@ -53,6 +53,7 @@ imagePullPolicy: IfNotPresent
 ## The Registration Token for adding new Runners to the GitLab Server. This must
 ## be retrieved from your GitLab Instance.
 ## ref: https://docs.gitlab.com/ce/ci/runners/index.html
+## ref: https://docs.gitlab.com/runner/register/
 ##
 # runnerRegistrationToken: ""
 
@@ -62,18 +63,6 @@ imagePullPolicy: IfNotPresent
 ##
 # runnerToken: ""
 #
-
-## Unregister runner before termination
-##
-## Updating the runner's chart version or configuration will cause the runner container
-## to be terminated and created again. This may cause your GitLab instance to reference
-## non-existant runners. Un-registering the runner before termination mitigates this issue.
-## ref: https://docs.gitlab.com/runner/commands/index.html#gitlab-runner-unregister
-##
-## Please set unregisterRunners to false if you set unregisterRunner to true as only
-## one preStop action is supported.
-##
-# unregisterRunner: true
 
 ## Unregister all runners before termination
 ##
@@ -135,7 +124,7 @@ checkInterval: 30
 ## ref:
 ##
 ## When sessionServer is enabled, the user can either provide a public publicIP
-## or either rely on the external IP auto discovery
+## or rely on the external IP auto discovery
 ## When a serviceAccountName is used with the automounting to the pod disable,
 ## we recommend the usage of the publicIP
 sessionServer:
@@ -162,9 +151,14 @@ rbac:
   ## - apiGroups: default "" (indicates the core API group) if missing or empty.
   ## - resources: default "*" if missing or empty.
   ## - verbs: default "*" if missing or empty.
+  ##
+  ## Read more about the recommended rules on the following link
+  ##
+  ## ref: https://docs.gitlab.com/runner/executors/kubernetes.html#configuring-executor-service-account
+  ##
   rules: []
   # - resources: ["configmaps", "pods", "pods/attach", "secrets", "services"]
-  #   verbs: ["get", "list", "watch", "create", "patch", "delete"]
+  #   verbs: ["get", "list", "watch", "create", "patch", "update", "delete"]
   # - apiGroups: [""]
   #   resources: ["pods/exec"]
   #   verbs: ["create", "patch", "delete"]
@@ -517,7 +511,7 @@ runners:
     # memoryLimit: 256Mi
     # cpuRequests: 100m
     # memoryRequests: 128Mi
-    # image: "registry.gitlab.com/gitlab-org/gitlab-runner-helper:x86_64-${CI_RUNNER_REVISION}"
+    # image: "registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-${CI_RUNNER_REVISION}"
 
   ## Helper container security context configuration
   ## Refer to https://docs.gitlab.com/runner/executors/kubernetes.html#using-security-context

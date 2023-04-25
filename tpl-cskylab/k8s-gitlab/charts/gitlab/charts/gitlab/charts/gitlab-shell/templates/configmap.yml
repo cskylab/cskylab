@@ -9,7 +9,7 @@ metadata:
     {{- include "gitlab.commonLabels" . | nindent 4 }}
 data:
   configure: |
-    {{- include "gitlab.scripts.configure.secrets" (dict "required" "shell" ) | nindent 4 -}}
+    {{- include "gitlab.scripts.configure.secrets" (dict "required" "shell" "optional" "none") | nindent 4 }}
     mkdir -p /${secret_dir}/ssh
     cp -v -r -L /${config_dir}/ssh_host_* /${secret_dir}/ssh/
     chmod 0400 /${secret_dir}/ssh/ssh_host_*
@@ -76,12 +76,25 @@ data:
       # The server disconnects after this time if the user has not successfully logged in
       login_grace_time: {{ .Values.config.loginGraceTime }}
       # SSH host key files.
+      # - Walking {% env.Getenv "KEYS_DIRECTORY" "/etc/ssh" %} for keys.
       host_key_files:
-      {%- range file.Walk "/etc/ssh" %}
-        {%- if filepath.Match "/etc/ssh/ssh_host_*_key" . %}
+      {%- range file.Walk ( env.Getenv "KEYS_DIRECTORY" "/etc/ssh" ) %}
+        {%- if filepath.Base . | filepath.Match "ssh_host_*_key" %}
         - {%.%}
         {%- end %}
       {%- end %}
+      # GSSAPI-related settings
+      gssapi:
+        # Enable the gssapi-with-mic authentication method. Defaults to false.
+        enabled: {{ .Values.config.gssapi.enabled }}
+        # Library path for gssapi shared library - defaults to libgssapi_krb5.so.2  
+        libpath: {{ .Values.config.gssapi.libpath }}
+        # Keytab path. Defaults to "", system default (usually /etc/krb5.keytab).
+        keytab: "/etc/krb5.keytab"
+        # The Kerberos service name to be used by sshd. Defaults to "", accepts any service name in keytab file.
+        service_principal_name: {{ .Values.config.gssapi.servicePrincipalName }}
     {{- end }}
+  krb5.conf: |
+    {{- .Values.config.gssapi.krb5Config | nindent 4 }}
 # Leave this here - This line denotes end of block to the parser.
 {{- end }}

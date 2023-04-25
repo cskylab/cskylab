@@ -6,11 +6,7 @@ migration:
   enabled: {{ .Values.migration.enabled | eq true }}
 {{-   if .Values.migration.disablemirrorfs }}
   disablemirrorfs: true
-{{-   end -}}
-   {{/* This value is used for testing purposes only and will be removed soon
-    TODO: https://gitlab.com/gitlab-org/container-registry/-/issues/616
-   */}}
-  testslowimport: {{ .Values.migration.testslowimport }}
+{{-   end }}
 {{-   if .Values.migration.rootdirectory }}
   rootdirectory: {{ .Values.migration.rootdirectory }}
 {{-   end }}

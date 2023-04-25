@@ -51,3 +51,26 @@ nodeSelector:
   {{- toYaml $nodeSelector | nindent 2 }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Return priorityClassName for Pod definitions
+*/}}
+{{- define "gitlab.priorityClassName" -}}
+{{- $pcName := default .Values.global.priorityClassName .Values.priorityClassName -}}
+{{- if $pcName }}
+priorityClassName: {{ $pcName }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Allow configuring a standard suffix on all images in chart
+*/}}
+{{- define "gitlab.image.tagSuffix" -}}
+{{- if hasKey . "Values" -}}
+{{ .Values.global.image.tagSuffix }}
+{{- else if hasKey . "global" -}}
+{{ .global.image.tagSuffix }}
+{{- else }}
+""
+{{- end -}}
+{{- end -}}

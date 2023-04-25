@@ -52,6 +52,9 @@ data:
         email_reply_to: {{ template "gitlab.email.reply_to" . }}
         email_subject_suffix: {{ .Values.global.email.subject_suffix | quote }}
       {{- with .Values.global.appConfig }}
+      {{- if .microsoft_graph_mailer.enabled }}
+      {{- include "gitlab.appConfig.microsoft_graph_mailer" . | nindent 6 }}
+      {{- end }}
       {{- if .incomingEmail.enabled }}
       {{- include "gitlab.appConfig.incoming_email" . | nindent 6 }}
       {{- end }}
@@ -93,7 +96,7 @@ data:
           - 0.0.0.0/0
         sidekiq_exporter:
   configure: |
-    {{- include "gitlab.scripts.configure.secrets" (dict "required" "rails-secrets" "optional" "postgres redis") | nindent 4 -}}
+    {{- include "gitlab.scripts.configure.secrets" (dict "required" "rails-secrets" "optional" "postgres redis") | nindent 4 }}
     {{- include "gitlab.psql.ssl.initScript" . | nindent 4 }}
 
 # Leave this here - This line denotes end of block to the parser.

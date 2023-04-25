@@ -30,6 +30,9 @@ object_store:
   {{- else if and .config.enabled .context.Values.global.minio.enabled }}
   {{-   include "gitlab.appConfig.objectStorage.connection.minio" . | nindent 2 }}
   {{- end -}}
+  {{- if and .config.enabled .config.cdn (eq .name "artifacts") }}
+  cdn: <%= YAML.load_file("/etc/gitlab/objectstorage/cdn/{{ .name }}").to_json %>
+  {{- end -}}
 {{- end -}}{{/* "gitlab.appConfig.objectStorage.configuration" */}}
 
 {{/*
@@ -73,6 +76,13 @@ Usage:
       - key: {{ default "connection" .config.connection.key }}
         path: objectstorage/{{ .name }}
 {{- end -}}
+{{- if and .config.cdn (eq .name "artifacts") }}
+- secret:
+    name: {{ .config.cdn.secret }}
+    items:
+      - key: {{ default "cdn" .config.cdn.key }}
+        path: objectstorage/cdn/{{ .name }}
+{{- end -}}
 {{- end -}}{{/* "gitlab.appConfig.objectStorage.mountSecrets" */}}
 
 
@@ -90,5 +100,8 @@ Usage:
 {{-   if default false .config.enabled -}}
 {{ .name }}:
   bucket: {{ .config.bucket }}
+{{-     if and .config.cdn (eq .name "artifacts") }}
+  cdn: <%= YAML.load_file("/etc/gitlab/objectstorage/cdn/{{ .name }}").to_json %>
+{{-     end -}}
 {{-   end -}}
 {{- end }}

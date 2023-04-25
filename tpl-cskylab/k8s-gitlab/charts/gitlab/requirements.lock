@@ -16,21 +16,24 @@ dependencies:
   version: v1.5.4
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
-  version: 15.0.4
+  version: 15.18.0
 - name: postgresql
   repository: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
   version: 8.9.4
 - name: gitlab-runner
   repository: https://charts.gitlab.io/
-  version: 0.43.0
+  version: 0.51.1
 - name: grafana
   repository: https://grafana.github.io/helm-charts
-  version: 6.9.1
+  version: 6.11.0
 - name: redis
   repository: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
   version: 11.3.4
 - name: nginx-ingress
   repository: ""
   version: '*.*.*'
-digest: sha256:3ce5f8b514b23dde9b826d7668a9c775cb78488c6413fe6005b92db8ea062408
-generated: "2022-08-01T17:38:28.525136852Z"
+- name: gitlab-zoekt
+  repository: https://charts.gitlab.io/
+  version: 0.3.0
+digest: sha256:67477d660a351df330393ce9ed84458eafbc419de2c454339ed7539bde9c45ca
+generated: "2023-04-22T14:06:15.482471816Z"

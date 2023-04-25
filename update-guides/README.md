@@ -32,7 +32,7 @@
 
 Welcome to cSkyLab release of v99-99-99.
 
-This release features templates for Ubuntu 22.40 server machines. It is highly recommended to develop the new operating system from a clean installation and new configuration files, migrating configuration and data services as needed.
+This release features templates for Ubuntu 22.04 server machines. It is highly recommended to develop the new operating system from a clean installation and new configuration files, migrating configuration and data services as needed.
 
 Regarding to kubernetes services, it is also recommended to generate new clusters with new nodes based on Ubuntu 22.04, restoring data services from old Ubuntu 20.04 nodes. 
 
@@ -76,6 +76,8 @@ Application update procedures in this release:
 | [k8s-cert-manager](./k8s-cert-manager.md)     |
 | [k8s-harbor](./k8s-harbor.md)                 |
 | [k8s-keycloakx](./k8s-keycloakx.md)           |
+| [k8s-gitlab.md](./k8s-gitlab.md)                 |
+
 
 ---
 

@@ -29,6 +29,9 @@ spec:
       tolerations:
         {{- toYaml $sharedSecretValues.tolerations | nindent 8 }}
       {{- end }}
+      {{- if or $.Values.global.priorityClassName $sharedSecretValues.priorityClassName }}
+      priorityClassName: {{ default $.Values.global.priorityClassName $sharedSecretValues.priorityClassName }}
+      {{- end }}
       securityContext:
         runAsUser: {{ $sharedSecretValues.securityContext.runAsUser }}
         fsGroup: {{ $sharedSecretValues.securityContext.fsGroup }}
@@ -39,7 +42,7 @@ spec:
       {{- include "gitlab.image.pullSecrets" $imageCfg | nindent 6 }}
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ include "gitlab.kubectl.image" . | quote }}
+          image: {{ include "gitlab.kubectl.image" . }}
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           command: ['/bin/bash', '/scripts/generate-secrets']
           volumeMounts:
