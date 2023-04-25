@@ -1,8 +1,8 @@
 # [MinIO](https://min.io) standalone <!-- omit in toc -->
 
-## v22-12-19 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: bitnami/minio v11.10.24<!-- omit in toc -->
+## Helm charts: bitnami/minio v12.4.1<!-- omit in toc -->
 
 [MinIO](https://min.io) is an object storage server, compatible with Amazon S3 cloud storage service, mainly used for storing unstructured data (such as photos, videos, log files, etc.)
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
