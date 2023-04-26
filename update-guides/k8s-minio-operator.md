@@ -55,7 +55,16 @@ From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/minio-
 image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
 ```
 
-- Edit `README.md` documentation file and change in section **Install** the yaml section as follows:
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v99-99-99 <!-- omit in toc -->
+
+## Image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z <!-- omit in toc -->
+```
+
+
+- In the same file, change the yaml section at **Install** as follows:
 
 ```yaml
   ## Registry location and Tag to download MinIO Server image
