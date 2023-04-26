@@ -7,7 +7,7 @@
 - [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
-    - [1.- Update minio-tenant manifest](#1--update-minio-tenant-manifest)
+    - [1.- Update minio-tenant manifest and documentation](#1--update-minio-tenant-manifest-and-documentation)
     - [2.- Update minio-operator chart](#2--update-minio-operator-chart)
     - [3.- Update minio-operator namespace](#3--update-minio-operator-namespace)
     - [4.- Update minio-tenant namespace](#4--update-minio-tenant-namespace)
@@ -15,7 +15,7 @@
 - [v22-12-19](#v22-12-19)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
-    - [1.- Update minio-tenant manifest](#1--update-minio-tenant-manifest-1)
+    - [1.- Update minio-tenant manifest](#1--update-minio-tenant-manifest)
     - [2.- Update minio-operator chart](#2--update-minio-operator-chart-1)
     - [3.- Update minio-operator namespace](#3--update-minio-operator-namespace-1)
     - [4.- Update minio-tenant namespace](#4--update-minio-tenant-namespace-1)
@@ -44,7 +44,7 @@ This procedure updates the installation in k8s-mod cluster.
 
 ### How-to guides
 
-#### 1.- Update minio-tenant manifest
+#### 1.- Update minio-tenant manifest and documentation
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/minio-t1` repository directory.
 
@@ -52,7 +52,14 @@ From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/minio-
 
 ```bash
 ## Registry location and Tag to download MinIO Server image
-image: quay.io/minio/minio:RELEASE.2022-12-12T19-27-27Z
+image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
+```
+
+- Edit `README.md` documentation file and change in section **Install** the yaml section as follows:
+
+```yaml
+  ## Registry location and Tag to download MinIO Server image
+  image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
 ```
 
 #### 2.- Update minio-operator chart
@@ -74,7 +81,7 @@ helm repo add minio https://operator.min.io/
 helm repo update
 
 ## Charts
-helm pull minio/operator --version 4.5.5 --untar
+helm pull minio/operator --version 5.0.4 --untar
 
 EOF
 )"
@@ -83,9 +90,9 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v22-12-19 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: minio/operator v4.5.5 <!-- omit in toc -->
+## Helm charts: minio/operator v5.0.4 <!-- omit in toc -->
 ```
 
 #### 3.- Update minio-operator namespace
