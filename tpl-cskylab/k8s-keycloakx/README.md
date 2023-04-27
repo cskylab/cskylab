@@ -1,6 +1,6 @@
 # Keycloak identity and access management <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v23-04-27 <!-- omit in toc -->
 
 ## Helm charts: <!-- omit in toc -->
 

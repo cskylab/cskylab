@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99b (k8s v1.27.1-00)](#v99-99-99b-k8s-v1271-00)
+- [v23-04-27b (k8s v1.27.1-00)](#v23-04-27b-k8s-v1271-00)
   - [Prerequisites (Not neccesary in Ubuntu 22.04)](#prerequisites-not-neccesary-in-ubuntu-2204)
   - [k8s version 1.27.1-00](#k8s-version-1271-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions)
@@ -17,7 +17,7 @@
     - [Update mcc configuration](#update-mcc-configuration)
     - [Connect with mcc](#connect-with-mcc)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc)
-- [v99-99-99a (k8s v1.26.3-00)](#v99-99-99a-k8s-v1263-00)
+- [v23-04-27a (k8s v1.26.3-00)](#v23-04-27a-k8s-v1263-00)
   - [Prerequisites (Not neccesary in Ubuntu 22.04)](#prerequisites-not-neccesary-in-ubuntu-2204-1)
   - [k8s version 1.26.3-00](#k8s-version-1263-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions-1)
@@ -81,7 +81,7 @@
 
 ---
 
-## v99-99-99b (k8s v1.27.1-00)
+## v23-04-27b (k8s v1.27.1-00)
 
 ### Prerequisites (Not neccesary in Ubuntu 22.04)
 
@@ -390,7 +390,7 @@ Host mcc.cskylab.net
 
 ---
 
-## v99-99-99a (k8s v1.26.3-00)
+## v23-04-27a (k8s v1.26.3-00)
 
 ### Prerequisites (Not neccesary in Ubuntu 22.04)
 

@@ -6,7 +6,7 @@
 
 _tplname: ubt2204srv-k8s
 _tpldescription: Ubuntu server 22.04 kubernetes node
-_tplversion: 99-99-99
+_tplversion: 23-04-27
 
 #
 # Values to override

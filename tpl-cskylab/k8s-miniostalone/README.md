@@ -1,6 +1,6 @@
 # [MinIO](https://min.io) standalone <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v23-04-27 <!-- omit in toc -->
 
 ## Helm charts: bitnami/minio v12.4.1<!-- omit in toc -->
 

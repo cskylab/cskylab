@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v23-04-27](#v23-04-27)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace)
@@ -54,7 +54,7 @@
 
 ---
 
-## v99-99-99
+## v23-04-27
 
 ### Background
 

@@ -1,6 +1,6 @@
 # Kubernetes oauth2-proxy<!-- omit in toc -->
 
-## `k8s-hello-oauth2` v99-99-99 <!-- omit in toc -->
+## `k8s-hello-oauth2` v23-04-27 <!-- omit in toc -->
 
 ## Helm charts: oauth2-proxy/oauth2-proxy v6.12.0 <!-- omit in toc -->
 

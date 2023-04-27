@@ -2,7 +2,7 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v23-04-27](#v23-04-27)
   - [Release notes](#release-notes)
   - [Ubuntu 22.04 Servers](#ubuntu-2204-servers)
   - [Application updates](#application-updates)
@@ -26,11 +26,11 @@
   - [Baseline build AM](#baseline-build-am)
 
 ---
-## v99-99-99
+## v23-04-27
 
 ### Release notes
 
-Welcome to cSkyLab release of v99-99-99.
+Welcome to cSkyLab release of v23-04-27.
 
 This release features templates for Ubuntu 22.04 server machines. It is highly recommended to develop the new operating system from a clean installation and new configuration files, migrating configuration and data services as needed.
 

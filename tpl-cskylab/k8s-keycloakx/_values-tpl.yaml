@@ -6,7 +6,7 @@
 
 _tplname: k8s-keycloakx
 _tpldescription: Kubernetes Keycloak namespace
-_tplversion: 99-99-99
+_tplversion: 23-04-27
 
 #
 # Values to override
