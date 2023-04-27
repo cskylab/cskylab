@@ -5,7 +5,7 @@
 ## Helm charts: oauth2-proxy/oauth2-proxy v6.12.0 <!-- omit in toc -->
 
 
-This namespace is intended to deploy an example of oauth2-proxy protecting a simple Hello World application for modeling purposes.
+This namespace is intended to deploy an example of oauth2-proxy deployment protecting a simple Hello World application for modeling purposes.
 
 To run this namespace, you must deploy before k8s-keycloakx to configure the example backend authentication client.
 

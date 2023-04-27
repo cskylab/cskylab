@@ -2,7 +2,7 @@
 
 ## v22-12-19 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v6.6.2 bitnami/postgresql v12.1.3<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v6.11.0 bitnami/postgresql v12.3.1<!-- omit in toc -->
 
 [Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.
 

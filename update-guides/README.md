@@ -68,7 +68,7 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 New templates in this release:
 
-- `k8s-hello-oauth2`: Example of oauth2-proxy protecting a simple Hello World application for modeling purposes.
+- `k8s-hello-oauth2`: Example of oauth2-proxy deployment protecting a simple Hello World application for modeling purposes.
 
 Application update procedures in this release:
 
