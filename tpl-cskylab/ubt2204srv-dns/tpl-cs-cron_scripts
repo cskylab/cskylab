@@ -1,0 +1,32 @@
+#
+#   crontab file
+#   
+#       These file contains jobs for every cs_* script suitable for crontab
+#       Modify or comment jobs as needed
+#
+#       To set the appropriate schedule see: https://crontab.guru
+#
+#       Independent files can also be created with the name pattern cron-cs_*
+#       to be deployed in /etc/cron.d directory
+#               
+#   Copyright © 2021 cSkyLab.com
+#
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+#
+# Warning: Do not break lines in cron files
+#
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name   command to be executed >> log file redirection for stderr and stdout
+
+## Example
+# * * * * *     root        run-one cs-helloworld.sh -q -l -n Bond >> /var/log/cs-helloworld.log 2>&1

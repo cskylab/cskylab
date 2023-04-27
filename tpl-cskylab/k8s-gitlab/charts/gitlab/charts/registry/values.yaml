@@ -1,6 +1,6 @@
 image:
   repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry
-  tag: 'v3.51.1-gitlab'
+  tag: 'v3.71.0-gitlab'
   # pullPolicy: IfNotPresent
   # pullSecrets: []
 
@@ -48,6 +48,9 @@ service:
 
 ## Support for tolerations for pod scheduling
 tolerations: []
+
+# Priority class assigned to pods
+priorityClassName: ""
 
 ## Enable/Disable Chart
 enabled: true
@@ -178,7 +181,11 @@ init:
     if [ -f /config/database_password ] ; then
       sed -i -e 's@DB_PASSWORD_FILE@'"$(cat /config/database_password)"'@' /registry/config.yml
     fi
-     # Insert import notification secret, if migration is enabled
+    # Insert Redis password, if enabled
+    if [ -f /config/registry/redis-password ] ; then
+      sed -i -e 's@REDIS_CACHE_PASSWORD@'"$(cat /config/registry/redis-password)"'@' /registry/config.yml
+    fi
+    # Insert import notification secret, if migration is enabled
     if [ -f /config/registry/notificationSecret ] ; then
       sed -i -e 's@NOTIFICATION_SECRET@'"$(cat /config/registry/notificationSecret | tr -d '[]"')"'@' /registry/config.yml
     fi
@@ -192,7 +199,7 @@ init:
     if [ -d /config/tls ]; then
       cp -r /config/tls/ /registry/tls
       chmod 700 /registry/tls
-      chmod 600 /registry/tls/tls.*
+      chmod 600 /registry/tls/*
     fi
 
 # define some sane resource requests and limitations
@@ -219,7 +226,7 @@ tokenService: 'container_registry'
 # This must match your GitLab Rails configuration
 tokenIssuer: 'gitlab-issuer'
 # Must to be `false` to support Windows clients
-# See https://gitlab.com/gitlab-org/omnibus-gitlab/issues/3964
+# See https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/3964
 authAutoRedirect: false
 
 maxUnavailable: 1
@@ -289,6 +296,11 @@ log:
 debug:
   addr:
     port: 5001
+  tls:
+    enabled: false
+    secretName: # Kubernetes secret, type kubernetes.io/tls
+    clientCAs: []
+    minimumTLS: "tls1.2"
   # DEPRECATED in favor of `metrics`
   prometheus:
     enabled: false
@@ -321,6 +333,7 @@ health:
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
 
 # Disable reporting by default
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#reporting
@@ -358,13 +371,21 @@ database:
     activeDeadlineSeconds: 3600
     backoffLimit: 6
 
+# Redis cache to be used in conjunction with the metadata database.
+# NOTE: This is an experimental feature and must not be used in production.
+# https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#cache-1
+redis:
+  cache:
+    enabled: false
+    password:
+      enabled: false
+
 # Configuration settings to support the migration of large registries to the metadata database.
 # NOTE: This is an experimental feature and must not be used in production.
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#migration
 migration:
   enabled: false
   disablemirrorfs: false
-  testslowimport: "0s"
   # rootdirectory:
   # tagconcurrency: 1
   # maxconcurrentimports: 1

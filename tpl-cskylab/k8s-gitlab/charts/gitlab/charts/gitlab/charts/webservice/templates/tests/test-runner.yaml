@@ -7,6 +7,9 @@ metadata:
   annotations:
     "helm.sh/hook": test
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+  labels:
+    {{- include "gitlab.standardLabels" . | nindent 4 }}
+    {{- include "gitlab.commonLabels" . | nindent 4 }}
 spec:
   containers:
   - name: test-runner

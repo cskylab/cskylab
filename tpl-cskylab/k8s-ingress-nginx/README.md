@@ -1,8 +1,8 @@
 # Ingress nginx controller for kubernetes <!-- omit in toc -->
 
-## v22-12-19 <!-- omit in toc -->
+## v23-04-27 <!-- omit in toc -->
 
-## Helm charts: ingress-nginx/ingress-nginx v4.4.0 <!-- omit in toc -->
+## Helm charts: ingress-nginx/ingress-nginx v4.6.0 <!-- omit in toc -->
 
 `k8s-ingress-nginx` ingress controller uses NGINX as a reverse proxy and load balancer.
 

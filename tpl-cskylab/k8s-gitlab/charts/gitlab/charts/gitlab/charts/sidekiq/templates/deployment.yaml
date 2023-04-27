@@ -7,11 +7,12 @@
 {{- $releaseName := .Release.Name -}}
 {{- $releaseService := .Release.Service -}}
 {{- $fullname := include "fullname" . -}}
-{{- $image := printf "%s:%s" (coalesce .Values.image.repository (include "image.repository" .)) (coalesce .Values.image.tag (include "gitlab.versionTag" . ) | toString) -}}
+{{- $image := (printf "%s:%s%s" (coalesce .Values.image.repository (include "image.repository" .)) (coalesce .Values.image.tag (include "gitlab.versionTag" . )) (include "gitlab.image.tagSuffix" .)) | toString -}}
 {{- $concurrency := .Values.concurrency -}}
 {{- $timeout := .Values.timeout -}}
 {{- $resources := .Values.resources -}}
 {{- $nodeSelector := default .Values.global.nodeSelector .Values.nodeSelector -}}
+{{- $tolerations := .Values.tolerations -}}
 {{- $minioEnabled := .Values.global.minio.enabled -}}
 {{- $minioSecret := include "gitlab.minio.credentials.secret" . -}}
 {{- $railsSecretName := include "gitlab.rails-secrets.secret" . -}}
@@ -23,6 +24,7 @@
 {{- range .Values.pods -}}
 {{-   $queueName := printf "%s-%s" $fullname .name | trunc 63 }}
 {{-   $podNodeSelector := default $nodeSelector .nodeSelector -}}
+{{-   $tolerations := default $tolerations .tolerations -}}
 {{-   include "sidekiq.pod.common.labels" . }}
 {{-   $_ := set . "podLabels" (merge (default (dict) .podLabels) (default (dict) $.Values.podLabels) (default (dict) $.Values.global.pod.labels)) -}}
 apiVersion: apps/v1
@@ -74,16 +76,13 @@ spec:
       {{- end }}
       {{- end }}
     spec:
-      {{- if $.Values.tolerations }}
+      {{- with $tolerations }}
       tolerations:
-        {{- toYaml $.Values.tolerations | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if or $.Values.priorityClassName .priorityClassName }}
-      priorityClassName: {{ default $.Values.priorityClassName .priorityClassName }}
-      {{- end }}
-      securityContext:
-        runAsUser: {{ $.Values.securityContext.runAsUser }}
-        fsGroup: {{ $.Values.securityContext.fsGroup }}
+      {{- $priorityClassName := dict "Values" (dict "global" (dict "priorityClassName" $.Values.global.priorityClassName) "priorityClassName" $.Values.priorityClassName) -}}
+      {{- include "gitlab.priorityClassName" $priorityClassName | nindent 6 }}
+      {{- include "gitlab.podSecurityContext" $.Values.securityContext | nindent 6 }}
       {{- if eq (default $.Values.global.antiAffinity .antiAffinity) "hard" }}
       affinity:
         podAntiAffinity:
@@ -114,8 +113,9 @@ spec:
         {{- include "gitlab.certificates.initContainer" $ | nindent 8 }}
         - name: configure
           command: ['sh', '/config/configure']
-          image: {{ include "gitlab.busybox.image" (dict "local" $.Values.init "global" $.Values.global.busybox) | quote }}
+          image: {{ include "gitlab.busybox.image" (dict "local" $.Values.init "global" $.Values.global) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
+          {{- include "gitlab.init.containerSecurityContext" $ | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" $ | nindent 10 }}
           {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" .) | nindent 10 }}
@@ -138,6 +138,7 @@ spec:
         - name: dependencies
           image: "{{ $image }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
+          {{- include "gitlab.init.containerSecurityContext" $ | indent 10 }}
           args:
             - /scripts/wait-for-deps
           env:
@@ -179,6 +180,7 @@ spec:
         - name: {{ $name }}
           image: "{{ $image }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
+          {{- include "gitlab.containerSecurityContext" $ | indent 10 }}
           env:
           {{- if $metricsEnabled }}
             - name: prometheus_multiproc_dir
@@ -222,6 +224,7 @@ spec:
             {{- end }}
             {{- include "gitlab.tracing.env" $ | nindent 12 }}
             {{- include "sidekiq.podExtraEnv" (dict "local" . "context" $) | nindent 12 }}
+            {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" .) | nindent 12 }}
         {{- if $metricsEnabled }}
           ports:
           - containerPort: {{ $metricsPort }}
@@ -243,6 +246,10 @@ spec:
           - name: sidekiq-secrets
             mountPath: /srv/gitlab/config/secrets.yml
             subPath: rails-secrets/secrets.yml
+          - name: sidekiq-config
+            mountPath: '/etc/krb5.conf'
+            subPath: krb5.conf
+          {{- include "gitlab.appConfig.kerberos.volumeMount" $ | nindent 10 }}
           - name: sidekiq-config
             mountPath: '/srv/gitlab/config/initializers/smtp_settings.rb'
             subPath: smtp_settings.rb
@@ -284,6 +291,7 @@ spec:
       {{- include "gitlab.extraVolumes" $ | nindent 6 }}
       {{- include "gitlab.psql.ssl.volume" $ | nindent 6 }}
       {{- include "gitlab.geo.psql.ssl.volume" $ | nindent 6 }}
+      {{- include "gitlab.appConfig.kerberos.volume" $ | nindent 6 }}
     {{- if $metricsEnabled }}
       - name: sidekiq-metrics
         emptyDir:
@@ -332,6 +340,7 @@ spec:
           {{- include "gitlab.registry.notificationSecret.mount" $ | nindent 10 -}}
           {{- include "gitlab.pages.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.kas.mountSecrets" $ | nindent 10 }}
+          {{- include "gitlab.suggestedReviewers.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.minio.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "object_store" "config" $.Values.global.appConfig.object_store) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "lfs" "config" $.Values.global.appConfig.lfs) | nindent 10 }}
@@ -344,7 +353,15 @@ spec:
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "dependency_proxy" "config" $.Values.global.appConfig.dependencyProxy) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "pages" "config" $.Values.global.pages.objectStore) | nindent 10 }}
           {{- include "gitlab.appConfig.ldap.servers.mountSecrets" $ | nindent 10 }}
+          {{- include "gitlab.appConfig.duo.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.omniauth.mountSecrets" $ | nindent 10 }}
+          {{- if $.Values.global.appConfig.microsoft_graph_mailer.enabled }}
+          - secret:
+              name: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.secret | required "Missing required secret containing the OAuth2 Client ID for outgoing email. Make sure to set `global.appConfig.microsoft_graph_mailer.client_secret.secret`" }}
+              items:
+                - key: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.key }}
+                  path: microsoft_graph_mailer/client_secret
+          {{- end }}
           {{- if and $.Values.global.smtp.enabled $.Values.global.smtp.authentication }}
           - secret:
               name: {{ $.Values.global.smtp.password.secret | required "Missing required secret containing the SMTP password. Make sure to set `global.smtp.password.secret`" }}

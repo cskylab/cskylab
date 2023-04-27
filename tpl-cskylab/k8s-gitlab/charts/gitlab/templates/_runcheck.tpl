@@ -45,7 +45,7 @@ NEW_CHART_MINOR_VERSION=$(echo $CHART_VERSION | awk -F "." '{print $1"."$2}')
 
 if [ ! -f /chart-info/gitlabVersion ]; then
   notify "It seems you are attempting an unsupported upgrade path."
-  notify "Please follow the upgrade documentation at https://docs.gitlab.com/ee/update/README.html#upgrade-paths"
+  notify "Please follow the upgrade documentation at https://docs.gitlab.com/ee/update/#upgrade-paths"
   exit 1
 fi
 

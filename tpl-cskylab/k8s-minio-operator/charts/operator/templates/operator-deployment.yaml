@@ -40,17 +40,30 @@ spec:
       topologySpreadConstraints:
       {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.operator.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag }}"
           imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+          args:
+            - controller
           {{- with .Values.operator.env }}
           env:
           {{ toYaml . | nindent 10 }}
           {{- end }}
           resources:
-      {{- toYaml .Values.operator.resources | nindent 12 }}
+          {{- toYaml .Values.operator.resources | nindent 12 }}
+          securityContext:
+          {{- with .Values.operator.containerSecurityContext }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with .Values.operator.initContainers }}
       initContainers:
       {{- toYaml . | nindent 8 }}
       {{- end}}
+      {{- with .Values.operator.runtimeClassName }}
+      runtimeClassName:
+      {{- toYaml . | nindent 8 }}
+  {{- end }}

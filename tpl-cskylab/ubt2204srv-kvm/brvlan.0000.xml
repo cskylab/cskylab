@@ -1,0 +1,9 @@
+<!-- #
+  Libvirt network configuration xml file.               
+# -->
+
+<network>
+  <name>brvlan.0000</name>
+  <bridge name='brvlan.0000'/>
+  <forward mode="bridge"/>
+</network>

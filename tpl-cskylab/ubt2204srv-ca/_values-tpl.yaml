@@ -1,0 +1,37 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: ubt2204srv-ca
+_tpldescription: Ubuntu server 22.04 certification authority
+_tplversion: 23-04-27
+
+#
+# Values to override
+#
+
+## Machine related configuration values
+machine:
+  hostname: ubt2204srv-ca
+  domainname: cskylab.net
+  localadminusername: kos
+  localadminpassword: "NoFear21"
+  timezone: "UTC"
+  networkinterface: enp1s0
+  ipaddress: 192.168.82.9
+  netmask: 24
+  gateway4: 192.168.82.1
+  searchdomainnames:
+    - cskylab.net
+  nameservers:
+    - 192.168.82.1
+  ## Setup directory where configuration files will be injected
+  setupdir: "/etc/csky-setup"
+  systemlocale: "C.UTF-8"
+  systemkeyboard: "us"
+## ca name and subject
+ca:
+  caname: ca-test-internal
+  basesubject: /C=ES/ST=Spain/L=Madrid/O=Organization/OU=OrganizationalUnit/CN=ca-test-internal

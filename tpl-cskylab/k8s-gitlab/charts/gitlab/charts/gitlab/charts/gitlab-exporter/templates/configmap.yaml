@@ -76,6 +76,6 @@ data:
           <<: *db_common
 
   configure: |
-    {{- include "gitlab.scripts.configure.secrets" (dict "required" " " "optional" "redis postgres gitlab-exporter") | nindent 4 }}
+    {{- include "gitlab.scripts.configure.secrets" (dict "required" "none" "optional" "redis postgres gitlab-exporter") | nindent 4 }}
 # Leave this here - This line denotes end of block to the parser.
 {{- end }}

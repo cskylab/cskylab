@@ -24,6 +24,7 @@ rules:
       - namespaces
       - nodes
     verbs:
+      - create
       - get
       - watch
       - list
@@ -55,6 +56,31 @@ rules:
       - list
       - delete
       - deletecollection
+  - apiGroups:
+      - ""
+    resources:
+      - serviceaccounts
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - roles
+      - rolebindings
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
   - apiGroups:
       - apps
     resources:
@@ -106,6 +132,12 @@ rules:
       - approve
       - sign
   - apiGroups:
+      - authentication.k8s.io
+    resources:
+      - tokenreviews
+    verbs:
+      - create
+  - apiGroups:
       - minio.min.io
     resources:
       - "*"
@@ -113,6 +145,7 @@ rules:
       - "*"
   - apiGroups:
       - min.io
+      - sts.min.io
     resources:
       - "*"
     verbs:

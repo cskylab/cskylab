@@ -6,7 +6,7 @@
 
 _tplname: k8s-ingress-nginx
 _tpldescription: Ingress nginx controller for Kubernetes.
-_tplversion: 22-12-19
+_tplversion: 23-04-27
 
 #
 # Values to override

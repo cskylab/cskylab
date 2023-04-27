@@ -12,6 +12,7 @@ init:
   resources:
     requests:
       cpu: 50m
+  containerSecurityContext: {}
 
 # Tolerations for pod scheduling
 tolerations: []
@@ -32,6 +33,9 @@ enabled: true
 replicas: 1
 annotations: {}
 podLabels: {}
+
+# Priority class assigned to pods
+priorityClassName: ""
 
 psql: {}
   # port: 5432
@@ -141,6 +145,7 @@ backups:
     suspend: false
     backoffLimit: 6
     # activeDeadlineSeconds:
+    safeToEvict: false
     restartPolicy: "OnFailure"
     extraArgs: ""
     resources:
@@ -152,6 +157,11 @@ backups:
         memory: 350M
     persistence:
       enabled: false
+      ## Use a generic ephemeral volume.
+      ## This kind of volume will exist only as long as the pod exists.
+      ## Requires at least Kubernetes version 1.23.
+      ## https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes
+      useGenericEphemeralVolume: false
       ## toolbox temporarily Persistent Volume Storage Class
       ## If defined, storageClassName: <storageClass>
       ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -248,10 +258,15 @@ persistence:
   ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector
   matchExpressions: []
 
-## Allow to overwrite under which User and Group we're running.
+## Allow to overwrite under which User and Group the Pod will be running.
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
+
+## Allow to overwrite the specific security context under which the container is running.
+containerSecurityContext:
+  runAsUser: 1000
 
 ## Enable deployment to use a serviceAccount
 serviceAccount:

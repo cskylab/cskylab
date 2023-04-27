@@ -2,11 +2,12 @@
 {{- $name := default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- $releaseName := .Release.Name -}}
 {{- $fullname := printf "%s-%s" $releaseName $name | trunc 63 | trimSuffix "-" -}}
+{{- $pdbCfg := (dict "global" $.Values.global.pdb "local" .Values.pdb "context" $) -}}
 {{- range .Values.pods -}}
 {{-   $queueName := printf "%s-%s" $fullname .name | trunc 63}}
 {{-   include "sidekiq.pod.common.labels" . }}
 ---
-apiVersion: policy/v1beta1
+apiVersion: {{ template "gitlab.pdb.apiVersion" $pdbCfg }}
 kind: PodDisruptionBudget
 metadata:
   name: {{ printf "%s-v1" ($queueName | trunc 60) }}

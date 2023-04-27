@@ -41,9 +41,8 @@ spec:
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
-      securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+      {{- include "gitlab.podSecurityContext" .Values.securityContext | nindent 6 }}
+      {{- include "gitlab.priorityClassName" . | nindent 6 }}
       volumes:
         - name: podinfo
           downwardAPI:
@@ -70,7 +69,7 @@ spec:
             medium: "Memory"
       initContainers:
         - name: configure
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global.busybox) | quote }}
+          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           command: ["sh", "/config/configure"]
           volumeMounts:

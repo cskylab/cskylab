@@ -1,3 +1,70 @@
+## v0.51.1 (2023-03-30)
+
+### New features
+
+- Update GitLab Runner version to v15.10.1
+
+## v0.51.0 (2023-03-20)
+
+### New features
+
+- Update GitLab Runner version to v15.10.0
+- Removing replicaCount from deployment when HPA is configured !368 (Gustavo Oliveira @gustoliv)
+
+### Maintenance
+
+- Fix integration test scripting !383
+- Update the example reference to the helper image !382
+
+## v0.48.0 (2022-12-17)
+
+### New features
+
+- Update GitLab Runner version to 15.7.0
+
+## v0.47.0 (2022-11-22)
+
+### New features
+
+- Update GitLab Runner version to 15.6.0
+
+## v0.46.0 (2022-10-21)
+
+### New features
+
+- Update GitLab Runner version to 15.5.0
+
+## v0.45.0 (2022-09-21)
+
+### New features
+
+- Update GitLab Runner version to 15.4.0
+- Add secrets update permission to RBAC example provided !349 (Tim Hobbs @hobti01)
+
+### Bug fixes
+
+- Revert "Merge branch 'feature/unregister-one-runner' into 'main'" !362
+
+### Maintenance
+
+- Fix the pipeline being blocked by development release !357
+- Docs: Update values.yaml comments to reference kubernetes service accounts docs !310
+
+## v0.44.0 (2022-08-19)
+
+### New features
+
+- Update GitLab Runner version to 15.3.0
+- Add secrets update permission to RBAC example provided !349 (Tim Hobbs @hobti01)
+
+### Maintenance
+
+- Fix the pipeline being blocked by development release !357
+
+### Documentation changes
+
+- Docs: Update values.yaml comments to reference kubernetes service accounts docs !310
+
 ## v0.43.0 (2022-07-20)
 
 ### New features

@@ -1,0 +1,34 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: k8s-hello-oauth2
+_tpldescription: Kubernetes oauth2-proxy example app
+_tplversion: 23-04-27
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: hello-oauth2
+    ## Service domain name
+  domain: cskylab.net
+
+publishing:
+  ## External url
+  url: hello-oauth2.mod.cskylab.net
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub

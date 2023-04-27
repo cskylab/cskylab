@@ -28,8 +28,8 @@ spec:
         {{- include "ingress-nginx.labels" . | nindent 8 }}
         app.kubernetes.io/component: admission-webhook
     spec:
-    {{- if .Values.controller.admissionWebhooks.patch.priorityClassName }}
-      priorityClassName: {{ .Values.controller.admissionWebhooks.patch.priorityClassName }}
+    {{- if or .Values.global.priorityClassName .Values.controller.admissionWebhooks.patch.priorityClassName }}
+      priorityClassName: {{ default .Values.global.priorityClassName .Values.controller.admissionWebhooks.patch.priorityClassName }}
     {{- end }}
     {{- if .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml .Values.imagePullSecrets | nindent 8 }}

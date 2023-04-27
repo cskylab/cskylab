@@ -48,6 +48,9 @@ spec:
       {{- else }}
       {{- include "gitlab.nodeSelector" . | nindent 6 }}
       {{- end }}
+      {{- if or $.Values.global.priorityClassName .Values.upgradeCheck.priorityClassName }}
+      priorityClassName: {{ default $.Values.global.priorityClassName .Values.upgradeCheck.priorityClassName }}
+      {{- end }}
       {{- if .Values.upgradeCheck.tolerations }}
       tolerations:
         {{- toYaml .Values.upgradeCheck.tolerations | nindent 8 }}
@@ -59,7 +62,7 @@ spec:
       {{- include "gitlab.image.pullSecrets" $imageCfg | nindent 6}}
       containers:
         - name: run-check
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.upgradeCheck "global" $.Values.global.busybox) | quote }}
+          image: {{ include "gitlab.busybox.image" (dict "local" .Values.upgradeCheck "global" $.Values.global) | quote }}
           command: ['/bin/sh', '/scripts/runcheck']
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           env:
