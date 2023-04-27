@@ -1,7 +1,7 @@
-_tpldescription: Ubuntu server 20.04 kubernetes node
-_tplname: ubt2004srv-k8s
-_tplversion: 22-03-23
-k8s_version: 1.23.5-00
+_tpldescription: Ubuntu server 22.04 kubernetes node
+_tplname: ubt2204srv-k8s
+_tplversion: 23-04-27
+k8s_version: 1.27.1-00
 machine:
   domainname: cskylab.net
   gateway4: 192.168.83.1
@@ -20,7 +20,7 @@ machine:
   systemlocale: C.UTF-8
   timezone: UTC
 restic:
-  aws_access: bucketname_rw
+  aws_access: restic_rw
   aws_secret: iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr
   password: NoFear21
-  repo: s3:https://backup.cskylab.net/bucketname/restic
+  repo: sftp:kos@hostname.cskylab.net:/media/data/restic/mydir

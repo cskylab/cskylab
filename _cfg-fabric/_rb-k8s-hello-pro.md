@@ -50,7 +50,7 @@ namespace:
 
 publishing:
   ## External url
-  url: hello-pro.cskylab.net
+  url: hello.pro.cskylab.net
 
 certificate:
   ## Cert-manager clusterissuer

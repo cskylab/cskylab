@@ -16,7 +16,9 @@
 #       dhcp4: no
 #       dhcp6: no
 #       addresses: [192.168.80.10/24]
-#       gateway4: 192.168.80.1
+#       routes:
+#         - to: default
+#           via: 192.168.80.1
 #       nameservers:
 #         search:
 #
@@ -92,7 +94,9 @@ network:
       optional: true
       interfaces: [vlan.910, eno2]
       addresses: [192.168.80.10/24]
-      gateway4: 192.168.80.1
+      routes:
+        - to: default
+          via: 192.168.80.1
       nameservers:
         search:
           - cskylab.net

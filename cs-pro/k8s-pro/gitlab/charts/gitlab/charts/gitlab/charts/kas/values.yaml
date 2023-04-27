@@ -57,6 +57,9 @@ podLabels: {}
 common:
   labels: {}
 serviceLabels: {}
+## Additional environment variables to set
+extraEnv: {}
+extraEnvFrom: {}
 resources:
   requests:
     cpu: 100m
@@ -72,12 +75,18 @@ service:
   # loadBalancerSourceRanges:
 metrics:
   enabled: true
-  port: 8151
+  # port: 8151  # DEPRECATED: in favor of `observability.port` below
   path: /metrics
   serviceMonitor:
     enabled: false
     additionalLabels: {}
     endpointConfig: {}
+observability:
+  port: 8151
+  livenessProbe:
+    path: /liveness
+  readinessProbe:
+    path: /readiness
 serviceAccount:
   enabled: false
   create: false
@@ -93,11 +102,14 @@ workhorse: {}
 # merged with the default kas config
 customConfig: {}
 
-privateApi: {}
+privateApi:
   # secret:
   # key:
-
+  tls:
+    enabled: false # DEPRECATED: in favor of `global.kas.tls.enabled`
+      # secretName: # DEPRECATED: in favor of `global.kas.tls.secretName`
 deployment:
+  terminationGracePeriodSeconds: 300
   strategy: {}
   # minReadySeconds: 0
 
@@ -106,6 +118,8 @@ securityContext:
   runAsUser: 65532
   runAsGroup: 65532
   fsGroup: 65532
+  # fsGroupChangePolicy: OnRootMismatch
+
 redis:
   enabled: true
 
@@ -122,3 +136,6 @@ networkpolicy:
 affinity:
   podAntiAffinity:
     topologyKey:
+
+# Priority class assigned to pods
+priorityClassName: ""

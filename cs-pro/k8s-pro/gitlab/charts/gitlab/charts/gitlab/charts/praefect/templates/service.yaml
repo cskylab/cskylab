@@ -20,12 +20,12 @@ spec:
   type: {{ coalesce .Values.service.type .Values.global.praefect.service.type }}
   clusterIP: None
   ports:
-  - name: {{ coalesce .Values.service.name .Values.global.praefect.service.name }}
+  - name: grpc-{{ coalesce .Values.service.name .Values.global.praefect.service.name }}
     port: {{ include "gitlab.praefect.externalPort" . }}
     protocol: TCP
     targetPort: {{ include "gitlab.praefect.internalPort" . }}
   {{- if $.Values.global.praefect.tls.enabled }}
-  - name: {{ coalesce .Values.service.name .Values.global.praefect.service.name }}-tls
+  - name: tls-{{ coalesce .Values.service.name .Values.global.praefect.service.name }}
     port: {{ include "gitlab.praefect.tls.externalPort" . }}
     protocol: TCP
     targetPort: {{ include "gitlab.praefect.tls.internalPort" . }}

@@ -1,0 +1,13 @@
+_tpldescription: Kubernetes oauth2-proxy example app
+_tplname: k8s-hello-oauth2
+_tplversion: 23-04-27
+certificate:
+  clusterissuer: ca-test-internal
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
+namespace:
+  domain: cskylab.net
+  name: hello-oauth2
+publishing:
+  url: hello-oauth2.pro.cskylab.net
+registry:
+  proxy: harbor.cskylab.net/dockerhub

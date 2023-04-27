@@ -20,6 +20,11 @@ tolerations: []
 
 # Annotations for the job
 annotations: {}
+# Annotations for the pod
+podAnnotations: {}
+
+# Priority class assigned to pods
+priorityClassName: ""
 
 # Labels for the job
 podLabels: {}
@@ -76,6 +81,7 @@ backoffLimit: 6
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
 
 ## Enable deployment to use a serviceAccount
 serviceAccount:

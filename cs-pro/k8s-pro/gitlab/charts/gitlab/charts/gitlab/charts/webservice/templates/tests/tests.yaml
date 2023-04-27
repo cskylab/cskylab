@@ -4,6 +4,9 @@ kind: ConfigMap
 metadata:
   name: {{ template "fullname" . }}-tests
   namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "gitlab.standardLabels" . | nindent 4 }}
+    {{- include "gitlab.commonLabels" . | nindent 4 }}
 data:
   test_login: |
     set -e

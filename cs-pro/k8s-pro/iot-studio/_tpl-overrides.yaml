@@ -1,6 +1,6 @@
 _tpldescription: Kubernetes IOT Studio
 _tplname: k8s-iot-studio
-_tplversion: 22-12-19
+_tplversion: 23-04-27
 certificate:
   clusterissuer: ca-test-internal
 grafana:
@@ -13,7 +13,7 @@ influxdb:
   password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
   url: influxdb-iot.pro.cskylab.net
   user: admin
-kubeconfig: config-k8s-pro
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
 localpvnodes:
   all_pv: k8s-pro-n1
   domain: cskylab.net

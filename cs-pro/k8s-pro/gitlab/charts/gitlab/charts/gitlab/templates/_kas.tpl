@@ -36,6 +36,16 @@ Returns the KAS external URL (for external agentk connections)
 {{-   end -}}
 {{- end -}}
 
+{{- define "gitlab.kas.internal.scheme" -}}
+{{- $tlsEnabled := "" -}}
+{{- if eq .Chart.Name "kas" -}}
+{{-    $tlsEnabled = .Values.privateApi.tls.enabled -}}
+{{-    printf "%s" (ternary "grpcs" "grpc" (or (eq $tlsEnabled true) (eq $.Values.global.kas.tls.enabled true))) -}}
+{{- else -}}
+{{-    printf "%s" (ternary "grpcs" "grpc" (eq $.Values.global.kas.tls.enabled true)) -}}
+{{- end -}}
+{{- end -}}
+
 {{/*
 Returns the KAS internal URL (for GitLab backend connections)
 */}}
@@ -43,10 +53,19 @@ Returns the KAS internal URL (for GitLab backend connections)
 {{-   if .Values.global.appConfig.gitlab_kas.internalUrl -}}
 {{-     .Values.global.appConfig.gitlab_kas.internalUrl -}}
 {{-   else -}}
-{{-     $serviceName := include "gitlab.kas.serviceName" . -}}
+{{-     $serviceHost := include "gitlab.kas.serviceHost" . -}}
+{{-     $scheme := include "gitlab.kas.internal.scheme" . -}}
 {{-     $port := .Values.global.kas.service.apiExternalPort -}}
-{{-     printf "grpc://%s.%s.svc:%s" $serviceName $.Release.Namespace (toString $port) -}}
+{{-     printf "%s://%s:%s" $scheme $serviceHost (toString $port) -}}
 {{-   end -}}
+{{- end -}}
+
+{{/*
+Return the KAS service host
+*/}}
+{{- define "gitlab.kas.serviceHost" -}}
+{{-     $serviceName := include "gitlab.kas.serviceName" . -}}
+{{-     printf "%s.%s.svc" $serviceName $.Release.Namespace -}}
 {{- end -}}
 
 {{/*

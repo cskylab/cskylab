@@ -74,17 +74,17 @@ extraVolumes: |
 # Add additional volumes mounts, e. g. for custom themes
 extraVolumeMounts: |
   - name: theme1
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-keycloak
+    mountPath: /opt/keycloak/themes/bootstrap-mod-keycloak
   - name: theme2
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-nextcloud
+    mountPath: /opt/keycloak/themes/bootstrap-mod-nextcloud
   - name: theme3
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-mod-gitlab
+    mountPath: /opt/keycloak/themes/bootstrap-mod-gitlab
   - name: theme4
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-keycloak
+    mountPath: /opt/keycloak/themes/bootstrap-pub-keycloak
   - name: theme5
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-nextcloud
+    mountPath: /opt/keycloak/themes/bootstrap-pub-nextcloud
   - name: theme6
-    mountPath: /opt/jboss/keycloak/themes/bootstrap-pub-gitlab    
+    mountPath: /opt/keycloak/themes/bootstrap-pub-gitlab    
 
 ## Overrides the default entrypoint of the Keycloak container
 command:

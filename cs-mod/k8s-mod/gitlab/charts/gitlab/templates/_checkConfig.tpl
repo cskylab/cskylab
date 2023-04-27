@@ -49,7 +49,9 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $messages = append $messages (include "gitlab.checkConfig.gitaly.storageNames" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.gitaly.tls" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.gitaly.extern.repos" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.gitaly.gpgSigning" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.praefect.storageNames" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.praefect.defaultReplicationFactor" .) -}}
 
 {{/* _checkConfig_nginx.tpl*/}}
 {{- $messages = append $messages (include "gitlab.checkConfig.nginx.controller.extraArgs" .) -}}
@@ -70,6 +72,9 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $messages = append $messages (include "gitlab.checkConfig.registry.database" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.registry.gc" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.registry.migration" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.registry.redis.cache" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.registry.tls" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.registry.debug.tls" .) -}}
 
 {{/* _checkConfig_sidekiq.tpl*/}}
 {{- $messages = append $messages (include "gitlab.checkConfig.sidekiq.queues.mixed" .) -}}
@@ -86,20 +91,24 @@ Due to gotpl scoping, we can't make use of `range`, so we have to add action lin
 {{- $messages = append $messages (include "gitlab.checkConfig.appConfig.maxRequestDurationSeconds" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.webservice.gracePeriod" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.webservice.loadBalancer" .) -}}
-{{- $messages = append $messages (include "gitlab.checkConfig.workhorse.tls" .) -}}
 
 {{/* _checkConfig_gitlab_shell.tpl*/}}
 {{- $messages = append $messages (include "gitlab.checkConfig.gitlabShell.proxyPolicy" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.gitlabShell.metrics" .) -}}
 
-{{/* _checkConfig_gitlab_exporter.tpl*/}}
-{{- $messages = append $messages (include "gitlab.checkConfig.gitlabExporter.tls" .) -}}
+{{/* _checkConfig_omniauth.tpl*/}}
+{{- $messages = append $messages (include "gitlab.checkConfig.omniauth.providerFormat" .) -}}
 
 {{/* other checks */}}
 {{- $messages = append $messages (include "gitlab.checkConfig.multipleRedis" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.redisYmlOverride" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.hostWhenNoInstall" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.sentry" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.gitlab_docs" .) -}}
 {{- $messages = append $messages (include "gitlab.checkConfig.smtp.openssl_verify_mode" .) -}}
+{{- $messages = append $messages (include "gitlab.checkConfig.globalServiceAccount" .) -}}
+{{- $messages = append $messages (include "gitlab.duoAuth.checkConfig" .) -}}
+
 {{- /* prepare output */}}
 {{- $messages = without $messages "" -}}
 {{- $message := join "\n" $messages -}}
@@ -129,12 +138,23 @@ redis:
 {{/* END gitlab.checkConfig.multipleRedis */}}
 
 {{/*
+Ensure that `redis.install: false` if using redis.yml override
+*/}}
+{{- define "gitlab.checkConfig.redisYmlOverride" -}}
+{{- if and .Values.redis.install ( hasKey .Values.global.redis "redisYmlOverride" ) }}
+redis:
+  When you override redis.yml you can not use the in-chart Redis server. Please see https://docs.gitlab.com/charts/charts/globals#configure-redis-settings
+{{- end -}}
+{{- end -}}
+{{/* END gitlab.checkConfig.redisYmlOverride */}}
+
+{{/*
 Ensure that `global.redis.host: <hostname>` is present if `redis.install: false`
 */}}
 {{- define "gitlab.checkConfig.hostWhenNoInstall" -}}
-{{-   if and (not .Values.redis.install) (not .Values.global.redis.host) }}
+{{-   if and (not .Values.redis.install) (empty .Values.global.redis.host) (empty .Values.global.redis.redisYmlOverride) }}
 redis:
-  You've disabled the installation of Redis. When using an external Redis, you must populate `global.redis.host`. Please see https://docs.gitlab.com/charts/advanced/external-redis/
+  You've disabled the installation of Redis. When using an external Redis, you must populate `global.redis.host` or `gitlab.redis.redisYmlOverride`. Please see https://docs.gitlab.com/charts/advanced/external-redis/
 {{-   end -}}
 {{- end -}}
 {{/* END gitlab.checkConfig.hostWhenNoInstall */}}
@@ -184,3 +204,18 @@ smtp:
 {{-   end }}
 {{- end -}}
 {{/* END gitlab.checkConfig.smtp.openssl_verify_mode */}}
+
+{{/*
+Ensure that global service account settings are correct.
+*/}}
+{{- define "gitlab.checkConfig.globalServiceAccount" -}}
+{{-   if and .Values.global.serviceAccount.enabled .Values.global.serviceAccount.create -}}
+{{-     if .Values.global.serviceAccount.name }}
+serviceAccount:
+  `global.serviceAccount.name` is set to {{ .Values.global.serviceAccount.name | quote }}.
+  Please set `global.serviceAccount.create=false` and manually create a ServiceAccount
+  object in the cluster with a matching name.
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+{{/* END gitlab.checkConfig.globalServiceAccount */}}

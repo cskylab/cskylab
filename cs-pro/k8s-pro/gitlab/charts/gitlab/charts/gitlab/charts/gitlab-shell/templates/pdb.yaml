@@ -1,5 +1,6 @@
 {{- if .Values.enabled -}}
-apiVersion: policy/v1beta1
+{{- $pdbCfg := (dict "global" $.Values.global.pdb "local" .Values.pdb "context" $) -}}
+apiVersion: {{ template "gitlab.pdb.apiVersion" $pdbCfg }}
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "fullname" . }}

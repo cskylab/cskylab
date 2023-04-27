@@ -7,19 +7,18 @@ PostgreSQL (Postgres) is an open source object-relational database known for rel
 [Overview of PostgreSQL](http://www.postgresql.org)
 
 Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.
-                           
+
 ## TL;DR
 
-```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install my-release bitnami/postgresql
+```console
+helm install my-release oci://registry-1.docker.io/bitnamicharts/postgresql
 ```
 
 ## Introduction
 
 This chart bootstraps a [PostgreSQL](https://github.com/bitnami/containers/tree/main/bitnami/postgresql) deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
-For HA, please see [this repo](https://github.com/bitnami/charts/tree/master/bitnami/postgresql-ha)
+For HA, please see [this repo](https://github.com/bitnami/charts/tree/main/bitnami/postgresql-ha)
 
 Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in clusters.
 
@@ -33,8 +32,8 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment
 
 To install the chart with the release name `my-release`:
 
-```bash
-helm install my-release bitnami/postgresql
+```console
+helm install my-release oci://registry-1.docker.io/bitnamicharts/postgresql
 ```
 
 The command deploys PostgreSQL on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -53,7 +52,7 @@ The command removes all the Kubernetes components but PVC's associated with the 
 
 To delete the PVC's associated with `my-release`:
 
-```bash
+```console
 kubectl delete pvc -l release=my-release
 ```
 
@@ -78,7 +77,6 @@ kubectl delete pvc -l release=my-release
 | `global.postgresql.auth.secretKeys.replicationPasswordKey` | Name of key in existing secret to use for PostgreSQL credentials (overrides `auth.secretKeys.replicationPasswordKey`). Only used when `global.postgresql.auth.existingSecret` is set. | `""`  |
 | `global.postgresql.service.ports.postgresql`               | PostgreSQL service port (overrides `service.ports.postgresql`)                                                                                                                        | `""`  |
 
-
 ### Common parameters
 
 | Name                     | Description                                                                                  | Value           |
@@ -94,24 +92,24 @@ kubectl delete pvc -l release=my-release
 | `diagnosticMode.command` | Command to override all containers in the statefulset                                        | `["sleep"]`     |
 | `diagnosticMode.args`    | Args to override all containers in the statefulset                                           | `["infinity"]`  |
 
-
 ### PostgreSQL common parameters
 
 | Name                                     | Description                                                                                                                                                                                                                                                                                                                                   | Value                      |
 | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | `image.registry`                         | PostgreSQL image registry                                                                                                                                                                                                                                                                                                                     | `docker.io`                |
 | `image.repository`                       | PostgreSQL image repository                                                                                                                                                                                                                                                                                                                   | `bitnami/postgresql`       |
-| `image.tag`                              | PostgreSQL image tag (immutable tags are recommended)                                                                                                                                                                                                                                                                                         | `14.5.0-debian-11-r0`      |
+| `image.tag`                              | PostgreSQL image tag (immutable tags are recommended)                                                                                                                                                                                                                                                                                         | `15.2.0-debian-11-r24`     |
+| `image.digest`                           | PostgreSQL image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag                                                                                                                                                                                                                                    | `""`                       |
 | `image.pullPolicy`                       | PostgreSQL image pull policy                                                                                                                                                                                                                                                                                                                  | `IfNotPresent`             |
 | `image.pullSecrets`                      | Specify image pull secrets                                                                                                                                                                                                                                                                                                                    | `[]`                       |
 | `image.debug`                            | Specify if debug values should be set                                                                                                                                                                                                                                                                                                         | `false`                    |
 | `auth.enablePostgresUser`                | Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user                                                                                                                                                                                                                                        | `true`                     |
-| `auth.postgresPassword`                  | Password for the "postgres" admin user. Ignored if `auth.existingSecret` with key `postgres-password` is provided                                                                                                                                                                                                                             | `""`                       |
+| `auth.postgresPassword`                  | Password for the "postgres" admin user. Ignored if `auth.existingSecret` is provided                                                                                                                                                                                                                                                          | `""`                       |
 | `auth.username`                          | Name for a custom user to create                                                                                                                                                                                                                                                                                                              | `""`                       |
-| `auth.password`                          | Password for the custom user to create. Ignored if `auth.existingSecret` with key `password` is provided                                                                                                                                                                                                                                      | `""`                       |
+| `auth.password`                          | Password for the custom user to create. Ignored if `auth.existingSecret` is provided                                                                                                                                                                                                                                                          | `""`                       |
 | `auth.database`                          | Name for a custom database to create                                                                                                                                                                                                                                                                                                          | `""`                       |
 | `auth.replicationUsername`               | Name of the replication user                                                                                                                                                                                                                                                                                                                  | `repl_user`                |
-| `auth.replicationPassword`               | Password for the replication user. Ignored if `auth.existingSecret` with key `replication-password` is provided                                                                                                                                                                                                                               | `""`                       |
+| `auth.replicationPassword`               | Password for the replication user. Ignored if `auth.existingSecret` is provided                                                                                                                                                                                                                                                               | `""`                       |
 | `auth.existingSecret`                    | Name of existing secret to use for PostgreSQL credentials. `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored and picked up from this secret. The secret might also contains the key `ldap-password` if LDAP is enabled. `ldap.bind_password` will be ignored and picked from this secret in this case. | `""`                       |
 | `auth.secretKeys.adminPasswordKey`       | Name of key in existing secret to use for PostgreSQL credentials. Only used when `auth.existingSecret` is set.                                                                                                                                                                                                                                | `postgres-password`        |
 | `auth.secretKeys.userPasswordKey`        | Name of key in existing secret to use for PostgreSQL credentials. Only used when `auth.existingSecret` is set.                                                                                                                                                                                                                                | `password`                 |
@@ -155,7 +153,6 @@ kubectl delete pvc -l release=my-release
 | `tls.certKeyFilename`                    | Certificate key filename                                                                                                                                                                                                                                                                                                                      | `""`                       |
 | `tls.certCAFilename`                     | CA Certificate filename                                                                                                                                                                                                                                                                                                                       | `""`                       |
 | `tls.crlFilename`                        | File containing a Certificate Revocation List                                                                                                                                                                                                                                                                                                 | `""`                       |
-
 
 ### PostgreSQL Primary parameters
 
@@ -248,6 +245,7 @@ kubectl delete pvc -l release=my-release
 | `primary.service.extraPorts`                 | Extra ports to expose in the PostgreSQL primary service                                                                  | `[]`                  |
 | `primary.service.sessionAffinity`            | Session Affinity for Kubernetes service, can be "None" or "ClientIP"                                                     | `None`                |
 | `primary.service.sessionAffinityConfig`      | Additional settings for the sessionAffinity                                                                              | `{}`                  |
+| `primary.service.headless.annotations`       | Additional custom annotations for headless PostgreSQL primary service                                                    | `{}`                  |
 | `primary.persistence.enabled`                | Enable PostgreSQL Primary data persistence using PVC                                                                     | `true`                |
 | `primary.persistence.existingClaim`          | Name of an existing PVC to use                                                                                           | `""`                  |
 | `primary.persistence.mountPath`              | The path the volume will be mounted at                                                                                   | `/bitnami/postgresql` |
@@ -256,9 +254,9 @@ kubectl delete pvc -l release=my-release
 | `primary.persistence.accessModes`            | PVC Access Mode for PostgreSQL volume                                                                                    | `["ReadWriteOnce"]`   |
 | `primary.persistence.size`                   | PVC Storage Request for PostgreSQL volume                                                                                | `8Gi`                 |
 | `primary.persistence.annotations`            | Annotations for the PVC                                                                                                  | `{}`                  |
+| `primary.persistence.labels`                 | Labels for the PVC                                                                                                       | `{}`                  |
 | `primary.persistence.selector`               | Selector to match an existing Persistent Volume (this value is evaluated as a template)                                  | `{}`                  |
 | `primary.persistence.dataSource`             | Custom PVC data source                                                                                                   | `{}`                  |
-
 
 ### PostgreSQL read only replica parameters (only used when `architecture` is set to `replication`)
 
@@ -338,6 +336,7 @@ kubectl delete pvc -l release=my-release
 | `readReplicas.service.extraPorts`                 | Extra ports to expose in the PostgreSQL read only service                                                                | `[]`                  |
 | `readReplicas.service.sessionAffinity`            | Session Affinity for Kubernetes service, can be "None" or "ClientIP"                                                     | `None`                |
 | `readReplicas.service.sessionAffinityConfig`      | Additional settings for the sessionAffinity                                                                              | `{}`                  |
+| `readReplicas.service.headless.annotations`       | Additional custom annotations for headless PostgreSQL read only service                                                  | `{}`                  |
 | `readReplicas.persistence.enabled`                | Enable PostgreSQL read only data persistence using PVC                                                                   | `true`                |
 | `readReplicas.persistence.existingClaim`          | Name of an existing PVC to use                                                                                           | `""`                  |
 | `readReplicas.persistence.mountPath`              | The path the volume will be mounted at                                                                                   | `/bitnami/postgresql` |
@@ -346,9 +345,9 @@ kubectl delete pvc -l release=my-release
 | `readReplicas.persistence.accessModes`            | PVC Access Mode for PostgreSQL volume                                                                                    | `["ReadWriteOnce"]`   |
 | `readReplicas.persistence.size`                   | PVC Storage Request for PostgreSQL volume                                                                                | `8Gi`                 |
 | `readReplicas.persistence.annotations`            | Annotations for the PVC                                                                                                  | `{}`                  |
+| `readReplicas.persistence.labels`                 | Labels for the PVC                                                                                                       | `{}`                  |
 | `readReplicas.persistence.selector`               | Selector to match an existing Persistent Volume (this value is evaluated as a template)                                  | `{}`                  |
 | `readReplicas.persistence.dataSource`             | Custom PVC data source                                                                                                   | `{}`                  |
-
 
 ### NetworkPolicy parameters
 
@@ -369,26 +368,26 @@ kubectl delete pvc -l release=my-release
 | `networkPolicy.egressRules.denyConnectionsToExternal`                     | Enable egress rule that denies outgoing traffic outside the cluster, except for DNS (port 53).                                                     | `false` |
 | `networkPolicy.egressRules.customRules`                                   | Custom network policy rule                                                                                                                         | `{}`    |
 
-
 ### Volume Permissions parameters
 
-| Name                                                   | Description                                                                     | Value                   |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------- | ----------------------- |
-| `volumePermissions.enabled`                            | Enable init container that changes the owner and group of the persistent volume | `false`                 |
-| `volumePermissions.image.registry`                     | Init container volume-permissions image registry                                | `docker.io`             |
-| `volumePermissions.image.repository`                   | Init container volume-permissions image repository                              | `bitnami/bitnami-shell` |
-| `volumePermissions.image.tag`                          | Init container volume-permissions image tag (immutable tags are recommended)    | `11-debian-11-r24`      |
-| `volumePermissions.image.pullPolicy`                   | Init container volume-permissions image pull policy                             | `IfNotPresent`          |
-| `volumePermissions.image.pullSecrets`                  | Init container volume-permissions image pull secrets                            | `[]`                    |
-| `volumePermissions.resources.limits`                   | Init container volume-permissions resource limits                               | `{}`                    |
-| `volumePermissions.resources.requests`                 | Init container volume-permissions resource requests                             | `{}`                    |
-| `volumePermissions.containerSecurityContext.runAsUser` | User ID for the init container                                                  | `0`                     |
-
+| Name                                                   | Description                                                                                                                       | Value                   |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `volumePermissions.enabled`                            | Enable init container that changes the owner and group of the persistent volume                                                   | `false`                 |
+| `volumePermissions.image.registry`                     | Init container volume-permissions image registry                                                                                  | `docker.io`             |
+| `volumePermissions.image.repository`                   | Init container volume-permissions image repository                                                                                | `bitnami/bitnami-shell` |
+| `volumePermissions.image.tag`                          | Init container volume-permissions image tag (immutable tags are recommended)                                                      | `11-debian-11-r108`     |
+| `volumePermissions.image.digest`                       | Init container volume-permissions image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                    |
+| `volumePermissions.image.pullPolicy`                   | Init container volume-permissions image pull policy                                                                               | `IfNotPresent`          |
+| `volumePermissions.image.pullSecrets`                  | Init container volume-permissions image pull secrets                                                                              | `[]`                    |
+| `volumePermissions.resources.limits`                   | Init container volume-permissions resource limits                                                                                 | `{}`                    |
+| `volumePermissions.resources.requests`                 | Init container volume-permissions resource requests                                                                               | `{}`                    |
+| `volumePermissions.containerSecurityContext.runAsUser` | User ID for the init container                                                                                                    | `0`                     |
 
 ### Other Parameters
 
 | Name                                          | Description                                                                                                                                 | Value   |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `serviceBindings.enabled`                     | Create secret for service binding (Experimental)                                                                                            | `false` |
 | `serviceAccount.create`                       | Enable creation of ServiceAccount for PostgreSQL pod                                                                                        | `false` |
 | `serviceAccount.name`                         | The name of the ServiceAccount to use.                                                                                                      | `""`    |
 | `serviceAccount.automountServiceAccountToken` | Allows auto mount of ServiceAccountToken on the serviceAccount created                                                                      | `true`  |
@@ -397,84 +396,82 @@ kubectl delete pvc -l release=my-release
 | `rbac.rules`                                  | Custom RBAC rules to set                                                                                                                    | `[]`    |
 | `psp.create`                                  | Whether to create a PodSecurityPolicy. WARNING: PodSecurityPolicy is deprecated in Kubernetes v1.21 or later, unavailable in v1.25 or later | `false` |
 
-
 ### Metrics Parameters
 
-| Name                                            | Description                                                                           | Value                       |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------- |
-| `metrics.enabled`                               | Start a prometheus exporter                                                           | `false`                     |
-| `metrics.image.registry`                        | PostgreSQL Prometheus Exporter image registry                                         | `docker.io`                 |
-| `metrics.image.repository`                      | PostgreSQL Prometheus Exporter image repository                                       | `bitnami/postgres-exporter` |
-| `metrics.image.tag`                             | PostgreSQL Prometheus Exporter image tag (immutable tags are recommended)             | `0.11.0-debian-11-r2`       |
-| `metrics.image.pullPolicy`                      | PostgreSQL Prometheus Exporter image pull policy                                      | `IfNotPresent`              |
-| `metrics.image.pullSecrets`                     | Specify image pull secrets                                                            | `[]`                        |
-| `metrics.customMetrics`                         | Define additional custom metrics                                                      | `{}`                        |
-| `metrics.extraEnvVars`                          | Extra environment variables to add to PostgreSQL Prometheus exporter                  | `[]`                        |
-| `metrics.containerSecurityContext.enabled`      | Enable PostgreSQL Prometheus exporter containers' Security Context                    | `true`                      |
-| `metrics.containerSecurityContext.runAsUser`    | Set PostgreSQL Prometheus exporter containers' Security Context runAsUser             | `1001`                      |
-| `metrics.containerSecurityContext.runAsNonRoot` | Set PostgreSQL Prometheus exporter containers' Security Context runAsNonRoot          | `true`                      |
-| `metrics.livenessProbe.enabled`                 | Enable livenessProbe on PostgreSQL Prometheus exporter containers                     | `true`                      |
-| `metrics.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                               | `5`                         |
-| `metrics.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                      | `10`                        |
-| `metrics.livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                     | `5`                         |
-| `metrics.livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                   | `6`                         |
-| `metrics.livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                   | `1`                         |
-| `metrics.readinessProbe.enabled`                | Enable readinessProbe on PostgreSQL Prometheus exporter containers                    | `true`                      |
-| `metrics.readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                              | `5`                         |
-| `metrics.readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                     | `10`                        |
-| `metrics.readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                    | `5`                         |
-| `metrics.readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                  | `6`                         |
-| `metrics.readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                  | `1`                         |
-| `metrics.startupProbe.enabled`                  | Enable startupProbe on PostgreSQL Prometheus exporter containers                      | `false`                     |
-| `metrics.startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                | `10`                        |
-| `metrics.startupProbe.periodSeconds`            | Period seconds for startupProbe                                                       | `10`                        |
-| `metrics.startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                      | `1`                         |
-| `metrics.startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                    | `15`                        |
-| `metrics.startupProbe.successThreshold`         | Success threshold for startupProbe                                                    | `1`                         |
-| `metrics.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                   | `{}`                        |
-| `metrics.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                  | `{}`                        |
-| `metrics.customStartupProbe`                    | Custom startupProbe that overrides the default one                                    | `{}`                        |
-| `metrics.containerPorts.metrics`                | PostgreSQL Prometheus exporter metrics container port                                 | `9187`                      |
-| `metrics.resources.limits`                      | The resources limits for the PostgreSQL Prometheus exporter container                 | `{}`                        |
-| `metrics.resources.requests`                    | The requested resources for the PostgreSQL Prometheus exporter container              | `{}`                        |
-| `metrics.service.ports.metrics`                 | PostgreSQL Prometheus Exporter service port                                           | `9187`                      |
-| `metrics.service.clusterIP`                     | Static clusterIP or None for headless services                                        | `""`                        |
-| `metrics.service.sessionAffinity`               | Control where client requests go, to the same pod or round-robin                      | `None`                      |
-| `metrics.service.annotations`                   | Annotations for Prometheus to auto-discover the metrics endpoint                      | `{}`                        |
-| `metrics.serviceMonitor.enabled`                | Create ServiceMonitor Resource for scraping metrics using Prometheus Operator         | `false`                     |
-| `metrics.serviceMonitor.namespace`              | Namespace for the ServiceMonitor Resource (defaults to the Release Namespace)         | `""`                        |
-| `metrics.serviceMonitor.interval`               | Interval at which metrics should be scraped.                                          | `""`                        |
-| `metrics.serviceMonitor.scrapeTimeout`          | Timeout after which the scrape is ended                                               | `""`                        |
-| `metrics.serviceMonitor.labels`                 | Additional labels that can be used so ServiceMonitor will be discovered by Prometheus | `{}`                        |
-| `metrics.serviceMonitor.selector`               | Prometheus instance selector labels                                                   | `{}`                        |
-| `metrics.serviceMonitor.relabelings`            | RelabelConfigs to apply to samples before scraping                                    | `[]`                        |
-| `metrics.serviceMonitor.metricRelabelings`      | MetricRelabelConfigs to apply to samples before ingestion                             | `[]`                        |
-| `metrics.serviceMonitor.honorLabels`            | Specify honorLabels parameter to add the scrape endpoint                              | `false`                     |
-| `metrics.serviceMonitor.jobLabel`               | The name of the label on the target service to use as the job name in prometheus.     | `""`                        |
-| `metrics.prometheusRule.enabled`                | Create a PrometheusRule for Prometheus Operator                                       | `false`                     |
-| `metrics.prometheusRule.namespace`              | Namespace for the PrometheusRule Resource (defaults to the Release Namespace)         | `""`                        |
-| `metrics.prometheusRule.labels`                 | Additional labels that can be used so PrometheusRule will be discovered by Prometheus | `{}`                        |
-| `metrics.prometheusRule.rules`                  | PrometheusRule definitions                                                            | `[]`                        |
-
+| Name                                            | Description                                                                                                | Value                       |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `metrics.enabled`                               | Start a prometheus exporter                                                                                | `false`                     |
+| `metrics.image.registry`                        | PostgreSQL Prometheus Exporter image registry                                                              | `docker.io`                 |
+| `metrics.image.repository`                      | PostgreSQL Prometheus Exporter image repository                                                            | `bitnami/postgres-exporter` |
+| `metrics.image.tag`                             | PostgreSQL Prometheus Exporter image tag (immutable tags are recommended)                                  | `0.12.0-debian-11-r79`      |
+| `metrics.image.digest`                          | PostgreSQL image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                        |
+| `metrics.image.pullPolicy`                      | PostgreSQL Prometheus Exporter image pull policy                                                           | `IfNotPresent`              |
+| `metrics.image.pullSecrets`                     | Specify image pull secrets                                                                                 | `[]`                        |
+| `metrics.customMetrics`                         | Define additional custom metrics                                                                           | `{}`                        |
+| `metrics.extraEnvVars`                          | Extra environment variables to add to PostgreSQL Prometheus exporter                                       | `[]`                        |
+| `metrics.containerSecurityContext.enabled`      | Enable PostgreSQL Prometheus exporter containers' Security Context                                         | `true`                      |
+| `metrics.containerSecurityContext.runAsUser`    | Set PostgreSQL Prometheus exporter containers' Security Context runAsUser                                  | `1001`                      |
+| `metrics.containerSecurityContext.runAsNonRoot` | Set PostgreSQL Prometheus exporter containers' Security Context runAsNonRoot                               | `true`                      |
+| `metrics.livenessProbe.enabled`                 | Enable livenessProbe on PostgreSQL Prometheus exporter containers                                          | `true`                      |
+| `metrics.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                                    | `5`                         |
+| `metrics.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                           | `10`                        |
+| `metrics.livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                                          | `5`                         |
+| `metrics.livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                                        | `6`                         |
+| `metrics.livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                                        | `1`                         |
+| `metrics.readinessProbe.enabled`                | Enable readinessProbe on PostgreSQL Prometheus exporter containers                                         | `true`                      |
+| `metrics.readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                                                   | `5`                         |
+| `metrics.readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                                          | `10`                        |
+| `metrics.readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                                         | `5`                         |
+| `metrics.readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                                       | `6`                         |
+| `metrics.readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                                       | `1`                         |
+| `metrics.startupProbe.enabled`                  | Enable startupProbe on PostgreSQL Prometheus exporter containers                                           | `false`                     |
+| `metrics.startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                                     | `10`                        |
+| `metrics.startupProbe.periodSeconds`            | Period seconds for startupProbe                                                                            | `10`                        |
+| `metrics.startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                                           | `1`                         |
+| `metrics.startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                                         | `15`                        |
+| `metrics.startupProbe.successThreshold`         | Success threshold for startupProbe                                                                         | `1`                         |
+| `metrics.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                                        | `{}`                        |
+| `metrics.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                                       | `{}`                        |
+| `metrics.customStartupProbe`                    | Custom startupProbe that overrides the default one                                                         | `{}`                        |
+| `metrics.containerPorts.metrics`                | PostgreSQL Prometheus exporter metrics container port                                                      | `9187`                      |
+| `metrics.resources.limits`                      | The resources limits for the PostgreSQL Prometheus exporter container                                      | `{}`                        |
+| `metrics.resources.requests`                    | The requested resources for the PostgreSQL Prometheus exporter container                                   | `{}`                        |
+| `metrics.service.ports.metrics`                 | PostgreSQL Prometheus Exporter service port                                                                | `9187`                      |
+| `metrics.service.clusterIP`                     | Static clusterIP or None for headless services                                                             | `""`                        |
+| `metrics.service.sessionAffinity`               | Control where client requests go, to the same pod or round-robin                                           | `None`                      |
+| `metrics.service.annotations`                   | Annotations for Prometheus to auto-discover the metrics endpoint                                           | `{}`                        |
+| `metrics.serviceMonitor.enabled`                | Create ServiceMonitor Resource for scraping metrics using Prometheus Operator                              | `false`                     |
+| `metrics.serviceMonitor.namespace`              | Namespace for the ServiceMonitor Resource (defaults to the Release Namespace)                              | `""`                        |
+| `metrics.serviceMonitor.interval`               | Interval at which metrics should be scraped.                                                               | `""`                        |
+| `metrics.serviceMonitor.scrapeTimeout`          | Timeout after which the scrape is ended                                                                    | `""`                        |
+| `metrics.serviceMonitor.labels`                 | Additional labels that can be used so ServiceMonitor will be discovered by Prometheus                      | `{}`                        |
+| `metrics.serviceMonitor.selector`               | Prometheus instance selector labels                                                                        | `{}`                        |
+| `metrics.serviceMonitor.relabelings`            | RelabelConfigs to apply to samples before scraping                                                         | `[]`                        |
+| `metrics.serviceMonitor.metricRelabelings`      | MetricRelabelConfigs to apply to samples before ingestion                                                  | `[]`                        |
+| `metrics.serviceMonitor.honorLabels`            | Specify honorLabels parameter to add the scrape endpoint                                                   | `false`                     |
+| `metrics.serviceMonitor.jobLabel`               | The name of the label on the target service to use as the job name in prometheus.                          | `""`                        |
+| `metrics.prometheusRule.enabled`                | Create a PrometheusRule for Prometheus Operator                                                            | `false`                     |
+| `metrics.prometheusRule.namespace`              | Namespace for the PrometheusRule Resource (defaults to the Release Namespace)                              | `""`                        |
+| `metrics.prometheusRule.labels`                 | Additional labels that can be used so PrometheusRule will be discovered by Prometheus                      | `{}`                        |
+| `metrics.prometheusRule.rules`                  | PrometheusRule definitions                                                                                 | `[]`                        |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
-```bash
-$ helm install my-release \
+```console
+helm install my-release \
     --set auth.postgresPassword=secretpassword
-    bitnami/postgresql
+    oci://registry-1.docker.io/bitnamicharts/postgresql
 ```
 
 The above command sets the PostgreSQL `postgres` account password to `secretpassword`.
 
 > NOTE: Once this chart is deployed, it is not possible to change the application's access credentials, such as usernames or passwords, using Helm. To change these application credentials after deployment, delete any persistent volumes (PVs) used by the chart and re-deploy it, or use the application's built-in administrative tools if available.
-
 > **Warning** Setting a password will be ignored on new installation in case when previous Posgresql release was deleted through the helm command. In that case, old PVC will have an old password, and setting it through helm won't take effect. Deleting persistent volumes (PVs) will solve the issue. Refer to [issue 2061](https://github.com/bitnami/charts/issues/2061) for more details
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
-```bash
-helm install my-release -f values.yaml bitnami/postgresql
+```console
+helm install my-release -f values.yaml oci://registry-1.docker.io/bitnamicharts/postgresql
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
@@ -575,7 +572,7 @@ The exporter allows to create custom metrics from additional SQL queries. See th
 
 In more complex scenarios, we may have the following tree of dependencies
 
-```
+```text
                      +--------------+
                      |              |
         +------------+   Chart 1    +-----------+
@@ -595,7 +592,7 @@ In more complex scenarios, we may have the following tree of dependencies
 
 The three charts below depend on the parent chart Chart 1. However, subcharts 1 and 2 may need to connect to PostgreSQL as well. In order to do so, subcharts 1 and 2 need to know the PostgreSQL credentials, so one option for deploying could be deploy Chart 1 with the following parameters:
 
-```
+```text
 postgresql.auth.username=testuser
 subchart1.postgresql.auth.username=testuser
 subchart2.postgresql.auth.username=testuser
@@ -609,7 +606,7 @@ subchart2.postgresql.auth.database=testdb
 
 If the number of dependent sub-charts increases, installing the chart with parameters can become increasingly difficult. An alternative would be to set the credentials using global variables as follows:
 
-```
+```text
 global.postgresql.auth.username=testuser
 global.postgresql.auth.password=testpass
 global.postgresql.auth.database=testdb
@@ -632,7 +629,7 @@ To enable network policy for PostgreSQL, install [a networking plugin that imple
 
 For Kubernetes v1.5 & v1.6, you must also turn on NetworkPolicy by setting the DefaultDeny namespace annotation. Note: this will enforce policy for _all_ pods in the namespace:
 
-```bash
+```console
 kubectl annotate namespace default "net.beta.kubernetes.io/network-policy={\"ingress\":{\"isolation\":\"DefaultDeny\"}}"
 ```
 
@@ -645,13 +642,15 @@ This label will be displayed in the output of a successful install.
 
 - The Docker Official PostgreSQL image does not support replication. If you pass any replication environment variable, this would be ignored. The only environment variables supported by the Docker Official image are POSTGRES_USER, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_INITDB_ARGS, POSTGRES_INITDB_WALDIR and PGDATA. All the remaining environment variables are specific to the Bitnami PostgreSQL image.
 - The Bitnami PostgreSQL image is non-root by default. This requires that you run the pod with `securityContext` and updates the permissions of the volume with an `initContainer`. A key benefit of this configuration is that the pod follows security best practices and is prepared to run on Kubernetes distributions with hard security constraints like OpenShift.
-- For OpenShift, one may either define the runAsUser and fsGroup accordingly, or try this more dynamic option: volumePermissions.securityContext.runAsUser="auto",securityContext.enabled=false,containerSecurityContext.enabled=false,shmVolume.chmod.enabled=false
+- For OpenShift up to 4.10, let set the volume permissions, security context, runAsUser and fsGroup automatically by OpenShift and disable the predefined settings of the helm chart: primary.securityContext.enabled=false,primary.containerSecurityContext.enabled=false,volumePermissions.enabled=false,shmVolume.enabled=false
+- For OpenShift 4.11 and higher, let set OpenShift the runAsUser and fsGroup automatically. Configure the pod and container security context to restrictive defaults and disable the volume permissions setup: primary.
+    podSecurityContext.fsGroup=null,primary.podSecurityContext.seccompProfile.type=RuntimeDefault,primary.containerSecurityContext.runAsUser=null,primary.containerSecurityContext.allowPrivilegeEscalation=false,primary.containerSecurityContext.runAsNonRoot=true,primary.containerSecurityContext.seccompProfile.type=RuntimeDefault,primary.containerSecurityContext.capabilities.drop=['ALL'],volumePermissions.enabled=false,shmVolume.enabled=false
 
 ### Setting Pod's affinity
 
 This chart allows you to set your custom affinity using the `XXX.affinity` parameter(s). Find more information about Pod's affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
 
-As an alternative, you can use of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/master/bitnami/common#affinities) chart. To do so, set the `XXX.podAffinityPreset`, `XXX.podAntiAffinityPreset`, or `XXX.nodeAffinityPreset` parameters.
+As an alternative, you can use of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/main/bitnami/common#affinities) chart. To do so, set the `XXX.podAffinityPreset`, `XXX.podAntiAffinityPreset`, or `XXX.nodeAffinityPreset` parameters.
 
 ## Troubleshooting
 
@@ -659,17 +658,23 @@ Find more information about how to deal with common errors related to Bitnami's 
 
 ## Upgrading
 
+### To 12.0.0
+
+This major version changes the default PostgreSQL image from 14.x to 15.x. Follow the [official instructions](https://www.postgresql.org/docs/15/upgrading.html) to upgrade to 15.x.
+
+### To any previous version
+
 Refer to the [chart documentation for more information about how to upgrade from previous releases](https://docs.bitnami.com/kubernetes/infrastructure/postgresql/administration/upgrade/).
 
 ## License
 
-Copyright &copy; 2022 Bitnami
+Copyright &copy; 2023 Bitnami
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+<http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

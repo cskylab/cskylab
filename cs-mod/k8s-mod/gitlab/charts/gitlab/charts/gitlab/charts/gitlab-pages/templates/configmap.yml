@@ -51,8 +51,8 @@ data:
     root-key=/etc/gitlab-secrets/pages/{{ template "gitlab.pages.hostname" $ }}.key
       {{- end }}
     {{- end }}
-    {{- if .Values.propagateCorrelationId }}
-    propagate-correlation-id={{ .Values.propagateCorrelationId }}
+    {{- if kindIs "bool" .Values.propagateCorrelationId }}
+    propagate-correlation-id={{ eq .Values.propagateCorrelationId true }}
     {{- end }}
     pages-domain={{ template "gitlab.pages.hostname" . }}
     pages-root=/srv/gitlab-pages
@@ -111,6 +111,9 @@ data:
     auth-secret={% file.Read "/etc/gitlab-secrets/pages/auth_secret" %}
     auth-scope={{ template "oauth.gitlab-pages.authScope" . }}
     {{- end }}
+    {{- if .Values.authCookieSessionTimeout }}
+    auth-cookie-session-timeout={{ .Values.authCookieSessionTimeout }}
+    {{- end }}
     {{- with .Values.zipCache }}
     {{- if .cleanup }}
     zip-cache-cleanup={{ .cleanup }}
@@ -165,7 +168,7 @@ data:
     server-keep-alive={{ .Values.serverKeepAlive }}
     {{- end }}
   configure: |
-    {{- include "gitlab.scripts.configure.secrets" (dict "required" "pages" "optional" "pages") | nindent 4 -}}
+    {{- include "gitlab.scripts.configure.secrets" (dict "required" "pages" "optional" "none") | nindent 4 }}
     {{- if $.Values.metrics.tls.enabled }}
       mkdir -p /init-secrets/pages-metrics
       cp -v -L /init-config/pages-metrics/pages-metrics.crt /init-secrets/pages-metrics/pages-metrics.crt

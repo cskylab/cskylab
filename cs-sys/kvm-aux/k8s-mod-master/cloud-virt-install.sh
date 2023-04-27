@@ -13,7 +13,7 @@ virt-install --name "${vmachine_name}" \
     --boot hd,cdrom,menu=on --autostart \
     --disk path="${vmachines_path}/${vmachine_name}-setup.iso",device=cdrom \
     --disk path="${vmachines_path}/${vmachine_name}-sysdisk.qcow2",device=disk \
-    --os-variant ubuntu20.04 \
+    --os-variant ubuntu22.04 \
     --network network=br_mod_srv \
     --console pty,target_type=serial \
     --noautoconsole

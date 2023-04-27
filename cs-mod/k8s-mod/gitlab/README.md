@@ -2,11 +2,11 @@
 
 ## v22-12-19 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v6.6.2 bitnami/postgresql v12.1.3<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v6.11.0 bitnami/postgresql v12.3.1<!-- omit in toc -->
 
 [Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.
 
-Configuration files are deployed from template Gitlab DevOps platform version 22-12-19.
+Configuration files are deployed from template Gitlab DevOps platform version 23-04-27.
 
   ![ ](./images/gitlab-2021-11-08_15-24-36.png)
 
@@ -14,6 +14,7 @@ Configuration files are deployed from template Gitlab DevOps platform version 22
 - [Prerequisites](#prerequisites)
   - [LVM Data Services](#lvm-data-services)
     - [Persistent Volumes](#persistent-volumes)
+  - [Custom CA certificate](#custom-ca-certificate)
 - [How-to guides](#how-to-guides)
   - [Pull Charts](#pull-charts)
   - [Install](#install)
@@ -173,6 +174,17 @@ pv-task-runner.yaml
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.
+
+### Custom CA certificate
+
+A custom private CA certificate is injected in pods. 
+
+To change the CA certificate, you must add the appropriate pem certificate file, edit script `csdeploy.sh` and change the following variable as needed:
+
+```bash
+# Custom CA file.pem
+custom_ca_file="ca-test-internal.pem"
+```
 
 ## How-to guides
 

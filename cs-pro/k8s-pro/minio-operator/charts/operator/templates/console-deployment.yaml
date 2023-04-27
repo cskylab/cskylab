@@ -50,17 +50,16 @@ spec:
             - containerPort: 9443
               name: https
           args:
-            - server
-          env:
-            - name: CONSOLE_OPERATOR_MODE
-              value: "on"
-                {{- with .Values.console.env }}
-                {{ toYaml . | nindent 12 }}
-                {{- end }}
+            - ui
+            - --certs-dir=/tmp/certs
           resources:
           {{- toYaml .Values.console.resources | nindent 12 }}
           volumeMounts:
           {{- with .Values.console.volumeMounts }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+          {{- with .Values.console.containerSecurityContext }}
           {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
@@ -69,5 +68,9 @@ spec:
       {{- end }}
       {{- with .Values.console.initContainers }}
       initContainers:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.operator.runtimeClassName }}
+      runtimeClassName:
       {{- toYaml . | nindent 8 }}
   {{- end}}

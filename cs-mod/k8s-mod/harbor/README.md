@@ -1,12 +1,12 @@
 # [Harbor](https://goharbor.io/) registry <!-- omit in toc -->
 
-## v22-12-19 <!-- omit in toc -->
+## v23-04-27 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v16.1.1 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v16.4.10 <!-- omit in toc -->
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
-Configuration files are deployed from template Harbor opensource registry version 22-12-19.
+Configuration files are deployed from template Harbor opensource registry version 23-04-27.
 
   ![ ](./images/harbor-sample-2021-11-07_19-32-56.png)
 
@@ -91,6 +91,7 @@ echo \
   'sudo cs-lvmserv.sh -m create -qd "/srv/harbor" \
 && mkdir "/srv/harbor/data/chartmuseum" \
 && mkdir "/srv/harbor/data/jobservice" \
+&& mkdir "/srv/harbor/data/scandata" \
 && mkdir "/srv/harbor/data/postgresql" \
 && mkdir "/srv/harbor/data/redis" \
 && mkdir "/srv/harbor/data/registry" \
@@ -111,6 +112,7 @@ echo \
   'sudo cs-lvmserv.sh -m create -qd "/srv/harbor" \
 && mkdir "/srv/harbor/data/chartmuseum" \
 && mkdir "/srv/harbor/data/jobservice" \
+&& mkdir "/srv/harbor/data/scandata" \
 && mkdir "/srv/harbor/data/postgresql" \
 && mkdir "/srv/harbor/data/redis" \
 && mkdir "/srv/harbor/data/registry" \

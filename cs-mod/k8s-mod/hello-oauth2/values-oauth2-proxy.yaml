@@ -1,0 +1,61 @@
+# Oauth client configuration specifics
+config:
+  # OAuth client ID
+  clientID: "hello-oauth2"
+  # OAuth client secret
+  clientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  # Create a new secret with the following command
+  # openssl rand -base64 32 | head -c 32 | base64
+  # Use an existing secret for OAuth2 credentials (see secret.yaml for required fields)
+  # Example:
+  # existingSecret: secret
+  cookieSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  # The name of the cookie that oauth2-proxy will create
+  # If left empty, it will default to the release name
+  cookieName: ""
+  configFile: |-
+    provider = "oidc"
+    provider_display_name = "Keycloak"
+    oidc_issuer_url = "https://keycloakx.mod.cskylab.net/auth/realms/test-realm"
+    email_domains = [ "*" ]
+    allowed_groups = ["/hello-oauth2"]
+    scope = "openid profile email"
+    cookie_domains = ".hello-oauth2.mod.cskylab.net"
+    whitelist_domains = ".hello-oauth2.mod.cskylab.net"
+    pass_authorization_header = true
+    pass_access_token = true
+    pass_user_headers = true
+    set_authorization_header = true
+    set_xauthrequest = true
+    cookie_refresh = "1m"
+    cookie_expire = "30m"
+
+ingress:
+  enabled: true
+  # className: nginx
+  path: /
+  # Only used if API capabilities (networking.k8s.io/v1) allow it
+  pathType: ImplementationSpecific
+  # Used to create an Ingress record.
+  hosts:
+    - oauth.hello-oauth2.mod.cskylab.net
+  # Extra paths to prepend to every host configuration. This is useful when working with annotation based services.
+  # Warning! The configuration is dependant on your current k8s API version capabilities (networking.k8s.io/v1)
+  # extraPaths:
+  # - path: /*
+  #   pathType: ImplementationSpecific
+  #   backend:
+  #     service:
+  #       name: ssl-redirect
+  #       port:
+  #         name: use-annotation
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: ca-test-internal
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+  tls:
+    # Secrets must be manually created in the namespace.
+    - secretName: oauth-proxy-tls
+      hosts:
+        - oauth.hello-oauth2.mod.cskylab.net
+

@@ -50,7 +50,7 @@ namespace:
 
 publishing:
   ## External url
-  url: hello-mod.cskylab.net
+  url: hello.mod.cskylab.net
 
 certificate:
   ## Cert-manager clusterissuer

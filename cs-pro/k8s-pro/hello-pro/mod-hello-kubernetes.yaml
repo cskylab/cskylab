@@ -2,7 +2,7 @@
 #   k8s mod: hello-kubernetes 
 #
 #     Example app based on paulbouwer/hello-kubernetes
-#     Published at https://hello-pro.cskylab.net
+#     Published at https://hello.pro.cskylab.net
 #
 
 apiVersion: networking.k8s.io/v1
@@ -18,7 +18,7 @@ metadata:
 
 spec:
   rules:
-  - host: hello-pro.cskylab.net
+  - host: hello.pro.cskylab.net
     http:
       paths:
       - path: /
@@ -30,7 +30,7 @@ spec:
               number: 80
   tls:
   - hosts:
-      - hello-pro.cskylab.net
+      - hello.pro.cskylab.net
     secretName: hello-kubernetes-tls
 
 ---

@@ -1,10 +1,10 @@
 # Kubernetes Hello World app<!-- omit in toc -->
 
-## `k8s-hello` v22-03-23 <!-- omit in toc -->
+## `k8s-hello` v23-04-27 <!-- omit in toc -->
 
 This namespace is intended to deploy a simple Hello World application in Kubernetes for testing purposes.
 
-Configuration files are deployed from template Kubernetes hellow world app version 22-03-23.
+Configuration files are deployed from template Kubernetes hello world app version 23-04-27.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -35,7 +35,7 @@ Configuration files are deployed from template Kubernetes hellow world app versi
 
 Run:
 
-- Published at: `hello-pro.cskylab.net`
+- Published at: `hello.pro.cskylab.net`
 
 ## Prerequisites
 
@@ -186,12 +186,12 @@ The following table lists template configuration parameters and their specified 
 | Parameter                   | Description                                      | Values                             |
 | --------------------------- | ------------------------------------------------ | ---------------------------------- |
 | `_tplname`                  | template name                                    | `k8s-hello`                  |
-| `_tpldescription`           | template description                             | `Kubernetes hellow world app`           |
-| `_tplversion`               | template version                                 | `22-03-23`               |
-| `kubeconfig`                | kubeconfig file                                  | `config-k8s-pro`                |
+| `_tpldescription`           | template description                             | `Kubernetes hello world app`           |
+| `_tplversion`               | template version                                 | `23-04-27`               |
+| `kubeconfig`                | kubeconfig file                                  | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod`                |
 | `namespace.name`            | namespace name                                   | `hello-pro`            |
 | `namespace.domain`          | domain name                                      | `cskylab.net`          |
-| `publishing.url`            | external URL                                     | `hello-pro.cskylab.net`            |
+| `publishing.url`            | external URL                                     | `hello.pro.cskylab.net`            |
 | `certificate.clusterissuer` | cert-manager clusterissuer                       | `ca-test-internal` |
 | `registry.proxy`            | docker private proxy URL                         | `harbor.cskylab.net/dockerhub`            |
 

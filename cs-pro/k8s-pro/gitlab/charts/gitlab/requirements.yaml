@@ -13,7 +13,7 @@ dependencies:
   condition: certmanager.install
   alias: certmanager
 - name: prometheus
-  version: 15.0.4
+  version: 15.18.0
   repository: https://prometheus-community.github.io/helm-charts
   condition: prometheus.install
 - name: postgresql
@@ -21,11 +21,11 @@ dependencies:
   repository: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
   condition: postgresql.install
 - name: gitlab-runner
-  version: 0.43.0
+  version: 0.51.1
   repository: https://charts.gitlab.io/
   condition: gitlab-runner.install
 - name: grafana
-  version: 6.9.1
+  version: 6.11.0
   repository: https://grafana.github.io/helm-charts
   condition: global.grafana.enabled
 - name: redis
@@ -35,3 +35,7 @@ dependencies:
 - name: nginx-ingress
   condition: nginx-ingress.enabled
   version: '*.*.*'
+- name: gitlab-zoekt
+  version: 0.3.0
+  repository: https://charts.gitlab.io/
+  condition: gitlab-zoekt.install

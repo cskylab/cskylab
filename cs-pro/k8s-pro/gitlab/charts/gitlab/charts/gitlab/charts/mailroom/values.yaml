@@ -43,6 +43,7 @@ global:
       password:
         secret: ""
         key: password
+      deleteAfterDelivery: true
       expungeDeleted: false
       logger:
         logPath: "/dev/stdout"
@@ -68,6 +69,7 @@ global:
       password:
         secret: ""
         key: password
+      deleteAfterDelivery: true
       expungeDeleted: false
       logger:
         logPath: "/dev/stdout"
@@ -157,6 +159,7 @@ resources:
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
 
 ## Enable deployment to use a serviceAccount
 serviceAccount:
@@ -172,3 +175,6 @@ deployment:
 affinity:
   podAntiAffinity:
     topologyKey:
+
+# Priority class assigned to pods
+priorityClassName: ""

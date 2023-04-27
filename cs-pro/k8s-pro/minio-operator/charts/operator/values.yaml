@@ -3,15 +3,15 @@
 operator:
   ## Setup environment variables for the Operator
   # env:
-  #   - name: MINIO_OPERATOR_TLS_ENABLE
+  #   - name: MINIO_CONSOLE_TLS_ENABLE
   #     value: "off"
   #   - name: CLUSTER_DOMAIN
   #     value: "cluster.domain"
   #   - name: WATCHED_NAMESPACE
   #     value: ""
   image:
-    repository: minio/operator
-    tag: v4.5.5
+    repository: quay.io/minio/operator
+    tag: v5.0.4
     pullPolicy: IfNotPresent
   imagePullSecrets: [ ]
   initcontainers: [ ]
@@ -21,7 +21,12 @@ operator:
     runAsGroup: 1000
     runAsNonRoot: true
     fsGroup: 1000
+  containerSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
   nodeSelector: { }
+  priorityClassName: ""
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -42,8 +47,8 @@ operator:
 
 console:
   image:
-    repository: minio/console
-    tag: v0.22.1
+    repository: quay.io/minio/operator
+    tag: v5.0.4
     pullPolicy: IfNotPresent
   imagePullSecrets: [ ]
   initcontainers: [ ]
@@ -54,6 +59,9 @@ console:
   topologySpreadConstraints: [ ]
   resources: { }
   securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+  containerSecurityContext:
     runAsUser: 1000
     runAsNonRoot: true
   ingress:

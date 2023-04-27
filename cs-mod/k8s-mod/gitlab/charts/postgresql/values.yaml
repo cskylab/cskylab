@@ -87,6 +87,7 @@ diagnosticMode:
 ## @param image.registry PostgreSQL image registry
 ## @param image.repository PostgreSQL image repository
 ## @param image.tag PostgreSQL image tag (immutable tags are recommended)
+## @param image.digest PostgreSQL image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
 ## @param image.pullPolicy PostgreSQL image pull policy
 ## @param image.pullSecrets Specify image pull secrets
 ## @param image.debug Specify if debug values should be set
@@ -94,7 +95,8 @@ diagnosticMode:
 image:
   registry: docker.io
   repository: bitnami/postgresql
-  tag: 14.5.0-debian-11-r0
+  tag: 15.2.0-debian-11-r24
+  digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -120,13 +122,13 @@ auth:
   ## @param auth.enablePostgresUser Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user
   ##
   enablePostgresUser: true
-  ## @param auth.postgresPassword Password for the "postgres" admin user. Ignored if `auth.existingSecret` with key `postgres-password` is provided
+  ## @param auth.postgresPassword Password for the "postgres" admin user. Ignored if `auth.existingSecret` is provided
   ##
   postgresPassword: ""
   ## @param auth.username Name for a custom user to create
   ##
   username: ""
-  ## @param auth.password Password for the custom user to create. Ignored if `auth.existingSecret` with key `password` is provided
+  ## @param auth.password Password for the custom user to create. Ignored if `auth.existingSecret` is provided
   ##
   password: ""
   ## @param auth.database Name for a custom database to create
@@ -135,7 +137,7 @@ auth:
   ## @param auth.replicationUsername Name of the replication user
   ##
   replicationUsername: repl_user
-  ## @param auth.replicationPassword Password for the replication user. Ignored if `auth.existingSecret` with key `replication-password` is provided
+  ## @param auth.replicationPassword Password for the replication user. Ignored if `auth.existingSecret` is provided
   ##
   replicationPassword: ""
   ## @param auth.existingSecret Name of existing secret to use for PostgreSQL credentials. `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored and picked up from this secret. The secret might also contains the key `ldap-password` if LDAP is enabled. `ldap.bind_password` will be ignored and picked from this secret in this case.
@@ -229,6 +231,7 @@ ldap:
     enabled: false
   ## @param ldap.uri LDAP URL beginning in the form `ldap[s]://host[:port]/basedn`. If provided, all the other LDAP parameters will be ignored.
   ## Ref: https://www.postgresql.org/docs/current/auth-ldap.html
+  ##
   uri: ""
 ## @param postgresqlDataDir PostgreSQL data dir folder
 ##
@@ -626,6 +629,12 @@ primary:
     ##     timeoutSeconds: 300
     ##
     sessionAffinityConfig: {}
+    ## Headless service properties
+    ##
+    headless:
+      ## @param primary.service.headless.annotations Additional custom annotations for headless PostgreSQL primary service
+      ##
+      annotations: {}
   ## PostgreSQL Primary persistence configuration
   ##
   persistence:
@@ -661,6 +670,9 @@ primary:
     ## @param primary.persistence.annotations Annotations for the PVC
     ##
     annotations: {}
+    ## @param primary.persistence.labels Labels for the PVC
+    ##
+    labels: {}
     ## @param primary.persistence.selector Selector to match an existing Persistent Volume (this value is evaluated as a template)
     ## selector:
     ##   matchLabels:
@@ -954,6 +966,12 @@ readReplicas:
     ##     timeoutSeconds: 300
     ##
     sessionAffinityConfig: {}
+    ## Headless service properties
+    ##
+    headless:
+      ## @param readReplicas.service.headless.annotations Additional custom annotations for headless PostgreSQL read only service
+      ##
+      annotations: {}
   ## PostgreSQL read only persistence configuration
   ##
   persistence:
@@ -989,6 +1007,9 @@ readReplicas:
     ## @param readReplicas.persistence.annotations Annotations for the PVC
     ##
     annotations: {}
+    ## @param readReplicas.persistence.labels Labels for the PVC
+    ##
+    labels: {}
     ## @param readReplicas.persistence.selector Selector to match an existing Persistent Volume (this value is evaluated as a template)
     ## selector:
     ##   matchLabels:
@@ -1000,6 +1021,7 @@ readReplicas:
     dataSource: {}
 
 ## @section NetworkPolicy parameters
+##
 
 ## Add networkpolicies
 ##
@@ -1050,6 +1072,7 @@ networkPolicy:
       ##       - namespaceSelector:
       ##           matchLabels:
       ##             label: example
+      ##
       customRules: {}
     ## @param networkPolicy.ingressRules.readReplicasAccessOnlyFrom.enabled Enable ingress rule that makes PostgreSQL read-only nodes only accessible from a particular origin.
     ## @param networkPolicy.ingressRules.readReplicasAccessOnlyFrom.namespaceSelector [object] Namespace selector label that is allowed to access the PostgreSQL read-only nodes. This label will be used to identified the allowed namespace(s).
@@ -1075,6 +1098,7 @@ networkPolicy:
       ##       - namespaceSelector:
       ##           matchLabels:
       ##             label: example
+      ##
       customRules: {}
   ## @param networkPolicy.egressRules.denyConnectionsToExternal Enable egress rule that denies outgoing traffic outside the cluster, except for DNS (port 53).
   ## @param networkPolicy.egressRules.customRules [object] Custom network policy rule
@@ -1089,9 +1113,11 @@ networkPolicy:
     ##       - namespaceSelector:
     ##           matchLabels:
     ##             label: example
+    ##
     customRules: {}
 
 ## @section Volume Permissions parameters
+##
 
 ## Init containers parameters:
 ## volumePermissions: Change the owner and group of the persistent volume(s) mountpoint(s) to 'runAsUser:fsGroup' on each node
@@ -1103,13 +1129,15 @@ volumePermissions:
   ## @param volumePermissions.image.registry Init container volume-permissions image registry
   ## @param volumePermissions.image.repository Init container volume-permissions image repository
   ## @param volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
+  ## @param volumePermissions.image.digest Init container volume-permissions image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   ## @param volumePermissions.image.pullPolicy Init container volume-permissions image pull policy
   ## @param volumePermissions.image.pullSecrets Init container volume-permissions image pull secrets
   ##
   image:
     registry: docker.io
     repository: bitnami/bitnami-shell
-    tag: 11-debian-11-r24
+    tag: 11-debian-11-r108
+    digest: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
@@ -1136,6 +1164,13 @@ volumePermissions:
     runAsUser: 0
 
 ## @section Other Parameters
+##
+
+## @param serviceBindings.enabled Create secret for service binding (Experimental)
+## Ref: https://servicebinding.io/service-provider/
+##
+serviceBindings:
+  enabled: false
 
 ## Service account for PostgreSQL to use.
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
@@ -1180,6 +1215,7 @@ psp:
   create: false
 
 ## @section Metrics Parameters
+##
 
 metrics:
   ## @param metrics.enabled Start a prometheus exporter
@@ -1188,13 +1224,15 @@ metrics:
   ## @param metrics.image.registry PostgreSQL Prometheus Exporter image registry
   ## @param metrics.image.repository PostgreSQL Prometheus Exporter image repository
   ## @param metrics.image.tag PostgreSQL Prometheus Exporter image tag (immutable tags are recommended)
+  ## @param metrics.image.digest PostgreSQL image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   ## @param metrics.image.pullPolicy PostgreSQL Prometheus Exporter image pull policy
   ## @param metrics.image.pullSecrets Specify image pull secrets
   ##
   image:
     registry: docker.io
     repository: bitnami/postgres-exporter
-    tag: 0.11.0-debian-11-r2
+    tag: 0.12.0-debian-11-r79
+    digest: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
@@ -1343,7 +1381,7 @@ metrics:
     ##
     labels: {}
     ## @param metrics.serviceMonitor.selector Prometheus instance selector labels
-    ## ref: https://github.com/bitnami/charts/tree/master/bitnami/prometheus-operator#prometheus-configuration
+    ## ref: https://github.com/bitnami/charts/tree/main/bitnami/prometheus-operator#prometheus-configuration
     ##
     selector: {}
     ## @param metrics.serviceMonitor.relabelings RelabelConfigs to apply to samples before scraping

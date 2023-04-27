@@ -1,16 +1,16 @@
 # mcc - Mission Control Center<!-- omit in toc -->
 
-This machine runs a management host (Mission Control Center) on Ubuntu Server 20.04 LTS.
+This machine runs a management host (Mission Control Center) on Ubuntu Server 22.04 LTS.
 
 It is intended to host VS Code Remote Server and to be accessed with VS Code Remote via ssh.
 
 [comment]: <> (**Functional description goes here**)
 
-`mcc` is deployed from template Ubuntu server 20.04 Mission Control Center version 22-03-23.
+`mcc` is deployed from template Ubuntu server 22.04 Mission Control Center version 23-04-27.
 
 - [Prerequisites](#prerequisites)
 - [How-to guides](#how-to-guides)
-  - [Inject & Deploy configuration](#inject--deploy-configuration)
+  - [Inject \& Deploy configuration](#inject--deploy-configuration)
     - [1. SSH Authentication and sudoers file](#1-ssh-authentication-and-sudoers-file)
     - [2. Network configuration](#2-network-configuration)
     - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
@@ -24,14 +24,13 @@ It is intended to host VS Code Remote Server and to be accessed with VS Code Rem
     - [cs-inject](#cs-inject)
     - [cs-connect](#cs-connect)
     - [cs-helloworld](#cs-helloworld)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
 
 ## Prerequisites
 
-- Physical or virtual machine up and running, with a clean installation of Ubuntu server 20.04.
+- Physical or virtual machine up and running, with a clean installation of Ubuntu server 22.04.
 
 - Package `openssh-server` must be installed to allow remote ssh connections.
 
@@ -356,30 +355,6 @@ Examples:
 | [list-status] [install] [update] [remove] |                                | **Display status information**                           |
 |                                           | Display hostname and variables | Show hostame and content of variables used in the script |
 |                                           | Display report message         | Display report message with "some surprise"              |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                    | Description                                 | Values                                                     |
-| ---------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
-| `_tplname`                   | template name                               | `ubt2004srv-mcc`                                          |
-| `_tpldescription`            | template description                        | `Ubuntu server 20.04 Mission Control Center`                                   |
-| `_tplversion`                | template version                            | `22-03-23`                                       |
-| `machine.hostname`           | hostname                                    | `mcc`                                  |
-| `machine.domainname`         | domain name                                 | `cskylab.net`                                |
-| `machine.localadminusername` | local admin username                        | `kos`                        |
-| `machine.localadminpassword` | local admin password                        | `NoFear21`                        |
-| `machine.timezone`           | timezone                                    | `UTC`                                  |
-| `machine.networkinterface`   | main network interface name                 | `enp1s0`                          |
-| `machine.ipaddress`          | main IP address                             | `192.168.80.5`                                 |
-| `machine.netmask`            | netmask                                     | `24`                                   |
-| `machine.gateway4`           | default gateway                             | `192.168.80.1`                                  |
-| `machine.searchdomainnames`  | search domain names                         | `cskylab.net, ` |
-| `machine.nameservers`        | name servers IP addresses                   | `192.168.80.1, `       |
-| `machine.setupdir`           | inject directory for setup and config files | `/etc/csky-setup`                                  |
-| `machine.systemlocale`       | language configuration                      | `C.UTF-8`                              |
-| `machine.systemkeyboard`     | keyboard layout configuration               | `us`                            |
 
 ## License
 

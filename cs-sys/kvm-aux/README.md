@@ -1,19 +1,19 @@
 # kvm-aux <!-- omit in toc -->
 
-This machine runs a KVM host on Ubuntu Server 20.04 LTS.
+This machine runs a KVM host on Ubuntu Server 22.04 LTS.
 
 Virtual machines are created on storage supported by LVM services.
 
 
 [comment]: <> (**Machine functional description goes here**)
 
-Machine `kvm-aux` is deployed from template Ubuntu server 20.04 kvm base installation version 22-01-05.
+Machine `kvm-aux` is deployed from template Ubuntu server 22.04 kvm base installation version 23-04-27.
 
 - [Prerequisites](#prerequisites)
   - [Hardware requirements](#hardware-requirements)
   - [Network assignements](#network-assignements)
 - [How-to guides](#how-to-guides)
-  - [Inject & Deploy configuration](#inject--deploy-configuration)
+  - [Inject \& Deploy configuration](#inject--deploy-configuration)
     - [1. SSH Authentication and sudoers file](#1-ssh-authentication-and-sudoers-file)
     - [2. Network configuration](#2-network-configuration)
     - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
@@ -22,6 +22,7 @@ Machine `kvm-aux` is deployed from template Ubuntu server 20.04 kvm base install
   - [Storage services](#storage-services)
     - [Manage disk volume groups](#manage-disk-volume-groups)
     - [Manage Thin Provisioning LVM data services](#manage-thin-provisioning-lvm-data-services)
+    - [Repair LVM thin-pool](#repair-lvm-thin-pool)
     - [Rsync data replication](#rsync-data-replication)
     - [Restic data backup and restore](#restic-data-backup-and-restore)
   - [Virtualization services](#virtualization-services)
@@ -52,7 +53,6 @@ Machine `kvm-aux` is deployed from template Ubuntu server 20.04 kvm base install
     - [cs-inject](#cs-inject)
     - [cs-connect](#cs-connect)
     - [cs-helloworld](#cs-helloworld)
-  - [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -105,7 +105,7 @@ The physical machine hosting kvm services must have at least 4 NIC's (5 if users
 
 The recommended configuration is 4 10Gb NIC + 4 1Gb NIC connected as in the SuperMicro example provided.
 
->**Note:** Before deploying kvm, you should perform in your machine a basic installation of Ubuntu 20.04 server and get the interfaces names with `networkctl status --all`. Plan and modify your NetPlan configuration file `01-netcfg.yaml` according to your interfaces names.
+>**Note:** Before deploying kvm, you should perform in your machine a basic installation of Ubuntu 22.04 server and get the interfaces names with `networkctl status --all`. Plan and modify your NetPlan configuration file `01-netcfg.yaml` according to your interfaces names.
 
 ## How-to guides
 
@@ -288,6 +288,38 @@ Free space of unused blocks inside thin-pools:
   sudo cs-lvmserv.sh -m trim-space
 
 ```
+
+#### Repair LVM thin-pool
+
+1. Unmount all LVM in the volume group
+
+2. List LVM to see vg and lv names
+
+```bash
+sudo lvscan
+```
+
+3. Deactivate volume group
+
+```bash
+sudo lvchange -an vg
+```
+
+4. Repair thin-pool
+
+```bash
+sudo lvconvert --repair  vg/tpool
+```
+
+5. Activate volume group
+
+```bash
+sudo lvchange -ay vg
+```
+
+6. Mount LVM and check data
+
+To learn more see the following procedure: https://smileusd.github.io/2018/10/12/repair-thinpool/
 
 #### Rsync data replication
 
@@ -1780,34 +1812,6 @@ Examples:
 | [list-status] [install] [update] [remove] |                                | **Display status information**                           |
 |                                           | Display hostname and variables | Show hostame and content of variables used in the script |
 |                                           | Display report message         | Display report message with "some surprise"              |
-
-### Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                    | Description                                      | Values                                                     |
-| ---------------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
-| `_tplname`                   | template name                                    | `ubt2004srv-kvm`                                          |
-| `_tpldescription`            | template description                             | `Ubuntu server 20.04 kvm base installation`                                   |
-| `_tplversion`                | template version                                 | `22-01-05`                                       |
-| `machine.hostname`           | hostname                                         | `kvm-aux`                                  |
-| `machine.domainname`         | domain name                                      | `cskylab.net`                                |
-| `machine.localadminusername` | local admin username                             | `kos`                        |
-| `machine.localadminpassword` | local admin password                             | `NoFear21`                        |
-| `machine.timezone`           | timezone                                         | `UTC`                                  |
-| `machine.networkinterface`   | main network interface name                      | `<no value>`                          |
-| `machine.ipaddress`          | main IP address                                  | `192.168.80.11`                                 |
-| `machine.netmask`            | netmask                                          | `24`                                   |
-| `machine.gateway4`           | default gateway                                  | `192.168.80.1`                                  |
-| `machine.searchdomainnames`  | search domain names                              | `cskylab.net, ` |
-| `machine.nameservers`        | name servers IP addresses                        | `192.168.80.1, `       |
-| `machine.setupdir`           | inject directory for setup and config files      | `/etc/csky-setup`                                  |
-| `machine.systemlocale`       | language configuration                           | `C.UTF-8`                              |
-| `machine.systemkeyboard`     | keyboard layout configuration                    | `us`                            |
-| `restic.password`            | password to access restic repository (mandatory) | `NoFear21`                                   |
-| `restic.repo`                | restic repository (mandatory)                    | `sftp:kos@hostname.cskylab.net:/media/data/restic/mydir`                                       |
-| `restic.aws_access`          | S3 bucket access key (if used)                   | `restic_rw`                                 |
-| `restic.aws_secret`          | S3 bucket secret key (if used)                   | `iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr`                                 |
 
 ## License
 

@@ -15,6 +15,10 @@ init:
   resources:
     requests:
       cpu: 50m
+  containerSecurityContext: {}
+
+# Node labels for pod assignment
+# nodeSelector: {}
 
 # Tolerations for pod scheduling
 tolerations: []
@@ -46,6 +50,7 @@ metrics:
   enabled: true
   port: 3807
   path: /metrics
+  log_enabled: false
   podMonitor:
     enabled: false
     additionalLabels: {}
@@ -129,6 +134,8 @@ global:
     enabled:
     credentials: {}
   appConfig:
+    microsoft_graph_mailer:
+      enabled: false
     incomingEmail:
       enabled: false
       address:
@@ -244,7 +251,7 @@ trusted_proxies: []
 # Global defaults
 minReplicas: 1
 maxReplicas: 10
-concurrency: 25
+concurrency: 20
 
 # `deployment.strategy` is utilized to configure the desired upgrade approach and
 # configuration for the deployment.  See the Kubernetes documentation
@@ -282,7 +289,7 @@ maxUnavailable: 1
 # Define queue groups into Pods
 pods:
   - name: all-in-1
-    # concurrency: 25
+    # concurrency: 20
     # memoryKiller:
     #   maxRss: 2000000
     #   graceTime: 900
@@ -312,11 +319,18 @@ pods:
     #   labels: {}
     # podLabels: {}
     # terminationGracePeriodSeconds: 30
+    # nodeSelector: {}
+    # tolerations: []
 
-## Allow to overwrite under which User and Group we're running.
+## Allow to overwrite under which User and Group the Pod will be running.
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
+
+## Allow to overwrite the specific security context under which the container is running.
+containerSecurityContext:
+  runAsUser: 1000
 
 ## Enable deployment to use a serviceAccount
 serviceAccount:

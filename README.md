@@ -2,7 +2,7 @@
 
 ## Virtual data center in-a-box
 
-**v22-12-19**
+**v23-04-27**
 
 
 [cSkyLab](https://www.cskylab.com/) is a virtual data center model that allows fast application deployment and gives you the choice to scale up your services in any combination of private, public or hybrid cloud.
@@ -33,9 +33,10 @@ To help you to start fast, it bundles "out of the box" many popular open source 
 - [Nextcloud](https://nextcloud.com/) Colaboration and file sharing
 - [MinIO](https://min.io) S3 compatible storage
 - IOTStudio: IOT service environment with Mosquitto, Node-red, InfluxDB and Grafana.
+- hello-oauth2:	Example of [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) deployment protecting a simple Hello World application for modeling purposes
 
 And many more to come...
 
 ---
 
-[cSkyLab.com ™](https://www.cskylab.com/) © 2021 Trantor Advanced Technologies S.A.
+[cSkyLab.com ™](https://www.cskylab.com/) © 2021-2023 Trantor Advanced Technologies S.A.

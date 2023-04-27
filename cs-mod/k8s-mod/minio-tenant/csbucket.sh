@@ -459,9 +459,9 @@ EOF
   mc admin user add minio/ "${bucket_rw_user}" "${bucket_rw_secret}"
   # policy
   echo "${bucket_rw_policy_content}" >"/tmp/${bucket_rw_policy}.json"
-  mc admin policy add minio/ "${bucket_rw_policy}" "/tmp/${bucket_rw_policy}.json"
+  mc admin policy create minio/ "${bucket_rw_policy}" "/tmp/${bucket_rw_policy}.json"
   # Set policy to user
-  mc admin policy set minio/ "${bucket_rw_policy}" user="${bucket_rw_user}"
+  mc admin policy attach minio/ "${bucket_rw_policy}" --user "${bucket_rw_user}"
 
   # ReadOnly
   echo
@@ -471,9 +471,9 @@ EOF
   mc admin user add minio/ "${bucket_ro_user}" "${bucket_ro_secret}"
   # policy
   echo "${bucket_ro_policy_content}" >"/tmp/${bucket_ro_policy}.json"
-  mc admin policy add minio/ "${bucket_ro_policy}" "/tmp/${bucket_ro_policy}.json"
+  mc admin policy create minio/ "${bucket_ro_policy}" "/tmp/${bucket_ro_policy}.json"
   # Set policy to user
-  mc admin policy set minio/ "${bucket_ro_policy}" user="${bucket_ro_user}"
+  mc admin policy attach minio/ "${bucket_ro_policy}" --user "${bucket_ro_user}"
 
   # WriteOnly
   echo
@@ -483,9 +483,9 @@ EOF
   mc admin user add minio/ "${bucket_wo_user}" "${bucket_wo_secret}"
   # policy
   echo "${bucket_wo_policy_content}" >"/tmp/${bucket_wo_policy}.json"
-  mc admin policy add minio/ "${bucket_wo_policy}" "/tmp/${bucket_wo_policy}.json"
+  mc admin policy create minio/ "${bucket_wo_policy}" "/tmp/${bucket_wo_policy}.json"
   # Set policy to user
-  mc admin policy set minio/ "${bucket_wo_policy}" user="${bucket_wo_user}"
+  mc admin policy attach minio/ "${bucket_wo_policy}" --user "${bucket_wo_user}"
 
 fi
 

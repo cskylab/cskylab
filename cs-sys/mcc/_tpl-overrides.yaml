@@ -1,17 +1,17 @@
-_tpldescription: Ubuntu server 20.04 Mission Control Center
-_tplname: ubt2004srv-mcc
-_tplversion: 22-03-23
-go_version: go1.17.8.linux-amd64.tar.gz
-k8s_version: 1.23.5-00
+_tpldescription: Ubuntu server 22.04 Mission Control Center
+_tplname: ubt2204srv-mcc
+_tplversion: 23-04-27
+go_version: go1.20.3.linux-amd64.tar.gz
+k8s_version: 1.27.1-00
 machine:
   domainname: cskylab.net
-  gateway4: 192.168.80.1
+  gateway4: 192.168.82.1
   hostname: mcc
-  ipaddress: 192.168.80.5
+  ipaddress: 192.168.82.9
   localadminpassword: NoFear21
   localadminusername: kos
   nameservers:
-  - 192.168.80.1
+  - 192.168.82.1
   netmask: 24
   networkinterface: enp1s0
   searchdomainnames:

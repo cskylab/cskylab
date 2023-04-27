@@ -1,6 +1,6 @@
 # OPNsense® Firewall & Routing
 
-## OPNsense version v22.1.2 <!-- omit in toc -->
+## OPNsense version v23.1 <!-- omit in toc -->
 
 
 [OPNsense®](https://opnsense.org/) is an open source HardenedBSD based firewall and routing platform.
@@ -11,7 +11,7 @@ Firewall cluster **opn-cluster** gives routing, firewall, DHCP, DNS and VPN serv
 
 ---
 
-- [OPNsense® Firewall & Routing](#opnsense-firewall--routing)
+- [OPNsense® Firewall \& Routing](#opnsense-firewall--routing)
   - [Prerequisites](#prerequisites)
     - [Interfaces and IP addressing](#interfaces-and-ip-addressing)
     - [System requirements](#system-requirements)
@@ -42,7 +42,7 @@ Firewall cluster **opn-cluster** gives routing, firewall, DHCP, DNS and VPN serv
       - [Backup and restore configuration](#backup-and-restore-configuration)
       - [Update cluster](#update-cluster)
     - [Services configuration procedures](#services-configuration-procedures)
-      - [CA's & Certificate management](#cas--certificate-management)
+      - [CA's \& Certificate management](#cas--certificate-management)
         - [Create or import the Root CA](#create-or-import-the-root-ca)
         - [Create and sign certificates](#create-and-sign-certificates)
         - [Assign GUI certificate](#assign-gui-certificate)

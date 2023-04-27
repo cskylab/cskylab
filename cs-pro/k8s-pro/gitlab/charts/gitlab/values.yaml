@@ -30,6 +30,7 @@ global:
   image: {}
     # pullPolicy: IfNotPresent
     # pullSecrets: []
+    # tagSuffix: ""
 
   ## Supplemental Pod labels. Will not be used for selectors.
   pod:
@@ -39,7 +40,7 @@ global:
   edition: ee
 
   ## https://docs.gitlab.com/charts/charts/globals#gitlab-version
-  # gitlabVersion:
+  gitlabVersion: "15.11.0"
 
   ## https://docs.gitlab.com/charts/charts/globals#application-resource
   application:
@@ -78,6 +79,15 @@ global:
   # Override the API version to use for HorizontalPodAutoscaler
   hpa:
     apiVersion: ""
+
+  # Override the API version to use for PodDisruptionBudget
+  pdb:
+    apiVersion: ""
+
+  # Override the API version to use for CronJob
+  batch:
+    cronJob:
+      apiVersion: ""
 
   gitlab:
     ## Enterprise license for this GitLab installation
@@ -123,6 +133,7 @@ global:
       # key:
     # host: redis.hostedsomewhere.else
     # port: 6379
+    # user: webservice
     # sentinels:
     #   - host:
     #     port:
@@ -151,6 +162,7 @@ global:
 
   praefect:
     enabled: false
+    ntpHost: pool.ntp.org
     replaceInternalGitaly: true
     authToken: {}
     autoMigrate: true
@@ -234,6 +246,12 @@ global:
       ## Prune stale group runners on opted-in namespaces
       # ci_runners_stale_group_runners_prune_worker_cron:
       #   cron: "30 * * * *"
+      ## Periodically update ci_runner_versions table with up-to-date versions and status
+      # ci_runner_versions_reconciliation_worker:
+      #   cron: "@daily"
+      ## Periodically clean up stale ci_runner_machines records
+      # ci_runners_stale_machines_cleanup_worker:
+      #   cron: "36 4 * * *"
       ### GitLab Geo
       # Geo Primary only!
       # geo_prune_event_log_worker:
@@ -345,6 +363,19 @@ global:
       bucket: gitlab-backups
       tmpBucket: tmp
 
+    ## https://docs.gitlab.com/charts/charts/globals#outgoing-email
+    ## Microsoft Graph Mailer settings
+    microsoft_graph_mailer:
+      enabled: false
+      user_id: ""
+      tenant: ""
+      client_id: ""
+      client_secret:
+        secret: ""
+        key: secret
+      azure_ad_endpoint: "https://login.microsoftonline.com"
+      graph_endpoint: "https://graph.microsoft.com"
+
     ## https://docs.gitlab.com/charts/installation/command-line-options.html#incoming-email-configuration
     ## https://docs.gitlab.com/charts/charts/gitlab/mailroom/index.html#incoming-email
     incomingEmail:
@@ -358,6 +389,7 @@ global:
       password:
         secret: ""
         key: password
+      deleteAfterDelivery: true
       expungeDeleted: false
       logger:
         logPath: "/dev/stdout"
@@ -384,6 +416,7 @@ global:
       password:
         secret: ""
         key: password
+      deleteAfterDelivery: true
       expungeDeleted: false
       logger:
         logPath: "/dev/stdout"
@@ -405,6 +438,14 @@ global:
       servers: {}
       ## See documentation for complete example of a configured LDAP server
 
+    duoAuth:
+      enabled: false
+      # hostname:
+      # integrationKey:
+      # secretKey:
+      #   secret:
+      #   key:
+
     ## https://docs.gitlab.com/charts/charts/globals#kas-settings
     gitlab_kas: {}
       # secret:
@@ -412,6 +453,11 @@ global:
       # enabled:
       # externalUrl:
       # internalUrl:
+
+    ## https://docs.gitlab.com/charts/charts/globals#suggested-reviewers-settings
+    suggested_reviewers: {}
+      # secret:
+      # key:
 
     ## https://docs.gitlab.com/charts/charts/globals#omniauth
     omniauth:
@@ -429,6 +475,21 @@ global:
       providers: []
       # - secret: gitlab-google-oauth2
       #   key: provider
+
+    ## https://docs.gitlab.com/charts/charts/globals#kerberos
+    kerberos:
+      enabled: false
+      keytab:
+        # secret:
+        key: keytab
+      servicePrincipalName: ""
+      krb5Config: ""
+      dedicatedPort:
+        enabled: false
+        port: 8443
+        https: true
+      simpleLdapLinkingAllowedRealms: []
+
     ## https://docs.gitlab.com/charts/charts/globals#configure-appconfig-settings
     sentry:
       enabled: false
@@ -496,6 +557,11 @@ global:
     enabled: true
     service:
       apiExternalPort: 8153 # port for connections from the GitLab backend
+    tls:
+      enabled: false
+      verify: true
+      # secretName:
+      # caSecretName:
 
   ## https://docs.gitlab.com/charts/charts/gitlab/spamcheck/
   spamcheck:
@@ -534,6 +600,12 @@ global:
     notificationSecret: {}
       # secret:
       # key:
+    tls:
+      enabled: false
+      # secretName:
+    redis:
+      cache:
+        password: {}
     # https://docs.docker.com/registry/notifications/#configuration
     notifications: {}
       # endpoints:
@@ -585,7 +657,7 @@ global:
     registrationToken: {}
       # secret:
 
-  ## https://docs.gitlab.com/charts/installation/deployment#outgoing-email
+  ## https://docs.gitlab.com/charts/charts/globals#outgoing-email
   ## Outgoing email server settings
   smtp:
     enabled: false
@@ -602,7 +674,7 @@ global:
     openssl_verify_mode: "peer"
     pool: false
 
-  ## https://docs.gitlab.com/charts/installation/deployment#outgoing-email
+  ## https://docs.gitlab.com/charts/charts/globals#outgoing-email
   ## Email persona used in email sent by GitLab
   email:
     from: ""
@@ -632,6 +704,10 @@ global:
     podAntiAffinity:
       topologyKey: "kubernetes.io/hostname"
 
+  # Priority class assigned to pods, may be overridden for individual components
+  # https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+  priorityClassName: ""
+
   ## https://docs.gitlab.com/charts/charts/globals#configure-workhorse-settings
   ## Global settings related to Workhorse
   workhorse:
@@ -642,8 +718,8 @@ global:
     ## https://docs.gitlab.com/charts/installation/secrets#gitlab-workhorse-secret
     # secret:
     # key:
-    tls: {}
-      # enabled: true
+    tls:
+      enabled: false
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-webservice
   webservice:
@@ -653,27 +729,28 @@ global:
   # configuration of certificates container & custom CA injection
   certificates:
     image:
-      repository: registry.gitlab.com/gitlab-org/build/cng/alpine-certificates
-      # The digest below comes from a given tag pipeline because they are mirrored to .com,
-      # ensuring that the image tag is available from both instances. The digest can be
-      # found in the 'sync_images' job.
-      #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
-      tag: 20191127-r2@sha256:367d437d024d7647432d67fb2442e3e5723af5930bad77d3535f4f8f4f8630d9
+      repository: registry.gitlab.com/gitlab-org/build/cng/certificates
+      # Default tag is `master`, overridable by `global.gitlabVersion`.
+      # tag: master
       # pullPolicy: IfNotPresent
       # pullSecrets: []
     customCAs: []
     # - secret: custom-CA
     # - secret: more-custom-CAs
+    #   keys:
+    #     - custom-ca-1.crt
+    # - configMap: custom-CA-cm
+    # - configMap: more-custom-CAs-cm
+    #   keys:
+    #     - custom-ca-2.crt
+    #     - custom-ca-3.crt
 
   ## kubectl image used by hooks to carry out specific jobs
   kubectl:
     image:
       repository: registry.gitlab.com/gitlab-org/build/cng/kubectl
-      # The digest below comes from a given tag pipeline because they are mirrored to .com,
-      # ensuring that the image tag is available from both instances. The digest can be
-      # found in the 'sync_images' job.
-      #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
-      tag: 1.18.20@sha256:8d27c191af306cafddba2f293c5613f8966363f779d79a5599ad0231e60069e4
+      # Default tag is `master`, overridable by `global.gitlabVersion`.
+      # tag: master
       # pullPolicy: IfNotPresent
       # pullSecrets: []
     securityContext:
@@ -683,7 +760,7 @@ global:
   busybox:
     image:
       repository: registry.gitlab.com/gitlab-org/cloud-native/mirror/images/busybox
-      tag: latest
+      # tag: latest
       # pullPolicy: IfNotPresent
       # pullSecrets: []
 
@@ -743,6 +820,7 @@ upgradeCheck:
   resources:
     requests:
       cpu: 50m
+  priorityClassName: ""
 
 ## Settings to for the Let's Encrypt ACME Issuer
 # certmanager-issuer:
@@ -773,6 +851,7 @@ nginx-ingress:
     addHeaders:
       Referrer-Policy: strict-origin-when-cross-origin
     config:
+      annotation-value-word-blocklist: "load_module,lua_package,_by_lua,location,root,proxy_pass,serviceaccount,{,},',\""
       hsts: "true"
       hsts-include-subdomains: "false"
       hsts-max-age: "63072000"
@@ -785,7 +864,7 @@ nginx-ingress:
       externalTrafficPolicy: "Local"
     ingressClassByName: false
     ingressClassResource:
-      name: '{{ include "ingress.class.name" $ }}'
+      name: '{{ include "ingress.class.name" $ | quote }}'
     resources:
       requests:
         cpu: 100m
@@ -807,9 +886,6 @@ nginx-ingress:
     admissionWebhooks:
       enabled: false
   defaultBackend:
-    enabled: true
-    minAvailable: 1
-    replicaCount: 1
     resources:
       requests:
         cpu: 5m
@@ -843,7 +919,8 @@ prometheus:
     retention: 15d
     strategy:
       type: Recreate
-  #
+    image:
+      tag: v2.38.0
   serverFiles:
     prometheus.yml:
       scrape_configs:
@@ -1003,6 +1080,13 @@ postgresql:
       postgresql.gitlab/init-revision: "1"
   metrics:
     enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9187"
+        gitlab.com/prometheus_scrape: "true"
+        gitlab.com/prometheus_port: "9187"
+
     ## Optionally define additional custom metrics
     ## ref: https://github.com/wrouesnel/postgres_exporter#adding-new-metrics-via-a-config-file
 
@@ -1024,11 +1108,8 @@ shared-secrets:
       # pullPolicy: IfNotPresent
       # pullSecrets: []
       repository: registry.gitlab.com/gitlab-org/build/cng/cfssl-self-sign
-      # The digest below comes from a given tag pipeline because they are mirrored to .com,
-      # ensuring that the image tag is available from both instances. The digest can be
-      # found in the 'sync_images' job.
-      #   https://dev.gitlab.org/gitlab/charts/components/images/-/tags
-      tag: 1.6.1@sha256:e89392e13b4ef12cd48ba8c30326aacd89a8d0161cb081ac8dfbb77200d5ebac
+      # Default tag is `master`, overridable by `global.gitlabVersion`.
+      # tag: master
     keyAlgorithm: "rsa"
     keySize: "4096"
     expiry: "3650d"
@@ -1080,6 +1161,9 @@ gitlab-runner:
 ## See requirements.yaml for current version
 ## Controlled by `global.grafana.enabled`
 grafana:
+  # Overrides the Grafana image tag for the 7.5.16 security update
+  image:
+    tag: 7.5.16
   ## Override and provide "bogus" administation secrets
   ## gitlab/gitlab-grafana provides overrides via shared-secrets
   nameOverride: grafana-app
@@ -1155,3 +1239,7 @@ gitlab:
   #   kas:
   ## https://docs.gitlab.com/charts/charts/gitlab/praefect
   #   praefect:
+
+## Installation & configuration of gitlab/gitlab-zoekt
+gitlab-zoekt:
+  install: false

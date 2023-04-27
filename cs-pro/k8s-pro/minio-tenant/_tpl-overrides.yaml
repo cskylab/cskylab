@@ -1,12 +1,12 @@
 _tpldescription: Kubernetes MinIO Tenant
 _tplname: k8s-minio-tenant
-_tplversion: 22-12-19
+_tplversion: 23-04-27
 certificate:
   clusterissuer: ca-test-internal
 credentials:
   minio_accesskey: admin
   minio_secretkey: NoFear21
-kubeconfig: config-k8s-pro
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
 localpvnodes:
   domain: cskylab.net
   localadminusername: kos

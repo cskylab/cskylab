@@ -1,6 +1,7 @@
 {{- if and .Values.global.gitaly.enabled .Values.global.praefect.enabled -}}
+{{- $pdbCfg := (dict "global" $.Values.global.pdb "local" .Values.pdb "context" $) -}}
 {{- range .Values.global.praefect.virtualStorages -}}
-apiVersion: policy/v1beta1
+apiVersion: {{ template "gitlab.pdb.apiVersion" $pdbCfg }}
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "fullname" $ }}-{{ .name }}

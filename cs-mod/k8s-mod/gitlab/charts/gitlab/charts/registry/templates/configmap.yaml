@@ -22,17 +22,29 @@ data:
       tls:
         certificate: /etc/docker/registry/tls/tls.crt
         key: /etc/docker/registry/tls/tls.key
-        {{- if kindIs "slice" .Values.tls.clientCAs }}
-        clientCAs: {{ toYaml .Values.tls.clientCAs | nindent 10 }}
+        {{- if and .Values.tls.clientCAs (kindIs "slice" .Values.tls.clientCAs) }}
+        clientCAs: {{- toYaml .Values.tls.clientCAs | nindent 10 }}
         {{- end }}
         minimumTLS: {{ default "tls1.2" .Values.tls.minimumTLS | quote }}
       {{- end }}
       {{- if .Values.debug }}
       debug:
-        addr: ':{{ .Values.debug.addr.port | int }}'
+        addr: :{{ .Values.debug.addr.port | int }}
         prometheus:
           enabled: {{ (or .Values.metrics.enabled .Values.debug.prometheus.enabled) }}
           path: {{ default .Values.metrics.path .Values.debug.prometheus.path }}
+        {{- if .Values.debug.tls.enabled }}
+        tls:
+          enabled: true
+          {{- if .Values.debug.tls.secretName }}
+          certificate: /etc/docker/registry/tls/tls-debug.crt
+          key: /etc/docker/registry/tls/tls-debug.key
+          {{-   if and .Values.debug.tls.clientCAs (kindIs "slice" .Values.debug.tls.clientCAs) }}
+          clientCAs: {{- toYaml .Values.debug.tls.clientCAs | nindent 12 }}
+          {{-   end }}
+          minimumTLS: {{ .Values.debug.tls.minimumTLS | quote }}
+          {{- end }}
+        {{- end }}
       {{- end }}
       draintimeout: {{ .Values.draintimeout }}
       headers:
@@ -148,6 +160,7 @@ data:
     {{- include "registry.database.config" $ | nindent 4 }}
     {{- include "registry.gc.config" $ | nindent 4 }}
     {{- include "registry.migration.config" $ | nindent 4 }}
+    {{- include "registry.redis.config" $ | nindent 4}}
 
   # minimal configuration, in order to do database migrations
   migrations-config.yml: |

@@ -1,13 +1,13 @@
-_tpldescription: Kubernetes hellow world app
+_tpldescription: Kubernetes hello world app
 _tplname: k8s-hello
-_tplversion: 22-03-23
+_tplversion: 23-04-27
 certificate:
   clusterissuer: ca-test-internal
-kubeconfig: config-k8s-pro
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
 namespace:
   domain: cskylab.net
   name: hello-pro
 publishing:
-  url: hello-pro.cskylab.net
+  url: hello.pro.cskylab.net
 registry:
   proxy: harbor.cskylab.net/dockerhub

@@ -31,6 +31,10 @@ spec:
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
       {{- if and (or .Values.metrics.enabled .Values.debug.prometheus.enabled) (not .Values.metrics.serviceMonitor.enabled) }}
+        {{- if .Values.debug.tls.enabled }}
+        gitlab.com/prometheus_scheme: "https"
+        prometheus.io/scheme: "https"
+        {{- end }}
         gitlab.com/prometheus_scrape: "true"
         gitlab.com/prometheus_port: {{ .Values.debug.addr.port | quote }}
         gitlab.com/prometheus_path: {{ default .Values.metrics.path .Values.debug.prometheus.path | quote }}
@@ -47,9 +51,7 @@ spec:
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
-      securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+      {{- include "gitlab.podSecurityContext" .Values.securityContext | nindent 6 }}
       {{- if eq (default .Values.global.antiAffinity .Values.antiAffinity) "hard" }}
       affinity:
         podAntiAffinity:
@@ -75,10 +77,11 @@ spec:
       serviceAccountName: {{ include "registry.serviceAccount.name" $ }}
       {{- end }}
       automountServiceAccountToken: false
+      {{- include "gitlab.priorityClassName" . | nindent 6 }}
       initContainers:
         {{- include "gitlab.certificates.initContainer" . | nindent 8 }}
         - name: configure
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global.busybox) | quote }}
+          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           command: ["sh", "/config/configure"]
           volumeMounts:
@@ -93,7 +96,7 @@ spec:
           {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
         {{- if .Values.database.enabled }}
         - name: dependencies
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}{{ include "gitlab.image.tagSuffix" . }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           command: ["/scripts/wait-for-deps"]
           volumeMounts:
@@ -109,7 +112,7 @@ spec:
       {{- include "gitlab.image.pullSecrets" $imageCfg | indent 6 }}
       containers:
         - name: registry
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}{{ include "gitlab.image.tagSuffix" . }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
@@ -131,7 +134,7 @@ spec:
             httpGet:
               path: {{ .Values.deployment.livenessProbe.path }}
               port: {{ if .Values.deployment.livenessProbe.port }}{{ .Values.deployment.livenessProbe.port }}{{ else }}debug{{ end }}
-              scheme: HTTP
+              scheme: {{ .Values.debug.tls.enabled | ternary "HTTPS" "HTTP" }}
             initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds }}
@@ -143,7 +146,7 @@ spec:
             httpGet:
               path: {{ .Values.deployment.readinessProbe.path }}
               port: {{ if .Values.deployment.readinessProbe.port }}{{ .Values.deployment.readinessProbe.port }}{{ else }}debug{{ end }}
-              scheme: HTTP
+              scheme: {{ .Values.debug.tls.enabled | ternary "HTTPS" "HTTP" }}
             initialDelaySeconds: {{ .Values.deployment.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.readinessProbe.timeoutSeconds }}
@@ -218,12 +221,23 @@ spec:
           {{- if .Values.tls.enabled -}}
           # TLS secret for HTTPS service
           - secret:
-              name: {{ .Values.tls.secretName }}
+              name: {{ include "gitlab.registry.tls.secret" $ }}
               items:
                 - key: tls.crt
                   path: tls/tls.crt
                 - key: tls.key
                   path: tls/tls.key
           {{- end -}}
+          {{- if and .Values.debug.tls.enabled .Values.debug.tls.secretName }}
+          # TLS secret for metrics/debug HTTPS service
+          - secret:
+              name: {{ .Values.debug.tls.secretName }}
+              items:
+                - key: tls.crt
+                  path: tls/tls-debug.crt
+                - key: tls.key
+                  path: tls/tls-debug.key
+          {{- end -}}
+          {{- include "gitlab.registry.redisCacheSecret.mount" $ | nindent 10 -}}
       {{- include "gitlab.certificates.volumes" . | nindent 6 }}
 {{- end -}}

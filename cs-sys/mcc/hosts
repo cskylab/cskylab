@@ -6,7 +6,7 @@
 
 127.0.0.1	    localhost
 127.0.1.1	    mcc.cskylab.net	 mcc
-192.168.80.5	mcc.cskylab.net	 mcc
+192.168.82.9	mcc.cskylab.net	 mcc
 
 # The following lines are desirable for IPv6 capable hosts
 ::1     ip6-localhost ip6-loopback

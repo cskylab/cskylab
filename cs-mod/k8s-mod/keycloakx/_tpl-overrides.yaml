@@ -1,9 +1,9 @@
 _tpldescription: Kubernetes Keycloak namespace
 _tplname: k8s-keycloakx
-_tplversion: 22-12-19
+_tplversion: 23-04-27
 certificate:
   clusterissuer: ca-test-internal
-kubeconfig: config-k8s-mod
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
 localpvnodes:
   all_pv: k8s-mod-n1
   domain: cskylab.net

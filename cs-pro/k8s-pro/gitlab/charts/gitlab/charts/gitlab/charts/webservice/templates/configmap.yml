@@ -22,6 +22,8 @@ data:
     gitlab-helm-chart
   database.yml.erb: |
     {{- include "gitlab.database.yml" . | nindent 4 }}
+  krb5.conf: |
+    {{- .Values.global.appConfig.kerberos.krb5Config | nindent 4 }}
   smtp_settings.rb: |
     {{- include "gitlab.smtp_settings" . | nindent 4 }}
   {{- include "gitlab.rails.redis.all" . | nindent 2 }}
@@ -62,6 +64,9 @@ data:
       {{- if eq .contentSecurityPolicy.enabled true }}
       {{-   include "gitlab.appConfig.content_security_policy" . | nindent 8 }}
       {{- end }}
+      {{-   if .microsoft_graph_mailer.enabled }}
+      {{-     include "gitlab.appConfig.microsoft_graph_mailer" . | nindent 6 }}
+      {{-   end }}
       {{-   if .incomingEmail.enabled }}
       {{-     include "gitlab.appConfig.incoming_email" . | nindent 6 }}
       {{-   end }}
@@ -108,14 +113,15 @@ data:
       gitlab_ci:
       {{- include "gitlab.appConfig.ldap.configuration" $ | nindent 6 }}
       {{- include "gitlab.appConfig.omniauth.configuration" $ | nindent 6 }}
-      kerberos:
-        enabled: false
+      {{- include "gitlab.appConfig.kerberos.configuration" $ | nindent 6 }}
+      {{- include "gitlab.appConfig.duo.configuration" $ | nindent 6 }}
       shared:
       {{- include "gitlab.appConfig.gitaly" . | nindent 6 }}
       {{- include "gitlab.appConfig.repositories" . | nindent 6 }}
       backup:
         path: "tmp/backups"   # Relative paths are relative to Rails.root (default: tmp/backups/)
       {{- include "gitlab.appConfig.kas" . | nindent 6 }}
+      {{- include "gitlab.appConfig.suggested_reviewers" . | nindent 6 }}
       {{- include "gitlab.appConfig.shell" . | nindent 6 }}
         {{- include "gitlab.appConfig.shell.ssh_port" . | nindent 8 }}
         {{- include "gitlab.appConfig.shell.secret_file" . | nindent 8 }}
@@ -146,7 +152,7 @@ data:
       {{- include "gitlab.appConfig.registry.configuration" $ | nindent 6 }}
       {{- include "gitlab.appConfig.smartcard.configuration" $ | nindent 6 }}
   configure: |
-    {{- include "gitlab.scripts.configure.secrets" (dict) | nindent 4 -}}
+    {{- include "gitlab.scripts.configure.secrets" (dict) | nindent 4 }}
     {{- include "gitlab.psql.ssl.initScript" . | nindent 4 }}
     {{- include "gitlab.geo.psql.ssl.initScript" . | nindent 4 }}
     {{- if $.Values.tls.enabled }}

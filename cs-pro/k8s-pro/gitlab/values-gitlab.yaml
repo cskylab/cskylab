@@ -341,7 +341,7 @@ gitlab:
         app: 'gitaly'
     backups:
       cron:
-        enabled: true
+        enabled: false
         concurrencyPolicy: Replace
         failedJobsHistoryLimit: 1
         # Backup every day at 23:55

@@ -1,17 +1,17 @@
 # k8s-mod-master <!-- omit in toc -->
 
-This machine runs a Kubernetes node on Ubuntu Server 20.04 LTS.
+This machine runs a Kubernetes node on Ubuntu Server 22.04 LTS.
 
 Persistent Volumes on local storage are supported by LVM services.
 
 [comment]: <> (**Machine functional description goes here**)
 
-Machine `k8s-mod-master` is deployed from template Ubuntu server 20.04 kubernetes node version 22-03-23.
+Machine `k8s-mod-master` is deployed from template Ubuntu server 22.04 kubernetes node version 23-04-27.
 
 - [Prerequisites](#prerequisites)
   - [Check kubernetes version](#check-kubernetes-version)
 - [How-to guides](#how-to-guides)
-  - [Inject & Deploy configuration](#inject--deploy-configuration)
+  - [Inject \& Deploy configuration](#inject--deploy-configuration)
     - [1. SSH Authentication and sudoers file](#1-ssh-authentication-and-sudoers-file)
     - [2. Network configuration](#2-network-configuration)
     - [3. Install packages, updates and configuration tasks](#3-install-packages-updates-and-configuration-tasks)
@@ -20,6 +20,7 @@ Machine `k8s-mod-master` is deployed from template Ubuntu server 20.04 kubernete
   - [Storage services](#storage-services)
     - [Manage disk volume groups](#manage-disk-volume-groups)
     - [Manage Thin Provisioning LVM data services](#manage-thin-provisioning-lvm-data-services)
+    - [Repair LVM thin-pool](#repair-lvm-thin-pool)
     - [Rsync data replication](#rsync-data-replication)
     - [Restic data backup and restore](#restic-data-backup-and-restore)
   - [Initialize a new kubernetes cluster](#initialize-a-new-kubernetes-cluster)
@@ -30,6 +31,7 @@ Machine `k8s-mod-master` is deployed from template Ubuntu server 20.04 kubernete
   - [Add node to k8s cluster](#add-node-to-k8s-cluster)
     - [Create a new token](#create-a-new-token)
     - [Join the new node to the cluster](#join-the-new-node-to-the-cluster)
+    - [Inject ssh keys between k8s nodes](#inject-ssh-keys-between-k8s-nodes)
   - [Remove node from k8s cluster](#remove-node-from-k8s-cluster)
     - [Drain the node](#drain-the-node)
     - [Delete the node](#delete-the-node)
@@ -53,7 +55,6 @@ Machine `k8s-mod-master` is deployed from template Ubuntu server 20.04 kubernete
     - [cs-inject](#cs-inject)
     - [cs-connect](#cs-connect)
     - [cs-helloworld](#cs-helloworld)
-- [Template values](#template-values)
 - [License](#license)
 
 ---
@@ -61,7 +62,7 @@ Machine `k8s-mod-master` is deployed from template Ubuntu server 20.04 kubernete
 ## Prerequisites
 
 - Physical or virtual machine with two or more disks:
-  - Disk 1: Ubuntu server 20.04 installed up and running.
+  - Disk 1: Ubuntu server 22.04 installed up and running.
   - Additional disks: Free and ready to be managed by LVM.
 - Package `openssh-server` must be installed to allow remote ssh connections.
 
@@ -265,6 +266,38 @@ Free space of unused blocks inside thin-pools:
 
 ```
 
+#### Repair LVM thin-pool
+
+1. Unmount all LVM in the volume group
+
+2. List LVM to see vg and lv names
+
+```bash
+sudo lvscan
+```
+
+3. Deactivate volume group
+
+```bash
+sudo lvchange -an vg
+```
+
+4. Repair thin-pool
+
+```bash
+sudo lvconvert --repair  vg/tpool
+```
+
+5. Activate volume group
+
+```bash
+sudo lvchange -ay vg
+```
+
+6. Mount LVM and check data
+
+To learn more see the following procedure: https://smileusd.github.io/2018/10/12/repair-thinpool/
+
 #### Rsync data replication
 
 > **Note:** Prior to operate rsync with a remote host, you must insert the root public key for ssh authentication and passwordless login as sudoer user in the remote host. From a console inside the machine you must run `sudo ssh-copy-id kos@hostname.domain.com`
@@ -307,9 +340,9 @@ Credentials for default Restic environment and S3 bucket if used, are stored in 
 
 ```bash
 # restic-environment
-export RESTIC_REPOSITORY="s3:https://backup.cskylab.net/bucketname/restic"
+export RESTIC_REPOSITORY="sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 export RESTIC_PASSWORD="NoFear21"
-export AWS_ACCESS_KEY_ID="bucketname_rw"
+export AWS_ACCESS_KEY_ID="restic_rw"
 export AWS_SECRET_ACCESS_KEY="iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr"
 ```
 
@@ -321,7 +354,7 @@ To create Restic repository (Directory must exist):
 
 ```bash
   # Create repository
-    sudo cs-restic.sh -m repo-init -r "s3:https://backup.cskylab.net/bucketname/restic"
+    sudo cs-restic.sh -m repo-init -r "sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 ```
 
 **Backup LVM data service**:
@@ -333,7 +366,7 @@ To backup a data service directory:
 ```bash
   # Backup data service /srv/mydir
     sudo cs-restic.sh -m restic-bck -d /srv/mydir \
-      -r "s3:https://backup.cskylab.net/bucketname/restic"
+      -r "sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 ```
 
 **List snapshots in repository**:
@@ -342,7 +375,7 @@ To list snapshots in a repository:
 
 ```bash
   # List snapshots in repository
-    sudo cs-restic.sh -m restic-list -r "s3:https://backup.cskylab.net/bucketname/restic"
+    sudo cs-restic.sh -m restic-list -r "sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 ```
 
 **Restore snapshot**:
@@ -356,7 +389,7 @@ To restore from specific snapshot E.G.:(2a3dff53):
 ```bash
   # Restore from specific snapshot
     sudo cs-restic.sh -m restic-res 2a3dff53 -d /srv/mydir \
-      -r "s3:https://backup.cskylab.net/bucketname/restic"
+      -r "sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 ```
 
 **Mount restic repository snapshot**:
@@ -367,7 +400,7 @@ To mount restic repository:
 
 ```bash
   # Mount repository in local directory /tmp/restic
-    sudo cs-restic.sh -m restic-mount -r "s3:https://backup.cskylab.net/bucketname/restic"
+    sudo cs-restic.sh -m restic-mount -r "sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 ```
 
 After a restic-mount operation, console will be freezed while repository is mounted. To access the contents of the repository, open another terminal and refer to the locally mounted directory `/tmp/restic`
@@ -397,7 +430,7 @@ It's not recommended to run restic prune with regular backups, since it can be a
 
 ```bash
   # Forget snapshots in repository with default forget option and tag mydir
-    sudo cs-restic.sh -m restic-forget -t "mydir" -r "s3:https://backup.cskylab.net/bucketname/restic"
+    sudo cs-restic.sh -m restic-forget -t "mydir" -r "sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 ```
 
 ### Initialize a new kubernetes cluster
@@ -456,7 +489,7 @@ sudo cs-k8init.sh -l
 
 ```bash
   # Create kubernetes credential directory for kubeconfig files
-  mkdir /${HOME}/.kube
+  mkdir ${HOME}/.kube
 ```
 
   This directory will contain kubeconfig credential files for each k8s cluster you need to operate with.
@@ -464,13 +497,13 @@ sudo cs-k8init.sh -l
 - **Copy kubeconfig file**: You must copy from every k8s master node its credentials file `.kube/config` to your computer. Use an SCP command and name the config file according to the k8s cluster name, in the following form:
 
 ```bash
-  # Example: Download from host kube-mod-master.cskylab.com, the kubeconfig file for cluster k8s-mod
-  scp kos@kube-mod-master.cskylab.net:~/.kube/config /${HOME}/.kube/config-k8s-mod
+  # Example: Download from host k8s-mod-master.cskylab.com, the kubeconfig file for cluster k8s-mod
+  scp kos@k8s-mod-master.cskylab.net:~/.kube/config ${HOME}/.kube/config-k8s-mod
 ```
 
 - **Edit kubeconfig file and customize names**: 
   
-  Edit the kubeconfig file `/${HOME}/.kube/config-<your_k8s_cluster_name>` and change all the entries named `kubernetes` to `your_k8s_cluster_name` in the following way:
+  Edit the kubeconfig file `${HOME}/.kube/config-<your_k8s_cluster_name>` and change all the entries named `kubernetes` to `your_k8s_cluster_name` in the following way:
   
   | Entry:       | Change to:                | Example                            |
   | ------------ | ------------------------- | ---------------------------------- |
@@ -485,7 +518,7 @@ sudo cs-k8init.sh -l
 
 - **Merging kubeconfig files**:
   
-  In addition to these single cluster kubeconfig files, you need to merge them into a global default kubeconfig file `/${HOME}/.kube/config`.
+  In addition to these single cluster kubeconfig files, you need to merge them into a global default kubeconfig file `${HOME}/.kube/config`.
   
   Since kubeconfig files are structured YAML files, you can’t just append them to get one file. You must use `kubectl` to merge these files.
 
@@ -493,13 +526,13 @@ sudo cs-k8init.sh -l
 
 ```bash
   # Backup your current default kubeconfig file
-  cp -av /${HOME}/.kube/config /${HOME}/.kube/config.bak
+  cp -av ${HOME}/.kube/config ${HOME}/.kube/config.bak
 
   # Merge kubeconfig files format
-  KUBECONFIG=file1:file2:file3 kubectl config view --merge --flatten > /${HOME}/.kube/config
+  KUBECONFIG=file1:file2:file3 kubectl config view --merge --flatten > ${HOME}/.kube/config
   
   # Merging example for files config-k8s-mod and config-k8s-pro
-  KUBECONFIG=/${HOME}/.kube/config-k8s-mod:/${HOME}/.kube/config-k8s-pro kubectl config view --merge --flatten > /${HOME}/.kube/config
+  KUBECONFIG=${HOME}/.kube/config-k8s-mod:${HOME}/.kube/config-k8s-pro kubectl config view --merge --flatten > ${HOME}/.kube/config
 ```  
 
 ### Add node to k8s cluster
@@ -545,6 +578,42 @@ From the k8s master node or any other kubectl console, list your cluster’s nod
 ```bash
 # List existing nodes
 kubectl get nodes
+```
+
+#### Inject ssh keys between k8s nodes
+
+In order to schedule cron-tab copies of local data services to other nodes, you must inject ssh keys from each node, to the other nodes in the cluster.
+
+>**Note:** You will be asked for the password of local admin user (See file `secrets/admin-password`).
+
+**Example: k8s-mod nodes**
+
+- Open terminals at each k8s node and connect inside the machine with `./csconnect.sh`:
+  - k8s-mod-n1
+  - k8s-mod-n2
+  - k8s-mod-n3
+  - k8s-mod-n4
+
+```bash
+# Inject ssh keys from k8s-mod-n1
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n2
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n3
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n4.cskylab.net
+
+# Inject ssh keys from k8s-mod-n4
+sudo ssh-copy-id kos@k8s-mod-n1.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n2.cskylab.net
+sudo ssh-copy-id kos@k8s-mod-n3.cskylab.net
 ```
 
 ### Remove node from k8s cluster
@@ -1462,36 +1531,6 @@ Examples:
 | [list-status] [install] [update] [remove] |                                | **Display status information**                           |
 |                                           | Display hostname and variables | Show hostame and content of variables used in the script |
 |                                           | Display report message         | Display report message with "some surprise"              |
-
-## Template values
-
-The following table lists template configuration parameters and their specified values, when machine configuration files were created from the template:
-
-| Parameter                    | Description                                      | Values                                                     |
-| ---------------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
-| `_tplname`                   | template name                                    | `ubt2004srv-k8s`                                          |
-| `_tpldescription`            | template description                             | `Ubuntu server 20.04 kubernetes node`                                   |
-| `_tplversion`                | template version                                 | `22-03-23`                                       |
-| `k8s_version`                | Kubernetes version to install                    | `1.23.5-00`                                       |
-| `machine.hostname`           | hostname                                         | `k8s-mod-master`                                  |
-| `machine.domainname`         | domain name                                      | `cskylab.net`                                |
-| `machine.localadminusername` | local admin username                             | `kos`                        |
-| `machine.localadminpassword` | local admin password                             | `NoFear21`                        |
-| `machine.timezone`           | timezone                                         | `UTC`                                  |
-| `machine.networkinterface`   | main network interface name                      | `enp1s0`                          |
-| `machine.ipaddress`          | main IP address                                  | `192.168.82.10`                                 |
-| `machine.netmask`            | netmask                                          | `24`                                   |
-| `machine.gateway4`           | default gateway                                  | `192.168.82.1`                                  |
-| `machine.searchdomainnames`  | search domain names                              | `cskylab.net, ` |
-| `machine.nameservers`        | name servers IP addresses                        | `192.168.82.1, `       |
-| `machine.setupdir`           | inject directory for setup and config files      | `/etc/csky-setup`                                  |
-| `machine.systemlocale`       | language configuration                           | `C.UTF-8`                              |
-| `machine.systemkeyboard`     | keyboard layout configuration                    | `us`                            |
-| `restic.password`            | password to access restic repository (mandatory) | `NoFear21`                                   |
-| `restic.repo`                | restic repository (mandatory)                    | `s3:https://backup.cskylab.net/bucketname/restic`                                       |
-| `restic.aws_access`          | S3 bucket access key (if used)                   | `bucketname_rw`                                 |
-| `restic.aws_secret`          | S3 bucket secret key (if used)                   | `iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr`                                 |
-
 
 ## License
 

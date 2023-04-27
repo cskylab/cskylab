@@ -26,6 +26,9 @@ ingress:
 ## Support for tolerations for pod scheduling
 tolerations: []
 
+# Priority class assigned to pods
+priorityClassName: ""
+
 global:
   ingress:
     enabled:
@@ -252,6 +255,7 @@ maxUnavailable: 1
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
 
 deployment:
   strategy:

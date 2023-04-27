@@ -1,4 +1,4 @@
-{{- if and .Values.global.pages.enabled .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled -}}
+{{- if .Values.metrics.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -17,7 +17,7 @@ spec:
     - port: {{ .Values.metrics.port | int }}
       targetPort: http-metrics
       protocol: TCP
-      name: http-metrics
+      name: {{ .Values.metrics.tls.enabled | ternary "https" "http" }}-metrics
   selector:
     app: {{ template "name" . }}
     release: {{ .Release.Name }}

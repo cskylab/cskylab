@@ -1,9 +1,9 @@
 _tpldescription: Kubernetes MinIO Operator
 _tplname: k8s-minio-operator
-_tplversion: 22-12-19
+_tplversion: 23-04-27
 certificate:
   clusterissuer: ca-test-internal
-kubeconfig: config-k8s-mod
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
 namespace:
   name: minio-operator
 publishing:

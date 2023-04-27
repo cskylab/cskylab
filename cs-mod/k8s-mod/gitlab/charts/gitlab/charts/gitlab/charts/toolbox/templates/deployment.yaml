@@ -37,20 +37,20 @@ spec:
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
-      securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+      {{- include "gitlab.podSecurityContext" .Values.securityContext | nindent 6 }}
       {{- if or .Values.serviceAccount.enabled .Values.global.serviceAccount.enabled }}
       serviceAccountName: {{ include "gitlab.serviceAccount.name" . }}
       {{- end }}
       automountServiceAccountToken: false
+      {{- include "gitlab.priorityClassName" . | nindent 6 }}
       initContainers:
         {{- include "gitlab.extraInitContainers" . | nindent 8 }}
         {{- include "gitlab.certificates.initContainer" . | nindent 8 }}
         - name: configure
           command: ['sh', '/config/configure']
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global.busybox) | quote }}
+          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
+          {{- include "gitlab.init.containerSecurityContext" . | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
           {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
@@ -103,9 +103,12 @@ spec:
             - cp -v -r -L /etc/gitlab/.s3cfg $HOME/.s3cfg && while sleep 3600; do :; done # alpine sleep has no infinity
             {{- else if eq .Values.backups.objectStorage.backend "gcs" }}
             - sh /var/opt/gitlab/templates/configure-gsutil && while sleep 3600; do :; done
+            {{- else if eq .Values.backups.objectStorage.backend "azure" }}
+            - while sleep 3600; do :; done
             {{- end }}
-          image: "{{ coalesce .Values.image.repository (include "image.repository" .) }}:{{ coalesce .Values.image.tag (include "gitlab.versionTag" . ) }}"
+          image: "{{ coalesce .Values.image.repository (include "image.repository" .) }}:{{ coalesce .Values.image.tag (include "gitlab.versionTag" . ) }}{{ include "gitlab.image.tagSuffix" . }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
+          {{- include "gitlab.containerSecurityContext" . | indent 10 }}
           env:
             - name: ARTIFACTS_BUCKET_NAME
               value: {{ .Values.global.appConfig.artifacts.bucket }}
@@ -145,12 +148,20 @@ spec:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: '/etc/gitlab/objectstorage/{{ default "config" .Values.backups.objectStorage.config.key }}'
             {{- end }}
+            {{- if eq .Values.backups.objectStorage.backend "azure" }}
+            - name: AZURE_CONFIG_FILE
+              value: '/etc/gitlab/objectstorage/azure_config'
+            {{- end }}
             {{- include "gitlab.extraEnv" . | nindent 12 }}
             {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
           volumeMounts:
             {{- include "gitlab.extraVolumeMounts" . | nindent 12 }}
             - name: toolbox-config
               mountPath: '/var/opt/gitlab/templates'
+            - name: toolbox-config
+              mountPath: '/etc/krb5.conf'
+              subPath: krb5.conf
+            {{- include "gitlab.appConfig.kerberos.volumeMount" $ | nindent 12 }}
             - name: toolbox-config
               mountPath: '/srv/gitlab/config/initializers/smtp_settings.rb'
               subPath: smtp_settings.rb
@@ -178,6 +189,7 @@ spec:
       {{- include "gitlab.extraVolumes" . | nindent 6 }}
       {{- include "gitlab.psql.ssl.volume" . | nindent 6 }}
       {{- include "gitlab.geo.psql.ssl.volume" . | nindent 6 }}
+      {{- include "gitlab.appConfig.kerberos.volume" $ | nindent 6 }}
       - name: toolbox-config
         projected:
           sources:
@@ -223,21 +235,11 @@ spec:
                   path: registry/gitlab-registry.key
           {{- include "gitlab.registry.notificationSecret.mount" $ | nindent 10 -}}
           {{- if or .Values.backups.objectStorage.config (not (or .Values.global.minio.enabled .Values.global.appConfig.object_store.enabled)) }}
-          - secret:
-              name: {{ .Values.backups.objectStorage.config.secret }}
-              items:
-                - key: {{ default "config" .Values.backups.objectStorage.config.key }}
-                  path: objectstorage/.s3cfg
-          {{- end }}
-          {{- if eq .Values.backups.objectStorage.backend "gcs" }}
-          - secret:
-              name: {{ .Values.backups.objectStorage.config.secret }}
-              items:
-                - key: {{ default "config" .Values.backups.objectStorage.config.key }}
-                  path: objectstorage/{{ default "config" .Values.backups.objectStorage.config.key }}
+          {{-   include "toolbox.backups.objectStorage.config.secret" .Values.backups.objectStorage | nindent 10 }}
           {{- end }}
           {{- include "gitlab.pages.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.kas.mountSecrets" $ | nindent 10 }}
+          {{- include "gitlab.suggestedReviewers.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.minio.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "object_store" "config" $.Values.global.appConfig.object_store) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "artifacts" "config" $.Values.global.appConfig.artifacts) | nindent 10 }}
@@ -250,7 +252,15 @@ spec:
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "dependency_proxy" "config" $.Values.global.appConfig.dependencyProxy) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "pages" "config" $.Values.global.pages.objectStore) | nindent 10 }}
           {{- include "gitlab.appConfig.ldap.servers.mountSecrets" $ | nindent 10 }}
+          {{- include "gitlab.appConfig.duo.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.omniauth.mountSecrets" $ | nindent 10 }}
+          {{- if $.Values.global.appConfig.microsoft_graph_mailer.enabled }}
+          - secret:
+              name: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.secret | required "Missing required secret containing the OAuth2 Client ID for outgoing email. Make sure to set `global.appConfig.microsoft_graph_mailer.client_secret.secret`" }}
+              items:
+                - key: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.key }}
+                  path: microsoft_graph_mailer/client_secret
+          {{- end }}
           {{- if and $.Values.global.smtp.enabled $.Values.global.smtp.authentication }}
           - secret:
               name: {{ $.Values.global.smtp.password.secret | required "Missing required secret containing the SMTP password. Make sure to set `global.smtp.password.secret`" }}

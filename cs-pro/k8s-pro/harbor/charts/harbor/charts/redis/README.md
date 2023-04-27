@@ -7,12 +7,12 @@ Redis(R) is an open source, advanced key-value store. It is often referred to as
 [Overview of Redis&reg;](http://redis.io)
 
 Disclaimer: Redis is a registered trademark of Redis Ltd. Any rights therein are reserved to Redis Ltd. Any use by Bitnami is for referential purposes only and does not indicate any sponsorship, endorsement, or affiliation between Redis Ltd.
-                           
+
 ## TL;DR
 
-```bash
-$ helm repo add my-repo https://charts.bitnami.com/bitnami
-$ helm install my-release my-repo/redis
+```console
+helm repo add my-repo https://charts.bitnami.com/bitnami
+helm install my-release my-repo/redis
 ```
 
 ## Introduction
@@ -46,8 +46,9 @@ The main features of each chart are the following:
 
 To install the chart with the release name `my-release`:
 
-```bash
-$ helm install my-release my-repo/redis
+```console
+helm repo add my-repo https://charts.bitnami.com/bitnami
+helm install my-release my-repo/redis
 ```
 
 The command deploys Redis&reg; on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -58,8 +59,8 @@ The command deploys Redis&reg; on the Kubernetes cluster in the default configur
 
 To uninstall/delete the `my-release` deployment:
 
-```bash
-$ helm delete my-release
+```console
+helm delete my-release
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -75,7 +76,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `global.storageClass`     | Global StorageClass for Persistent Volume(s)           | `""`  |
 | `global.redis.password`   | Global Redis&reg; password (overrides `auth.password`) | `""`  |
 
-
 ### Common parameters
 
 | Name                     | Description                                                                             | Value           |
@@ -88,23 +88,22 @@ The command removes all the Kubernetes components associated with the chart and 
 | `secretAnnotations`      | Annotations to add to secret                                                            | `{}`            |
 | `clusterDomain`          | Kubernetes cluster domain name                                                          | `cluster.local` |
 | `extraDeploy`            | Array of extra objects to deploy with the release                                       | `[]`            |
+| `useHostnames`           | Use hostnames internally when announcing replication                                    | `true`          |
 | `diagnosticMode.enabled` | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
 | `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
 | `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["infinity"]`  |
 
-
 ### Redis&reg; Image parameters
 
-| Name                | Description                                                                                                | Value                |
-| ------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------- |
-| `image.registry`    | Redis&reg; image registry                                                                                  | `docker.io`          |
-| `image.repository`  | Redis&reg; image repository                                                                                | `bitnami/redis`      |
-| `image.tag`         | Redis&reg; image tag (immutable tags are recommended)                                                      | `7.0.7-debian-11-r0` |
-| `image.digest`      | Redis&reg; image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                 |
-| `image.pullPolicy`  | Redis&reg; image pull policy                                                                               | `IfNotPresent`       |
-| `image.pullSecrets` | Redis&reg; image pull secrets                                                                              | `[]`                 |
-| `image.debug`       | Enable image debug mode                                                                                    | `false`              |
-
+| Name                | Description                                                                                                | Value                 |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------- |
+| `image.registry`    | Redis&reg; image registry                                                                                  | `docker.io`           |
+| `image.repository`  | Redis&reg; image repository                                                                                | `bitnami/redis`       |
+| `image.tag`         | Redis&reg; image tag (immutable tags are recommended)                                                      | `7.0.10-debian-11-r2` |
+| `image.digest`      | Redis&reg; image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                  |
+| `image.pullPolicy`  | Redis&reg; image pull policy                                                                               | `IfNotPresent`        |
+| `image.pullSecrets` | Redis&reg; image pull secrets                                                                              | `[]`                  |
+| `image.debug`       | Enable image debug mode                                                                                    | `false`               |
 
 ### Redis&reg; common configuration parameters
 
@@ -119,7 +118,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `auth.usePasswordFiles`          | Mount credentials as files instead of using an environment variable                   | `false`       |
 | `commonConfiguration`            | Common configuration to be added into the ConfigMap                                   | `""`          |
 | `existingConfigmap`              | The name of an existing ConfigMap with your custom configuration for Redis&reg; nodes | `""`          |
-
 
 ### Redis&reg; master configuration parameters
 
@@ -198,6 +196,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `master.persistence.accessModes`                     | Persistent Volume access modes                                                                        | `["ReadWriteOnce"]`      |
 | `master.persistence.size`                            | Persistent Volume size                                                                                | `8Gi`                    |
 | `master.persistence.annotations`                     | Additional custom annotations for the PVC                                                             | `{}`                     |
+| `master.persistence.labels`                          | Additional custom labels for the PVC                                                                  | `{}`                     |
 | `master.persistence.selector`                        | Additional labels to match for the PVC                                                                | `{}`                     |
 | `master.persistence.dataSource`                      | Custom PVC data source                                                                                | `{}`                     |
 | `master.persistence.existingClaim`                   | Use a existing PVC which must be created manually before bound                                        | `""`                     |
@@ -210,6 +209,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `master.service.clusterIP`                           | Redis&reg; master service Cluster IP                                                                  | `""`                     |
 | `master.service.loadBalancerIP`                      | Redis&reg; master service Load Balancer IP                                                            | `""`                     |
 | `master.service.loadBalancerSourceRanges`            | Redis&reg; master service Load Balancer sources                                                       | `[]`                     |
+| `master.service.externalIPs`                         | Redis&reg; master service External IPs                                                                | `[]`                     |
 | `master.service.annotations`                         | Additional custom annotations for Redis&reg; master service                                           | `{}`                     |
 | `master.service.sessionAffinity`                     | Session Affinity for Kubernetes service, can be "None" or "ClientIP"                                  | `None`                   |
 | `master.service.sessionAffinityConfig`               | Additional settings for the sessionAffinity                                                           | `{}`                     |
@@ -218,7 +218,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `master.serviceAccount.name`                         | The name of the ServiceAccount to use.                                                                | `""`                     |
 | `master.serviceAccount.automountServiceAccountToken` | Whether to auto mount the service account token                                                       | `true`                   |
 | `master.serviceAccount.annotations`                  | Additional custom annotations for the ServiceAccount                                                  | `{}`                     |
-
 
 ### Redis&reg; replicas configuration parameters
 
@@ -300,6 +299,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `replica.persistence.accessModes`                     | Persistent Volume access modes                                                                          | `["ReadWriteOnce"]`      |
 | `replica.persistence.size`                            | Persistent Volume size                                                                                  | `8Gi`                    |
 | `replica.persistence.annotations`                     | Additional custom annotations for the PVC                                                               | `{}`                     |
+| `replica.persistence.labels`                          | Additional custom labels for the PVC                                                                    | `{}`                     |
 | `replica.persistence.selector`                        | Additional labels to match for the PVC                                                                  | `{}`                     |
 | `replica.persistence.dataSource`                      | Custom PVC data source                                                                                  | `{}`                     |
 | `replica.persistence.existingClaim`                   | Use a existing PVC which must be created manually before bound                                          | `""`                     |
@@ -326,7 +326,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `replica.serviceAccount.automountServiceAccountToken` | Whether to auto mount the service account token                                                         | `true`                   |
 | `replica.serviceAccount.annotations`                  | Additional custom annotations for the ServiceAccount                                                    | `{}`                     |
 
-
 ### Redis&reg; Sentinel configuration parameters
 
 | Name                                          | Description                                                                                                                                 | Value                    |
@@ -334,15 +333,17 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sentinel.enabled`                            | Use Redis&reg; Sentinel on Redis&reg; pods.                                                                                                 | `false`                  |
 | `sentinel.image.registry`                     | Redis&reg; Sentinel image registry                                                                                                          | `docker.io`              |
 | `sentinel.image.repository`                   | Redis&reg; Sentinel image repository                                                                                                        | `bitnami/redis-sentinel` |
-| `sentinel.image.tag`                          | Redis&reg; Sentinel image tag (immutable tags are recommended)                                                                              | `7.0.6-debian-11-r1`     |
+| `sentinel.image.tag`                          | Redis&reg; Sentinel image tag (immutable tags are recommended)                                                                              | `7.0.10-debian-11-r1`    |
 | `sentinel.image.digest`                       | Redis&reg; Sentinel image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag                         | `""`                     |
 | `sentinel.image.pullPolicy`                   | Redis&reg; Sentinel image pull policy                                                                                                       | `IfNotPresent`           |
 | `sentinel.image.pullSecrets`                  | Redis&reg; Sentinel image pull secrets                                                                                                      | `[]`                     |
 | `sentinel.image.debug`                        | Enable image debug mode                                                                                                                     | `false`                  |
+| `sentinel.annotations`                        | Additional custom annotations for Redis&reg; Sentinel resource                                                                              | `{}`                     |
 | `sentinel.masterSet`                          | Master set name                                                                                                                             | `mymaster`               |
 | `sentinel.quorum`                             | Sentinel Quorum                                                                                                                             | `2`                      |
 | `sentinel.getMasterTimeout`                   | Amount of time to allow before get_sentinel_master_info() times out.                                                                        | `220`                    |
 | `sentinel.automateClusterRecovery`            | Automate cluster recovery in cases where the last replica is not considered a good replica and Sentinel won't automatically failover to it. | `false`                  |
+| `sentinel.redisShutdownWaitFailover`          | Whether the Redis&reg; master container waits for the failover at shutdown (in addition to the Redis&reg; Sentinel container).              | `true`                   |
 | `sentinel.downAfterMilliseconds`              | Timeout for detecting a Redis&reg; node is down                                                                                             | `60000`                  |
 | `sentinel.failoverTimeout`                    | Timeout for performing a election failover                                                                                                  | `180000`                 |
 | `sentinel.parallelSyncs`                      | Number of replicas that can be reconfigured in parallel to use the new master after a failover                                              | `1`                      |
@@ -383,9 +384,11 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sentinel.persistence.accessModes`            | Persistent Volume access modes                                                                                                              | `["ReadWriteOnce"]`      |
 | `sentinel.persistence.size`                   | Persistent Volume size                                                                                                                      | `100Mi`                  |
 | `sentinel.persistence.annotations`            | Additional custom annotations for the PVC                                                                                                   | `{}`                     |
+| `sentinel.persistence.labels`                 | Additional custom labels for the PVC                                                                                                        | `{}`                     |
 | `sentinel.persistence.selector`               | Additional labels to match for the PVC                                                                                                      | `{}`                     |
 | `sentinel.persistence.dataSource`             | Custom PVC data source                                                                                                                      | `{}`                     |
 | `sentinel.persistence.medium`                 | Provide a medium for `emptyDir` volumes.                                                                                                    | `""`                     |
+| `sentinel.persistence.sizeLimit`              | Set this to enable a size limit for `emptyDir` volumes.                                                                                     | `""`                     |
 | `sentinel.resources.limits`                   | The resources limits for the Redis&reg; Sentinel containers                                                                                 | `{}`                     |
 | `sentinel.resources.requests`                 | The requested resources for the Redis&reg; Sentinel containers                                                                              | `{}`                     |
 | `sentinel.containerSecurityContext.enabled`   | Enabled Redis&reg; Sentinel containers' Security Context                                                                                    | `true`                   |
@@ -406,13 +409,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sentinel.service.annotations`                | Additional custom annotations for Redis&reg; Sentinel service                                                                               | `{}`                     |
 | `sentinel.service.sessionAffinity`            | Session Affinity for Kubernetes service, can be "None" or "ClientIP"                                                                        | `None`                   |
 | `sentinel.service.sessionAffinityConfig`      | Additional settings for the sessionAffinity                                                                                                 | `{}`                     |
+| `sentinel.service.headless.annotations`       | Annotations for the headless service.                                                                                                       | `{}`                     |
 | `sentinel.terminationGracePeriodSeconds`      | Integer setting the termination grace period for the redis-node pods                                                                        | `30`                     |
-
 
 ### Other Parameters
 
 | Name                                          | Description                                                                                                                                 | Value   |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `serviceBindings.enabled`                     | Create secret for service binding (Experimental)                                                                                            | `false` |
 | `networkPolicy.enabled`                       | Enable creation of NetworkPolicy resources                                                                                                  | `false` |
 | `networkPolicy.allowExternal`                 | Don't require client label for connections                                                                                                  | `true`  |
 | `networkPolicy.extraIngress`                  | Add extra ingress rules to the NetworkPolicy                                                                                                | `[]`    |
@@ -440,7 +444,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `tls.certCAFilename`                          | CA Certificate filename                                                                                                                     | `""`    |
 | `tls.dhParamsFilename`                        | File containing DH params (in order to support DH based ciphers)                                                                            | `""`    |
 
-
 ### Metrics Parameters
 
 | Name                                         | Description                                                                                                         | Value                    |
@@ -448,10 +451,31 @@ The command removes all the Kubernetes components associated with the chart and 
 | `metrics.enabled`                            | Start a sidecar prometheus exporter to expose Redis&reg; metrics                                                    | `false`                  |
 | `metrics.image.registry`                     | Redis&reg; Exporter image registry                                                                                  | `docker.io`              |
 | `metrics.image.repository`                   | Redis&reg; Exporter image repository                                                                                | `bitnami/redis-exporter` |
-| `metrics.image.tag`                          | Redis&reg; Exporter image tag (immutable tags are recommended)                                                      | `1.45.0-debian-11-r16`   |
+| `metrics.image.tag`                          | Redis&reg; Exporter image tag (immutable tags are recommended)                                                      | `1.48.0-debian-11-r6`    |
 | `metrics.image.digest`                       | Redis&reg; Exporter image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                     |
 | `metrics.image.pullPolicy`                   | Redis&reg; Exporter image pull policy                                                                               | `IfNotPresent`           |
 | `metrics.image.pullSecrets`                  | Redis&reg; Exporter image pull secrets                                                                              | `[]`                     |
+| `metrics.startupProbe.enabled`               | Enable startupProbe on Redis&reg; replicas nodes                                                                    | `false`                  |
+| `metrics.startupProbe.initialDelaySeconds`   | Initial delay seconds for startupProbe                                                                              | `10`                     |
+| `metrics.startupProbe.periodSeconds`         | Period seconds for startupProbe                                                                                     | `10`                     |
+| `metrics.startupProbe.timeoutSeconds`        | Timeout seconds for startupProbe                                                                                    | `5`                      |
+| `metrics.startupProbe.failureThreshold`      | Failure threshold for startupProbe                                                                                  | `5`                      |
+| `metrics.startupProbe.successThreshold`      | Success threshold for startupProbe                                                                                  | `1`                      |
+| `metrics.livenessProbe.enabled`              | Enable livenessProbe on Redis&reg; replicas nodes                                                                   | `true`                   |
+| `metrics.livenessProbe.initialDelaySeconds`  | Initial delay seconds for livenessProbe                                                                             | `10`                     |
+| `metrics.livenessProbe.periodSeconds`        | Period seconds for livenessProbe                                                                                    | `10`                     |
+| `metrics.livenessProbe.timeoutSeconds`       | Timeout seconds for livenessProbe                                                                                   | `5`                      |
+| `metrics.livenessProbe.failureThreshold`     | Failure threshold for livenessProbe                                                                                 | `5`                      |
+| `metrics.livenessProbe.successThreshold`     | Success threshold for livenessProbe                                                                                 | `1`                      |
+| `metrics.readinessProbe.enabled`             | Enable readinessProbe on Redis&reg; replicas nodes                                                                  | `true`                   |
+| `metrics.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe                                                                            | `5`                      |
+| `metrics.readinessProbe.periodSeconds`       | Period seconds for readinessProbe                                                                                   | `10`                     |
+| `metrics.readinessProbe.timeoutSeconds`      | Timeout seconds for readinessProbe                                                                                  | `1`                      |
+| `metrics.readinessProbe.failureThreshold`    | Failure threshold for readinessProbe                                                                                | `3`                      |
+| `metrics.readinessProbe.successThreshold`    | Success threshold for readinessProbe                                                                                | `1`                      |
+| `metrics.customStartupProbe`                 | Custom startupProbe that overrides the default one                                                                  | `{}`                     |
+| `metrics.customLivenessProbe`                | Custom livenessProbe that overrides the default one                                                                 | `{}`                     |
+| `metrics.customReadinessProbe`               | Custom readinessProbe that overrides the default one                                                                | `{}`                     |
 | `metrics.command`                            | Override default metrics container init command (useful when using custom images)                                   | `[]`                     |
 | `metrics.redisTargetHost`                    | A way to specify an alternative Redis&reg; hostname                                                                 | `localhost`              |
 | `metrics.extraArgs`                          | Extra arguments for Redis&reg; exporter, for example:                                                               | `{}`                     |
@@ -485,7 +509,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `metrics.prometheusRule.additionalLabels`    | Additional labels for the prometheusRule                                                                            | `{}`                     |
 | `metrics.prometheusRule.rules`               | Custom Prometheus rules                                                                                             | `[]`                     |
 
-
 ### Init Container Parameters
 
 | Name                                                   | Description                                                                                                   | Value                   |
@@ -493,7 +516,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `volumePermissions.enabled`                            | Enable init container that changes the owner/group of the PV mount point to `runAsUser:fsGroup`               | `false`                 |
 | `volumePermissions.image.registry`                     | Bitnami Shell image registry                                                                                  | `docker.io`             |
 | `volumePermissions.image.repository`                   | Bitnami Shell image repository                                                                                | `bitnami/bitnami-shell` |
-| `volumePermissions.image.tag`                          | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r62`      |
+| `volumePermissions.image.tag`                          | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r99`      |
 | `volumePermissions.image.digest`                       | Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                    |
 | `volumePermissions.image.pullPolicy`                   | Bitnami Shell image pull policy                                                                               | `IfNotPresent`          |
 | `volumePermissions.image.pullSecrets`                  | Bitnami Shell image pull secrets                                                                              | `[]`                    |
@@ -503,7 +526,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sysctl.enabled`                                       | Enable init container to modify Kernel settings                                                               | `false`                 |
 | `sysctl.image.registry`                                | Bitnami Shell image registry                                                                                  | `docker.io`             |
 | `sysctl.image.repository`                              | Bitnami Shell image repository                                                                                | `bitnami/bitnami-shell` |
-| `sysctl.image.tag`                                     | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r62`      |
+| `sysctl.image.tag`                                     | Bitnami Shell image tag (immutable tags are recommended)                                                      | `11-debian-11-r99`      |
 | `sysctl.image.digest`                                  | Bitnami Shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `""`                    |
 | `sysctl.image.pullPolicy`                              | Bitnami Shell image pull policy                                                                               | `IfNotPresent`          |
 | `sysctl.image.pullSecrets`                             | Bitnami Shell image pull secrets                                                                              | `[]`                    |
@@ -511,7 +534,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `sysctl.mountHostSys`                                  | Mount the host `/sys` folder to `/host-sys`                                                                   | `false`                 |
 | `sysctl.resources.limits`                              | The resources limits for the init container                                                                   | `{}`                    |
 | `sysctl.resources.requests`                            | The requested resources for the init container                                                                | `{}`                    |
-
 
 ### useExternalDNS Parameters
 
@@ -522,11 +544,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | `useExternalDNS.annotationKey`         | The annotation key utilized when `external-dns` is enabled. Setting this to `false` will disable annotations.                            | `external-dns.alpha.kubernetes.io/` |
 | `useExternalDNS.suffix`                | The DNS suffix utilized when `external-dns` is enabled.  Note that we prepend the suffix with the full name of the release.              | `""`                                |
 
-
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
-```bash
-$ helm install my-release \
+```console
+helm install my-release \
   --set auth.password=secretpassword \
     my-repo/redis
 ```
@@ -537,8 +558,8 @@ The above command sets the Redis&reg; server password to `secretpassword`.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
-```bash
-$ helm install my-release -f values.yaml my-repo/redis
+```console
+helm install my-release -f values.yaml my-repo/redis
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
@@ -591,10 +612,10 @@ useExternalDNS:
 
 On a cluster where the name of the Helm release is `a`, the hostname of a Pod is generated as: `a-redis-node-0.a-redis.prod.example.org`. The IP of that FQDN will match that of the associated Pod. This modifies the following parameters of the Redis/Sentinel configuration using this new FQDN:
 
-* `replica-announce-ip`
-* `known-sentinel`
-* `known-replica`
-* `announce-ip`
+- `replica-announce-ip`
+- `known-sentinel`
+- `known-replica`
+- `announce-ip`
 
 :warning: This requires a working installation of `external-dns` to be fully functional. :warning:
 
@@ -619,13 +640,17 @@ When installing the chart with `architecture=standalone`, it will deploy a stand
 
 #### Master-Replicas with Sentinel
 
-When installing the chart with `architecture=replication` and `sentinel.enabled=true`, it will deploy a Redis&reg; master StatefulSet (only one master allowed) and a Redis&reg; replicas StatefulSet. In this case, the pods will contain an extra container with Redis&reg; Sentinel. This container will form a cluster of Redis&reg; Sentinel nodes, which will promote a new master in case the actual one fails. In addition to this, only one service is exposed:
+When installing the chart with `architecture=replication` and `sentinel.enabled=true`, it will deploy a Redis&reg; master StatefulSet (only one master allowed) and a Redis&reg; replicas StatefulSet. In this case, the pods will contain an extra container with Redis&reg; Sentinel. This container will form a cluster of Redis&reg; Sentinel nodes, which will promote a new master in case the actual one fails.
+
+On graceful termination of the Redis&reg; master pod, a failover of the master is initiated to promote a new master. The Redis&reg; Sentinel container in this pod will wait for the failover to occur before terminating. If `sentinel.redisShutdownWaitFailover=true` is set (the default), the Redis&reg; container will wait for the failover as well before terminating. This increases availability for reads during failover, but may cause stale reads until all clients have switched to the new master.
+
+In addition to this, only one service is exposed:
 
 - Redis&reg; service: Exposes port 6379 for Redis&reg; read-only operations and port 26379 for accessing Redis&reg; Sentinel.
 
 For read-only operations, access the service using port 6379. For write operations, it's necessary to access the Redis&reg; Sentinel cluster and query the current master using the command below (using redis-cli or similar):
 
-```
+```console
 SENTINEL get-master-addr-by-name <name of your MasterSet. e.g: mymaster>
 ```
 
@@ -640,6 +665,7 @@ In case the current master crashes, the Sentinel containers will elect a new mas
 When `master.count` is greater than `1`, special care must be taken to create a consistent setup.
 
 An example of use case is the creation of a redundant set of standalone masters or master-replicas per Kubernetes node where you must ensure:
+
 - No more than `1` master can be deployed per Kubernetes node
 - Replicas and writers can only see the single master of their own Kubernetes node
 
@@ -696,8 +722,8 @@ By default, the chart mounts a [Persistent Volume](https://kubernetes.io/docs/co
 2. Create the PersistentVolumeClaim
 3. Install the chart
 
-```bash
-$ helm install my-release --set master.persistence.existingClaim=PVC_NAME my-repo/redis
+```console
+helm install my-release --set master.persistence.existingClaim=PVC_NAME my-repo/redis
 ```
 
 ## Backup and restore
@@ -733,6 +759,7 @@ This major version updates the Redis&reg; docker image version used from `6.2` t
 This major release renames several values in this chart and adds missing features, in order to be inline with the rest of assets in the Bitnami charts repository.
 
 Affected values:
+
 - `master.service.port` renamed as `master.service.ports.redis`.
 - `master.service.nodePort` renamed as `master.service.nodePorts.redis`.
 - `replica.service.port` renamed as `replica.service.ports.redis`.
@@ -756,11 +783,11 @@ The Redis&reg; sentinel exporter was removed in this version because the upstrea
 ### To 14.0.0
 
 - Several parameters were renamed or disappeared in favor of new ones on this major version:
-    - The term *slave* has been replaced by the term *replica*. Therefore, parameters prefixed with `slave` are now prefixed with `replicas`.
-    - Credentials parameter are reorganized under the `auth` parameter.
-    - `cluster.enabled` parameter is deprecated in favor of `architecture` parameter that accepts two values: `standalone` and `replication`.
-    - `securityContext.*` is deprecated in favor of `XXX.podSecurityContext` and `XXX.containerSecurityContext`.
-    - `sentinel.metrics.*` parameters are deprecated in favor of `metrics.sentinel.*` ones.
+  - The term *slave* has been replaced by the term *replica*. Therefore, parameters prefixed with `slave` are now prefixed with `replicas`.
+  - Credentials parameter are reorganized under the `auth` parameter.
+  - `cluster.enabled` parameter is deprecated in favor of `architecture` parameter that accepts two values: `standalone` and `replication`.
+  - `securityContext.*` is deprecated in favor of `XXX.podSecurityContext` and `XXX.containerSecurityContext`.
+  - `sentinel.metrics.*` parameters are deprecated in favor of `metrics.sentinel.*` ones.
 - New parameters to add custom command, environment variables, sidecars, init containers, etc. were added.
 - Chart labels were adapted to follow the [Helm charts standard labels](https://helm.sh/docs/chart_best_practices/labels/#standard-labels).
 - values.yaml metadata was adapted to follow the format supported by [Readme Generator for Helm](https://github.com/bitnami-labs/readme-generator-for-helm).
@@ -772,11 +799,11 @@ Backwards compatibility is not guaranteed. To upgrade to `14.0.0`, install a new
 - Create a backup of the database, and restore it on the new release as explained in the [Backup and restore](#backup-and-restore) section.
 - Reuse the PVC used to hold the master data on your previous release. To do so, use the `master.persistence.existingClaim` parameter. The following example assumes that the release name is `redis`:
 
-```bash
-$ helm install redis my-repo/redis --set auth.password=[PASSWORD] --set master.persistence.existingClaim=[EXISTING_PVC]
+```console
+helm install redis my-repo/redis --set auth.password=[PASSWORD] --set master.persistence.existingClaim=[EXISTING_PVC]
 ```
 
-| Note: you need to substitute the placeholder _[EXISTING_PVC]_ with the name of the PVC used on your previous release, and _[PASSWORD]_ with the password used in your previous release.
+| Note: you need to substitute the placeholder *[EXISTING_PVC]* with the name of the PVC used on your previous release, and *[PASSWORD]* with the password used in your previous release.
 
 ### To 13.0.0
 
@@ -790,40 +817,28 @@ This version also introduces `bitnami/common`, a [library chart](https://helm.sh
 
 [On November 13, 2020, Helm v2 support was formally finished](https://github.com/helm/charts#status-of-the-project), this major version is the result of the required changes applied to the Helm Chart to be able to incorporate the different features added in Helm v3 and to be consistent with the Helm project itself regarding the Helm v2 EOL.
 
-**What changes were introduced in this major version?**
+#### What changes were introduced in this major version?
 
 - Previous versions of this Helm Chart use `apiVersion: v1` (installable by both Helm 2 and 3), this Helm Chart was updated to `apiVersion: v2` (installable by Helm 3 only). [Here](https://helm.sh/docs/topics/charts/#the-apiversion-field) you can find more information about the `apiVersion` field.
 - The different fields present in the *Chart.yaml* file has been ordered alphabetically in a homogeneous way for all the Bitnami Helm Charts
 
-**Considerations when upgrading to this version**
+#### Considerations when upgrading to this version
 
 - If you want to upgrade to this version from a previous one installed with Helm v3, you shouldn't face any issues
 - If you want to upgrade to this version using Helm v2, this scenario is not supported as this version doesn't support Helm v2 anymore
 - If you installed the previous version with Helm v2 and wants to upgrade to this version with Helm v3, please refer to the [official Helm documentation](https://helm.sh/docs/topics/v2_v3_migration/#migration-use-cases) about migrating from Helm v2 to v3
 
-**Useful links**
+#### Useful links
 
-- https://docs.bitnami.com/tutorials/resolve-helm2-helm3-post-migration-issues/
-- https://helm.sh/docs/topics/v2_v3_migration/
-- https://helm.sh/blog/migrate-from-helm-v2-to-helm-v3/
-
-### To 11.0.0
-
-When deployed with sentinel enabled, only a group of nodes is deployed and the master/slave role is handled in the group. To avoid breaking the compatibility, the settings for this nodes are given through the `slave.xxxx` parameters in `values.yaml`
-
-### To 9.0.0
-
-The metrics exporter has been changed from a separate deployment to a sidecar container, due to the latest changes in the Redis&reg; exporter code. Check the [official page](https://github.com/oliver006/redis_exporter/) for more information. The metrics container image was changed from oliver006/redis_exporter to bitnami/redis-exporter (Bitnami's maintained package of oliver006/redis_exporter).
-
-### To 7.0.0
-
-In order to improve the performance in case of slave failure, we added persistence to the read-only slaves. That means that we moved from Deployment to StatefulSets. This should not affect upgrades from previous versions of the chart, as the deployments did not contain any persistence at all.
-
-This version also allows enabling Redis&reg; Sentinel containers inside of the Redis&reg; Pods (feature disabled by default). In case the master crashes, a new Redis&reg; node will be elected as master. In order to query the current master (no redis master service is exposed), you need to query first the Sentinel cluster.
+- <https://docs.bitnami.com/tutorials/resolve-helm2-helm3-post-migration-issues/>
+- <https://helm.sh/docs/topics/v2_v3_migration/>
+- <https://helm.sh/blog/migrate-from-helm-v2-to-helm-v3/>
 
 ### To 11.0.0
 
 When using sentinel, a new statefulset called `-node` was introduced. This will break upgrading from a previous version where the statefulsets are called master and slave. Hence the PVC will not match the new naming and won't be reused. If you want to keep your data, you will need to perform a backup and then a restore the data in this new version.
+
+When deployed with sentinel enabled, only a group of nodes is deployed and the master/slave role is handled in the group. To avoid breaking the compatibility, the settings for this nodes are given through the `slave.xxxx` parameters in `values.yaml`
 
 ### To 10.0.0
 
@@ -833,6 +848,10 @@ For releases with `usePassword: true`, the value `sentinel.usePassword` controls
 - Where redis clients need to be updated to support sentinel authentication.
 
 If using a master/slave topology, or with `usePassword: false`, no action is required.
+
+### To 9.0.0
+
+The metrics exporter has been changed from a separate deployment to a sidecar container, due to the latest changes in the Redis&reg; exporter code. Check the [official page](https://github.com/oliver006/redis_exporter/) for more information. The metrics container image was changed from oliver006/redis_exporter to bitnami/redis-exporter (Bitnami's maintained package of oliver006/redis_exporter).
 
 ### To 8.0.18
 
@@ -844,16 +863,16 @@ This version causes a change in the Redis&reg; Master StatefulSet definition, so
 
 - Recommended: Create a clone of the Redis&reg; Master PVC (for example, using projects like [this one](https://github.com/edseymour/pvc-transfer)). Then launch a fresh release reusing this cloned PVC.
 
-   ```
-   helm install my-release my-repo/redis --set persistence.existingClaim=<NEW PVC>
-   ```
+```console
+helm install my-release my-repo/redis --set persistence.existingClaim=<NEW PVC>
+```
 
 - Alternative (not recommended, do at your own risk): `helm delete --purge` does not remove the PVC assigned to the Redis&reg; Master StatefulSet. As a consequence, the following commands can be done to upgrade the release
 
-   ```
-   helm delete --purge <RELEASE>
-   helm install <RELEASE> my-repo/redis
-   ```
+```console
+helm delete --purge <RELEASE>
+helm install <RELEASE> my-repo/redis
+```
 
 Previous versions of the chart were not using persistence in the slaves, so this upgrade would add it to them. Another important change is that no values are inherited from master to slaves. For example, in 6.0.0 `slaves.readinessProbe.periodSeconds`, if empty, would be set to `master.readinessProbe.periodSeconds`. This approach lacked transparency and was difficult to maintain. From now on, all the slave parameters must be configured just as it is done with the masters.
 
@@ -884,34 +903,34 @@ must be specified.
 
 This version removes the `chart` label from the `spec.selector.matchLabels`
 which is immutable since `StatefulSet apps/v1beta2`. It has been inadvertently
-added, causing any subsequent upgrade to fail. See https://github.com/helm/charts/issues/7726.
+added, causing any subsequent upgrade to fail. See <https://github.com/helm/charts/issues/7726>.
 
-It also fixes https://github.com/helm/charts/issues/7726 where a deployment `extensions/v1beta1` can not be upgraded if `spec.selector` is not explicitly set.
+It also fixes <https://github.com/helm/charts/issues/7726> where a deployment `extensions/v1beta1` can not be upgraded if `spec.selector` is not explicitly set.
 
-Finally, it fixes https://github.com/helm/charts/issues/7803 by removing mutable labels in `spec.VolumeClaimTemplate.metadata.labels` so that it is upgradable.
+Finally, it fixes <https://github.com/helm/charts/issues/7803> by removing mutable labels in `spec.VolumeClaimTemplate.metadata.labels` so that it is upgradable.
 
 In order to upgrade, delete the Redis&reg; StatefulSet before upgrading:
 
-```bash
+```console
 kubectl delete statefulsets.apps --cascade=false my-release-redis-master
 ```
 
 And edit the Redis&reg; slave (and metrics if enabled) deployment:
 
-```bash
+```console
 kubectl patch deployments my-release-redis-slave --type=json -p='[{"op": "remove", "path": "/spec/selector/matchLabels/chart"}]'
 kubectl patch deployments my-release-redis-metrics --type=json -p='[{"op": "remove", "path": "/spec/selector/matchLabels/chart"}]'
 ```
 
 ## License
 
-Copyright &copy; 2022 Bitnami
+Copyright &copy; 2023 Bitnami
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+<http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

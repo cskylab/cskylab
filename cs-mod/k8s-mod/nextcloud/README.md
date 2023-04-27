@@ -2,11 +2,11 @@
 
 ## v22-12-19 <!-- omit in toc -->
 
-## Helm charts: nextcloud/nextcloud v3.3.4 bitnami/mariadb v11.4.1 <!-- omit in toc -->
+## Helm charts: nextcloud/nextcloud v3.5.10 bitnami/mariadb v12.0.0 <!-- omit in toc -->
 
 [Nextcloud](https://nextcloud.com/) is a file sharing server that puts the control and security of your own data back into your hands.
 
-Configuration files are deployed from template Kubernetes nextcloud namespace version 22-12-19.
+Configuration files are deployed from template Kubernetes nextcloud namespace version 23-04-27.
 
   ![ ](./images/nextcloud-2021-11-08_22-57-13.png)
 

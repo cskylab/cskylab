@@ -137,9 +137,9 @@ restic_mount_point="/tmp/restic"
 declare -a forget_options=(--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10)
 
 # restic-environment
-export RESTIC_REPOSITORY="s3:https://backup.cskylab.net/bucketname/restic"
+export RESTIC_REPOSITORY="sftp:kos@hostname.cskylab.net:/media/data/restic/mydir"
 export RESTIC_PASSWORD="NoFear21"
-export AWS_ACCESS_KEY_ID="bucketname_rw"
+export AWS_ACCESS_KEY_ID="restic_rw"
 export AWS_SECRET_ACCESS_KEY="iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr"
 
 # Color code for messages

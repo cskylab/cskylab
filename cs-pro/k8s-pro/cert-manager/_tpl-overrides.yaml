@@ -1,7 +1,7 @@
 _tpldescription: x509 certificate management for Kubernetes
 _tplname: k8s-cert-manager
-_tplversion: 22-12-19
-kubeconfig: config-k8s-pro
+_tplversion: 23-04-27
+kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
 letsencrypt:
   email: certadmin@cskylab.net
 namespace:

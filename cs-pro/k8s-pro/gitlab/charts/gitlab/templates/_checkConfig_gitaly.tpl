@@ -49,6 +49,25 @@ praefect:
 {{/* END gitlab.checkConfig.praefect.storageNames" -}}
 
 {{/*
+Ensure that defaultReplicationFactor is greater then 0, and less than gitalyReplicas's number
+*/}}
+{{- define "gitlab.checkConfig.praefect.defaultReplicationFactor" -}}
+{{- if and $.Values.global.gitaly.enabled $.Values.global.praefect.enabled -}}
+{{-   range $i, $vs := $.Values.global.praefect.virtualStorages -}}
+{{-     $gitalyReplicas := int (default 1 $vs.gitalyReplicas) -}}
+{{-     $defaultReplicationFactor := int (default 1 $vs.defaultReplicationFactor) -}}
+{{-     if or ( gt $defaultReplicationFactor $gitalyReplicas ) ( lt $defaultReplicationFactor 1 ) -}}
+praefect:
+    Praefect is enabled but 'defaultReplicationFactor' is not correct.
+    'defaultReplicationFactor' is greater than 1, less than 'gitalyReplicas'.
+    Please modify `global.praefect.virtualStorages[{{ $i }}].defaultReplicationFactor`.
+{{-     end }}
+{{-   end }}
+{{- end }}
+{{- end }}
+{{/* END gitlab.checkConfig.praefect.defaultReplicationFactor */}}
+
+{{/*
 Ensure a certificate is provided when Gitaly is enabled and is instructed to
 listen over TLS */}}
 {{- define "gitlab.checkConfig.gitaly.tls" -}}
@@ -59,10 +78,6 @@ listen over TLS */}}
 {{-       if not $vs.tlsSecretName }}
 {{-         $errorMsg = append $errorMsg (printf "global.praefect.virtualStorages[%d].tlsSecretName not specified ('%s')" $i $vs.name) -}}
 {{-       end }}
-{{-     end }}
-{{-   else }}
-{{-     if not $.Values.global.gitaly.tls.secretName -}}
-{{-       $errorMsg = append $errorMsg ("global.gitaly.tls.secretName not specified") -}}
 {{-     end }}
 {{-   end }}
 {{- end }}
@@ -76,17 +91,6 @@ gitaly:
 {{- end -}}
 {{/* END gitlab.checkConfig.gitaly.tls */}}
 
-{{/*
-Ensure a certificate is provided when Praefect is enabled and is instructed to listen over TLS
-*/}}
-{{- define "gitlab.checkConfig.praefect.tls" -}}
-{{- if and (and $.Values.global.praefect.enabled $.Values.global.praefect.tls.enabled) (not $.Values.global.praefect.tls.secretName) }}
-praefect: server enabled with TLS, no TLS certificate provided
-    It appears Praefect is specified to listen over TLS, but no certificate was specified.
-{{- end -}}
-{{- end -}}
-{{/* END gitlab.checkConfig.praefect.tls */}}
-
 {{/* Check configuration of Gitaly external repos*/}}
 {{- define "gitlab.checkConfig.gitaly.extern.repos" -}}
 {{-   if (and (not .Values.global.gitaly.enabled) (not .Values.global.gitaly.external) ) }}
@@ -95,3 +99,14 @@ gitaly:
 {{-   end -}}
 {{- end -}}
 {{/* END gitlab.checkConfig.gitaly.extern.repos */}}
+
+{{/* Check that both GPG secret and key are set*/}}
+{{- define "gitlab.checkConfig.gitaly.gpgSigning" -}}
+{{-   if and $.Values.global.gitaly.enabled $.Values.gitlab.gitaly.gpgSigning.enabled -}}
+{{-     if not (and $.Values.gitlab.gitaly.gpgSigning.secret $.Values.gitlab.gitaly.gpgSigning.key) -}}
+gitaly:
+    secret and key must be set if gitlab.gitaly.gpgSigning.enabled is set
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+{{/* END gitlab.checkConfig.gitaly.gpgSigning */}}

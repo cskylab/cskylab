@@ -91,8 +91,10 @@ sudo_username="kos"
 # shellcheck disable=SC2034
 setup_dir="/etc/csky-setup"
 
-# Host FQDN or IP address
+# Host FQDN
 remote_machine="k8s-mod-n2.cskylab.net"
+# IP address
+ip_address="192.168.82.12"
 
 # Color code for messages
 # https://robotmoon.com/256-colors/
@@ -296,6 +298,17 @@ echo
 ################################################################################
 
 if [[ "${execution_mode}" == "ssh-sudoers" ]]; then
+
+  # Clean known_host file from previous entries
+  if [[ -f ${HOME}/.ssh/known_hosts ]]; then
+
+    echo
+    echo "${msg_info} Cleaning ${HOME}/.ssh/known_hosts file entries"
+    echo
+    ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${remote_machine}"
+    ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${ip_address}"
+
+  fi
 
   # Perform ssh-copy-id
   echo
