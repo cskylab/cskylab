@@ -4,13 +4,88 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v22-12-19](#v22-12-19)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
+    - [1.- Update script cs-deploy.sh](#1--update-script-cs-deploysh)
+    - [3.- Pull charts \& update](#3--pull-charts--update)
+- [v22-12-19](#v22-12-19)
+  - [Background](#background-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Change image section in values-node-red.yaml](#1--change-image-section-in-values-node-redyaml)
     - [2.- Change image section in values-influxdb2.yaml](#2--change-image-section-in-values-influxdb2yaml)
     - [3.- Update script cs-deploy.sh](#3--update-script-cs-deploysh)
-    - [3.- Pull charts \& update](#3--pull-charts--update)
+    - [3.- Pull charts \& update](#3--pull-charts--update-1)
+
+---
+
+## v99-99-99
+
+### Background
+
+This update covers the following charts:
+
+- **bitnami/grafana v8.2.33**: appVersion v9.4.7
+
+This procedure updates iot-studio installation in k8s-mod cluster.
+
+### How-to guides
+
+#### 1.- Update script cs-deploy.sh
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/iot-studio` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+## Repositories
+helm repo add k8s-at-home https://k8s-at-home.com/charts/
+helm repo add influxdata https://helm.influxdata.com/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+## Charts
+helm pull k8s-at-home/mosquitto --version 4.8.2 --untar
+helm pull k8s-at-home/node-red --version 10.3.2 --untar
+helm pull influxdata/influxdb2 --version 2.1.1 --untar
+helm pull bitnami/grafana --version 8.2.33 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## k8s-iot-studio v22-12-19 <!-- omit in toc -->
+```
+
+- Save file
+
+#### 3.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/iot-studio` repository directory.
+
+Execute the following commands to pull charts and upgrade:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+```
 
 ---
 

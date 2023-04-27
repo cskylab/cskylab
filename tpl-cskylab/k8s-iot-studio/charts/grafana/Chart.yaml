@@ -1,7 +1,8 @@
 annotations:
   category: Analytics
+  licenses: Apache-2.0
 apiVersion: v2
-appVersion: 9.3.2
+appVersion: 9.4.7
 dependencies:
 - name: common
   repository: https://charts.bitnami.com/bitnami
@@ -24,4 +25,4 @@ name: grafana
 sources:
 - https://github.com/bitnami/containers/tree/main/bitnami/grafana
 - https://grafana.com/
-version: 8.2.21
+version: 8.2.33

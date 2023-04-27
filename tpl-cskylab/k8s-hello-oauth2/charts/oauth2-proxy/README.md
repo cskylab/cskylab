@@ -110,11 +110,14 @@ Parameter | Description | Default
 `alphaConfig.existingConfig` | existing Kubernetes configmap to use for the alpha configuration file. See [config template](https://github.com/oauth2-proxy/manifests/blob/master/helm/oauth2-proxy/templates/configmap-alpha.yaml) for the required values | `nil`
 `customLabels` | Custom labels to add into metadata | `{}` |
 `config.google.adminEmail` | user impersonated by the google service account | `""`
+`config.google.useApplicationDefaultCredentials` | use the application-default credentials (i.e. Workload Identity on GKE) instead of providing a service account json | `false`
+`config.google.targetPrincipal` | service account to use/impersonate | `""`
 `config.google.serviceAccountJson` | google service account json contents | `""`
 `config.google.existingConfig` | existing Kubernetes configmap to use for the service account file. See [google secret template](https://github.com/oauth2-proxy/manifests/blob/master/helm/oauth2-proxy/templates/google-secret.yaml) for the required values | `nil`
 `config.google.groups` | restrict logins to members of these google groups | `[]`
 `containerPort` | used to customise port on the deployment | `""`
 `extraArgs` | Extra arguments to give the binary. Either as a map with key:value pairs or as a list type, which allows to configure the same flag multiple times. (e.g. `["--allowed-role=CLIENT_ID:CLIENT_ROLE_NAME_A", "--allowed-role=CLIENT_ID:CLIENT_ROLE_NAME_B"]`). | `{}` or `[]`
+`extraContainers` | List of extra containers to be added to the pod | `[]`
 `extraEnv` | key:value list of extra environment variables to give the binary | `[]`
 `extraVolumes` | list of extra volumes | `[]`
 `extraVolumeMounts` | list of extra volumeMounts | `[]`
@@ -134,12 +137,14 @@ Parameter | Description | Default
 `ingress.path` | Ingress accepted path | `/`
 `ingress.pathType` | Ingress [path type](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) | `ImplementationSpecific`
 `ingress.extraPaths` | Ingress extra paths to prepend to every host configuration. Useful when configuring [custom actions with AWS ALB Ingress Controller](https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/#actions). | `[]`
+`ingress.labels` | Ingress extra labels | `{}`
 `ingress.annotations` | Ingress annotations | `nil`
 `ingress.hosts` | Ingress accepted hostnames | `nil`
 `ingress.tls` | Ingress TLS configuration | `nil`
 `livenessProbe.enabled`  | enable Kubernetes livenessProbe. Disable to use oauth2-proxy with Istio mTLS. See [Istio FAQ](https://istio.io/help/faq/security/#k8s-health-checks) | `true`
 `livenessProbe.initialDelaySeconds` | number of seconds | 0
 `livenessProbe.timeoutSeconds` | number of seconds | 1
+`namespaceOverride` | Override the deployment namespace | `""`
 `nodeSelector` | node labels for pod assignment | `{}`
 `deploymentAnnotations` | annotations to add to the deployment | `{}`
 `podAnnotations` | annotations to add to each pod | `{}`
@@ -155,6 +160,7 @@ Parameter | Description | Default
 `readinessProbe.successThreshold` | number of successes | 1
 `replicaCount` | desired number of pods | `1`
 `resources` | pod resource requests & limits | `{}`
+`revisionHistoryLimit` | maximum number of revisions maintained | 10
 `service.portNumber` | port number for the service | `80`
 `service.appProtocol` | application protocol on the port of the service | `http`
 `service.type` | type of service | `ClusterIP`
@@ -190,7 +196,7 @@ Parameter | Description | Default
 `metrics.service.appProtocol` | application protocol of the metrics port in the service | `http`
 `metrics.servicemonitor.enabled` | Enable Prometheus Operator ServiceMonitor | `false`
 `metrics.servicemonitor.namespace` | Define the namespace where to deploy the ServiceMonitor resource | `""`
-`metrics.servicemonitor.prometheusInstance` | Prometheus Instance definition  | `default`
+`metrics.servicemonitor.prometheusInstance` | Prometheus Instance definition | `default`
 `metrics.servicemonitor.interval` | Prometheus scrape interval | `60s`
 `metrics.servicemonitor.scrapeTimeout` | Prometheus scrape timeout | `30s`
 `metrics.servicemonitor.labels` | Add custom labels to the ServiceMonitor resource| `{}`
