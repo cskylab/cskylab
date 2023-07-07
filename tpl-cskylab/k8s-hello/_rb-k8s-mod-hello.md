@@ -1,4 +1,4 @@
-# k8s-hello
+# k8s-mod-hello
 
 This namespace is intended to deploy a simple Hello World application in Kubernetes for testing purposes.
 

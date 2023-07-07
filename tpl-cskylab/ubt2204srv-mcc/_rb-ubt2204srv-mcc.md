@@ -19,8 +19,8 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory" \
-&& export RB_ZONE="cs-mod" \
-&& export RB_MACHINE_NAME="ubt2204srv-mcc" \
+&& export RB_ZONE="cs-sys" \
+&& export RB_MACHINE_NAME="mcc" \
 && export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2204srv-mcc" \
 && echo
 ```
@@ -46,7 +46,7 @@ go_version: "go1.20.3.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:
-  hostname: ubt2204srv-mcc
+  hostname: mcc
   domainname: cskylab.net
   localadminusername: kos
   localadminpassword: "NoFear21"

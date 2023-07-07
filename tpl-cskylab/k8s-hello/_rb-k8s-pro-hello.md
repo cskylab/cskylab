@@ -1,4 +1,4 @@
-# k8s-hello-oauth2
+# k8s-pro-hello
 
 This namespace is intended to deploy a simple Hello World application in Kubernetes for testing purposes.
 
@@ -21,8 +21,8 @@ echo \
 && export RB_REPO_DIR="Your_Repository_Root_Directory" \
 && export RB_ZONE="cs-pro" \
 && export RB_K8S_CLUSTER="k8s-pro" \
-&& export RB_K8S_NAMESPACE="hello-oauth2" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-hello-oauth2" \
+&& export RB_K8S_NAMESPACE="hello-pro" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-hello" \
 && echo
 ```
 
@@ -44,13 +44,13 @@ kubeconfig: config-k8s-pro
 
 namespace:
   ## k8s namespace name
-  name: hello-oauth2
+  name: hello-pro
     ## Service domain name
   domain: cskylab.net
 
 publishing:
   ## External url
-  url: hello-oauth2.pro.cskylab.net
+  url: hello.pro.cskylab.net
 
 certificate:
   ## Cert-manager clusterissuer
