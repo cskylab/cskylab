@@ -51,6 +51,7 @@ metallb:
   staticpooladdr: 
     - 192.168.82.20/32  # k8s-ingress
     - 192.168.82.21/32  # mosquitto iot-studio
+    - 192.168.82.22/32  # mosquitto iot-edge
   dynamicpooladdr: 
     - 192.168.82.75-192.168.82.90   # Auto assigned
    
