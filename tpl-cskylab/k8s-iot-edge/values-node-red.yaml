@@ -83,6 +83,6 @@ persistence:
   data:
     enabled: true
     mountPath: /data
-    storageClass: "{{ .edgename }}/node-red"
+    storageClass: "{{ .edgename }}-node-red"
     accessMode: ReadWriteOnce
     size: 1Gi

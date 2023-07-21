@@ -80,7 +80,7 @@ publishing:
   url: iot-edge.mod.cskylab.net
 
 ## Local storage PV's node affinity (Configured in pv*.yaml)
-datadirectoryname: shard1
+datadirectoryname: iot-edge-shard1
 edgename: iot-edge
 localpvnodes:    # (k8s node names)
   all_pv: k8s-mod-n1

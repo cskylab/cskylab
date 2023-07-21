@@ -192,7 +192,7 @@ To **create** edge service directories, execute from your **mcc** management mac
 
 ```bash
 #
-# Create LVM data services in PV node:
+# Create Edge directories in PV node:
 #
 echo \
 && echo "******** START of snippet execution ********" \
@@ -210,7 +210,7 @@ echo \
 
 ```bash
 #
-# Create LVM data services in Rsync node:
+# Create Edge directories in Rsync node:
 #
 echo \
 && echo "******** START of snippet execution ********" \

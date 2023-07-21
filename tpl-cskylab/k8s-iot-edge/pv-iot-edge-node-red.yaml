@@ -1,7 +1,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ .edgename }}/node-red
+  name: {{ .edgename }}-node-red
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 
@@ -10,7 +10,7 @@ volumeBindingMode: WaitForFirstConsumer
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .edgename }}/node-red
+  name: {{ .edgename }}-node-red
 spec:
   capacity:
     storage: 1Gi
@@ -18,7 +18,7 @@ spec:
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: {{ .edgename }}/node-red
+  storageClassName: {{ .edgename }}-node-red
   local:
     path: /srv/{{ .datadirectoryname }}/data/{{ .edgename }}/node-red
   nodeAffinity:

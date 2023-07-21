@@ -20,16 +20,6 @@
  *
  **/
 
-//
-// File with source code to declare domometrics environment variables.
-//
-// process.env.SNS_0 = "Lámpara biblioteca";
-// process.env.SNS_1 = "Enchufe biblioteca";
-// process.env.SNS_2 = "Luz biblioteca";
-
-// const domometricsEnv = require ('./domometrics_env.js');
-require("./domometrics_env.js");
-
 module.exports = {
   /*******************************************************************************
    * Flow File and User Directory Settings
@@ -95,7 +85,7 @@ module.exports = {
     type: "credentials",
     users: [
       {
-        username: "{{ .nodered.user }}",
+        username: "admin",
         // Obfuscated password
         password: "__node_red_obfuscated_password__",
         permissions: "*",
@@ -146,10 +136,9 @@ module.exports = {
   //httpNodeAuth: {user:"user",pass:"$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN."},
   //httpStaticAuth: {user:"user",pass:"$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN."},
 
-  httpStaticAuth: {
-    user: "{{ .nodered.user }}",
-    pass: "__node_red_obfuscated_password__",
-  },
+  // Obfuscated passwords
+  // httpNodeAuth: { user: "admin", pass: "__node_red_obfuscated_password__" },
+  httpStaticAuth: { user: "admin", pass: "__node_red_obfuscated_password__" },
 
   /*******************************************************************************
    * Server Settings
@@ -292,6 +281,12 @@ module.exports = {
       module: "localfilesystem",
     },
   },
+
+  // contextStorage: {
+  //     default: "memoryOnly",
+  //     memoryOnly: { module: 'memory' },
+  //     file: { module: 'localfilesystem' }
+  //  },
 
   /** `global.keys()` returns a list of all properties set in global context.
    * This allows them to be displayed in the Context Sidebar within the editor.
@@ -519,7 +514,4 @@ module.exports = {
   //    *   - reason: if result is false, the HTTP reason string to return
   //    */
   //},
-
-  // ALEXA virtual-smart-home-settings
-  vshConnectionShowSettings: true,
 };
