@@ -61,6 +61,7 @@ To run this namespace, you must deploy before k8s-keycloakx to configure the exa
 
 ## Prerequisites
 
+- Configure backend authentication in keycloak: See service template **k8s-hello-oauth2**
 - Administrative access to kubernetes cluster.
 - SSH keys deployed in kubernetes nodes.
 - Helm v3.
