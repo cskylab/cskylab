@@ -486,6 +486,24 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   snap install kustomize
 
+  # Install wireguard
+  # Ref: https://www.wireguard.com/install/#ubuntu-module-tools
+  echo
+  echo "${msg_info} Install wireguard"
+  echo
+  apt -y install wireguard
+
+  # Install keycloak admin
+  # Ref: https://cloudinfrastructureservices.co.uk/install-keycloak-sso-on-ubuntu-20-04/
+  apt-get install default-jdk -y
+  wget https://github.com/keycloak/keycloak/releases/download/22.0.1/keycloak-22.0.1.tar.gz
+  tar -xvzf keycloak-22.0.1.tar.gz
+  mv keycloak-22.0.1 /opt/keycloak
+  chmod +x /opt/keycloak/bin/
+  echo "# Keycloak admin" | sudo tee -a "$HOME/.bashrc"
+  # shellcheck disable=SC2016
+  echo 'export PATH=/opt/keycloak/bin:$PATH' | sudo tee -a "$HOME/.bashrc"
+
 fi
 
 ################################################################################
