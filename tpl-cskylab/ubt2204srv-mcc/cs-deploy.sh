@@ -504,6 +504,11 @@ if [[ "${execution_mode}" == "install" ]]; then
   # shellcheck disable=SC2016
   echo 'export PATH=/opt/keycloak/bin:$PATH' | sudo tee -a "$HOME/.bashrc"
 
+  # Install influxdb client
+  # Ref: https://docs.influxdata.com/influxdb/v2.7/tools/influx-cli/?t=Linux
+  wget https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.7.3-linux-amd64.tar.gz
+  tar xvzf influxdb2-client-2.7.3-linux-amd64.tar.gz
+  mv influx /usr/local/bin/
 fi
 
 ################################################################################
