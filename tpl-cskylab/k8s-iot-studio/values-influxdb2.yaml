@@ -1,6 +1,6 @@
 image:
   repository: "{{ .registry.proxy }}/library/influxdb"
-  tag: 2.5.1
+  tag: 2.7-alpine
   pullPolicy: IfNotPresent
 
 podAnnotations: {}
