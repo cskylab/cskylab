@@ -21,12 +21,12 @@ env:
   # -- Node.js runtime arguments
   NODE_OPTIONS:
   # -- Setting to `true` starts Node-RED with the projects feature enabled
-  NODE_RED_ENABLE_PROJECTS: true
+  NODE_RED_ENABLE_PROJECTS:
   # -- Setting to `true` starts Node-RED in safe (not running) mode
   NODE_RED_ENABLE_SAFE_MODE:
   # -- Location of the flows configuration file.
   # If you set `FLOWS: ""` then the flow file can be set via the `flowFile` property in the `settings.js` file.
-  FLOWS: flows.json
+  FLOWS:
 
 # -- Configures service settings for the chart.
 # @default -- See values.yaml
