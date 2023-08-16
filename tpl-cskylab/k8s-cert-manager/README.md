@@ -83,9 +83,9 @@ You can obtain the base64 values `tls.crt` and `tls.key` from the private and pu
 ```bash
 # Base64 encoding with single line format
 # Public key
-base64 ca-test-internal.crt ca-test-internal.crt.b64
+base64 -w 0 ca-test-internal.crt > ca-test-internal.crt.b64
 # Private key
-base64 ca-test-internal.key ca-test-internal.key.b64
+base64 -w 0 ca-test-internal.key > ca-test-internal.key.b64
 ```
 
 To prepare a private `./clusterissuer-*.yaml` file, you can use the following example:
