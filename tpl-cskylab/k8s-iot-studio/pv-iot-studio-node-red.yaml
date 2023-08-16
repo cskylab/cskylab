@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-node-red
   local:
-    path: /srv/{{ .namespace.name }}-node-red/data
+    path: /srv/{{ .datadirectoryname }}/data/node-red
   nodeAffinity:
     required:
       nodeSelectorTerms:

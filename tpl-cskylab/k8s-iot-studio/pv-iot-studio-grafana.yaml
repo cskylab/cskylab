@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-grafana
   local:
-    path: /srv/{{ .namespace.name }}-grafana/data
+    path: /srv/{{ .datadirectoryname }}/data/grafana
   nodeAffinity:
     required:
       nodeSelectorTerms:

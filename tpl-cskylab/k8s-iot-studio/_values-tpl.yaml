@@ -34,7 +34,7 @@ mosquitto:
   ## Must be previously configured in MetalLB
   loadbalancerip: 192.168.82.21
   ## External url
-  url: mosquitto-iot.mod.cskylab.net
+  url: mosquitto-iot-studio.mod.cskylab.net
   ## Credentials
   user: "admin"
   password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
@@ -43,7 +43,7 @@ nodered:
   ## Container timezone
   timezone: "UTC"
   ## External url
-  url: node-red-iot.mod.cskylab.net
+  url: node-red-iot-studio.mod.cskylab.net
   ## Credentials
   user: "admin"
   password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
@@ -54,19 +54,30 @@ influxdb:
   # influxdb bucket
   bucket: "iot-studio"
   # influxdb ui
-  url: influxdb-iot.mod.cskylab.net
+  url: influxdb-iot-studio.mod.cskylab.net
   ## Credentials
   user: "admin"
   password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
 
 grafana:
   # grafana ui access
-  url: grafana-iot.mod.cskylab.net
+  url: grafana-iot-studio.mod.cskylab.net
   ## Credentials
   user: "admin"
   password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
 
+publishing:
+  ## External url
+  url: iot-studio.mod.cskylab.net
+
+oauthconfig:
+  ## Client secret from keycloak
+  client_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  ## cookie secret (random)
+  cookie_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 ## Local storage PV's node affinity (Configured in pv*.yaml)
+datadirectoryname: iot-studio
 localpvnodes:    # (k8s node names)
   all_pv: k8s-mod-n1
   # k8s nodes domain name

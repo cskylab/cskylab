@@ -68,31 +68,7 @@ To run this namespace, you must deploy before k8s-keycloakx to configure the exa
 
 ### MetalLB configuration
 
-Review and deploy if necessary file `config.yaml` in MetalLB configuration for k8s-mod and k8s-pro cluster in order to include load balanced IP addresses for mosquitto service.
-
-Example:
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-      - name: static-pool
-        auto-assign: false
-        protocol: layer2
-        addresses:
-        - 192.168.82.20/32  # k8s-ingress   
-        - 192.168.82.21/32  # mosquitto iot-studio
-        - 192.168.82.22/32  # mosquitto iot-edge
-      - name: dynamic-pool
-        protocol: layer2
-        addresses:
-        - 192.168.82.75-192.168.82.90
-```
+Review and deploy if necessary file `resources.yaml` in MetalLB configuration for k8s-mod and k8s-pro cluster in order to include load balanced IP addresses for mosquitto service.
 
 ### Administrative tools
 
@@ -113,7 +89,7 @@ echo \
 
 ### LVM Data Services
 
-A shared data service must be previously created in the two nodes assigned to support all iot-edge services deployed:
+A shared data service must be previously created in the two nodes assigned to support all services deployed:
 
 | Data service                    | Kubernetes PV node           | Kubernetes RSync node           |
 | ------------------------------- | ---------------------------- | ------------------------------- |
@@ -303,6 +279,7 @@ echo \
 && echo "******** Injecting file node-red-settings.js in node-red configuration" \
 && echo \
 && scp ./node-red-settings.js {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }}:/srv/{{ .datadirectoryname }}/data/{{ .edgename }}/node-red/settings.js \
+&& scp ./node-red_env.js {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }}:/srv/{{ .datadirectoryname }}/data/{{ .edgename }}/node-red/node-red_env \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -445,7 +422,7 @@ To perform RSync manual copies on demand, execute from your **mcc** management m
 
 ```bash
 #
-# RSync node-red data services
+# RSync data services
 #
 echo \
 && echo "******** START of snippet execution ********" \
@@ -469,9 +446,10 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ##
 ## RSync path:  /srv/{{ .datadirectoryname }}
 ## To Node:     {{ .localrsyncnodes.all_pv }}
-## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .datadirectoryname }} >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/{{ .datadirectoryname }}  -t {{ .localrsyncnodes.all_pv }}.{{ .namespace.domain }}  >> /var/log/cs-rsync.log 2>&1
+# At minute 0, 10, 20, 30, 40, and 50 past every hour from 1 through 23.
+# 0,10,20,30,40,50 1-23 * * *       root    run-one cs-source-rsync-ab-mode.sh >> /var/log/cs-rsync.log 2>&1
 ```
+>Note: Script `cs-source-rsync-ab-mode.sh` must exist in host {{ .localpvnodes.all_pv }}
 
 #### Restic backup
 
@@ -518,9 +496,11 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ################################################################################
 ##
 ## Data service:  /srv/{{ .datadirectoryname }}
-## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .datadirectoryname }} >> /var/log/cs-restic.log 2>&1 ; restic unlock --remove-all >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .datadirectoryname }}   -t {{ .datadirectoryname }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .datadirectoryname }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+## At minute 15 and 45 past every hour from 1 through 23.
+# 15,45 1-23 * * *       root    run-one cs-source-restic.sh >> /var/log/cs-restic.log 2>&1
 ```
+
+>Note: Script `cs-source-restic.sh` must exist in host {{ .localpvnodes.all_pv }}
 
 ## Reference
 

@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-mosquitto-data
   local:
-    path: /srv/{{ .namespace.name }}-mosquitto/data/data
+    path: /srv/{{ .datadirectoryname }}/data/mosquitto/data
   nodeAffinity:
     required:
       nodeSelectorTerms:

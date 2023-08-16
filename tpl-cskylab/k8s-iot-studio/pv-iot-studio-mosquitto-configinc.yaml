@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-mosquitto-configinc
   local:
-    path: /srv/{{ .namespace.name }}-mosquitto/data/configinc
+    path: /srv/{{ .datadirectoryname }}/data/mosquitto/configinc
   nodeAffinity:
     required:
       nodeSelectorTerms:
