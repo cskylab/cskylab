@@ -92,6 +92,7 @@ source_charts="$(
 
 ## Repositories
 helm repo add k8s-at-home https://k8s-at-home.com/charts/
+helm repo add oauth2-proxy https://oauth2-proxy.github.io/manifests
 helm repo add influxdata https://helm.influxdata.com/
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
@@ -99,6 +100,7 @@ helm repo update
 ## Charts
 helm pull k8s-at-home/mosquitto --version 4.8.2 --untar
 helm pull k8s-at-home/node-red --version 10.3.2 --untar
+helm pull oauth2-proxy/oauth2-proxy --version 6.16.1 --untar
 helm pull influxdata/influxdb2 --version 2.1.1 --untar
 helm pull bitnami/grafana --version 8.2.33 --untar
 
