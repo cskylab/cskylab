@@ -79,6 +79,12 @@ publishing:
   ## External url
   url: iot-edge.pro.cskylab.net
 
+oauthconfig:
+  ## Client secret from keycloak
+  client_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  ## cookie secret (random)
+  cookie_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 ## Local storage PV's node affinity (Configured in pv*.yaml)
 datadirectoryname: iot-edge-shard1
 edgename: iot-edge
