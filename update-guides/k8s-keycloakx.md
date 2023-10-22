@@ -4,23 +4,97 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v23-04-27](#v23-04-27)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
+    - [PostgreSQL migration](#postgresql-migration)
+    - [Keycloak migration](#keycloak-migration)
+  - [Reference](#reference)
+- [v23-04-27](#v23-04-27)
+  - [Background](#background-1)
+  - [How-to guides](#how-to-guides-1)
     - [1.- Uninstall keycloakx namespace](#1--uninstall-keycloakx-namespace)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
     - [4.- Install new keycloakx namespace](#4--install-new-keycloakx-namespace)
-  - [Reference](#reference)
+  - [Reference](#reference-1)
 - [v22-12-19](#v22-12-19)
-  - [Background](#background-1)
-  - [How-to guides](#how-to-guides-1)
+  - [Background](#background-2)
+  - [How-to guides](#how-to-guides-2)
     - [1.- Change image section in values-postgresql.yaml](#1--change-image-section-in-values-postgresqlyaml)
     - [2.- Update script cs-deploy.sh](#2--update-script-cs-deploysh)
     - [3.- Pull charts \& update](#3--pull-charts--update)
-  - [Reference](#reference-1)
+  - [Reference](#reference-2)
 
 ---
+## v99-99-99
+
+### Background
+
+Chart codecentric/keycloakx 2.3.0 updates chart components in keycloak appVersion 22.0.4
+Chart bitnami/postgresql 13.1.5 updates chart components in postgresql appVersion 15.x (image selected in values-posgresql.yaml)   
+
+### How-to guides
+
+#### PostgreSQL migration
+
+- This upgrade requires to update from postgresql 14 to 15 version following the new procedure covered in `README.md`. 
+
+#### Keycloak migration
+
+- Change the following sections in helm chart values file `values-keycloakx.yaml`:
+
+```yaml
+image:
+  # The Keycloak image repository
+  repository: quay.io/keycloak/keycloak
+  # Overrides the Keycloak image tag whose default is the chart appVersion
+  tag: "22.0.4"
+  # Overrides the Keycloak image tag with a specific digest
+  digest: ""
+  # The Keycloak image pull policy
+  pullPolicy: IfNotPresent
+
+```
+
+```yaml
+# Additional environment variables for Keycloak
+extraEnv: |
+  - name: KEYCLOAK_ADMIN
+    value: keycloak
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    value: "{{ .publishing.password }}"
+  - name: JAVA_OPTS_APPEND
+    value: >-
+      -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+      -XX:+UseContainerSupport
+      -XX:MaxRAMPercentage=50.0
+      -Djava.net.preferIPv4Stack=true
+      -Djava.awt.headless=true
+```
+
+```yaml
+## Overrides the default entrypoint of the Keycloak container
+command:
+  - "/opt/keycloak/bin/kc.sh"
+  - "start"
+  - "--http-enabled=true"
+  - "--http-port=8080"
+  - "--hostname-strict=false"
+  - "--hostname-strict-https=false"
+
+```
+
+- Change `csdeploy.sh` to migrate keycloak to intermediate codecentric/keycloakx 2.2.2 (appVersion 21.1.1)
+- Change `csdeploy.sh` to migrate keycloak to verskon codecentric/keycloakx 2.3.0 (appVersion 22.0.4)
+
+### Reference
+
+- <https://github.com/codecentric/helm-charts/tree/master/charts/keycloakx>
+- <https://www.keycloak.org/>
+
+---
+
 
 ## v23-04-27
 
