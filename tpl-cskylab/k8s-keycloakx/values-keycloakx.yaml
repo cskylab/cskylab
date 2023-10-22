@@ -51,7 +51,7 @@ extraEnv: |
     value: "{{ .publishing.password }}"
   - name: JAVA_OPTS_APPEND
     value: >-
-      -Djgroups.dns.query={{ namespace.name }}-headless
+      -Djgroups.dns.query={{ .namespace.name }}-headless
       -XX:+UseContainerSupport
       -XX:MaxRAMPercentage=50.0
       -Djava.net.preferIPv4Stack=true
