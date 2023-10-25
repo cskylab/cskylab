@@ -38,7 +38,7 @@ Welcome to cSkyLab release of v99-99-99.
 
 ### Ubuntu 22.04 Servers Updates
 
-New server templates in this release:
+Updated server templates in this release:
 
 | Template         |                                                                          |
 | ---------------- | ------------------------------------------------------------------------ |
