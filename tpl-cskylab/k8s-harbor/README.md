@@ -1,8 +1,8 @@
 # [Harbor](https://goharbor.io/) registry <!-- omit in toc -->
 
-## v23-04-27 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v16.4.10 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v19.1.0 <!-- omit in toc -->
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
@@ -26,6 +26,12 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
     - [Restic backup](#restic-backup)
   - [Create private registry](#create-private-registry)
   - [Create dockerhub proxy](#create-dockerhub-proxy)
+  - [Upgrade PostgreSQL version](#upgrade-postgresql-version)
+    - [1.- Backup PostgreSQL database version](#1--backup-postgresql-database-version)
+    - [2.- Uninstall harbor namespace](#2--uninstall-harbor-namespace)
+    - [3.- Deploy New Postgres Image in a limited namespace](#3--deploy-new-postgres-image-in-a-limited-namespace)
+    - [4.- Import PostgreSQL Dump into the new pod](#4--import-postgresql-dump-into-the-new-pod)
+    - [5.- Uninstall \& Reinstall the namespace](#5--uninstall--reinstall-the-namespace)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
 - [Reference](#reference)
@@ -89,7 +95,6 @@ echo \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
-&& mkdir "/srv/{{ .namespace.name }}/data/chartmuseum" \
 && mkdir "/srv/{{ .namespace.name }}/data/jobservice" \
 && mkdir "/srv/{{ .namespace.name }}/data/scandata" \
 && mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
@@ -110,7 +115,6 @@ echo \
 && echo \
 && ssh {{ .localrsyncnodes.localadminusername }}@{{ .localrsyncnodes.all_pv }}.{{ .localrsyncnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
-&& mkdir "/srv/{{ .namespace.name }}/data/chartmuseum" \
 && mkdir "/srv/{{ .namespace.name }}/data/jobservice" \
 && mkdir "/srv/{{ .namespace.name }}/data/scandata" \
 && mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
@@ -380,6 +384,67 @@ To pull official images or from single level repositories, make sure to include 
 ```bash
 docker pull {{ .publishing.url }}/dockerhub/library/nginx:latest
 ```
+
+### Upgrade PostgreSQL version
+
+#### 1.- Backup PostgreSQL database version
+
+The `pg_dumpall` utility is used for writing out (dumping) all of your PostgreSQL databases of a cluster. It accomplishes this by calling the pg_dump command for each database in a cluster, while also dumping global objects that are common to all databases, such as database roles and tablespaces.
+
+The official PostgreSQL Docker image come bundled with all of the standard utilities, such as pg_dumpall, and it is what we will use in this tutorial to perform a complete backup of our database server.
+
+If your Postgres server is running as a Kubernetes Pod, you will execute the following command:
+
+```bash
+kubectl -n {{ .namespace.name }} exec -i {{ .namespace.name }}-postgresql-0 -- /bin/bash -c "PGPASSWORD='NoFear21' pg_dumpall -U postgres" > postgresql.dump
+```
+
+#### 2.- Uninstall harbor namespace
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/harbor` repository directory.
+
+- Remove harbor namespace by running:
+
+```bash
+# Uninstall chart and namespace.  
+./csdeploy.sh -m uninstall
+```
+
+#### 3.- Deploy New Postgres Image in a limited namespace
+
+The second step is to deploy a new Postgress container using the updated image version. This container MUST NOT mount the same volume from the older Postgress container. It will need to mount a new volume for the database.
+
+>**Note**: If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
+
+To deploy the new version on an empty volume:
+
+- Delete the PostgreSQL data service (view snippets in README.md)
+- Re-Create the PostgreSQL data service (view snippets in README.md)
+- Change the following section of `values-harbor` to update PostgreSQL:
+
+```yaml
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 13.12.0-debian-11-r57
+...
+```
+
+- Install the namespace by running `csdeploy.sh -m install`
+
+#### 4.- Import PostgreSQL Dump into the new pod
+With the new Postgres container running with a new volume mount for the data directory, you will use the psql command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
+
+```bash
+kubectl -n {{ .namespace.name }} exec -i {{ .namespace.name }}-postgresql-0 -- /bin/bash -c "PGPASSWORD='NoFear21' psql -U postgres" < postgresql.dump
+```
+
+#### 5.- Uninstall & Reinstall the namespace
+
+- Uninstall the namespace by running `csdeploy.sh -m uninstall`
+- Install the namespace by running `csdeploy.sh -m install`
 
 ### Utilities
 

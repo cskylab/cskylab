@@ -73,36 +73,36 @@ ingress:
     ##
     tls: true
 
-  ## Configure the ingress resource that allows you to access Notary
-  ## ref: https://kubernetes.io/docs/user-guide/ingress/
-  ##
-  notary:
-    ## @param ingress.notary.hostname Default host for the ingress record
-    ##
-    hostname: notary.{{ .publishing.url }}
-    ## @param ingress.notary.annotations [object] Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
-    ## Use this parameter to set the required annotations for cert-manager, see
-    ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
-    ## e.g:
-    ## annotations:
-    ##   kubernetes.io/ingress.class: nginx
-    ##   cert-manager.io/cluster-issuer: cluster-issuer-name
-    ##
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      cert-manager.io/cluster-issuer: {{ .certificate.clusterissuer }}
-      ingress.kubernetes.io/ssl-redirect: 'true'
-      ingress.kubernetes.io/proxy-body-size: '0'
-      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
-      nginx.ingress.kubernetes.io/proxy-body-size: '0'
-    ## @param ingress.notary.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
-    ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.notary.hostname }}`
-    ## You can:
-    ##   - Use the `ingress.notary.secrets` parameter to create this TLS secret
-    ##   - Rely on cert-manager to create it by setting the corresponding annotations
-    ##   - Rely on Helm to create self-signed certificates by setting `ingress.notary.selfSigned=true`
-    ##
-    tls: true
+  # ## Configure the ingress resource that allows you to access Notary
+  # ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  # ##
+  # notary:
+  #   ## @param ingress.notary.hostname Default host for the ingress record
+  #   ##
+  #   hostname: notary.{{ .publishing.url }}
+  #   ## @param ingress.notary.annotations [object] Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  #   ## Use this parameter to set the required annotations for cert-manager, see
+  #   ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  #   ## e.g:
+  #   ## annotations:
+  #   ##   kubernetes.io/ingress.class: nginx
+  #   ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  #   ##
+  #   annotations:
+  #     kubernetes.io/ingress.class: nginx
+  #     cert-manager.io/cluster-issuer: {{ .certificate.clusterissuer }}
+  #     ingress.kubernetes.io/ssl-redirect: 'true'
+  #     ingress.kubernetes.io/proxy-body-size: '0'
+  #     nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+  #     nginx.ingress.kubernetes.io/proxy-body-size: '0'
+  #   ## @param ingress.notary.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  #   ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.notary.hostname }}`
+  #   ## You can:
+  #   ##   - Use the `ingress.notary.secrets` parameter to create this TLS secret
+  #   ##   - Rely on cert-manager to create it by setting the corresponding annotations
+  #   ##   - Rely on Helm to create self-signed certificates by setting `ingress.notary.selfSigned=true`
+  #   ##
+  #   tls: true
 
 ## The persistence is enabled by default and a default StorageClass
 ## is needed in the k8s cluster to provision volumes dynamicly.
@@ -155,42 +155,42 @@ persistence:
       size: 1Gi
       annotations: {}
       selector: {}
-      ## @param persistence.persistentVolumeClaim.jobservice.scanData.existingClaim Name of an existing PVC to use
-      ## @param persistence.persistentVolumeClaim.jobservice.scanData.storageClass PVC Storage Class for Harbor Jobservice scan data volume
-      ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
-      ## @param persistence.persistentVolumeClaim.jobservice.scanData.subPath The sub path used in the volume
-      ## @param persistence.persistentVolumeClaim.jobservice.scanData.accessModes The access mode of the volume
-      ## @param persistence.persistentVolumeClaim.jobservice.scanData.size The size of the volume
-      ## @param persistence.persistentVolumeClaim.jobservice.scanData.annotations Annotations for the PVC
-      ## @param persistence.persistentVolumeClaim.jobservice.scanData.selector Selector to match an existing Persistent Volume
-      ##
-      scanData:
-        existingClaim: ""
-        storageClass: "{{ .namespace.name }}-scandata"
-        subPath: ""
-        accessModes:
-          - ReadWriteOnce
-        size: 1Gi
-        annotations: {}
-        selector: {}
-    ## @param persistence.persistentVolumeClaim.chartmuseum.existingClaim Name of an existing PVC to use
-    ## @param persistence.persistentVolumeClaim.chartmuseum.storageClass PVC Storage Class for Chartmuseum data volume
+    ## @param persistence.persistentVolumeClaim.jobservice.scanData.existingClaim Name of an existing PVC to use
+    ## @param persistence.persistentVolumeClaim.jobservice.scanData.storageClass PVC Storage Class for Harbor Jobservice scan data volume
     ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
-    ## @param persistence.persistentVolumeClaim.chartmuseum.subPath The sub path used in the volume
-    ## @param persistence.persistentVolumeClaim.chartmuseum.accessModes The access mode of the volume
-    ## @param persistence.persistentVolumeClaim.chartmuseum.size The size of the volume
-    ## @param persistence.persistentVolumeClaim.chartmuseum.annotations Annotations for the PVC
-    ## @param persistence.persistentVolumeClaim.chartmuseum.selector Selector to match an existing Persistent Volume
+    ## @param persistence.persistentVolumeClaim.jobservice.scanData.subPath The sub path used in the volume
+    ## @param persistence.persistentVolumeClaim.jobservice.scanData.accessModes The access mode of the volume
+    ## @param persistence.persistentVolumeClaim.jobservice.scanData.size The size of the volume
+    ## @param persistence.persistentVolumeClaim.jobservice.scanData.annotations Annotations for the PVC
+    ## @param persistence.persistentVolumeClaim.jobservice.scanData.selector Selector to match an existing Persistent Volume
     ##
-    chartmuseum:
+    scanData:
       existingClaim: ""
-      storageClass: "{{ .namespace.name }}-chartmuseum"
+      storageClass: "{{ .namespace.name }}-scandata"
       subPath: ""
       accessModes:
         - ReadWriteOnce
-      size: 5Gi
+      size: 1Gi
       annotations: {}
       selector: {}
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.existingClaim Name of an existing PVC to use
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.storageClass PVC Storage Class for Chartmuseum data volume
+    # ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.subPath The sub path used in the volume
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.accessModes The access mode of the volume
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.size The size of the volume
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.annotations Annotations for the PVC
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.selector Selector to match an existing Persistent Volume
+    # ##
+    # chartmuseum:
+    #   existingClaim: ""
+    #   storageClass: "{{ .namespace.name }}-chartmuseum"
+    #   subPath: ""
+    #   accessModes:
+    #     - ReadWriteOnce
+    #   size: 5Gi
+    #   annotations: {}
+    #   selector: {}
     ## @param persistence.persistentVolumeClaim.trivy.storageClass PVC Storage Class for Trivy data volume
     ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
     ## @param persistence.persistentVolumeClaim.trivy.accessModes The access mode of the volume
@@ -225,20 +225,25 @@ postgresql:
       max_connections = 1024
     initdb:
       scripts:
-        initial-notaryserver.sql: |
-          CREATE DATABASE notaryserver;
-          CREATE USER server;
-          alter user server with encrypted password 'password';
-          GRANT ALL PRIVILEGES ON DATABASE notaryserver TO server;
-        initial-notarysigner.sql: |
-          CREATE DATABASE notarysigner;
-          CREATE USER signer;
-          alter user signer with encrypted password 'password';
-          GRANT ALL PRIVILEGES ON DATABASE notarysigner TO signer;
         initial-registry.sql: |
           CREATE DATABASE registry ENCODING 'UTF8';
           \c registry;
           CREATE TABLE schema_migrations(version bigint not null primary key, dirty boolean not null);
+      # scripts:
+      #   initial-notaryserver.sql: |
+      #     CREATE DATABASE notaryserver;
+      #     CREATE USER server;
+      #     alter user server with encrypted password 'password';
+      #     GRANT ALL PRIVILEGES ON DATABASE notaryserver TO server;
+      #   initial-notarysigner.sql: |
+      #     CREATE DATABASE notarysigner;
+      #     CREATE USER signer;
+      #     alter user signer with encrypted password 'password';
+      #     GRANT ALL PRIVILEGES ON DATABASE notarysigner TO signer;
+      #   initial-registry.sql: |
+      #     CREATE DATABASE registry ENCODING 'UTF8';
+      #     \c registry;
+      #     CREATE TABLE schema_migrations(version bigint not null primary key, dirty boolean not null);
     persistence:
       enabled: true
       storageClass: {{ .namespace.name }}-postgresql

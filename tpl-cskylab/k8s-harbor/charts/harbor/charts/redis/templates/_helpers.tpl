@@ -1,3 +1,8 @@
+{{/*
+Copyright VMware, Inc.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
 {{/* vim: set filetype=mustache: */}}
 
 {{/*
@@ -204,7 +209,7 @@ Get the password key to be retrieved from Redis&reg; secret.
 */}}
 {{- define "redis.secretPasswordKey" -}}
 {{- if and .Values.auth.existingSecret .Values.auth.existingSecretPasswordKey -}}
-{{- printf "%s" .Values.auth.existingSecretPasswordKey -}}
+{{- printf "%s" (tpl .Values.auth.existingSecretPasswordKey $) -}}
 {{- else -}}
 {{- printf "redis-password" -}}
 {{- end -}}
