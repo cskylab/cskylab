@@ -257,14 +257,22 @@ postgresql:
 ##
 redis:
   enabled: true
-  nameOverride:
-  ## image:
-  ##   tag:
-  ## password: ""
-  ##
-  usePassword: false
-  cluster:
+  auth:
     enabled: false
+    ## Redis&reg; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
+    ## It should always be set using the password value or in the existingSecret to avoid issues
+    ## with Harbor.
+    ## The password value is ignored if existingSecret is set
+    ##
+    password: ""
+    existingSecret: ""
+  architecture: standalone
+  sentinel:
+    enabled: false
+    masterSet: mymaster
+    service:
+      ports:
+        sentinel: 26379
   master:
     persistence:
       enabled: true

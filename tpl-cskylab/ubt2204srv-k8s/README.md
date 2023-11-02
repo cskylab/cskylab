@@ -702,6 +702,14 @@ sudo reboot
 
 ### Force delete namespace
 
+To check what's going on at the status of the namespace you can check:
+
+```bash
+kubectl get ns {NAMESPACE} -o yaml
+```
+
+To force namespace deletion execute:
+
 ```bash
 NAMESPACE={YOUR_NAMESPACE_TO_DELETE}
 kubectl proxy &
