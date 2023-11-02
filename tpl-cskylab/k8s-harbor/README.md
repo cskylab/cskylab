@@ -396,7 +396,7 @@ The official PostgreSQL Docker image come bundled with all of the standard utili
 If your Postgres server is running as a Kubernetes Pod, you will execute the following command:
 
 ```bash
-kubectl -n {{ .namespace.name }} exec -i {{ .namespace.name }}-postgresql-0 -- /bin/bash -c "PGPASSWORD='NoFear21' pg_dumpall -U postgres" > postgresql.dump
+kubectl -n {{ .namespace.name }} exec -i {{ .namespace.name }}-postgresql-0 -- /bin/bash -c "PGPASSWORD='{{ .publishing.password }}' pg_dumpall -U postgres" > postgresql.dump
 ```
 
 #### 2.- Uninstall harbor namespace
@@ -438,7 +438,7 @@ postgresql:
 With the new Postgres container running with a new volume mount for the data directory, you will use the psql command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
 
 ```bash
-kubectl -n {{ .namespace.name }} exec -i {{ .namespace.name }}-postgresql-0 -- /bin/bash -c "PGPASSWORD='NoFear21' psql -U postgres" < postgresql.dump
+kubectl -n {{ .namespace.name }} exec -i {{ .namespace.name }}-postgresql-0 -- /bin/bash -c "PGPASSWORD='{{ .publishing.password }}' psql -U postgres" < postgresql.dump
 ```
 
 #### 5.- Uninstall & Reinstall the namespace
