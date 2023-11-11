@@ -63,7 +63,7 @@
 
 ### Background
 
-Harbor chart 19.1.0 updates components versions in Harbor appVersion 2.9.0. This version deprecates the use of  `notary` and `chartmuseum`.
+Harbor chart 19.1.1 updates components versions in Harbor appVersion 2.9.1. This version deprecates the use of  `notary` and `chartmuseum`.
 
 This procedure updates Harbor installation in k8s-mod cluster.
 
@@ -146,7 +146,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull bitnami/harbor --version 19.1.0 --untar
+helm pull bitnami/harbor --version 19.1.1 --untar
 
 EOF
 )"
@@ -158,7 +158,7 @@ EOF
 ``` bash
 ## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v19.1.0 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v19.1.1 <!-- omit in toc -->
 ```
 
 - Save file
