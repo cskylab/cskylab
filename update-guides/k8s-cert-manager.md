@@ -41,7 +41,7 @@
 
 ### Background
 
-Jetstack chart cert-manager 1.13.1 updates components for appVersion 1.13.1.
+Jetstack chart cert-manager 1.13.2 updates components for appVersion 1.13.2.
 
 There are some considerations concerning migrations that you can review at <https://cert-manager.io/docs/installation/upgrading/>
 
@@ -69,7 +69,7 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 # Charts
-helm pull jetstack/cert-manager --version 1.13.1 --untar
+helm pull jetstack/cert-manager --version 1.13.2 --untar
 
 EOF
 )"
@@ -81,7 +81,7 @@ EOF
 ``` bash
 ## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: `jetstack/cert-manager v1.13.1` <!-- omit in toc -->
+## Helm charts: `jetstack/cert-manager v1.13.2` <!-- omit in toc -->
 ```
 
 - Save file
