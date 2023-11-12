@@ -1,0 +1,23 @@
+1. Index a repo:
+   With new indexer:
+   $ kubectl exec gitlab-zoekt-0 -- curl -XPOST -d '{"GitalyConnectionInfo":{"Address":"tcp://gitaly.host:2305","Storage":"default","Path":"@hashed/a/b/c.git"},"RepoId":7,"FileSizeLimit":2097152,"Timeout":"10m"}' 'http://127.0.0.1:{{ .Values.gateway.listen.port }}/indexer/index'
+
+   With legacy indexer:
+   $ kubectl exec gitlab-zoekt-0 -- curl -XPOST -d '{"CloneUrl":"https://gitlab.com/gitlab-org/gitlab-development-kit.git","RepoId":74823}' 'http://127.0.0.1:{{ .Values.gateway.listen.port }}/index'
+
+2. Search:
+   $ kubectl exec gitlab-zoekt-0 -- curl -XPOST -d '{"Q":"gitaly"}' 'http://127.0.0.1:{{ .Values.gateway.listen.port }}/api/search'
+
+4. The gateway is exposed via a service on port {{ .Values.gateway.listen.port }} for each replica (where the replica number is part of the DNS name).
+   You can connect from any other pod to index and search:
+   $ kubectl exec <some-pod> -- curl -XPOST -d '{"Q":"gitaly"}' 'http://gitlab-zoekt-0.gitlab-zoekt.default.svc.cluster.local:{{ .Values.gateway.listen.port }}/api/search'
+
+{{- if .Values.ingress.enabled }}
+5. Get the IP of the ingress by running these commands:
+   $ kubectl get ingress gitlab-zoekt
+
+   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+6. Then do a search via the Ingress
+
+   $ curl -H 'Host: gitlab-zoekt.local' -XPOST -d '{"Q":"gitaly"}' 'http://<IP_ADDRESS>:{{ .Values.gateway.listen.port }}/api/search'
+{{- end }}

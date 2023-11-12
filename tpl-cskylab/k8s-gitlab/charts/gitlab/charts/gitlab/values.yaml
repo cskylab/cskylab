@@ -39,6 +39,17 @@ global:
     knownDecompositions:
       - main
       - ci
+      - embedding
+  clickhouse:
+    enabled: false
+    # main:
+    #   username: gitlab
+    #   password:
+    #     secret:
+    #     key:
+    #   database: gitlab_clickhouse_main_production
+    #   url:
+
 
 gitlab-runner:
   enabled: false

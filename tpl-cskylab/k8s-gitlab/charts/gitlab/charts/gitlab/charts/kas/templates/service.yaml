@@ -27,17 +27,17 @@ spec:
     - port: {{ .Values.service.externalPort }}
       targetPort: {{ .Values.service.internalPort }}
       protocol: TCP
-      name: grpc-{{ template "name" . }}-external-api
+      name: tcp-{{ template "name" . }}-external-api
     - port: {{ .Values.global.kas.service.apiExternalPort }}
       targetPort: {{ .Values.service.apiInternalPort }}
       protocol: TCP
-      name: grpc-{{ template "name" . }}-internal-api
+      name: tcp-{{ template "name" . }}-internal-api
     - port: {{ .Values.service.kubernetesApiPort }}
       targetPort: {{ .Values.service.kubernetesApiPort }}
       protocol: TCP
-      name: grpc-{{ template "name" . }}-k8s-api
+      name: tcp-{{ template "name" . }}-k8s-api
   {{- if .Values.metrics.enabled }}
-    - port: {{ default .Values.observability.port .Values.metrics.port }}
+    - port: {{ .Values.observability.port }}
       targetPort: http-metrics
       protocol: TCP
       name: http-metrics

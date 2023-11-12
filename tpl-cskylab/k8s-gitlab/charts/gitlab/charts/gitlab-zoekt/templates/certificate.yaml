@@ -1,0 +1,24 @@
+{{- if .Values.gateway.tls.certificate.create -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.gateway.tls.certificate.name }}
+  {{- with .Values.gateway.tls.certificate.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.gateway.tls.certificate.dnsNames }}
+  dnsNames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  secretName: {{ .Values.gateway.tls.certificate.secretName }}
+  {{- with .Values.gateway.tls.certificate.privateKey }}
+  privateKey:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  issuerRef:
+    name: {{ .Values.gateway.tls.certificate.issuer.name }}
+    kind: {{ .Values.gateway.tls.certificate.issuer.kind }}
+    group: {{ .Values.gateway.tls.certificate.issuer.group }}
+{{- end }}

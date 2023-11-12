@@ -1,6 +1,6 @@
 {{- if .Values.enabled -}}
 {{- $imageCfg := dict "global" .Values.global.image "local" .Values.image -}}
-{{- $initImageCfg := dict "global" $.Values.global.busybox.image "local" $.Values.init.image -}}
+{{- $initImageCfg := include "gitlab.configure.config" $.Values | fromYaml -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -81,8 +81,9 @@ spec:
       initContainers:
         {{- include "gitlab.certificates.initContainer" . | nindent 8 }}
         - name: configure
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
+          image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
+          {{- include "gitlab.init.containerSecurityContext" $ | indent 10 }}
           command: ["sh", "/config/configure"]
           volumeMounts:
             - name: registry-secrets
@@ -98,6 +99,7 @@ spec:
         - name: dependencies
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}{{ include "gitlab.image.tagSuffix" . }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
+          {{- include "gitlab.init.containerSecurityContext" $ | indent 10 }}
           command: ["/scripts/wait-for-deps"]
           volumeMounts:
             - name: registry-server-config
@@ -114,6 +116,7 @@ spec:
         - name: registry
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}{{ include "gitlab.image.tagSuffix" . }}"
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
+          {{- include "gitlab.containerSecurityContext" $ | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
           {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
@@ -214,11 +217,8 @@ spec:
           {{- if .Values.database.enabled -}}
           {{-   include "gitlab.registry.database.password.projectedVolume" . | nindent 10 }}
           {{-   include "gitlab.registry.psql.ssl" . | nindent 10 }}
-          {{- end -}}
-          {{- if .Values.migration.enabled -}}
-          {{- include "gitlab.registry.notificationSecret.mount" $ | nindent 10 -}}
-          {{- end -}}
-          {{- if .Values.tls.enabled -}}
+          {{- end }}
+          {{- if .Values.tls.enabled }}
           # TLS secret for HTTPS service
           - secret:
               name: {{ include "gitlab.registry.tls.secret" $ }}
@@ -227,7 +227,7 @@ spec:
                   path: tls/tls.crt
                 - key: tls.key
                   path: tls/tls.key
-          {{- end -}}
+          {{- end }}
           {{- if and .Values.debug.tls.enabled .Values.debug.tls.secretName }}
           # TLS secret for metrics/debug HTTPS service
           - secret:
@@ -237,7 +237,7 @@ spec:
                   path: tls/tls-debug.crt
                 - key: tls.key
                   path: tls/tls-debug.key
-          {{- end -}}
-          {{- include "gitlab.registry.redisCacheSecret.mount" $ | nindent 10 -}}
+          {{- end }}
+          {{- include "gitlab.registry.redisCacheSecret.mount" $ | nindent 10 }}
       {{- include "gitlab.certificates.volumes" . | nindent 6 }}
 {{- end -}}

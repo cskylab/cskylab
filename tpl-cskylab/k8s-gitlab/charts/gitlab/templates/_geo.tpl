@@ -55,3 +55,11 @@ Uses `postgresql-password` to match upstream postgresql chart when not using an
 {{- define "gitlab.geo.psql.password.key" -}}
 {{- default "postgresql-password" .Values.global.geo.psql.password.key | quote -}}
 {{- end -}}
+
+{{/*
+Calculates the IngressClass name of Ingresses accepting traffic from other Geo sites.
+*/}}
+{{- define "gitlab.geo.ingress.class.name" -}}
+{{- .Values.global.geo.ingressClass | default (printf "%s-nginx-geo" .Release.Name) -}}
+{{- end -}}
+

@@ -26,7 +26,13 @@ smtp_settings = {
   tls: {{ .Values.global.smtp.tls }},
   {{- end }}
   {{- if .Values.global.smtp.openssl_verify_mode }}
-  openssl_verify_mode: {{ .Values.global.smtp.openssl_verify_mode | quote }}
+  openssl_verify_mode: {{ .Values.global.smtp.openssl_verify_mode | quote }},
+  {{- end }}
+  {{- if .Values.global.smtp.open_timeout }}
+  open_timeout: {{ .Values.global.smtp.open_timeout | int }},
+  {{- end }}
+  {{- if .Values.global.smtp.read_timeout }}
+  read_timeout: {{ .Values.global.smtp.read_timeout | int }}
   {{- end }}
 }
 
@@ -73,5 +79,32 @@ email_smime:
   enabled: true
   key_file: /home/git/gitlab/.gitlab_smime_key
   cert_file: /home/git/gitlab/.gitlab_smime_cert
+{{- end }}
+{{- end }}
+
+{{/* microsoftGraphMailer secrets */}}
+{{- define "gitlab.appConfig.microsoftGraphMailer.mountSecrets" -}}
+# mount secrets for microsoftGraphMailer
+{{- if $.Values.global.appConfig.microsoft_graph_mailer.enabled }}
+- secret:
+    name: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.secret | required "Missing required secret containing the OAuth2 Client ID for outgoing email. Make sure to set `global.appConfig.microsoft_graph_mailer.client_secret.secret`" }}
+    items:
+      - key: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.key }}
+        path: microsoft_graph_mailer/client_secret
+{{- end }}
+{{- end -}}{{/* "gitlab.appConfig.microsoftGraphMailer.mountSecrets" "*/}}
+
+{{/* SMTP authentication secret */}}
+{{- define "gitlab.smtp.mountSecrets" -}}
+# mount secrets for SMTP
+{{- with $.Values.global.smtp }}
+{{-   $isNoneAuth := eq "none" (.authentication | default "none") }}
+{{-   if and .enabled (not $isNoneAuth) }}
+- secret:
+    name: {{ .password.secret | required "Missing required secret containing the SMTP password. Make sure to set `global.smtp.password.secret`" }}
+    items:
+      - key: {{ .password.key }}
+        path: smtp/smtp-password
+{{-   end }}
 {{- end }}
 {{- end }}

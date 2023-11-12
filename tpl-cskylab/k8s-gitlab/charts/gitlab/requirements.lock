@@ -13,27 +13,33 @@ dependencies:
   version: '*.*.*'
 - name: cert-manager
   repository: https://charts.jetstack.io/
-  version: v1.5.4
+  version: v1.11.1
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 15.18.0
 - name: postgresql
-  repository: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
-  version: 8.9.4
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.5.2
 - name: gitlab-runner
   repository: https://charts.gitlab.io/
-  version: 0.51.1
-- name: grafana
-  repository: https://grafana.github.io/helm-charts
-  version: 6.11.0
+  version: 0.58.1
 - name: redis
-  repository: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
-  version: 11.3.4
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.13.2
+- name: nginx-ingress
+  repository: ""
+  version: '*.*.*'
 - name: nginx-ingress
   repository: ""
   version: '*.*.*'
 - name: gitlab-zoekt
   repository: https://charts.gitlab.io/
-  version: 0.3.0
-digest: sha256:67477d660a351df330393ce9ed84458eafbc419de2c454339ed7539bde9c45ca
-generated: "2023-04-22T14:06:15.482471816Z"
+  version: 0.6.0
+- name: traefik
+  repository: https://helm.traefik.io/traefik
+  version: 10.19.4
+- name: kubernetes-ingress
+  repository: https://haproxytech.github.io/helm-charts
+  version: 1.32.0
+digest: sha256:b0f5706dbda7b7359af696aabd3130dc7968f8b925d2a1fbce2421b447a314b2
+generated: "2023-10-31T14:20:02.942582938Z"

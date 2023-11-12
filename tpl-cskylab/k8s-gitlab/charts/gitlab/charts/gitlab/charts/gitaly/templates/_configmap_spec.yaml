@@ -11,7 +11,7 @@ data:
     {{- if .Values.gpgSigning.enabled }}
     cp -v -L /init-config/signing_key.gpg  /init-secrets/gitaly/signing_key.gpg
     {{- end }}
-  config.toml.erb: |
+  config.toml.tpl: |
     # The directory where Gitaly's executables are stored
     bin_dir = "/usr/local/bin"
 
@@ -44,17 +44,17 @@ data:
     the contents of the ConfigMap, which would cause existing pods to restart unnecessarily.
     */}}
     {{ if not .skipStorages }}
-    <% @storages = [ {{ include "gitlab.praefect.gitaly.storageNames" . }}  ] %>
+    {% $storages := coll.Slice {{ include "gitlab.praefect.gitaly.storageNames" . }} %}
     {{- end }}
 
-    <% @hostname=ENV['HOSTNAME'].strip %>
-    <% if @storages.any? { |s| s.include?(@hostname) } %>
+    {% $hostname := .Env.HOSTNAME | strings.TrimSpace %}
+    {% if coll.Has $storages $hostname %}
     [[storage]]
-    name = "<%= @hostname %>"
+    name = "{% $hostname %}"
     path = "/home/git/repositories"
-    <% else %>
-    <% raise Exception, "Storage for node #{@hostname} is not present in the storageNames array. Did you use kubectl to scale up? You need to solely use helm for this purpose." %>
-    <% end %>
+    {% else %}
+    {% printf "Storage for node %q is not present in the storageNames array. Did you use kubectl to scale up? You need to solely use helm for this purpose." $hostname | fail %}
+    {% end %}
 
     {{- else }}
 
@@ -63,17 +63,17 @@ data:
     the contents of the ConfigMap, which would cause existing pods to restart unnecessarily.
     */}}
     {{ if not .skipStorages }}
-    <% @storages = [ {{ include "gitlab.gitaly.storageNames" . }}  ] %>
+    {% $storages := coll.Slice {{ include "gitlab.gitaly.storageNames" . }} %}
     {{- end }}
 
-    <% @index=`echo ${HOSTNAME##*-}`.to_i %>
-    <% if @storages.length > @index %>
+    {% $index := index (.Env.HOSTNAME | strings.Split "-" | coll.Reverse) 0 | conv.ToInt64 %}
+    {% if len $storages | lt $index %}
     [[storage]]
-    name = "<%= @storages[@index] %>"
+    name = "{% index $storages $index %}"
     path = "/home/git/repositories"
-    <% else %>
-    <% raise Exception, "Storage for node #{@index} is not present in the storageNames array. Did you use kubectl to scale up? You need to solely use helm for this purpose." %>
-    <% end %>
+    {% else %}
+    {% printf "Storage for node %d is not present in the storageNames array. Did you use kubectl to scale up? You need to solely use helm for this purpose." $index | fail %}
+    {% end %}
 
     {{- end }}
 
@@ -88,9 +88,6 @@ data:
     {{- if .sentryDsn }}
     sentry_dsn = "{{ .sentryDsn }}"
     {{- end }}
-    {{- if .rubySentryDsn }}
-    ruby_sentry_dsn = "{{ .rubySentryDsn }}"
-    {{- end }}
     dir = "/var/log/gitaly"
     {{- if .sentryEnvironment }}
     sentry_environment = "{{ .sentryEnvironment }}"
@@ -103,7 +100,7 @@ data:
     {{- end }}
 
     [auth]
-    token = <%= File.read('/etc/gitlab-secrets/gitaly/gitaly_token').strip.to_json %>
+    token = {% file.Read "/etc/gitlab-secrets/gitaly/gitaly_token" | strings.TrimSpace | data.ToJSON %}
 
     [git]
     use_bundled_binaries = true
@@ -122,24 +119,6 @@ data:
     [[git.config]]
     key = "{{ .key }}"
     value = "{{ .value }}"
-    {{-   end }}
-    {{- end }}
-
-    [gitaly-ruby]
-    # The directory where gitaly-ruby is installed
-    dir = "/srv/gitaly-ruby"
-    {{- with .Values.ruby }}
-    {{-   if .maxRss }}
-    max_rss = {{ .maxRss }}
-    {{-   end }}
-    {{-   if .gracefulRestartTimeout }}
-    graceful_restart_timeout = "{{ .gracefulRestartTimeout }}"
-    {{-   end }}
-    {{-   if .restartDelay }}
-    restart_delay = "{{ .restartDelay }}"
-    {{-   end }}
-    {{-   if .numWorkers }}
-    num_workers = {{ .numWorkers }}
     {{-   end }}
     {{- end }}
 

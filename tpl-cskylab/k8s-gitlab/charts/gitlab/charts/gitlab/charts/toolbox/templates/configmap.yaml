@@ -11,6 +11,10 @@ metadata:
 data:
   database.yml.erb: |
     {{- include "gitlab.database.yml" . | nindent 4 }}
+  {{- if $.Values.global.clickhouse.enabled }}
+  click_house.yml.erb: |
+    {{- include "gitlab.clickhouse.yml" . | nindent 4 }}
+  {{- end }}
   krb5.conf: |
     {{- .Values.global.appConfig.kerberos.krb5Config | nindent 4 }}
   smtp_settings.rb: |
@@ -33,7 +37,6 @@ data:
         application_settings_cache_seconds: {{ .applicationSettingsCacheSeconds | int }}
         usage_ping_enabled: {{ eq .enableUsagePing true }}
         seat_link_enabled: {{ eq .enableSeatLink true }}
-        default_can_create_group: {{ eq .defaultCanCreateGroup true }}
         username_changing_enabled: {{ eq .usernameChangingEnabled true }}
         issue_closing_pattern: {{ .issueClosingPattern | quote }}
         default_theme: {{ .defaultTheme }}
@@ -41,6 +44,7 @@ data:
         {{- if hasKey .initialDefaults "signupEnabled" }}
         signup_enabled: {{ .initialDefaults.signupEnabled }}
         {{- end }}
+        graphql_timeout: {{ .graphQlTimeout }}
         webhook_timeout: {{ .webhookTimeout }}
         {{- end }}
         trusted_proxies:
@@ -67,7 +71,6 @@ data:
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "packages" "config" $.Values.global.appConfig.packages) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "external_diffs" "config" $.Values.global.appConfig.externalDiffs) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "terraform_state" "config" $.Values.global.appConfig.terraformState) | nindent 10 -}}
-          {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "ci_secure_files" "config" $.Values.global.appConfig.ciSecureFiles) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "dependency_proxy" "config" $.Values.global.appConfig.dependencyProxy) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "pages" "config" $.Values.global.pages.objectStore) | nindent 10 -}}
       {{- end }}
@@ -98,6 +101,7 @@ data:
         path: "tmp/backups"   # Relative paths are relative to Rails.root (default: tmp/backups/)
       {{- include "gitlab.appConfig.kas" . | nindent 6 }}
       {{- include "gitlab.appConfig.suggested_reviewers" . | nindent 6 }}
+      {{- include "gitlab.appConfig.zoekt" . | nindent 6 }}
       {{- include "gitlab.appConfig.shell" . | nindent 6 }}
         {{- include "gitlab.appConfig.shell.ssh_port" . | nindent 8 }}
         {{- include "gitlab.appConfig.shell.secret_file" . | nindent 8 }}

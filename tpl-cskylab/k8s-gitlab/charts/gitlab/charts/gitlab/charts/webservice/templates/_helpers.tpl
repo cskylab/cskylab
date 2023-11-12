@@ -14,15 +14,19 @@ Unless `ingress.path: /` or `name: default`
 Returns the secret name for the Secret containing the TLS certificate and key.
 Uses `ingress.tls.secretName` first and falls back to `global.ingress.tls.secretName`
 if there is a shared tls secret for all ingresses.
+
+It expects a dictionary with two entries:
+  `root`: the root context
+  `local`: the ingress context
 */}}
 {{- define "webservice.tlsSecret" -}}
 {{- $defaultName := (dict "secretName" "") -}}
-{{- if $.Values.global.ingress.configureCertmanager -}}
-{{- $_ := set $defaultName "secretName" (printf "%s-gitlab-tls" $.Release.Name) -}}
+{{- if .root.Values.global.ingress.configureCertmanager -}}
+{{-   $_ := set $defaultName "secretName" (printf "%s-gitlab-tls" .root.Release.Name) -}}
 {{- else -}}
-{{- $_ := set $defaultName "secretName" (include "gitlab.wildcard-self-signed-cert-name" .) -}}
+{{-   $_ := set $defaultName "secretName" (include "gitlab.wildcard-self-signed-cert-name" .root) -}}
 {{- end -}}
-{{- pluck "secretName" $.Values.ingress.tls $.Values.global.ingress.tls $defaultName | first -}}
+{{- pluck "secretName" .local.tls .root.Values.global.ingress.tls $defaultName | first -}}
 {{- end -}}
 
 {{/*
@@ -218,10 +222,21 @@ Return the webservice TLS secret name
 {{- end -}}
 
 {{/*
-Return the webservice-metrics TLS secret name
+Return the webservice-metrics TLS secret name.
 */}}
 {{- define "webservice-metrics.tls.secret" -}}
-{{- default (printf "%s-webservice-metrics-tls" .Release.Name) $.Values.metrics.tls.secretName | quote -}}
+{{- $.Values.metrics.tls.secretName | default (include "webservice.tls.secret" .) }}
+{{- end -}}
+
+{{/*
+Return whether the webservice has TLS for metrics enabled.
+*/}}
+{{- define "webservice-metrics.tls.enabled" -}}
+{{- if hasKey $.Values.metrics.tls "enabled" }}
+{{-   $.Values.metrics.tls.enabled }}
+{{- else }}
+{{-   $.Values.tls.enabled }}
+{{- end }}
 {{- end -}}
 
 {{/*
@@ -229,4 +244,54 @@ Return the Workhorse TLS Secret name
 */}}
 {{- define "workhorse.tls.secret" -}}
 {{- default (printf "%s-workhorse-tls" .Release.Name) $.Values.workhorse.tls.secretName | quote -}}
+{{- end -}}
+
+{{/*
+Return whether the Workhorse exporter has TLS enabled.
+*/}}
+{{- define "workhorse.monitoring.exporter.tls.enabled" -}}
+{{- if hasKey $.Values.workhorse.monitoring.exporter.tls "enabled" }}
+{{-   $.Values.workhorse.monitoring.exporter.tls.enabled }}
+{{- else }}
+{{-   $.Values.global.workhorse.tls.enabled }}
+{{- end }}
+{{- end -}}
+
+
+{{/*
+Return the workhorse redis configuration.
+*/}}
+{{- define "workhorse.redis.config" -}}
+{{- if $.Values.global.redis.workhorse }}
+{{-   $_ := set $ "redisConfigName" "workhorse" }}
+{{- end }}
+{{- include "gitlab.redis.selectedMergedConfig" . -}}
+[redis]
+{{- if not .redisMergedConfig.sentinels }}
+URL = "{{ template "gitlab.redis.scheme" $ }}://{{ template "gitlab.redis.host" $ }}:{{ template "gitlab.redis.port" $ }}"
+{{- else }}
+SentinelMaster = "{{ template "gitlab.redis.host" $ }}"
+Sentinel = [ {{ template "gitlab.redis.workhorse.sentinel-list" $ }} ]
+{{- end }}
+{{- if .redisMergedConfig.password.enabled }}
+{{-   $passwordPath := printf "%s-password" (default "redis" .redisConfigName) }}
+Password = {% file.Read "/etc/gitlab/redis/{{ $passwordPath }}" | strings.TrimSpace | data.ToJSON %}
+{{- end }}
+{{- $_ := set . "redisConfigName" "" }}
+{{- end -}}
+
+{{/*
+Return the bash setup commands for redis secrets.
+*/}}
+{{- define "workhorse.redis.secret-setup" -}}
+{{- if $.Values.global.redis.workhorse -}}
+{{-   $_ := set $ "redisConfigName" "workhorse" }}
+{{- end -}}
+{{- include "gitlab.redis.selectedMergedConfig" . -}}
+{{- if .redisMergedConfig.password.enabled -}}
+{{-   $passwordPath := printf "%s-password" (default "redis" .redisConfigName) -}}
+mkdir -p /init-secrets-workhorse/redis
+cp -v -r -L /init-config/redis/{{ $passwordPath }} /init-secrets-workhorse/redis/
+{{- end -}}
+{{- $_ := set . "redisConfigName" "" }}
 {{- end -}}

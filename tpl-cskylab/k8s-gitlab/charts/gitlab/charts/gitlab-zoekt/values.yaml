@@ -1,0 +1,146 @@
+# --  The size of storage mounted to the gitlab-zoekt-indexer that will be used to store bare repos.<br>
+# The bare repos are stored as an intermediate step in calculating the
+# resulting index and treated like a cache as they will be refetched if
+# missing.
+# @raw
+bareRepoStorage: 5Gi
+bareRepoStorageClassName: ""
+
+# --  The size of storage mounted to the gitlab-zoekt-indexer and zoekt-webserver that will be used to store index files.<br>
+# The index files are those with the `.zoekt` extension and used to serve
+# search results.
+# @raw
+indexStorage: 2Gi
+indexStorageClassName: ""
+
+image:
+  pullPolicy: IfNotPresent
+dynamicIndexserver:
+  image:
+    repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-dynamic-indexserver
+    tag: v0.0.1-5f25b
+    # pullPolicy:
+  listen:
+    port: 6060
+  resources: {}
+indexer:
+  image:
+    repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-indexer
+    tag: v0.0.6-47c4d
+  listen:
+    port: 6065
+  resources: {}
+  googleCloudProfiler:
+    enabled: false
+webserver:
+  image:
+    repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-webserver
+    tag: v0.0.2-fcb27
+    # pullPolicy:
+  listen:
+    port: 6070
+  resources: {}
+  googleCloudProfiler:
+    enabled: false
+gateway:
+  image:
+    repository: nginx
+    tag: latest
+  listen:
+    port: 8080
+  resources: {}
+  securityContext: {}
+  basicAuth:
+    enabled: false
+    secretName: '' # Defaults to {{ .Release.Name }}-basicauth and it must be created outside this chart
+  tls:
+    certificate:
+      enabled: false # Whether to use TLS for the gateway
+      name: zoekt-gateway-cert
+      create: false # Whether to create a Certificate with certmanager
+      dnsNames: [] # You must provide at least one entry if create is true
+      secretName: zoekt-gateway-cert
+      issuer: # A valid certmanager issuer
+        name: ""
+        kind: Issuer
+        group: cert-manager.io
+      annotations: {}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+statefulSetAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+service:
+  type: ClusterIP
+  clusterIP: None
+  annotations: {}
+    # cloud.google.com/load-balancer-type: Internal
+    # networking.gke.io/internal-load-balancer-allow-global-access: "true"
+  # loadBalancerIP: 123.123.123.123
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # kubernetes.io/ingress.regional-static-ip-name: "gitlab-zoekt"
+    # kubernetes.io/ingress.class: "gce-internal"
+  host: gitlab-zoekt.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+networkpolicy:
+  enabled: false
+  egress:
+    enabled: false
+    rules: []
+  ingress:
+    enabled: false
+    rules: []
+  annotations: {}

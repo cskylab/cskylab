@@ -1,8 +1,8 @@
 # Gitlab open DevOps platform <!-- omit in toc -->
 
-## v22-12-19 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: gitlab/gitlab v6.11.0 bitnami/postgresql v12.3.1<!-- omit in toc -->
+## Helm charts: gitlab/gitlab v7.5.1 bitnami/postgresql v13.2.5<!-- omit in toc -->
 
 [Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.
 
@@ -25,6 +25,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Backup \& data protection](#backup--data-protection)
     - [RSync HA copies](#rsync-ha-copies)
     - [Restic backup](#restic-backup)
+  - [Upgrade PostgreSQL database version](#upgrade-postgresql-database-version)
   - [Gitlab Application Backup \& Restore](#gitlab-application-backup--restore)
     - [Rails-Secret Backup](#rails-secret-backup)
     - [Cron based backups](#cron-based-backups)
@@ -348,6 +349,60 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 ## At minute 30 past every hour from 8 through 23.
 # 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/{{ .namespace.name }} >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/{{ .namespace.name }}  -t {{ .namespace.name }}  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t {{ .namespace.name }}  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
 ```
+
+### Upgrade PostgreSQL database version
+
+1. **Backup Running Container**
+
+The `pg_dumpall` utility is used for writing out (dumping) all of your PostgreSQL databases of a cluster. It accomplishes this by calling the pg_dump command for each database in a cluster, while also dumping global objects that are common to all databases, such as database roles and tablespaces.
+
+The official PostgreSQL Docker image come bundled with all of the standard utilities, such as pg_dumpall, and it is what we will use in this tutorial to perform a complete backup of our database server.
+
+If your Postgres server is running as a Kubernetes Pod, you will execute the following command:
+
+```bash
+kubectl -n {{ .namespace.name }} exec -i postgresql-0 -- /bin/bash -c "PGPASSWORD='{{ .publishing.password }}' pg_dumpall -U postgres" > postgresql.dump
+```
+
+2. **Deploy New Postgres Image in a limited namespace**
+
+The second step is to deploy a new Postgress container using the updated image version. This container MUST NOT mount the same volume from the older Postgress container. It will need to mount a new volume for the database.
+
+>**Note**: If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
+
+To deploy the new version on an empty volume:
+
+- Uninstall the namespace containing the PostgreSQL service (GitLab)
+- Delete the PostgreSQL data service
+- Re-Create the PostgreSQL data service
+- Change `csdeploy.sh` file commenting all helm pull deploying charts lines except `helm pull bitnami/postgresql`
+- Remove all charts and pull only `bitnami/postgresql` chart by running `csdeploy.sh - m pull-charts`
+- Edit `values-postgresql.yaml` file to download the appropriate image of postgresql:
+```yaml
+## Bitnami PostgreSQL image version
+## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
+## @param image.tag PostgreSQL image tag (immutable tags are recommended)
+##
+image:
+  tag: XX.xx
+```
+- Deploy the namespace by running `csdeploy.sh -m install`
+
+3. **Import PostgreSQL Dump into New Pod**
+With the new Postgres container running with a new volume mount for the data directory, you will use the psql command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
+
+```bash
+kubectl -n {{ .namespace.name }} exec -i postgresql-0 -- /bin/bash -c "PGPASSWORD='{{ .publishing.password }}' psql -U postgres" < postgresql.dump
+```
+
+4. **Deploy the namespace with all charts**
+
+Once the PosgreSQL container is running with the new version and dumped data successfully restored, the namespace can be re-started with all its charts:
+
+- Uninstall the namespace
+- Change `csdeploy.sh` file un-commenting all helm pull deploying charts lines
+- Re-Import all charts by running `csdeploy.sh - m pull-charts`
+- Deploy the namespace by running `csdeploy.sh -m install`
 
 ### Gitlab Application Backup & Restore
 

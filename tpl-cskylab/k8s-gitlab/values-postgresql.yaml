@@ -29,4 +29,4 @@ global:
 ##
 image:
   # tag: 12.12.0-debian-11-r1
-  tag: 12
+  tag: 14

@@ -61,8 +61,8 @@ metrics:
   enabled: true
   port: 8083
   path: /metrics
-  tls:
-    enabled: false
+  tls: {}
+    # enabled:
     # secretName:
   serviceMonitor:
     enabled: false
@@ -99,6 +99,7 @@ service:
   # loadBalancerIP:
   # loadBalancerSourceRanges:
 enabled: true
+
 ingress:
   apiVersion:
   enabled:
@@ -114,6 +115,25 @@ ingress:
   configureCertmanager:
   # Use this in combination of .deployments below
   requireBasePath: true
+  useGeoClass: false
+
+extraIngress:
+  enabled: false
+  apiVersion:
+  proxyConnectTimeout: 15
+  proxyReadTimeout: 600
+  proxyBodySize: "512m"
+  # hostname: 
+  tls: {}
+    # secretName:
+    # smartcardSecretName:
+    # enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+  configureCertmanager:
+  # Use this in combination of .deployments below
+  requireBasePath: true
+  useGeoClass: false
 
 workerProcesses: 2
 
@@ -139,6 +159,22 @@ hpa:
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300
+
+keda:
+  enabled: false
+  ## See https://keda.sh/docs/2.10/concepts/scaling-deployments/#scaledobject-spec
+  pollingInterval: 30
+  cooldownPeriod: 300
+  # minReplicaCount: 2
+  # maxReplicaCount: 10
+  # fallback:
+  #   failureThreshold: 3
+  #   replicas: 6
+  # hpaName: keda-hpa-{scaled-object-name}
+  # restoreToOriginalReplicaCount: false
+  # behavior: {}
+  # triggers: []
+
 
 deployment:
   # terminationGracePeriodSeconds: 30
@@ -193,8 +229,8 @@ workhorse:
     exporter:
       enabled: false
       port: 9229
-      tls:
-        enabled: false
+      tls: {}
+        # enabled: false
   metrics:
     enabled: false
     port: 9229
@@ -252,7 +288,7 @@ global:
     #   serverCA: server-ca.pem
   redis:
     # host: '0.0.0.0'
-    password: {}
+    auth: {}
   gitaly:
     internal:
       names: ["default"]
@@ -355,7 +391,7 @@ global:
       host: ""
 
 redis:
-  password: {}
+  auth: {}
 gitaly:
   # host: '0.0.0.0'
   # port: 8075
@@ -366,15 +402,7 @@ gitaly:
 minio:
   serviceName: 'minio-svc'
   port: 9000
-registry:
-  enabled: true
-  host:
-  # port: 443
-  api:
-    protocol: http
-    serviceName: registry
-    port: 5000
-  tokenIssuer: gitlab-issuer
+
 extra: {}
   # google_analytics_id: '_your_tracking_id'
   # matomo_url: '_your_matomo_url'

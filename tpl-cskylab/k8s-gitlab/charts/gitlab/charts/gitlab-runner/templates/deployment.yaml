@@ -2,12 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "gitlab-runner.fullname" . }}
-  namespace: {{ default .Release.Namespace .Values.runners.namespace | quote }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     app: {{ include "gitlab-runner.fullname" . }}
     chart: {{ include "gitlab-runner.chart" . }}
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- range $key, $value := .Values.deploymentLabels }}
+    {{   $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- if .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml .Values.deploymentAnnotations | nindent 4 }}
+  {{- end }}
 spec:
   {{- if not .Values.hpa}}
   replicas: {{ default 1 .Values.replicas }}
@@ -28,7 +35,9 @@ spec:
         {{- end }}
       annotations:
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if or .Values.runnerRegistrationToken .Values.runnerToken .Values.runners.secret }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- end }}
         {{- if .Values.metrics.enabled }}
         prometheus.io/scrape: 'true'
         prometheus.io/port: {{ .Values.metrics.port | quote }}
@@ -37,10 +46,15 @@ spec:
         {{   $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- if hasKey .Values "automountServiceAccountToken" }}
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      {{- end }}
       {{- if .Values.schedulerName }}
       schedulerName: {{ .Values.schedulerName }}
       {{- end }}
-      securityContext: {{ toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.podSecurityContext }}
+      securityContext: {{ toYaml . | nindent 8 }}
+      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName | quote }}
@@ -52,7 +66,11 @@ spec:
         imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
         securityContext: {{ toYaml .Values.securityContext | nindent 10 }}
         {{- include "gitlab-runner.unregisterRunners" . | nindent 8 }}
+        {{- if .Values.useTini }}
+        command: ["/usr/local/bin/tini", "--", "/bin/bash", "/configmaps/entrypoint"]
+        {{- else }}
         command: ["/usr/bin/dumb-init", "--", "/bin/bash", "/configmaps/entrypoint"]
+        {{- end }}
         env:
         {{ include "gitlab-runner.runner-env-vars" . | indent 8 }}
         livenessProbe:
@@ -80,8 +98,10 @@ spec:
           protocol: TCP
         {{- end }}
         volumeMounts:
+        {{- if or (include "gitlab-runner.cache.secret" .) .Values.runnerRegistrationToken .Values.runnerToken .Values.secrets .Values.runners.secret }}
         - name: projected-secrets
           mountPath: /secrets
+        {{- end }}
         - name: etc-gitlab-runner
           mountPath: /home/gitlab-runner/.gitlab-runner
         - name: configmaps
@@ -103,28 +123,15 @@ spec:
       - name: etc-gitlab-runner
         emptyDir:
           medium: "Memory"
+      {{- if or (include "gitlab-runner.cache.secret" .) .Values.runnerRegistrationToken .Values.runnerToken .Values.secrets .Values.runners.secret }}
       - name: projected-secrets
         projected:
           sources:
-            {{- if .Values.runners.cache.cacheType }}
-              # .Values.runners.cache.cacheType is deprecated: https://gitlab.com/gitlab-org/charts/gitlab-runner/-/issues/224
-            {{- end }}
-
-            {{- if and .Values.runners.cache .Values.runners.cache.cacheType }}
-            {{-   if and (include "gitlab-runner.cache.secret" .) (eq .Values.runners.cache.cacheType "s3") }}
-            - secret:
-                name: {{ include "gitlab-runner.cache.secret" . }}
-            {{-   end }}
-            {{-   if eq .Values.runners.cache.cacheType "gcs"}}
-            - secret:
-                # Outdated default secret "s3access" kept for compatibilty with older installs using it.
-                # Will be removed in next major release: https://gitlab.com/gitlab-org/charts/gitlab-runner/merge_requests/177
-                name: {{ default "s3access" (include "gitlab-runner.cache.secret" .) }}
-            {{-   end }}
-            {{- else if include "gitlab-runner.cache.secret" . }}
+            {{- if include "gitlab-runner.cache.secret" . }}
             - secret:
                 name: {{ include "gitlab-runner.cache.secret" . }}
             {{- end }}
+            {{- if  or .Values.runnerRegistrationToken .Values.runnerToken .Values.runners.secret }}
             - secret:
                 name: {{ include "gitlab-runner.secret" . }}
                 items:
@@ -132,11 +139,12 @@ spec:
                     path: runner-registration-token
                   - key: runner-token
                     path: runner-token
-
+            {{- end }}
             {{- range .Values.secrets }}
             - secret:
 {{ toYaml . | indent 16 }}
             {{- end }}
+      {{- end }}
       {{- if .Values.certsSecretName }}
       - name: custom-certs
         secret:
