@@ -10,9 +10,9 @@
   - [How-to guides](#how-to-guides)
     - [1.- Upgrade postgresql from v12 to v13 database](#1--upgrade-postgresql-from-v12-to-v13-database)
     - [2.- Perform all intermediate gitlab charts upgrades with PostgreSQL v13](#2--perform-all-intermediate-gitlab-charts-upgrades-with-postgresql-v13)
-    - [4.- Upgrade postgresql from v13 to v14 database](#4--upgrade-postgresql-from-v13-to-v14-database)
-    - [5.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14](#5--perform-all-intermediate-gitlab-charts-upgrades-with-postgresql-v14)
-    - [6.- Perform final configuration steps after upgrade](#6--perform-final-configuration-steps-after-upgrade)
+    - [3.- Upgrade postgresql from v13 to v14 database](#3--upgrade-postgresql-from-v13-to-v14-database)
+    - [4.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14](#4--perform-all-intermediate-gitlab-charts-upgrades-with-postgresql-v14)
+    - [5.- Perform final configuration steps after upgrade](#5--perform-final-configuration-steps-after-upgrade)
   - [Reference](#reference)
 - [v23-04-27](#v23-04-27)
   - [Background](#background-1)
@@ -206,7 +206,7 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | From chart 7.1.5 to chart 7.2.8    | helm pull gitlab/gitlab --version 7.2.8 --untar   |
 
 
-#### 4.- Upgrade postgresql from v13 to v14 database
+#### 3.- Upgrade postgresql from v13 to v14 database
 
 1. **Backup Running Container**
 
@@ -269,7 +269,7 @@ Once the PosgreSQL container is running with the new version and dumped data suc
 - Re-Import all charts by running `csdeploy.sh - m pull-charts`
 - Deploy the namespace by running `csdeploy.sh -m install`
 
-#### 5.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14
+#### 4.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14
 
 Gitlab charts updates must be made one at a time from the latest minor version of the previous.
 
@@ -313,7 +313,7 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | From chart 7.3.6 to chart 7.4.2   | helm pull gitlab/gitlab --version 7.4.2 --untar |
 | From chart 7.4.2 to chart 7.5.1   | helm pull gitlab/gitlab --version 7.5.1 --untar |
 
-#### 6.- Perform final configuration steps after upgrade
+#### 5.- Perform final configuration steps after upgrade
 
 - After migration, you must save rail secrets to rail-secrets.yaml
 
