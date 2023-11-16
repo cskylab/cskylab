@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "gitlab-zoekt.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "gitlab-zoekt.labels" . | nindent 4 }}
     {{- include "gitlab.standardLabels" . | nindent 4 }}
@@ -15,7 +16,7 @@ spec:
     matchLabels:
       {{- include "gitlab-zoekt.selectorLabels" . | nindent 6 }}
   serviceName: {{ include "gitlab-zoekt.fullname" . }}
-  replicas: 1 # See https://gitlab.com/gitlab-org/gitlab-build-images/-/issues/118
+  replicas: {{ .Values.replicas }}
   template:
     metadata:
       annotations:
@@ -90,10 +91,26 @@ spec:
           volumeMounts:
           - name: zoekt-index
             mountPath: /data/index
-          {{- if .Values.indexer.googleCloudProfiler.enabled }}
+          {{- if .Values.indexer.internalApi.enabled }}
+          - name: internal-api-secret
+            readOnly: true
+            mountPath: /.gitlab_shell_secret
+            subPath: .gitlab_shell_secret
+          {{- end }}
           env:
-            - name: GOOGLE_CLOUD_PROFILER_ENABLED
-              value: "true"
+          {{- if .Values.indexer.googleCloudProfiler.enabled }}
+          - name: GOOGLE_CLOUD_PROFILER_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.indexer.goGc.enabled }}
+          - name: GOGC
+            value: {{ .Values.indexer.goGc.value | quote }}
+          {{- end }}
+          {{- if .Values.indexer.internalApi.enabled }}
+          - name: GITLAB_URL
+            value: {{ template "gitlab-zoekt.internalApi.gitlabUrl" . }}
+          - name: SERVICE_URL
+            value: {{ template "gitlab-zoekt.internalApi.serviceUrl" . }}
           {{- end }}
         - name: zoekt-webserver
           securityContext:
@@ -116,10 +133,14 @@ spec:
           volumeMounts:
           - name: zoekt-index
             mountPath: /data/index
-          {{- if .Values.webserver.googleCloudProfiler.enabled }}
           env:
-            - name: GOOGLE_CLOUD_PROFILER_ENABLED
-              value: "true"
+          {{- if .Values.webserver.googleCloudProfiler.enabled }}
+          - name: GOOGLE_CLOUD_PROFILER_ENABLED
+            value: "true"
+          {{- end }}
+          {{- if .Values.webserver.goGc.enabled }}
+          - name: GOGC
+            value: {{ .Values.webserver.goGc.value | quote }}
           {{- end }}
         - name: zoekt-gateway
           securityContext:
@@ -131,14 +152,14 @@ spec:
               name: gateway
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: {{ .Values.gateway.listen.port }}
               {{- if .Values.gateway.tls.certificate.enabled }}
               scheme: HTTPS
               {{- end }}
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: {{ .Values.gateway.listen.port }}
               {{- if .Values.gateway.tls.certificate.enabled }}
               scheme: HTTPS
@@ -179,7 +200,7 @@ spec:
       volumes:
         - name: nginx-conf
           configMap:
-            name: {{ include "gitlab-zoekt.configMapName" . }}
+            name: {{ include "gitlab-zoekt.configZoektGatewayMapName" . }}
             items:
               - key: nginx.conf
                 path: nginx.conf
@@ -201,6 +222,14 @@ spec:
           secret:
             secretName: {{ include "gitlab-zoekt.basicAuth.secretName" . }}
         {{- end }}
+      {{- if .Values.indexer.internalApi.enabled }}
+        - name: internal-api-secret
+          secret:
+            secretName: {{ template "gitlab-zoekt.internalApi.secretName" . }}
+            items:
+              - key: {{ template "gitlab-zoekt.internalApi.secretKey" . }}
+                path: ".gitlab_shell_secret"
+      {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: zoekt-data

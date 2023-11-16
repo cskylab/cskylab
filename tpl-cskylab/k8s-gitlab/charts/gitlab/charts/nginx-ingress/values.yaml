@@ -883,3 +883,5 @@ tcpExternalConfig: ""
 
 common:
   labels: {}
+
+externalIpTpl: '{{ .Values.global.hosts.externalIP }}'

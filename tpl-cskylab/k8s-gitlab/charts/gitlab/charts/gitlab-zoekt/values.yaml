@@ -13,6 +13,7 @@ bareRepoStorageClassName: ""
 indexStorage: 2Gi
 indexStorageClassName: ""
 
+replicas: 1
 image:
   pullPolicy: IfNotPresent
 dynamicIndexserver:
@@ -26,12 +27,21 @@ dynamicIndexserver:
 indexer:
   image:
     repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-indexer
-    tag: v0.0.6-47c4d
+    tag: v0.1.1-10574
   listen:
     port: 6065
   resources: {}
   googleCloudProfiler:
     enabled: false
+  internalApi:
+    enabled: false
+    secretName: ''
+    secretKey: ''
+    gitlabUrl: '' # Internal URL to connect to GitLab
+    serviceUrl: '' # URL to reach Zoekt service
+  goGc:
+    enabled: false
+    value: 100
 webserver:
   image:
     repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-webserver
@@ -42,17 +52,22 @@ webserver:
   resources: {}
   googleCloudProfiler:
     enabled: false
+  goGc:
+    enabled: false
+    value: 100
 gateway:
   image:
     repository: nginx
     tag: latest
   listen:
     port: 8080
+  replicas: 1
   resources: {}
   securityContext: {}
   basicAuth:
     enabled: false
     secretName: '' # Defaults to {{ .Release.Name }}-basicauth and it must be created outside this chart
+  dnsResolver: 'kube-dns.kube-system.svc.cluster.local'
   tls:
     certificate:
       enabled: false # Whether to use TLS for the gateway

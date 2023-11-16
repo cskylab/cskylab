@@ -83,9 +83,9 @@
 ### Background
 
 This procedure updates to the following versions:
-- GitLab chart to version v7.5.1 with appVersion 16.5.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- GitLab chart to version v7.6.0 with appVersion 16.6.0. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- Postgresql chart v13.2.5, with application version 14.x
+- Postgresql chart v13.2.9, with application version 14.x
 
 This procedure updates gitlab installation in k8s-mod cluster.
 
@@ -126,7 +126,7 @@ To deploy the new version on an empty volume:
 ```bash
 ...
 ...
-helm pull bitnami/postgresql --version 13.2.5 --untar
+helm pull bitnami/postgresql --version 13.2.9 --untar
 ...
 ...
 ```
@@ -235,7 +235,7 @@ To deploy the new version on an empty volume:
 ```bash
 ...
 ...
-helm pull bitnami/postgresql --version 13.2.5 --untar
+helm pull bitnami/postgresql --version 13.2.9 --untar
 ...
 ...
 ```
@@ -311,7 +311,8 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | --------------------------------- | ----------------------------------------------- |
 | From chart 7.2.8 to chart 7.3.6   | helm pull gitlab/gitlab --version 7.3.6 --untar |
 | From chart 7.3.6 to chart 7.4.2   | helm pull gitlab/gitlab --version 7.4.2 --untar |
-| From chart 7.4.2 to chart 7.5.1   | helm pull gitlab/gitlab --version 7.5.1 --untar |
+| From chart 7.4.2 to chart 7.5.2   | helm pull gitlab/gitlab --version 7.5.2 --untar |
+| From chart 7.5.2 to chart 7.6.0   | helm pull gitlab/gitlab --version 7.6.0 --untar |
 
 #### 5.- Perform final configuration steps after upgrade
 

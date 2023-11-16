@@ -1,6 +1,6 @@
 image:
   repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry
-  tag: 'v3.85.0-gitlab'
+  tag: 'v3.86.1-gitlab'
   # pullPolicy: IfNotPresent
   # pullSecrets: []
 

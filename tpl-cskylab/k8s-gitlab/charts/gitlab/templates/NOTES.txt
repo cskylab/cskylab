@@ -6,8 +6,8 @@
 {{- $enabledNonProdCharts := fromJsonArray (include "gitlab.nonProdCharts.enabledNames" .) -}}
 {{- if not (empty $enabledNonProdCharts) }}
 {{ $CRITICAL }}
-The following charts are included for evaluation purposes only. They will not be supported by GitLab Support 
-for production workloads. Use Cloud Native Hybrid deployments for production. For more information visit 
+The following charts are included for evaluation purposes only. They will not be supported by GitLab Support
+for production workloads. Use Cloud Native Hybrid deployments for production. For more information visit
 https://docs.gitlab.com/charts/installation/index.html#use-the-reference-architectures.
 {{- range $name := $enabledNonProdCharts }}
 - {{ $name }}
@@ -118,16 +118,6 @@ GitLab Pages configured to use disk storage via `{{ $component }}.extraEnv.PAGES
 Using `PAGES_UPDATE_LEGACY_STORAGE` environment variable with bundled Pages service is not recommended. This setting is specifically used when using an external GitLab Pages deployment.
 {{-     end }}
 {{-   end }}
-{{- end }}
-
-{{- /* In-chart NGINX Ingress Controller notices */}}
-{{- if eq true (index $.Values "nginx-ingress").enabled }}
-{{ $NOTICE }}
-The in-chart NGINX Ingress Controller has the following requirements:
-    - Kubernetes version must be 1.20 or newer (unless NGINX version is set
-      to v1.2.1 via `nginx-ingress.controller.image.tag=v1.2.1`, which will
-      restore Kubernetes 1.19 compatibility).
-    - Ingress objects must be in group/version `networking.k8s.io/v1`.
 {{- end }}
 
 {{- /* Deprecation notice for `gitlab.deprecate.kas.privateApi.tls.enabled` setting */}}

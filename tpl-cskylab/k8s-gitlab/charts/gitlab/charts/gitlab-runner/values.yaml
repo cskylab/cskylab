@@ -37,7 +37,7 @@ imagePullPolicy: IfNotPresent
 #   - name: "image-pull-secret"
 
 ## Timeout, in seconds, for liveness and readiness probes of a runner pod.
-# probeTimeoutSeconds: 1
+# probeTimeoutSeconds: 3
 
 ## How many runner pods to launch.
 ##
@@ -179,7 +179,7 @@ rbac:
   ## serviceAccountAnnotations:
   ##   eks.amazonaws.com/role-arn: "arn:aws:iam::{{ .Values.global.accountId }}:role/{{ .Values.global.iamRoleName }}"
   ##
-  ## ref: https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html 
+  ## ref: https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
   ##
   # serviceAccountAnnotations: {}
 
@@ -237,7 +237,7 @@ metrics:
 
     ## Supply a tls configuration for the service monitor
     ##
-    ## ref: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml 
+    ## ref: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml
     ##
     # tlsConfig: {}
 
@@ -438,7 +438,7 @@ runners:
 # schedulerName: "my-custom-scheduler"
 
 ## Configure securitycontext for the main container
-## ref: https://kubernetes.io/docs/concepts/security/pod-security-standards/ 
+## ref: https://kubernetes.io/docs/concepts/security/pod-security-standards/
 ##
 securityContext:
   allowPrivilegeEscalation: false
@@ -449,7 +449,7 @@ securityContext:
     drop: ["ALL"]
 
 ## Configure securitycontext valid for the whole pod
-## ref: https://kubernetes.io/docs/concepts/security/pod-security-standards/ 
+## ref: https://kubernetes.io/docs/concepts/security/pod-security-standards/
 ##
 podSecurityContext:
   runAsUser: 100

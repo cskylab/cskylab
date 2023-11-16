@@ -1,3 +1,9 @@
+## v0.58.2 (2023-11-03)
+
+### Bug fixes
+
+- Update the default probeTimeoutSeconds to 3 seconds !448
+
 ## v0.58.1 (2023-10-24)
 
 ### Bug fixes
