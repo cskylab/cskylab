@@ -18,6 +18,7 @@ rules:
       - get
       - update
       - list
+      - delete
   - apiGroups:
       - ""
     resources:
@@ -139,13 +140,13 @@ rules:
       - create
   - apiGroups:
       - minio.min.io
+      - sts.min.io
     resources:
       - "*"
     verbs:
       - "*"
   - apiGroups:
       - min.io
-      - sts.min.io
     resources:
       - "*"
     verbs:
@@ -164,3 +165,15 @@ rules:
       - get
       - update
       - create
+  - apiGroups:
+      - policy
+    resources:
+      - poddisruptionbudgets
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - deletecollection

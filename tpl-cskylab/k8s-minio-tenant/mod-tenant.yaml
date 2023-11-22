@@ -1,4 +1,5 @@
 ##
+## Release v5.0.11
 ## Modified from https://github.com/minio/operator/blob/master/examples/kustomization/base/tenant.yaml
 ##
 
@@ -148,7 +149,7 @@ spec:
   externalClientCertSecrets: [ ]
 
   ## Registry location and Tag to download MinIO Server image
-  image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
+  image: quay.io/minio/minio:RELEASE.2023-11-15T20-43-25Z
   imagePullSecret: { }
   ## Mount path where PV will be mounted inside container(s).
   mountPath: /export
@@ -201,6 +202,7 @@ spec:
         runAsGroup: 1000
         runAsNonRoot: true
         fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
       ## Configure container security context
       containerSecurityContext:
         runAsUser: 1000
