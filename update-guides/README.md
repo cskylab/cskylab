@@ -40,11 +40,11 @@ Welcome to cSkyLab release of v99-99-99.
 
 Updated server templates in this release:
 
-| Template         |                                                                          |
-| ---------------- | ------------------------------------------------------------------------ |
-| ubt2204srv-k8s   | Kubernetes master / node on Ubuntu Server 22.04 LTS                      |
-| ubt2204srv-kvm   | KVM host on Ubuntu Server 22.04 LTS                                      |
-| ubt2204srv-mcc   | Management host (mcc: Mission Control Center) on Ubuntu Server 22.04 LTS |
+| Template       |                                                                          |
+| -------------- | ------------------------------------------------------------------------ |
+| ubt2204srv-k8s | Kubernetes master / node on Ubuntu Server 22.04 LTS                      |
+| ubt2204srv-kvm | KVM host on Ubuntu Server 22.04 LTS                                      |
+| ubt2204srv-mcc | Management host (mcc: Mission Control Center) on Ubuntu Server 22.04 LTS |
 
 To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
 
@@ -64,23 +64,23 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 New templates in this release:
 
-- `k8s-iot-edge`: Edge version of k8s-iot-studio featuring oauth2 proxy authentication.
+- `k8s-iot-edge`: Edge version of k8s-iot-studio featuring oauth2 proxy authentication with keycloakx.
 
 Application update procedures in this release:
 
 | Procedures                                           |
 | ---------------------------------------------------- |
-| [kubeadm-clusters.md](./kubeadm-clusters.md)         |
+| [kubeadm-clusters](./kubeadm-clusters.md)            |
 | [k8s-metallb-system](./k8s-metallb-system.md)        |
 | [k8s-ingress-nginx](./k8s-ingress-nginx.md)          |
 | [k8s-cert-manager](./k8s-cert-manager.md)            |
 | [k8s-harbor](./k8s-harbor.md)                        |
 | [k8s-keycloakx](./k8s-keycloakx.md)                  |
-| [k8s-gitlab.md](./k8s-gitlab.md)                     |
+| [k8s-gitlab](./k8s-gitlab.md)                        |
 | [k8s-nextcloud](./k8s-nextcloud.md)                  |
 | [k8s-miniostalone](./k8s-miniostalone.md)            |
 | [k8s-minio-operator/tenant](./k8s-minio-operator.md) |
-| [k8s-iot-studio.md](./k8s-iot-studio.md)             |
+| [k8s-iot-studio / k8s-iot-edge](./k8s-iot-studio.md) |
 
 ---
 

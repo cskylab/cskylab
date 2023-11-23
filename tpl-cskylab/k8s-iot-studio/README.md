@@ -1,15 +1,16 @@
 # Kubernetes IOT Studio<!-- omit in toc -->
 
-## k8s-iot-studio v23-04-27 <!-- omit in toc -->
+## k8s-iot-studio v99-99-99 <!-- omit in toc -->
 
   ![ ](./images/nr-image-1.png)
 
 ## Helm charts:<!-- omit in toc -->
 
-- k8s-at-home/mosquitto v4.8.2
-- k8s-at-home/node-red v10.3.2
-- influxdata/influxdb2 v2.1.1
-- bitnami/grafana v8.2.21    
+- **k8s-at-home/mosquitto v4.8.2**: appVersion v2.0.18
+- **k8s-at-home/node-red v10.3.2**: appVersion v3.1
+- **oauth2-proxy/oauth2-proxy v6.19.1**: appVersion v7.5.1
+- **influxdata/influxdb2 v2.1.1**: appVersion v2.7-alpine
+- **bitnami/grafana v9.6.2**: appVersion v10.2.2
 
 This namespace is intended to deploy an IOT service environment in Kubernetes with the following applications:
 
