@@ -6,9 +6,9 @@
 
 ## Helm charts:<!-- omit in toc -->
 
-- k8s-at-home/mosquitto v4.8.2
-- k8s-at-home/node-red v10.3.2
-- oauth2-proxy/oauth2-proxy v6.16.1
+- **k8s-at-home/mosquitto v4.8.2**: appVersion v2.0.18
+- **k8s-at-home/node-red v10.3.2**: appVersion v3.1
+- **oauth2-proxy/oauth2-proxy v6.19.1**: appVersion v7.5.1
 
 This namespace is intended to deploy an IOT Edge service environment in Kubernetes with the following applications:
 
@@ -17,6 +17,8 @@ This namespace is intended to deploy an IOT Edge service environment in Kubernet
 - **oauth2-proxy**: OpenID authentication proxy for Node-Red.
 
 To run this namespace, you must deploy before k8s-keycloakx to configure the example backend authentication client.
+
+> **Note**: Uncomment oauth2-proxy chart when file `values-oauth2-proxy.yaml` is configured appropiately with its keycloakx backend, and file `values-node-red.yaml` is configure with appropiately ingress anotations.
 
 ---  
 

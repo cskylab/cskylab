@@ -19,6 +19,8 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 - **InfluxDB**: InfluxDB is a Time Series Data Platform where developers build IoT, analytics, and cloud applications.
 - **Grafana**: Grafana allows you to query, visualize, alert on and understand metrics.
 
+> **Note**: Uncomment oauth2-proxy chart when file `values-oauth2-proxy.yaml` is configured appropiately with its keycloakx backend, and file `values-node-red.yaml` is configure with appropiately ingress anotations.
+
 ---  
 
 - [TL;DR](#tldr)
