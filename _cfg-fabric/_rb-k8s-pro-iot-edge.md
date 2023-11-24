@@ -1,4 +1,4 @@
-# k8s-pro-iot-studio
+# k8s-pro-iot-edge
 
 This namespace is intended to deploy an IOT service environment in Kubernetes.
 
@@ -21,8 +21,8 @@ echo \
 && export RB_REPO_DIR="/Users/grenes/git/cskylab-github" \
 && export RB_ZONE="cs-pro" \
 && export RB_K8S_CLUSTER="k8s-pro" \
-&& export RB_K8S_NAMESPACE="iot-studio" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-iot-studio" \
+&& export RB_K8S_NAMESPACE="iot-edge" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/k8s-iot-edge" \
 && echo
 ```
 
@@ -44,7 +44,7 @@ kubeconfig: config-k8s-pro
 
 namespace:
   ## k8s namespace name
-  name: iot-studio
+  name: iot-edge
   ## Service domain name
   domain: cskylab.net
 
@@ -59,9 +59,9 @@ registry:
 mosquitto:
   ## LoadBanancer IP static address
   ## Must be previously configured in MetalLB
-  loadbalancerip: 192.168.83.21
+  loadbalancerip: 192.168.83.22
   ## External url
-  url: mosquitto-iot-studio.pro.cskylab.net
+  url: mosquitto-iot-edge.pro.cskylab.net
   ## Credentials
   user: "admin"
   password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
@@ -70,32 +70,14 @@ nodered:
   ## Container timezone
   timezone: "UTC"
   ## External url
-  url: node-red-iot-studio.pro.cskylab.net
-  ## Credentials
-  user: "admin"
-  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
-
-influxdb:
-  # influxdb organization name
-  organization: "cskylab"
-  # influxdb bucket
-  bucket: "iot-studio"
-  # influxdb ui
-  url: influxdb-iot-studio.pro.cskylab.net
-  ## Credentials
-  user: "admin"
-  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
-
-grafana:
-  # grafana ui access
-  url: grafana-iot-studio.pro.cskylab.net
+  url: node-red-iot-edge.pro.cskylab.net
   ## Credentials
   user: "admin"
   password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
 
 publishing:
   ## External url
-  url: iot-studio.pro.cskylab.net
+  url: iot-edge.pro.cskylab.net
 
 oauthconfig:
   ## Client secret from keycloak
@@ -104,7 +86,8 @@ oauthconfig:
   cookie_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ## Local storage PV's node affinity (Configured in pv*.yaml)
-datadirectoryname: iot-studio
+datadirectoryname: iot-edge-shard1
+edgename: iot-edge
 localpvnodes:    # (k8s node names)
   all_pv: k8s-pro-n1
   # k8s nodes domain name
