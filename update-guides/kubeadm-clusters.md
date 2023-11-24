@@ -5,7 +5,9 @@
 ## Update Guides <!-- omit in toc -->
 
 - [v99-99-99 (k8s v1.28.x-00)](#v99-99-99-k8s-v128x-00)
-  - [Prerequisites (Not neccesary in Ubuntu 22.04)](#prerequisites-not-neccesary-in-ubuntu-2204)
+  - [Prerequisites](#prerequisites)
+    - [Containerd configuration (Not neccesary in Ubuntu 22.04)](#containerd-configuration-not-neccesary-in-ubuntu-2204)
+    - [Change kubernetes package repository](#change-kubernetes-package-repository)
   - [k8s version 1.28.x-\*](#k8s-version-128x-)
   - [List available kubeadm versions](#list-available-kubeadm-versions)
   - [Upgrading k8s master node](#upgrading-k8s-master-node)
@@ -18,7 +20,7 @@
     - [Connect with mcc](#connect-with-mcc)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc)
 - [v23-04-27b (k8s v1.27.1-00)](#v23-04-27b-k8s-v1271-00)
-  - [Prerequisites (Not neccesary in Ubuntu 22.04)](#prerequisites-not-neccesary-in-ubuntu-2204-1)
+  - [Prerequisites (Not neccesary in Ubuntu 22.04)](#prerequisites-not-neccesary-in-ubuntu-2204)
   - [k8s version 1.27.1-00](#k8s-version-1271-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions-1)
   - [Upgrading k8s master node](#upgrading-k8s-master-node-1)
@@ -31,7 +33,7 @@
     - [Connect with mcc](#connect-with-mcc-1)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc-1)
 - [v23-04-27a (k8s v1.26.3-00)](#v23-04-27a-k8s-v1263-00)
-  - [Prerequisites (Not neccesary in Ubuntu 22.04)](#prerequisites-not-neccesary-in-ubuntu-2204-2)
+  - [Prerequisites (Not neccesary in Ubuntu 22.04)](#prerequisites-not-neccesary-in-ubuntu-2204-1)
   - [k8s version 1.26.3-00](#k8s-version-1263-00)
   - [List available kubeadm versions](#list-available-kubeadm-versions-2)
   - [Upgrading k8s master node](#upgrading-k8s-master-node-2)
@@ -96,7 +98,9 @@
 
 ## v99-99-99 (k8s v1.28.x-00)
 
-### Prerequisites (Not neccesary in Ubuntu 22.04)
+### Prerequisites 
+
+#### Containerd configuration (Not neccesary in Ubuntu 22.04)
 
 - Check file `kubeadm-config.yaml` and deploy it with this api configuration:
 
@@ -122,6 +126,15 @@ cgroupDriver: systemd
 
   # Restart containerd
   sudo systemctl restart containerd
+```
+
+#### Change kubernetes package repository
+
+>**Important from September 13, 2023!**: The new kubernetes package repository must be introduced in all nodes (master & workers):
+
+```bash
+sudo echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 ```
 
 ### k8s version 1.28.x-*
