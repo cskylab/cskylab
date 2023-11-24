@@ -1,4 +1,4 @@
-{{- if and .Values.enabled .Values.global.appConfig.incomingEmail.enabled }}
+{{- if and .Values.enabled .Values.global.appConfig.incomingEmail.enabled (not (default $.Values.global.keda.enabled .Values.keda.enabled)) -}}
 {{- $hpaCfg := (dict "global" $.Values.global.hpa "local" .Values.hpa "context" $) -}}
 ---
 apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}

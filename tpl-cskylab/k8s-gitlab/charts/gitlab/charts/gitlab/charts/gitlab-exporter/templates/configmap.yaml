@@ -52,6 +52,8 @@ data:
         opts:
           redis_url: {{ template "gitlab.redis.url" . }}
           redis_enable_client: false
+          probe_non_namespaced: true
+          probe_namespaced: true
 
       ruby: &ruby
         methods:

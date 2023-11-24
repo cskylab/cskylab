@@ -1,20 +1,127 @@
-## v0.51.1 (2023-03-30)
+## v0.58.2 (2023-11-03)
+
+### Bug fixes
+
+- Update the default probeTimeoutSeconds to 3 seconds !448
+
+## v0.58.1 (2023-10-24)
+
+### Bug fixes
+
+- Update liveness probe to support authentication token !446
+
+## v0.58.0 (2023-10-20)
 
 ### New features
 
-- Update GitLab Runner version to v15.10.1
+- Update GitLab Runner version to v16.5.0
+- Add shutdown_timeout flag for global section config !435 (Maxim Tacu @mtacu)
 
-## v0.51.0 (2023-03-20)
+### Bug fixes
 
-### New features
-
-- Update GitLab Runner version to v15.10.0
-- Removing replicaCount from deployment when HPA is configured !368 (Gustavo Oliveira @gustoliv)
+- Add missing rbac when debugging services !442 (Ismael Posada Trobo @iposadat)
+- Adjust the runner image to match the configured podSecurityContext !434 (Harald Dunkel @hdunkel)
+- Support for external secrets added via values.yaml envVars value; avoid setting volumes and volume mounts for nonexistent secrets !426 (Thomas Spear @tspearconquest)
+- Make livenessProbe actually probe for a working runner !404 (fiskhest @fiskhest)
+- helm: fix runners.config template rendering !386 (Viktor Oreshkin @stek29)
 
 ### Maintenance
 
-- Fix integration test scripting !383
-- Update the example reference to the helper image !382
+- Add ephemeral-storage example in resources.requests and resources.limits !443
+- Update broken and outdated links in Helm chart values.yaml !438 (Kolja Lucht @k0jak)
+
+## v0.57.1 (2023-10-06)
+
+### New features
+
+- Update GitLab Runner version to v16.4.1
+
+## v0.57.0 (2023-09-25)
+
+### New features
+
+- Update GitLab Runner version to v16.3.2
+
+## v0.56.1 (2023-09-18)
+
+### New features
+
+- Update GitLab Runner version to v16.3.1
+
+## v0.56.0 (2023-08-21)
+
+### New features
+
+- Update GitLab Runner version to v16.2.1
+
+## v0.55.0 (2023-07-23)
+
+### New features
+
+- Update GitLab Runner version to v16.1.1
+
+## v0.54.0 (2023-06-21)
+
+### New features
+
+- Update GitLab Runner version to v16.0.3
+
+## v0.53.2 (2023-06-08)
+
+### New features
+
+- Update GitLab Runner version to v16.0.2
+
+### Bug fixes
+
+- Revert cache settings through Kubernetes secret in values yaml !406
+- Take in account registration token from secret !405
+- Support empty rules defined in the values.yaml !402
+
+### Maintenance
+
+- Remove reference to rbac.resources and rbac.verbs !403
+
+## v0.52.1 (2023-06-02)
+
+### New features
+
+- Update GitLab Runner version to v15.11.1
+
+## v0.53.1 (2023-05-25)
+
+### New features
+
+- Update GitLab Runner version to v16.0.1
+
+## v0.53.0 (2023-05-22)
+
+### New features
+
+- Update GitLab Runner version to v16.0.0
+
+### Maintenance
+
+- Adapt the Helm Chart to support the next Token Architecture !398
+- Remove namespace and cache deprecated fields from the Helm Chart project !397
+- Remove all deprecated fields that can be resolved with template merging !393
+- Fix failure in integration tests !390
+
+## v0.52.0 (2023-04-22)
+
+### New features
+
+- Update GitLab Runner version to v15.11.0
+
+### Bug fixes
+
+- Enable ability to use tini instead of dumb-init !385
+- Invalid yaml when creating service account with no annotations !381 (Zev Isert @zevisert)
+
+### Maintenance
+
+- Fix failure in integration tests !390
+- Add merge release config to be executed after stable branches are merged into the main branch !387
 
 ## v0.48.0 (2022-12-17)
 

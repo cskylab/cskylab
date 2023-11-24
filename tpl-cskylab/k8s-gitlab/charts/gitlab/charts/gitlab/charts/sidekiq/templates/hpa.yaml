@@ -5,8 +5,10 @@
 {{- range .Values.pods -}}
 {{-   $queueName := printf "%s-%s" $fullname .name | trunc 63 }}
 {{-   $hpa := merge (default dict .hpa) $.Values.hpa }}
+{{-   $keda := merge (default dict .keda) $.Values.keda }}
 {{-   $hpaCfg := (dict "global" $.Values.global.hpa "local" $hpa "context" $) }}
 {{-   include "sidekiq.pod.common.labels" . }}
+{{-   if not (default $.Values.global.keda.enabled $keda.enabled) }}
 ---
 apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}
 kind: HorizontalPodAutoscaler
@@ -25,5 +27,6 @@ spec:
   maxReplicas: {{ default $.Values.maxReplicas .maxReplicas }}
   {{- include "gitlab.hpa.metrics" $hpaCfg | nindent 2 }}
   {{- include "gitlab.hpa.behavior" $hpaCfg | nindent 2 }}
-{{- end }}
+{{-   end -}}
+{{- end -}}
 {{- end -}}

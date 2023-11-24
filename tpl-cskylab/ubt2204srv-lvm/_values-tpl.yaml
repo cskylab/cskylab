@@ -6,7 +6,7 @@
 
 _tplname: ubt2204srv-lvm
 _tpldescription: Ubuntu server 22.04 LVM base installation
-_tplversion: 23-04-27
+_tplversion: 23-11-24
 
 #
 # Values to override

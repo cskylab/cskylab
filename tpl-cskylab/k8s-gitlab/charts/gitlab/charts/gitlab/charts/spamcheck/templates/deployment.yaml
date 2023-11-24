@@ -1,5 +1,5 @@
 {{- if .Values.global.spamcheck.enabled -}}
-{{- $imageCfg := dict "global" $.Values.global.image "local" $.Values.image -}}
+{{- $imageCfg := dict "global" $.Values.global.image "local" $.Values.image "context" $ -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,7 +67,7 @@ spec:
       containers:
         {{- include "gitlab.extraContainers" . | nindent 8 }}
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ coalesce .Values.image.tag (include "gitlab.parseAppVersion" (dict "appVersion" .Chart.AppVersion "prepend" "false")) }}{{ include "gitlab.image.tagSuffix" . }}"
+          image: {{ include "gitlab.image.fullPath" $imageCfg }}
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           ports:
             - name: grpc

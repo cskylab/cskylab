@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .namespace.name }}-influxdb
   local:
-    path: /srv/{{ .namespace.name }}-influxdb/data
+    path: /srv/{{ .datadirectoryname }}/data/influxdb
   nodeAffinity:
     required:
       nodeSelectorTerms:

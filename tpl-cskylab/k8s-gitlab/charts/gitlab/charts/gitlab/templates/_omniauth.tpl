@@ -21,7 +21,11 @@ omniauth:
   {{- if .omniauth.providers }}
   providers:
   {{-   range $index, $entry := .omniauth.providers }}
+  {{-     if $entry.secret }}
     - <%= YAML.load_file({{ printf "/etc/gitlab/omniauth/%s/%s" $entry.secret (default "provider" $entry.key) | quote }}).to_json() %>
+  {{-     else }}
+    - {{ toJson $entry }}
+  {{-     end }}
   {{-   end }}
   {{- end }}
 {{- end -}}
@@ -31,11 +35,13 @@ omniauth:
 {{- with $.Values.global.appConfig -}}
 {{- if .omniauth.providers }}
 {{-   range $index, $entry := .omniauth.providers }}
+{{-     if hasKey $entry "secret" }}
 - secret:
     name: {{ $entry.secret }}
     items:
       - key: {{ default "provider" $entry.key }}
         path: {{ printf "omniauth/%s/%s" $entry.secret (default "provider" $entry.key) | quote }}
+{{-     end }}
 {{-   end }}
 {{- end -}}
 {{- end -}}

@@ -12,6 +12,9 @@ metadata:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "-11"
     "helm.sh/hook-delete-policy": before-hook-creation
+    {{- range $key, $value := .Values.upgradeCheck.configMapAnnotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 data:
   runcheck: |
     {{- include (print $.Template.BasePath "/_runcheck.tpl") . | nindent 4 }}
@@ -62,7 +65,7 @@ spec:
       {{- include "gitlab.image.pullSecrets" $imageCfg | nindent 6}}
       containers:
         - name: run-check
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.upgradeCheck "global" $.Values.global) | quote }}
+          image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.upgradeCheck.image) | quote }}
           command: ['/bin/sh', '/scripts/runcheck']
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
           env:

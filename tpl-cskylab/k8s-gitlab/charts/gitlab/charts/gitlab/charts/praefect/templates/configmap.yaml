@@ -18,9 +18,7 @@ data:
     cp -v -L /init-config/praefect.crt /init-secrets/praefect/praefect.crt
     cp -v -L /init-config/praefect.key /init-secrets/praefect/praefect.key
     {{- end }}
-  config.toml.erb: |
-    <% gitaly_token = File.read('/etc/gitlab-secrets/praefect/gitaly_token').strip.to_json %>
-    <% praefect_token = File.read('/etc/gitlab-secrets/praefect/praefect_token').strip.to_json %>
+  config.toml.tpl: |
     # TCP address to listen on
     listen_addr = '0.0.0.0:{{ include "gitlab.praefect.internalPort" . }}'
 
@@ -45,7 +43,8 @@ data:
     read_only_after_failover = {{ .Values.failover.readonlyAfter }}
 
     [auth]
-    token = <%= praefect_token %>
+    token = {% file.Read "/etc/gitlab-secrets/praefect/praefect_token" | strings.TrimSpace | data.ToJSON %}
+
     transitioning = false
 
     [logging]
@@ -58,9 +57,6 @@ data:
     {{- end }}
     {{- if .sentryDsn }}
     sentry_dsn = "{{ .sentryDsn }}"
-    {{- end }}
-    {{- if .rubySentryDsn }}
-    ruby_sentry_dsn = "{{ .rubySentryDsn }}"
     {{- end }}
     dir = "/var/log/gitaly"
     {{- if .sentryEnvironment }}
@@ -88,7 +84,7 @@ data:
     {{- $podAddress := include "gitlab.praefect.gitaly.qualifiedServiceName" (dict "context" $globalContext "index" . "name" $storageName) }}
     storage = '{{ $serviceName }}-{{ . }}'
     address = '{{ printf "%s://%s.%s.svc:%s" $scheme $podAddress $globalContext.Release.Namespace $port }}'
-    token = <%= gitaly_token %>
+    token = {% file.Read "/etc/gitlab-secrets/praefect/gitaly_token" | strings.TrimSpace | data.ToJSON %}
     {{- end }}
     {{ end }}
 
@@ -96,6 +92,6 @@ data:
     host = '{{ template "gitlab.praefect.psql.host" . }}'
     port = {{ template "gitlab.praefect.psql.port" . }}
     user = '{{ template "gitlab.praefect.psql.user" . }}'
-    password = <%= File.read("/etc/gitlab-secrets/praefect/db_password").strip.to_json %>
+    password = {% file.Read "/etc/gitlab-secrets/praefect/db_password" | strings.TrimSpace | data.ToJSON %}
     dbname = '{{ template "gitlab.praefect.psql.dbName" . }}'
     sslmode = '{{ $.Values.global.praefect.psql.sslMode }}'

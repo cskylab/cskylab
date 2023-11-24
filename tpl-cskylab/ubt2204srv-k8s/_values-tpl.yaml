@@ -6,14 +6,14 @@
 
 _tplname: ubt2204srv-k8s
 _tpldescription: Ubuntu server 22.04 kubernetes node
-_tplversion: 23-04-27
+_tplversion: 23-11-24
 
 #
 # Values to override
 #
 
 ## Kubernetes version to install
-k8s_version: "1.27.1-00"
+k8s_version: "1.28.2-00"
 
 ## Machine related configuration values
 machine:

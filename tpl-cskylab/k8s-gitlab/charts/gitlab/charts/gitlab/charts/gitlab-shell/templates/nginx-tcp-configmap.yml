@@ -1,4 +1,4 @@
-{{- if not .Values.tcpExternalConfig}}
+{{- if and (eq .Values.global.ingress.provider "nginx") (not .Values.tcpExternalConfig) }}
 {{- if .Values.enabled }}
 {{- $port := include "gitlab.shell.port" . | int -}}
 {{- $tcpProxyProtocol := include "gitlab.shell.tcp.proxyProtocol" . }}

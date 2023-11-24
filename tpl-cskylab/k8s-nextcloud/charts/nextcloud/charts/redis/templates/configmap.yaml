@@ -1,3 +1,8 @@
+{{- /*
+Copyright VMware, Inc.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
 {{- if (include "redis.createConfigmap" .) }}
 apiVersion: v1
 kind: ConfigMap
@@ -32,7 +37,6 @@ data:
     # End of master configuration
   replica.conf: |-
     dir {{ .Values.replica.persistence.path }}
-    slave-read-only yes
     # User-supplied replica configuration:
     {{- if .Values.replica.configuration }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.replica.configuration "context" $ ) | nindent 4 }}

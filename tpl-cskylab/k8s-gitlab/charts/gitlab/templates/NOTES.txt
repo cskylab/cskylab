@@ -1,39 +1,27 @@
 {{- $NOTICE := "\n=== NOTICE" -}}
 {{- $WARNING := "\n=== WARNING" -}}
+{{- $CRITICAL := "\n=== CRITICAL" -}}
 
-{{/* PostgreSQL minimum version change */}}
+{{- /* If any development subchart is enabled, note it is not production ready */}}
+{{- $enabledNonProdCharts := fromJsonArray (include "gitlab.nonProdCharts.enabledNames" .) -}}
+{{- if not (empty $enabledNonProdCharts) }}
+{{ $CRITICAL }}
+The following charts are included for evaluation purposes only. They will not be supported by GitLab Support
+for production workloads. Use Cloud Native Hybrid deployments for production. For more information visit
+https://docs.gitlab.com/charts/installation/index.html#use-the-reference-architectures.
+{{- range $name := $enabledNonProdCharts }}
+- {{ $name }}
+{{- end }}
+{{- end }}
+
+{{- /* PostgreSQL minimum version change */}}
 {{ $NOTICE }}
-The minimum required version of PostgreSQL is now 12. See https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/doc/installation/upgrade.md for more details.
+The minimum required version of PostgreSQL is now 13. See https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/doc/installation/upgrade.md for more details.
 
 {{- /* If the Container Registry metadata database is enabled, note it is not production ready */}}
 {{- if eq .Values.registry.database.enabled true }}
 {{ $WARNING }}
 The Container Registry metadata database has been enabled. Please note that it is an experimental feature and must not be used in production.
-{{- end }}
-
-{{- /* If the Container Registry filesystem metadata is disabled, note it is not production ready */}}
-{{- if eq true .Values.registry.migration.disablemirrorfs }}
-{{ $WARNING }}
-The Container Registry filesystem metadata has been disabled. Please note that it is an experimental feature and must not be used in production.
-{{- end }}
-
-{{- /* If the Container Registry migration mode is enabled, note it is not production ready */}}
-{{- if eq .Values.registry.migration.enabled true }}
-{{ $WARNING }}
-The Container Registry migration mode has been enabled. Please note that it is an experimental feature and must not be used in production.
-
-{{- end }}
-
-{{- /* If the Container Registry online garbage collection is enabled, note it is not production ready */}}
-{{- if eq false .Values.registry.gc.disabled }}
-{{ $WARNING }}
-The Container Registry online garbage collection has been enabled. Please note that it is an experimental feature and must not be used in production.
-{{- end }}
-
-{{- /* If Praefect enabled, note it is not production ready */}}
-{{- if eq .Values.global.praefect.enabled true }}
-{{ $WARNING }}
-The Praefect chart has been enabled. Please note that it is still under development and not ready for production use. Usage may require significant manual intervention during upgrades.
 {{- end }}
 
 {{- /* If shared-secrets is disable, manual secret creation will be needed */}}
@@ -132,30 +120,8 @@ Using `PAGES_UPDATE_LEGACY_STORAGE` environment variable with bundled Pages serv
 {{-   end }}
 {{- end }}
 
-{{- /* In-chart NGINX Ingress Controller notices */}}
-{{- if eq true (index $.Values "nginx-ingress").enabled }}
-{{ $NOTICE }}
-The in-chart NGINX Ingress Controller has the following requirements:
-    - Kubernetes version must be 1.19 or newer.
-    - Ingress objects must be in group/version `networking.k8s.io/v1`.
-{{- end }}
-
-{{- /* Deprecation notice for `defaultCanCreateGroup` setting */}}
-{{- if eq false .Values.global.appConfig.defaultCanCreateGroup }}
-{{ $NOTICE }}
-`global.appConfig.defaultCanCreateGroup` setting has been deprecated. Starting with GitLab 15.5, this setting cannot be controlled via the configuration file anymore. Follow the steps at https://docs.gitlab.com/ee/user/admin_area/settings/account_and_limit_settings.html#prevent-users-from-creating-top-level-groups, to configure this setting via the Admin UI or the API.
-{{- end }}
-
-{{- /* Deprecation notice for `gitlab.deprecate.kas.metrics.port` setting */}}
-{{- if hasKey $.Values.gitlab.kas.metrics "port" }}
-{{ $NOTICE }}
-kas:
-    The configuration of `gitlab.kas.metrics.port` has moved. Please use `gitlab.kas.observability.port` instead.
-    This port is used for more observability features than just the metrics, e.g. the liveness and readiness probe endpoints.
-{{- end }}
-
 {{- /* Deprecation notice for `gitlab.deprecate.kas.privateApi.tls.enabled` setting */}}
-{{- if hasKey $.Values.gitlab.kas.privateApi.tls "enabled" }}
+{{- if eq true $.Values.gitlab.kas.privateApi.tls.enabled }}
 {{ $NOTICE }}
 kas:
     The configuration of `gitlab.kas.privateApi.tls.enabled` has moved. Please use `global.kas.tls.enabled` instead.
@@ -186,7 +152,7 @@ sidekiq:
 sidekiq.pods[{{ $index }}] ({{ $pod.name }}):
     The configuration of 'gitlab.sidekiq.pods[{{ $index }}].queueSelector' should be removed. Please follow the steps at https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html#start-multiple-processes, to run Sidekiq with multiple processes while listening to all queues.
 {{-   end -}}
-{{- end -}}
+{{- end }}
 
 {{- /* Deprecation notice for `gitlab.deprecate.sidekiq.negateQueues` setting */}}
 {{- if hasKey .Values.gitlab.sidekiq "negateQueues" -}}
@@ -202,6 +168,25 @@ sidekiq:
 sidekiq.pods[{{ $index }}] ({{ $pod.name }}):
     The configuration of 'gitlab.sidekiq.pods[{{ $index }}].negateQueues' should be removed. Please follow the steps at https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html#start-multiple-processes, to run Sidekiq with multiple processes while listening to all queues.
 {{-   end -}}
+{{- end }}
+
+{{- /* Deprecation notice for global.redis.password */}}
+{{- if kindIs "map" .Values.global.redis.password }}
+{{ $NOTICE }}
+redis:
+    The configuration key `global.redis.password` has been renamed. Please use
+    `globa.redis.auth` instead. This is the source of the `coalesce.go` warning
+    message from Helm as well. For more details, please see:
+    https://docs.gitlab.com/charts/installation/upgrade.html#use-of-globalredispassword
+{{- end -}}
+
+{{- /* Deprecation notice for global.busybox */}}
+{{- if hasKey .Values.global "busybox" }}
+{{ $NOTICE }}
+global.busybox:
+    The configuration key `global.busybox` is deprecated in favor of `global.gitlabBase`.
+    For more details, please see:
+    https://docs.gitlab.com/charts/charts/globals#gitlab-base-image
 {{- end -}}
 
 {{- /* run deprecations */}}

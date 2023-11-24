@@ -1,33 +1,32 @@
+{{- /*
+Copyright VMware, Inc.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
 apiVersion: {{ template "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
   name: {{ include "harbor.registry" . }}
   namespace: {{ .Release.Namespace | quote }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
-    {{- if .Values.commonLabels }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
-    {{- end }}
+  {{- $versionLabel := dict "app.kubernetes.io/version" ( include "common.images.version" ( dict "imageRoot" .Values.registry.server.image "chart" .Chart ) ) }}
+  {{- $labels := include "common.tplvalues.merge" ( dict "values" ( list .Values.commonLabels $versionLabel ) "context" . ) }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" $labels "context" $ ) | nindent 4 }}
     app.kubernetes.io/component: registry
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
   replicas: {{ .Values.registry.replicaCount }}
+  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.registry.podLabels .Values.commonLabels $versionLabel ) "context" . ) }}
   selector:
-    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+    matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
       app.kubernetes.io/component: registry
   {{- if .Values.registry.updateStrategy }}
   strategy: {{- toYaml .Values.registry.updateStrategy | nindent 4 }}
   {{- end }}
   template:
     metadata:
-      labels: {{- include "common.labels.standard" . | nindent 8 }}
-        {{- if .Values.commonLabels }}
-        {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 8 }}
-        {{- end }}
-        {{- if .Values.registry.podLabels }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.registry.podLabels "context" $) | nindent 8 }}
-        {{- end }}
+      labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
         app.kubernetes.io/component: registry
       annotations:
         checksum/configmap: {{ include (print $.Template.BasePath "/registry/registry-cm.yaml") . | sha256sum }}
@@ -50,8 +49,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.registry.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.registry.podAffinityPreset "component" "registry" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.registry.podAntiAffinityPreset "component" "registry" "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.registry.podAffinityPreset "component" "registry" "customLabels" $podLabels "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.registry.podAntiAffinityPreset "component" "registry" "customLabels" $podLabels "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.registry.nodeAffinityPreset.type "key" .Values.registry.nodeAffinityPreset.key "values" .Values.registry.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.registry.nodeSelector }}
@@ -127,14 +126,6 @@ spec:
               value: /etc/harbor/ssl/registry/tls.crt
             - name: INTERNAL_TLS_TRUST_CA_PATH
               value: /etc/harbor/ssl/registry/ca.crt
-            {{- end }}
-            {{- if has "chartmuseum" .Values.proxy.components }}
-            - name: HTTP_PROXY
-              value: {{ .Values.proxy.httpProxy | quote  }}
-            - name: HTTPS_PROXY
-              value: {{ .Values.proxy.httpsProxy | quote }}
-            - name: NO_PROXY
-              value: {{ include "harbor.noProxy" . | quote }}
             {{- end }}
             {{- if .Values.registry.server.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.registry.server.extraEnvVars "context" $) | nindent 12 }}

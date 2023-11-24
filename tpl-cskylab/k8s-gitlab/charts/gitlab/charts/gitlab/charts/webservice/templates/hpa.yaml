@@ -2,7 +2,8 @@
 {{- include "webservice.datamodel.prepare" $ -}}
 {{/* BEGIN range deployments */}}
 {{- range $.Values.deployments -}}
-{{- $hpaCfg := (dict "global" $.Values.global.hpa "local" .hpa "context" $) -}}
+{{-   if not (default $.Values.global.keda.enabled .keda.enabled) -}}
+{{-   $hpaCfg := (dict "global" $.Values.global.hpa "local" .hpa "context" $) -}}
 {{/*
 From here on:
 - `.` is `.deployments.xyz` value
@@ -27,6 +28,7 @@ spec:
   maxReplicas: {{ .hpa.maxReplicas }}
   {{- include "gitlab.hpa.metrics" $hpaCfg | nindent 2 }}
   {{- include "gitlab.hpa.behavior" $hpaCfg | nindent 2 }}
-{{- end }}
+{{-   end -}}
+{{- end -}}
 {{/* END range deployments */}}
 {{- end }}

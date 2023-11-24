@@ -148,7 +148,7 @@ sudo cs-kvmserv.sh -m vm-create -i NONE -n opn-tpl \
 ```  
 
 - Connect to the console with `Virtual Machine Manager`.
-- Login with user `installer` and password `opnsense`.
+- Login with user `installer` and password `NoFear21`.
 
   ![ ](./images/iso-2021-05-10_18-02-37.png)
 

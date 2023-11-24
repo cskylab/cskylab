@@ -1,0 +1,75 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: k8s-iot-edge
+_tpldescription: Kubernetes IOT Edge
+_tplversion: 23-11-24
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: iot-edge
+  ## Service domain name
+  domain: cskylab.net
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub
+
+mosquitto:
+  ## LoadBanancer IP static address
+  ## Must be previously configured in MetalLB
+  loadbalancerip: 192.168.82.22
+  ## External url
+  url: mosquitto-iot-edge.mod.cskylab.net
+  ## Credentials
+  user: "admin"
+  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
+
+nodered:
+  ## Container timezone
+  timezone: "UTC"
+  ## External url
+  url: node-red-iot-edge.mod.cskylab.net
+  ## Credentials
+  user: "admin"
+  password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
+
+publishing:
+  ## External url
+  url: iot-edge.mod.cskylab.net
+
+oauthconfig:
+  ## Client secret from keycloak
+  client_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  ## cookie secret (random)
+  cookie_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+## Local storage PV's node affinity (Configured in pv*.yaml)
+datadirectoryname: iot-edge-shard1
+edgename: iot-edge
+localpvnodes:    # (k8s node names)
+  all_pv: k8s-mod-n1
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
+localrsyncnodes: # (k8s node names)
+  all_pv: k8s-mod-n2
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
