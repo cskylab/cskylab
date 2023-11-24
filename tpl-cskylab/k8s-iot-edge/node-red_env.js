@@ -3,7 +3,7 @@
 //
 
 // App version
-process.env.NR_APP_VER = "99-99-99";
+process.env.NR_APP_VER = "23-11-24";
 
 // Installation
 process.env.NR_APP_ID = "{{ .namespace.name }}";

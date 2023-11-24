@@ -6,7 +6,7 @@
 
 _tplname: ubt2204srv-kvm
 _tpldescription: Ubuntu server 22.04 kvm base installation
-_tplversion: 99-99-99
+_tplversion: 23-11-24
 
 #
 # Values to override

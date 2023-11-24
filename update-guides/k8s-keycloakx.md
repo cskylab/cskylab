@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v23-11-24](#v23-11-24)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [PostgreSQL migration](#postgresql-migration)
@@ -27,7 +27,7 @@
   - [Reference](#reference-2)
 
 ---
-## v99-99-99
+## v23-11-24
 
 ### Background
 

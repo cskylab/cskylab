@@ -2,7 +2,7 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v23-11-24](#v23-11-24)
   - [Release notes](#release-notes)
   - [Ubuntu 22.04 Servers Updates](#ubuntu-2204-servers-updates)
   - [Application updates](#application-updates)
@@ -30,11 +30,11 @@
   - [Baseline build AM](#baseline-build-am)
 
 ---
-## v99-99-99
+## v23-11-24
 
 ### Release notes
 
-Welcome to cSkyLab release of v99-99-99. This release performs updates in all namespaces and upgrades kubernetes clusters to version 1.28.x with new k8s package repositories.
+Welcome to cSkyLab release of v23-11-24. This release performs updates in all namespaces and upgrades kubernetes clusters to version 1.28.x with new k8s package repositories.
 
 The new namespace **k8s-iot-edge**, derived from **k8s-iot-studio** is intended to deploy an IOT Edge service environment.
 

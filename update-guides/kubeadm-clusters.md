@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99 (k8s v1.28.x-00)](#v99-99-99-k8s-v128x-00)
+- [v23-11-24 (k8s v1.28.x-00)](#v23-11-24-k8s-v128x-00)
   - [Prerequisites](#prerequisites)
     - [Containerd configuration (Not neccesary in Ubuntu 22.04)](#containerd-configuration-not-neccesary-in-ubuntu-2204)
     - [Change kubernetes package repository](#change-kubernetes-package-repository)
@@ -96,7 +96,7 @@
 
 ---
 
-## v99-99-99 (k8s v1.28.x-00)
+## v23-11-24 (k8s v1.28.x-00)
 
 ### Prerequisites 
 

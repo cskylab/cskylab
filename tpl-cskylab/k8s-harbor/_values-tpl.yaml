@@ -6,7 +6,7 @@
 
 _tplname: k8s-harbor
 _tpldescription: Harbor opensource registry
-_tplversion: 99-99-99
+_tplversion: 23-11-24
 
 #
 # Values to override

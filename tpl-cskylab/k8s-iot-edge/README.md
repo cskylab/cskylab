@@ -1,6 +1,6 @@
 # Kubernetes IOT Edge<!-- omit in toc -->
 
-## k8s-iot-edge v99-99-99 <!-- omit in toc -->
+## k8s-iot-edge v23-11-24 <!-- omit in toc -->
 
   ![ ](./images/nr-image-1.png)
 

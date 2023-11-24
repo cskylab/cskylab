@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v23-11-24](#v23-11-24)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update minio-tenant manifest and documentation](#1--update-minio-tenant-manifest-and-documentation)
@@ -43,7 +43,7 @@
 
 ---
 
-## v99-99-99
+## v23-11-24
 
 ### Background
 
@@ -357,7 +357,7 @@ spec:
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v23-11-24 <!-- omit in toc -->
 
 ## Image: quay.io/minio/minio:RELEASE.2023-11-15T20-43-25Z <!-- omit in toc -->
 ```
@@ -397,7 +397,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## 99-99-99 <!-- omit in toc -->
+## 23-11-24 <!-- omit in toc -->
 
 ## Helm charts: minio/operator v5.0.11 <!-- omit in toc -->
 ```
