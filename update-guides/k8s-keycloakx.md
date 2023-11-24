@@ -32,7 +32,7 @@
 ### Background
 
 Chart codecentric/keycloakx 2.3.0 updates chart components in keycloak appVersion 22.0.4
-Chart bitnami/postgresql 13.1.5 updates chart components in postgresql appVersion 15.x (image selected in values-posgresql.yaml)   
+Chart bitnami/postgresql 13.2.16 updates chart components in postgresql appVersion 15.x (image selected in values-posgresql.yaml)   
 
 ### How-to guides
 

@@ -65,7 +65,7 @@
 
 ### Background
 
-Nextcloud chart 4.5.2 updates chart parameters in Nextcloud appVersion 27.1.3.
+Nextcloud chart 4.5.2 updates chart parameters in Nextcloud appVersion 27.1.4.
 
 This procedure updates Nextcloud installation in k8s-mod cluster.
 
@@ -107,7 +107,7 @@ helm repo update
 
 # Charts
 helm pull nextcloud/nextcloud --version 4.5.2 --untar
-helm pull bitnami/mariadb --version 14.1.3 --untar
+helm pull bitnami/mariadb --version 14.1.4 --untar
 
 EOF
 )"

@@ -85,7 +85,7 @@
 This procedure updates to the following versions:
 - GitLab chart to version v7.6.0 with appVersion 16.6.0. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- Postgresql chart v13.2.9, with application version 14.x
+- Postgresql chart v13.2.16, with application version 14.x
 
 This procedure updates gitlab installation in k8s-mod cluster.
 
@@ -126,7 +126,7 @@ To deploy the new version on an empty volume:
 ```bash
 ...
 ...
-helm pull bitnami/postgresql --version 13.2.9 --untar
+helm pull bitnami/postgresql --version 13.2.16 --untar
 ...
 ...
 ```
@@ -235,7 +235,7 @@ To deploy the new version on an empty volume:
 ```bash
 ...
 ...
-helm pull bitnami/postgresql --version 13.2.9 --untar
+helm pull bitnami/postgresql --version 13.2.16 --untar
 ...
 ...
 ```
