@@ -2,7 +2,7 @@
 
 ## Virtual data center in-a-box
 
-**v23-04-27**
+**v23-11-24**
 
 
 [cSkyLab](https://www.cskylab.com/) is a virtual data center model that allows fast application deployment and gives you the choice to scale up your services in any combination of private, public or hybrid cloud.
@@ -11,11 +11,7 @@
 
 It implements a thin layer of bash scripts, templates and procedures that allows you to leverage all the power and versatility of native cloud tools.
 
-### Documentation
-
-To learn more about how to build your cSkyLab virtual data center see <https://docs.cskylab.com>.
-
-### Out-of-the-box Applications
+## Out-of-the-box Applications
 
 [cSkyLab](https://www.cskylab.com/) is designed to deploy your own applications and services.
 
@@ -33,7 +29,9 @@ To help you to start fast, it bundles "out of the box" many popular open source 
 - [Nextcloud](https://nextcloud.com/) Colaboration and file sharing
 - [MinIO](https://min.io) S3 compatible storage
 - IOTStudio: IOT service environment with Mosquitto, Node-red, InfluxDB and Grafana.
-- hello-oauth2:	Example of [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) deployment protecting a simple Hello World application for modeling purposes
+- IOTEdge: IOT Edge service environment with Mosquitto, Node-red, & oauth2-proxy authentication.
+- hello-oauth2: Example of [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) deployment protecting a simple Hello World application for modeling purposes.
+
 
 And many more to come...
 
