@@ -9,6 +9,7 @@ spec:
   addresses:
   - 192.168.82.20/32
   - 192.168.82.21/32
+  - 192.168.82.22/32
   autoAssign: false
 status: {}
 ---

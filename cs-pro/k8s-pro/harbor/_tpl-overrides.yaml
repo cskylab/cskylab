@@ -1,9 +1,9 @@
 _tpldescription: Harbor opensource registry
 _tplname: k8s-harbor
-_tplversion: 23-04-27
+_tplversion: 23-11-24
 certificate:
   clusterissuer: ca-test-internal
-kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
+kubeconfig: config-k8s-pro
 localpvnodes:
   all_pv: k8s-pro-n1
   domain: cskylab.net

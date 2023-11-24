@@ -1,3 +1,4 @@
+{{- if not (default $.Values.global.keda.enabled .Values.keda.enabled) -}}
 {{- $hpaCfg := (dict "global" $.Values.global.hpa "local" .Values.hpa "context" $) -}}
 ---
 apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}
@@ -17,3 +18,4 @@ spec:
   maxReplicas: {{ .Values.hpa.maxReplicas | int }}
   {{- include "gitlab.hpa.metrics" $hpaCfg | nindent 2 }}
   {{- include "gitlab.hpa.behavior" $hpaCfg | nindent 2 }}
+{{- end -}}

@@ -5,9 +5,7 @@ ethernets:
     dhcp4: no
     dhcp6: no
     addresses: [192.168.82.11/24]
-    routes:
-      - to: default
-        via: 192.168.82.1
+    gateway4: 192.168.82.1
     nameservers:
       search:
         - cskylab.net

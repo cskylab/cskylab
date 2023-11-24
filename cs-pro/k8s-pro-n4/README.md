@@ -6,7 +6,7 @@ Persistent Volumes on local storage are supported by LVM services.
 
 [comment]: <> (**Machine functional description goes here**)
 
-Machine `k8s-pro-n4` is deployed from template Ubuntu server 22.04 kubernetes node version 23-04-27.
+Machine `k8s-pro-n4` is deployed from template Ubuntu server 22.04 kubernetes node version 23-11-24.
 
 - [Prerequisites](#prerequisites)
   - [Check kubernetes version](#check-kubernetes-version)
@@ -40,6 +40,7 @@ Machine `k8s-pro-n4` is deployed from template Ubuntu server 22.04 kubernetes no
     - [Manual certificate renewal](#manual-certificate-renewal)
   - [k8s Raspberry Pi](#k8s-raspberry-pi)
     - [Enable cgroups limit support](#enable-cgroups-limit-support)
+  - [Force delete namespace](#force-delete-namespace)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
     - [Abridged ‘find’ command examples](#abridged-find-command-examples)
@@ -698,6 +699,23 @@ sudo reboot
 ```
 
 - Reboot the Raspberry Pi
+
+### Force delete namespace
+
+To check what's going on at the status of the namespace you can check:
+
+```bash
+kubectl get ns {NAMESPACE} -o yaml
+```
+
+To force namespace deletion execute:
+
+```bash
+NAMESPACE={YOUR_NAMESPACE_TO_DELETE}
+kubectl proxy &
+kubectl get namespace $NAMESPACE -o json |jq '.spec = {"finalizers":[]}' >temp.json
+curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json 127.0.0.1:8001/api/v1/namespaces/$NAMESPACE/finalize
+```
 
 ### Utilities
 

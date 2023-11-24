@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: iot-studio-mosquitto-configinc
   local:
-    path: /srv/iot-studio-mosquitto/data/configinc
+    path: /srv/iot-studio/data/mosquitto/configinc
   nodeAffinity:
     required:
       nodeSelectorTerms:

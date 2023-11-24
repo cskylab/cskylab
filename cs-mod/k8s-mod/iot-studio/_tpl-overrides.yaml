@@ -1,19 +1,20 @@
 _tpldescription: Kubernetes IOT Studio
 _tplname: k8s-iot-studio
-_tplversion: 23-04-27
+_tplversion: 23-11-24
 certificate:
   clusterissuer: ca-test-internal
+datadirectoryname: iot-studio
 grafana:
   password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
-  url: grafana-iot.mod.cskylab.net
+  url: grafana-iot-studio.mod.cskylab.net
   user: admin
 influxdb:
   bucket: iot-studio
   organization: cskylab
   password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
-  url: influxdb-iot.mod.cskylab.net
+  url: influxdb-iot-studio.mod.cskylab.net
   user: admin
-kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
+kubeconfig: config-k8s-mod
 localpvnodes:
   all_pv: k8s-mod-n1
   domain: cskylab.net
@@ -25,7 +26,7 @@ localrsyncnodes:
 mosquitto:
   loadbalancerip: 192.168.82.21
   password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
-  url: mosquitto-iot.mod.cskylab.net
+  url: mosquitto-iot-studio.mod.cskylab.net
   user: admin
 namespace:
   domain: cskylab.net
@@ -33,7 +34,12 @@ namespace:
 nodered:
   password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
   timezone: UTC
-  url: node-red-iot.mod.cskylab.net
+  url: node-red-iot-studio.mod.cskylab.net
   user: admin
+oauthconfig:
+  client_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  cookie_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+publishing:
+  url: iot-studio.mod.cskylab.net
 registry:
   proxy: harbor.cskylab.net/dockerhub

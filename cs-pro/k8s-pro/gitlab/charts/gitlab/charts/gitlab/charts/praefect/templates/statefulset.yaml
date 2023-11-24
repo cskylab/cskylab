@@ -1,5 +1,5 @@
 {{- $imageCfg := dict "global" .Values.global.image "local" .Values.image -}}
-{{- $initImageCfg := dict "global" .Values.global.busybox.image "local" .Values.init.image -}}
+{{- $initImageCfg := include "gitlab.configure.config" .Values | fromYaml -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -68,7 +68,7 @@ spec:
         {{- include "gitlab.certificates.initContainer" $ | nindent 8 }}
         - name: configure
           command: ['sh', '/config/configure']
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" .Values.global) | quote }}
+          image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" $ | nindent 10 }}

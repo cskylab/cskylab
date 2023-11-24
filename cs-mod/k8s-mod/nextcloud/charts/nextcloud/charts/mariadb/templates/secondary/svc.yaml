@@ -1,3 +1,8 @@
+{{- /*
+Copyright VMware, Inc.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
 {{- if eq .Values.architecture "replication" }}
 apiVersion: v1
 kind: Service
@@ -49,9 +54,9 @@ spec:
       {{- else if eq .Values.secondary.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
-    {{- if .Values.metrics.enabled }}
+    {{- if and .Values.metrics.enabled (gt (.Values.secondary.service.ports.metrics | int) 0) }}
     - name: metrics
-      port: 9104
+      port: {{ .Values.secondary.service.ports.metrics }}
       protocol: TCP
       targetPort: metrics
     {{- end }}

@@ -188,7 +188,7 @@ The following table lists template configuration parameters and their specified 
 | `_tplname`                  | template name                                    | `k8s-hello`                  |
 | `_tpldescription`           | template description                             | `Kubernetes hello world app`           |
 | `_tplversion`               | template version                                 | `23-04-27`               |
-| `kubeconfig`                | kubeconfig file                                  | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod`                |
+| `kubeconfig`                | kubeconfig file                                  | `config-k8s-pro`                |
 | `namespace.name`            | namespace name                                   | `hello-pro`            |
 | `namespace.domain`          | domain name                                      | `cskylab.net`          |
 | `publishing.url`            | external URL                                     | `hello.pro.cskylab.net`            |

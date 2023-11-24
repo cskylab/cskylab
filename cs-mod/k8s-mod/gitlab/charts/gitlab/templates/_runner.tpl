@@ -16,7 +16,7 @@ Override the runner charts secret name containing the tokens so everything match
 Override the runner charts cache secret name to match minio
 */}}
 {{- define "gitlab-runner.cache.secret" -}}
-{{- if .Values.runners.cache.secretName -}}
+{{- if dig "cache" "secretName" false .Values.runners -}}
 {{    .Values.runners.cache.secretName | quote }}
 {{- else if .Values.global.minio.enabled -}}
 {{    include "gitlab.minio.credentials.secret" . }}
@@ -27,7 +27,7 @@ Override the runner charts cache secret name to match minio
 Provide our own defaults for our cache config
 */}}
 {{- define "gitlab-runner.cache-tpl.s3ServerAddress" -}}
-{{ default ( include "gitlab.minio.hostname" . ) .Values.runners.cache.s3ServerAddress | quote }}
+{{ dig "cache" "s3ServerAddress" ( include "gitlab.minio.hostname" . ) .Values.runners | quote }}
 {{- end -}}
 
 {{/*

@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: iot-studio-influxdb
   local:
-    path: /srv/iot-studio-influxdb/data
+    path: /srv/iot-studio/data/influxdb
   nodeAffinity:
     required:
       nodeSelectorTerms:

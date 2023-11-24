@@ -94,10 +94,10 @@ system_keyboard="us"
 netplan_timeout="30"
 
 # Kubernetes version for kubectl
-k8s_version="1.27.1-00"
+k8s_version="1.28.2-00"
 
 # Go version
-go_version="go1.20.3.linux-amd64.tar.gz"
+go_version="go1.21.4.linux-amd64.tar.gz"
 
 # Color code for messages
 # https://robotmoon.com/256-colors/
@@ -431,9 +431,11 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo "${msg_info} Install kubectl"
   echo
 
+  # Install kubectl
+  # Ref.: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
   apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
-  curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
   apt-get update
 
@@ -485,6 +487,29 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   snap install kustomize
 
+  # Install wireguard
+  # Ref: https://www.wireguard.com/install/#ubuntu-module-tools
+  echo
+  echo "${msg_info} Install wireguard"
+  echo
+  apt -y install wireguard
+
+  # Install keycloak admin
+  # Ref: https://cloudinfrastructureservices.co.uk/install-keycloak-sso-on-ubuntu-20-04/
+  apt-get install default-jdk -y
+  wget https://github.com/keycloak/keycloak/releases/download/22.0.1/keycloak-22.0.1.tar.gz
+  tar -xvzf keycloak-22.0.1.tar.gz
+  mv keycloak-22.0.1 /opt/keycloak
+  chmod +x /opt/keycloak/bin/
+  echo "# Keycloak admin" | sudo tee -a "$HOME/.bashrc"
+  # shellcheck disable=SC2016
+  echo 'export PATH=/opt/keycloak/bin:$PATH' | sudo tee -a "$HOME/.bashrc"
+
+  # Install influxdb client
+  # Ref: https://docs.influxdata.com/influxdb/v2.7/tools/influx-cli/?t=Linux
+  wget https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.7.3-linux-amd64.tar.gz
+  tar xvzf influxdb2-client-2.7.3-linux-amd64.tar.gz
+  mv influx /usr/local/bin/
 fi
 
 ################################################################################

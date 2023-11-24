@@ -1,0 +1,36 @@
+_tpldescription: Kubernetes IOT Edge
+_tplname: k8s-iot-edge
+_tplversion: 23-11-24
+certificate:
+  clusterissuer: ca-test-internal
+datadirectoryname: iot-edge-shard1
+edgename: iot-edge
+kubeconfig: config-k8s-pro
+localpvnodes:
+  all_pv: k8s-pro-n1
+  domain: cskylab.net
+  localadminusername: kos
+localrsyncnodes:
+  all_pv: k8s-pro-n2
+  domain: cskylab.net
+  localadminusername: kos
+mosquitto:
+  loadbalancerip: 192.168.83.22
+  password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
+  url: mosquitto-iot-edge.pro.cskylab.net
+  user: admin
+namespace:
+  domain: cskylab.net
+  name: iot-edge
+nodered:
+  password: 5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY
+  timezone: UTC
+  url: node-red-iot-edge.pro.cskylab.net
+  user: admin
+oauthconfig:
+  client_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  cookie_secret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+publishing:
+  url: iot-edge.pro.cskylab.net
+registry:
+  proxy: harbor.cskylab.net/dockerhub

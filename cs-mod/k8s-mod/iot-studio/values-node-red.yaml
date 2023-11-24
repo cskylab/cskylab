@@ -9,7 +9,7 @@ image:
   # -- image repository
   repository: harbor.cskylab.net/dockerhub/nodered/node-red
   # -- image tag
-  tag: 3.0.2
+  tag: "3.1"
   # -- image pull policy
   # pullPolicy: IfNotPresent
 
@@ -21,12 +21,12 @@ env:
   # -- Node.js runtime arguments
   NODE_OPTIONS:
   # -- Setting to `true` starts Node-RED with the projects feature enabled
-  NODE_RED_ENABLE_PROJECTS: true
+  NODE_RED_ENABLE_PROJECTS:
   # -- Setting to `true` starts Node-RED in safe (not running) mode
   NODE_RED_ENABLE_SAFE_MODE:
   # -- Location of the flows configuration file.
   # If you set `FLOWS: ""` then the flow file can be set via the `flowFile` property in the `settings.js` file.
-  FLOWS: flows.json
+  FLOWS:
 
 # -- Configures service settings for the chart.
 # @default -- See values.yaml
@@ -47,9 +47,17 @@ ingress:
       cert-manager.io/cluster-issuer: ca-test-internal
       # cert-manager.io/cluster-issuer: letsencrypt-staging
       # cert-manager.io/cluster-issuer: letsencrypt
+
+      ## Ingress annotations for oauth2-proxy
+      # nginx.ingress.kubernetes.io/auth-url: "https://oauth-iot-studio.mod.cskylab.net/oauth2/auth"
+      # nginx.ingress.kubernetes.io/auth-signin: "https://oauth-iot-studio.mod.cskylab.net/oauth2/start?rd=$scheme://$best_http_host$request_uri"
+      # nginx.ingress.kubernetes.io/auth-response-headers: "x-auth-request-user, x-auth-request-email, x-auth-request-access-token"
+      # acme.cert-manager.io/http01-edit-in-place: "true"
+      # nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+
     hosts:
       -  # -- Host address. Helm template can be passed.
-        host: node-red-iot.mod.cskylab.net
+        host: node-red-iot-studio.mod.cskylab.net
         ## Configure the paths for the host
         paths:
           -  # -- Path.  Helm template can be passed.
@@ -66,7 +74,7 @@ ingress:
     tls:
       - secretName: node-red-tls
         hosts:
-          - node-red-iot.mod.cskylab.net
+          - node-red-iot-studio.mod.cskylab.net
 
 
 # -- Configure persistence settings for the chart under this key.

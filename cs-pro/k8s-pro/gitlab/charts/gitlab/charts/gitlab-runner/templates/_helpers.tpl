@@ -41,7 +41,7 @@ Define the name of the secret containing the tokens
 Define the name of the s3 cache secret
 */}}
 {{- define "gitlab-runner.cache.secret" -}}
-{{- if .Values.runners.cache.secretName -}}
+{{- if hasKey .Values.runners.cache "secretName" -}}
 {{- .Values.runners.cache.secretName | quote -}}
 {{- end -}}
 {{- end -}}
@@ -54,24 +54,13 @@ Template for outputing the gitlabUrl
 {{- end -}}
 
 {{/*
-Template runners.cache.s3ServerAddress in order to allow overrides from external charts.
-*/}}
-{{- define "gitlab-runner.cache.s3ServerAddress" }}
-{{- default "" .Values.runners.cache.s3ServerAddress | quote -}}
-{{- end -}}
-
-{{/*
 Define the image, using .Chart.AppVersion and GitLab Runner image as a default value
 */}}
 {{- define "gitlab-runner.image" }}
-{{- if kindIs "string" .Values.image -}}
-{{- .Values.image }}
-{{- else -}}
 {{- $appVersion := ternary "bleeding" (print "v" .Chart.AppVersion) (eq .Chart.AppVersion "bleeding") -}}
 {{- $appVersionImageTag := printf "alpine-%s" $appVersion -}}
 {{- $imageTag := default $appVersionImageTag .Values.image.tag -}}
 {{- printf "%s/%s:%s" .Values.image.registry .Values.image.image $imageTag }}
-{{- end -}}
 {{- end -}}
 
 {{/*
@@ -105,4 +94,17 @@ lifecycle:
     exec:
       command: ["/entrypoint", "unregister", "--all-runners"]
 {{- end -}}
+{{- end -}}
+
+{{/*
+Define if the registration token provided (if any)
+is an authentication token or not
+*/}}
+{{- define "gitlab-runner.isAuthToken" -}}
+{{- $isAuthToken := false -}}
+{{- $hasRegistrationToken := hasKey .Values "runnerRegistrationToken" -}}
+{{- if $hasRegistrationToken -}}
+{{-   $isAuthToken = (hasPrefix "glrt-" .Values.runnerRegistrationToken) -}}
+{{- end -}}
+{{- $isAuthToken -}}
 {{- end -}}

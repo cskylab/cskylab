@@ -38,7 +38,7 @@ spec:
       {{- include "gitlab.extraInitContainers" . | nindent 6 }}
       {{- include "gitlab.certificates.initContainer" . | nindent 6 }}
       - name: configure
-        image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
+        image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
         imagePullPolicy: {{ .Values.init.image.pullPolicy }}
         command: ['sh', '/config/configure']
         volumeMounts:

@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: iot-studio-grafana
   local:
-    path: /srv/iot-studio-grafana/data
+    path: /srv/iot-studio/data/grafana
   nodeAffinity:
     required:
       nodeSelectorTerms:

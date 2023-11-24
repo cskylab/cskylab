@@ -20,7 +20,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: iot-studio-node-red
   local:
-    path: /srv/iot-studio-node-red/data
+    path: /srv/iot-studio/data/node-red
   nodeAffinity:
     required:
       nodeSelectorTerms:

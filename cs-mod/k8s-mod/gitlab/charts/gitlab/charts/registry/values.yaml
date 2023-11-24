@@ -1,6 +1,6 @@
 image:
   repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry
-  tag: 'v3.71.0-gitlab'
+  tag: 'v3.86.1-gitlab'
   # pullPolicy: IfNotPresent
   # pullSecrets: []
 
@@ -132,6 +132,7 @@ init:
   resources:
     requests:
       cpu: 50m
+  containerSecurityContext: {}
   script: |-
     if [ -e /config/accesskey ] ; then
       sed -e 's@ACCESS_KEY@'"$(cat /config/accesskey)"'@' -e 's@SECRET_KEY@'"$(cat /config/secretkey)"'@' /config/config.yml > /registry/config.yml
@@ -185,10 +186,6 @@ init:
     if [ -f /config/registry/redis-password ] ; then
       sed -i -e 's@REDIS_CACHE_PASSWORD@'"$(cat /config/registry/redis-password)"'@' /registry/config.yml
     fi
-    # Insert import notification secret, if migration is enabled
-    if [ -f /config/registry/notificationSecret ] ; then
-      sed -i -e 's@NOTIFICATION_SECRET@'"$(cat /config/registry/notificationSecret | tr -d '[]"')"'@' /registry/config.yml
-    fi
     # Copy the database TLS connection files to the expected location and set permissions
     if [ -d /config/ssl ]; then
       cp -r /config/ssl/ /registry/ssl
@@ -224,7 +221,8 @@ authEndpoint:
 # Do not change this
 tokenService: 'container_registry'
 # This must match your GitLab Rails configuration
-tokenIssuer: 'gitlab-issuer'
+# tokenIssuer: 'gitlab-issuer'
+
 # Must to be `false` to support Windows clients
 # See https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/3964
 authAutoRedirect: false
@@ -249,6 +247,21 @@ hpa:
     scaleDown:
       stabilizationWindowSeconds: 300
 
+keda:
+  enabled: false
+  ## See https://keda.sh/docs/2.10/concepts/scaling-deployments/#scaledobject-spec
+  pollingInterval: 30
+  cooldownPeriod: 300
+  # minReplicaCount: 2
+  # maxReplicaCount: 10
+  # fallback: {}
+  #   failureThreshold: 3
+  #   replicas: 6
+  # hpaName: keda-hpa-{scaled-object-name}
+  # restoreToOriginalReplicaCount: false
+  # behavior: {}
+  # triggers: []
+
 storage: {}
 # secret:
 # redirect:
@@ -269,11 +282,6 @@ middleware:
 
 minio:
   redirect: false
-
-# https://github.com/docker/distribution/blob/master/docs/configuration.md#compatibility
-compatibility:
-  schema1:
-    enabled: false
 
 # Enable the registry to accept windows based docker images
 # See https://github.com/docker/distribution/issues/2795
@@ -329,11 +337,15 @@ health:
     interval: 10s
     threshold: 3
 
-## Allow to overwrite under which User and Group we're running.
+## Allow to overwrite under which User and Group the Pod will be running.
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
   # fsGroupChangePolicy: OnRootMismatch
+
+## Allow to overwrite the specific security context under which the container is running.
+containerSecurityContext:
+  runAsUser: 1000
 
 # Disable reporting by default
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#reporting
@@ -355,7 +367,9 @@ serviceAccount:
   create: false
 
 # Disable metadata database by default
-# NOTE: This is an experimental feature and must not be used in production.
+# NOTE: The metadata database is a beta feature from version 16.4 and later. Please
+# review the [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/423459)
+# and associated documentation before enabling this feature.
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#database
 database:
   enabled: false
@@ -370,7 +384,8 @@ database:
     enabled: true
     activeDeadlineSeconds: 3600
     backoffLimit: 6
-
+  discovery:
+    enabled: false
 # Redis cache to be used in conjunction with the metadata database.
 # NOTE: This is an experimental feature and must not be used in production.
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#cache-1
@@ -380,28 +395,13 @@ redis:
     password:
       enabled: false
 
-# Configuration settings to support the migration of large registries to the metadata database.
-# NOTE: This is an experimental feature and must not be used in production.
-# https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#migration
-migration:
-  enabled: false
-  disablemirrorfs: false
-  # rootdirectory:
-  # tagconcurrency: 1
-  # maxconcurrentimports: 1
-  # importtimeout: 5m
-  # preimporttimeout: 1h
-  importnotification:
-    enabled: false
-    timeout: 5s
-    # url: 'https://gitlab.example.com/api/v4/internal/registry/repositories/{path}/migration/status'
-
-# Disable online garbage collection by default.
-# NOTE: This is an experimental feature and must not be used in production.
+# The online garbage collector is only going to be enabled if the metadata
+# database is enabled. In general, we don't want to default to disabled, since
+# online garbage collection is designed to run continuously and should only be
+# disabled for compelling debugging and troubleshooting reasons.
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#gc
 gc:
-  disabled: true
-
+  disabled: false
 
 ## Configure TLS on the instance itself
 ## WARNING: All clients must trust the certificate used for service.

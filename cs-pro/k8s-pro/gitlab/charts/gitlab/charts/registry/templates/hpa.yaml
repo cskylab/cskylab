@@ -1,4 +1,4 @@
-{{- if .Values.enabled -}}
+{{- if and .Values.enabled (not (default $.Values.global.keda.enabled .Values.keda.enabled)) -}}
 {{- $hpaCfg := (dict "global" $.Values.global.hpa "local" .Values.hpa "context" $) -}}
 ---
 apiVersion: {{ template "gitlab.hpa.apiVersion" $hpaCfg }}

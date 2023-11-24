@@ -6,7 +6,7 @@ It is intended to host VS Code Remote Server and to be accessed with VS Code Rem
 
 [comment]: <> (**Functional description goes here**)
 
-`mcc` is deployed from template Ubuntu server 22.04 Mission Control Center version 23-04-27.
+`mcc` is deployed from template Ubuntu server 22.04 Mission Control Center version 23-11-24.
 
 - [Prerequisites](#prerequisites)
 - [How-to guides](#how-to-guides)

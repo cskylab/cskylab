@@ -1,15 +1,16 @@
 # Kubernetes IOT Studio<!-- omit in toc -->
 
-## k8s-iot-studio v23-04-27 <!-- omit in toc -->
+## k8s-iot-studio v23-11-24 <!-- omit in toc -->
 
   ![ ](./images/nr-image-1.png)
 
 ## Helm charts:<!-- omit in toc -->
 
-- k8s-at-home/mosquitto v4.8.2
-- k8s-at-home/node-red v10.3.2
-- influxdata/influxdb2 v2.1.1
-- bitnami/grafana v8.2.21    
+- **k8s-at-home/mosquitto v4.8.2**: appVersion v2.0.18
+- **k8s-at-home/node-red v10.3.2**: appVersion v3.1
+- **oauth2-proxy/oauth2-proxy v6.19.1**: appVersion v7.5.1
+- **influxdata/influxdb2 v2.1.1**: appVersion v2.7-alpine
+- **bitnami/grafana v9.6.2**: appVersion v10.2.2
 
 This namespace is intended to deploy an IOT service environment in Kubernetes with the following applications:
 
@@ -17,6 +18,8 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 - **Node-Red**: Node-Red is a flow-based programming tool, originally developed by IBM's Emerging Technology Services team and now a part of the OpenJS Foundation.
 - **InfluxDB**: InfluxDB is a Time Series Data Platform where developers build IoT, analytics, and cloud applications.
 - **Grafana**: Grafana allows you to query, visualize, alert on and understand metrics.
+
+> **Note**: Uncomment oauth2-proxy chart when file `values-oauth2-proxy.yaml` is configured appropiately with its keycloakx backend, and file `values-node-red.yaml` is configure with appropiately ingress anotations.
 
 ---  
 
@@ -66,30 +69,7 @@ This namespace is intended to deploy an IOT service environment in Kubernetes wi
 
 ### MetalLB configuration
 
-Review and deploy if necessary file `config.yaml` in MetalLB configuration for k8s-mod and k8s-pro cluster in order to include load balanced IP addresses for mosquitto service.
-
-Example:
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-      - name: static-pool
-        auto-assign: false
-        protocol: layer2
-        addresses:
-        - 192.168.82.20/32  # k8s-ingress   
-        - 192.168.82.21/32  # mosquitto iot-studio
-      - name: dynamic-pool
-        protocol: layer2
-        addresses:
-        - 192.168.82.75-192.168.82.90
-```
+Review and deploy if necessary file `resources.yaml` in MetalLB configuration for k8s-mod and k8s-pro cluster in order to include load balanced IP addresses for mosquitto service.
 
 ### Administrative tools
 
@@ -110,14 +90,11 @@ echo \
 
 ### LVM Data Services
 
-Data services are supported by the following nodes:
+A shared data service must be previously created in the two nodes assigned to support all services deployed:
 
-| Data service                           | Kubernetes PV node           | Kubernetes RSync node           |
-| -------------------------------------- | ---------------------------- | ------------------------------- |
-| `/srv/iot-studio-mosquitto` | `k8s-pro-n1` | `k8s-pro-n2` |
-| `/srv/iot-studio-node-red`  | `k8s-pro-n1` | `k8s-pro-n2` |
-| `/srv/iot-studio-influxdb`  | `k8s-pro-n1` | `k8s-pro-n2` |
-| `/srv/iot-studio-grafana`   | `k8s-pro-n1` | `k8s-pro-n2` |
+| Data service                    | Kubernetes PV node           | Kubernetes RSync node           |
+| ------------------------------- | ---------------------------- | ------------------------------- |
+| `/srv/iot-studio` | `k8s-pro-n1` | `k8s-pro-n2` |
 
 `PV node` is the node that supports the data service in normal operation.
 
@@ -128,18 +105,19 @@ To **create** the corresponding LVM data services, execute from your **mcc** man
 
 ```bash
 #
-# Create LVM data services in PV node
+# Create LVM data services in PV node:
 #
 echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-node-red" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-influxdb" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-grafana" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-mosquitto" \
-&& mkdir "/srv/iot-studio-mosquitto/data/configinc" \
-&& mkdir "/srv/iot-studio-mosquitto/data/data"' \
+  'sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio" \
+&& mkdir "/srv/iot-studio/data/grafana" \
+&& mkdir "/srv/iot-studio/data/influxdb" \
+&& mkdir "/srv/iot-studio/data/mosquitto" \
+&& mkdir "/srv/iot-studio/data/mosquitto/configinc" \
+&& mkdir "/srv/iot-studio/data/mosquitto/data" \
+&& mkdir "/srv/iot-studio/data/node-red"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -153,17 +131,17 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh kos@k8s-pro-n2.cskylab.net \
-  'sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-node-red" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-influxdb" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-grafana" \
-&& sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio-mosquitto" \
-&& mkdir "/srv/iot-studio-mosquitto/data/configinc" \
-&& mkdir "/srv/iot-studio-mosquitto/data/data"' \
+  'sudo cs-lvmserv.sh -m create -qd "/srv/iot-studio" \
+&& mkdir "/srv/iot-studio/data/grafana" \
+&& mkdir "/srv/iot-studio/data/influxdb" \
+&& mkdir "/srv/iot-studio/data/mosquitto" \
+&& mkdir "/srv/iot-studio/data/mosquitto/configinc" \
+&& mkdir "/srv/iot-studio/data/mosquitto/data" \
+&& mkdir "/srv/iot-studio/data/node-red"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
 ```
-
 
 To **delete** the corresponding LVM data services, execute from your **mcc** management machine the following commands:
 
@@ -175,10 +153,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-node-red" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-influxdb" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-grafana" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-mosquitto"' \
+  'sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -192,16 +167,11 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh kos@k8s-pro-n2.cskylab.net \
-  'sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-node-red" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-influxdb" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-grafana" \
-&& sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio-mosquitto"' \
+  'sudo cs-lvmserv.sh -m delete -qd "/srv/iot-studio"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
 ```
-
-
 
 #### Persistent Volumes
 
@@ -280,7 +250,8 @@ echo \
 && echo \
 && echo "******** Injecting file node-red-settings.js in node-red configuration" \
 && echo \
-&& scp ./node-red-settings.js kos@k8s-pro-n1.cskylab.net:/srv/iot-studio-node-red/data/settings.js \
+&& scp ./node-red-settings.js kos@k8s-pro-n1.cskylab.net:/srv/iot-studio/data/node-red/settings.js \
+&& scp ./node-red_env.js kos@k8s-pro-n1.cskylab.net:/srv/iot-studio/data/node-red/node-red_env.js \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -344,15 +315,14 @@ echo \
   'sudo touch ${HOME}/mosquitto_config.conf && sudo rm -v ${HOME}/mosquitto_* ' \
 && scp ./mosquitto_* kos@k8s-pro-n1.cskylab.net:~ \
 && ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cp -av ${HOME}/mosquitto_* /srv/iot-studio-mosquitto/data/configinc/ \
-&& sudo chown -R 1883:1883 "/srv/iot-studio-mosquitto/data/configinc"' \
+  'sudo cp -av ${HOME}/mosquitto_* /srv/iot-studio/data/mosquitto/configinc/ \
+&& sudo chown -R 1883:1883 "/srv/iot-studio/data/mosquitto/configinc"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
 ```
 
 >**Note:** You must have installed mosquitto package to generate the obfuscated password. Keep the original password to authenticate at login.
-
 
 To learn more about **mosquito_passwd** see https://mosquitto.org/man/mosquitto_passwd-1.html
 
@@ -423,63 +393,19 @@ To perform RSync manual copies on demand, execute from your **mcc** management m
 
 ```bash
 #
-# RSync node-red data services
+# RSync data services
 #
 echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-node-red \
+  'sudo cs-rsync.sh -q -m rsync-to -d /srv/iot-studio \
   -t k8s-pro-n2.cskylab.net' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
 ```
 
-```bash
-#
-# RSync influxdb data services
-#
-echo \
-&& echo "******** START of snippet execution ********" \
-&& echo \
-&& ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-influxdb \
-  -t k8s-pro-n2.cskylab.net' \
-&& echo \
-&& echo "******** END of snippet execution ********" \
-&& echo
-```
-
-```bash
-#
-# RSync grafana data services
-#
-echo \
-&& echo "******** START of snippet execution ********" \
-&& echo \
-&& ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-grafana \
-  -t k8s-pro-n2.cskylab.net' \
-&& echo \
-&& echo "******** END of snippet execution ********" \
-&& echo
-```
-
-```bash
-#
-# RSync mosquitto data services
-#
-echo \
-&& echo "******** START of snippet execution ********" \
-&& echo \
-&& ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-mosquitto \
-  -t k8s-pro-n2.cskylab.net' \
-&& echo \
-&& echo "******** END of snippet execution ********" \
-&& echo
-```
 
 **RSync cronjobs:**
 
@@ -487,47 +413,15 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 
 ```bash
 ################################################################################
-# /srv/iot-studio-node-red - RSync LVM data services
+#/srv/iot-studio - RSync LVM data services
 ################################################################################
 ##
-## RSync path:  /srv/iot-studio-node-red
+## RSync path:  /srv/iot-studio
 ## To Node:     k8s-pro-n2
-## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-node-red >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-node-red  -t k8s-pro-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+# At minute 0, 10, 20, 30, 40, and 50 past every hour from 1 through 23.
+# 0,10,20,30,40,50 1-23 * * *       root    run-one cs-source-rsync-ab-mode.sh >> /var/log/cs-rsync.log 2>&1
 ```
-
-```bash
-################################################################################
-# /srv/iot-studio-influxdb - RSync LVM data services
-################################################################################
-##
-## RSync path:  /srv/iot-studio-influxdb
-## To Node:     k8s-pro-n2
-## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-influxdb >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-influxdb  -t k8s-pro-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
-```
-
-```bash
-################################################################################
-# /srv/iot-studio-grafana - RSync LVM data services
-################################################################################
-##
-## RSync path:  /srv/iot-studio-grafana
-## To Node:     k8s-pro-n2
-## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-grafana >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-grafana  -t k8s-pro-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
-```
-
-```bash
-################################################################################
-# /srv/iot-studio-mosquitto - RSync LVM data services
-################################################################################
-##
-## RSync path:  /srv/iot-studio-mosquitto
-## To Node:     k8s-pro-n2
-## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-mosquitto >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/iot-studio-mosquitto  -t k8s-pro-n2.cskylab.net  >> /var/log/cs-rsync.log 2>&1
-```
+>Note: Script `cs-source-rsync-ab-mode.sh` must exist in host k8s-pro-n1
 
 #### Restic backup
 
@@ -545,49 +439,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-node-red -t iot-studio-node-red' \
-&& echo \
-&& echo "******** END of snippet execution ********" \
-&& echo
-```
-
-```bash
-#
-# Restic backup influxdb data services
-#
-echo \
-&& echo "******** START of snippet execution ********" \
-&& echo \
-&& ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-influxdb   -t iot-studio-influxdb' \
-&& echo \
-&& echo "******** END of snippet execution ********" \
-&& echo
-```
-
-```bash
-#
-# Restic backup grafana data services
-#
-echo \
-&& echo "******** START of snippet execution ********" \
-&& echo \
-&& ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-grafana   -t iot-studio-grafana' \
-&& echo \
-&& echo "******** END of snippet execution ********" \
-&& echo
-```
-
-```bash
-#
-# Restic backup mosquitto data services
-#
-echo \
-&& echo "******** START of snippet execution ********" \
-&& echo \
-&& ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-mosquitto   -t iot-studio-mosquitto' \
+  'sudo cs-restic.sh -q -m restic-bck -d  /srv/iot-studio -t iot-studio' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -600,12 +452,7 @@ echo \
 && echo "******** START of snippet execution ********" \
 && echo \
 && ssh kos@k8s-pro-n1.cskylab.net \
-  'sudo cs-restic.sh -q -m restic-list  -t \
-  iot-studio-node-red, \
-  iot-studio-influxdb, \
-  iot-studio-grafana, \
-  iot-studio-mosquitto, \
-  ' \
+  'sudo cs-restic.sh -q -m restic-list  -t iot-studio '\
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -617,43 +464,15 @@ The following cron jobs should be added to file `cs-cron-scripts` on the node th
 
 ```bash
 ################################################################################
-# /srv/iot-studio-node-red - Restic backups
+# /srv/iot-studio - Restic backups
 ################################################################################
 ##
-## Data service:  /srv/iot-studio-node-red
-## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-node-red >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-node-red   -t iot-studio-node-red  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t iot-studio-node-red  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+## Data service:  /srv/iot-studio
+## At minute 15 and 45 past every hour from 1 through 23.
+# 15,45 1-23 * * *       root    run-one cs-source-restic.sh >> /var/log/cs-restic.log 2>&1
 ```
 
-```bash
-################################################################################
-# /srv/iot-studio-influxdb - Restic backups
-################################################################################
-##
-## Data service:  /srv/iot-studio-influxdb
-## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-influxdb >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-influxdb   -t iot-studio-influxdb  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t iot-studio-influxdb  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
-```
-
-```bash
-################################################################################
-# /srv/iot-studio-grafana - Restic backups
-################################################################################
-##
-## Data service:  /srv/iot-studio-grafana
-## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-grafana >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-grafana   -t iot-studio-grafana  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t iot-studio-grafana  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
-```
-
-```bash
-################################################################################
-# /srv/iot-studio-mosquitto - Restic backups
-################################################################################
-##
-## Data service:  /srv/iot-studio-mosquitto
-## At minute 30 past every hour from 8 through 23.
-# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/iot-studio-mosquitto >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/iot-studio-mosquitto   -t iot-studio-mosquitto  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget   -t iot-studio-mosquitto  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
-```
+>Note: Script `cs-source-restic.sh` must exist in host k8s-pro-n1
 
 ## Reference
 

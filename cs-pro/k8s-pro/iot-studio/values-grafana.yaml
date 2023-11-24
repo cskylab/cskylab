@@ -71,7 +71,7 @@ ingress:
   enabled: true
   ## @param ingress.hostname When the ingress is enabled, a host pointing to this will be created
   ##
-  hostname: grafana-iot.pro.cskylab.net
+  hostname: grafana-iot-studio.pro.cskylab.net
   ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
   ## For a full list of possible ingress annotations, please see
   ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md

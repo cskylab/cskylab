@@ -1,6 +1,6 @@
 # OPNsense® Firewall & Routing
 
-## OPNsense version v23.1 <!-- omit in toc -->
+## OPNsense version v23.7 <!-- omit in toc -->
 
 
 [OPNsense®](https://opnsense.org/) is an open source HardenedBSD based firewall and routing platform.

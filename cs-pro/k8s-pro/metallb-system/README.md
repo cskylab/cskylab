@@ -1,15 +1,15 @@
 # MetalLB Load-balancer for kubernetes<!-- omit in toc -->
 
-## v23-04-27 <!-- omit in toc -->
+## v23-11-24 <!-- omit in toc -->
 
-## MetalLB manifest version v0.13.9 <!-- omit in toc -->
+## MetalLB manifest version v0.13.12 <!-- omit in toc -->
 
 [MetalLB](https://metallb.universe.tf/) is a load-balancer implementation for bare metal Kubernetes clusters, using standard routing protocols.
 
 
 > **Note**: [MetalLB](https://metallb.universe.tf/) is a cluster service, and as such can only be deployed as a cluster singleton. Running multiple installations of [MetalLB](https://metallb.universe.tf/) in a single cluster is not supported.
 
-Configuration files are deployed from template MetalLB load-balancer for bare metal Kubernetes clusters version 23-04-27.
+Configuration files are deployed from template MetalLB load-balancer for bare metal Kubernetes clusters version 23-11-24.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)

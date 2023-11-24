@@ -1,20 +1,8 @@
-{{- if .Values.nginx.enabled -}}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "nextcloud.fullname" . }}-nginxconfig
-  labels:
-    app.kubernetes.io/name: {{ include "nextcloud.name" . }}
-    helm.sh/chart: {{ include "nextcloud.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-data:
-  nginx.conf: |-
-{{- if .Values.nginx.config.default }}
+{{- define "nginx.conf" }}
     worker_processes auto;
 
     error_log  /var/log/nginx/error.log warn;
-    pid        /var/run/nginx.pid;
+    pid        /tmp/nginx.pid;
 
 
     events {
@@ -44,7 +32,7 @@ data:
         }
 
         server {
-            listen 80;
+            listen {{ .Values.nginx.containerPort | default "80" }};
 
             # HSTS settings
             # WARNING: Only add the preload option once you read about
@@ -71,13 +59,13 @@ data:
             #pagespeed off;
 
             # HTTP response headers borrowed from Nextcloud `.htaccess`
-            add_header Referrer-Policy                      "no-referrer"   always;
-            add_header X-Content-Type-Options               "nosniff"       always;
-            add_header X-Download-Options                   "noopen"        always;
-            add_header X-Frame-Options                      "SAMEORIGIN"    always;
-            add_header X-Permitted-Cross-Domain-Policies    "none"          always;
-            add_header X-Robots-Tag                         "none"          always;
-            add_header X-XSS-Protection                     "1; mode=block" always;
+            add_header Referrer-Policy                      "no-referrer"       always;
+            add_header X-Content-Type-Options               "nosniff"           always;
+            add_header X-Download-Options                   "noopen"            always;
+            add_header X-Frame-Options                      "SAMEORIGIN"        always;
+            add_header X-Permitted-Cross-Domain-Policies    "none"              always;
+            add_header X-Robots-Tag                         "noindex, nofollow" always;
+            add_header X-XSS-Protection                     "1; mode=block"     always;
 
             # Remove X-Powered-By, which is an information leak
             fastcgi_hide_header X-Powered-By;
@@ -134,6 +122,9 @@ data:
             # then Nginx will encounter an infinite rewriting loop when it prepends `/index.php`
             # to the URI, resulting in a HTTP 500 error response.
             location ~ \.php(?:$|/) {
+                # Required for legacy support
+                rewrite ^/(?!index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+|.+\/richdocumentscode\/proxy) /index.php$request_uri;
+
                 fastcgi_split_path_info ^(.+?\.php)(/.*)$;
                 set $path_info $fastcgi_path_info;
 
@@ -169,6 +160,22 @@ data:
             }
         }
     }
+{{- end }}
+
+{{- if .Values.nginx.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "nextcloud.fullname" . }}-nginxconfig
+  labels:
+    app.kubernetes.io/name: {{ include "nextcloud.name" . }}
+    helm.sh/chart: {{ include "nextcloud.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  nginx.conf: |-
+{{- if .Values.nginx.config.default }}
+    {{- template "nginx.conf" $ }}
 {{- else }}
 {{ .Values.nginx.config.custom | indent 4 }}
 {{- end }}

@@ -11,6 +11,9 @@ metadata:
     gitlab.com/metrics-service: "true"
   annotations:
     {{- include "gitlab.serviceAnnotations" . | nindent 4 }}
+    {{- if .Values.service.metrics.annotations -}}
+    {{-   toYaml .Values.service.metrics.annotations | nindent 4 }}
+    {{- end }}
 spec:
   type: ClusterIP
   ports:

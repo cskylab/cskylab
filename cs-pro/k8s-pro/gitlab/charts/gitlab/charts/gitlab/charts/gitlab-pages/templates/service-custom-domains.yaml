@@ -11,6 +11,9 @@ metadata:
     {{- include "gitlab.serviceLabels" . | nindent 4 }}
   annotations:
     {{- include "gitlab.serviceAnnotations" . | nindent 4 }}
+    {{- if .Values.service.customDomains.annotations -}}
+    {{-   toYaml .Values.service.customDomains.annotations | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.service.customDomains.type }}
   {{- if eq .Values.service.customDomains.type "LoadBalancer" }}

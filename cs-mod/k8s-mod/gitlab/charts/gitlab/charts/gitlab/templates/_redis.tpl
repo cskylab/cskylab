@@ -65,7 +65,8 @@ Return the password section of the Redis URI, if needed.
 */}}
 {{- define "gitlab.redis.url.password" -}}
 {{- include "gitlab.redis.configMerge" . -}}
-{{- if .redisMergedConfig.password.enabled -}}:<%= ERB::Util::url_encode(File.read("/etc/gitlab/redis/{{ printf "%s-password" (default "redis" .redisConfigName) }}").strip) %>@{{- end -}}
+{{- $password := printf "%s-%spassword" (default "redis" .redisConfigName) (ternary "override-" "" (default false .usingOverride)) -}}
+{{- if .redisMergedConfig.password.enabled -}}:<%= ERB::Util::url_encode(File.read("/etc/gitlab/redis/{{ $password }}").strip) %>@{{- end -}}
 {{- end -}}
 
 {{/*
@@ -89,41 +90,80 @@ sentinels:
 {{- else -}}
 {{-   $_ := set . "redisMergedConfig" .Values.global.redis -}}
 {{- end -}}
+{{-   if not (kindIs "map" (get $.redisMergedConfig "password")) -}}
+{{-     $_ := set $.redisMergedConfig "password" $.Values.global.redis.auth -}}
+{{-   end -}}
+{{- range $key := keys $.Values.global.redis.auth -}}
+{{-   if not (hasKey $.redisMergedConfig.password $key) -}}
+{{-     $_ := set $.redisMergedConfig.password $key (index $.Values.global.redis.auth $key) -}}
+{{-   end -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return Sentinel list in format for Workhorse
-Note: Workhorse only uses the primary Redis (global.redis)
 */}}
 {{- define "gitlab.redis.workhorse.sentinel-list" }}
+{{- include "gitlab.redis.selectedMergedConfig" . -}}
 {{- $sentinelList := list }}
-{{- range $i, $entry := .Values.global.redis.sentinels }}
+{{- range $i, $entry := .redisMergedConfig.sentinels }}
   {{- $sentinelList = append $sentinelList (quote (print "tcp://" (trim $entry.host) ":" ( default 26379 $entry.port | int ) ) ) }}
 {{- end }}
 {{- $sentinelList | join "," }}
 {{- end -}}
 
+
+{{/*
+Takes a dict with `globalContext` and `instances` as keys. The former specifies
+the root context `$`, and the latter a list of instances to mount secrets for.
+If instances is not specified, we mount secrets for all enabled Redis
+instances.
+*/}}
 {{- define "gitlab.redis.secrets" -}}
-{{- range $redis := list "cache" "clusterCache" "sharedState" "queues" "actioncable" "traceChunks" "rateLimiting" "clusterRateLimiting" "sessions" "repositoryCache" -}}
+{{- $ := .globalContext }}
+{{- $mountRedisYmlOverrideSecrets := true }}
+{{- if hasKey . "mountRedisYmlOverrideSecrets" }}
+{{- $mountRedisYmlOverrideSecrets = .mountRedisYmlOverrideSecrets }}
+{{- end }}
+{{- $redisInstances := list "cache" "clusterCache" "sharedState" "queues" "actioncable" "traceChunks" "rateLimiting" "clusterRateLimiting" "sessions" "repositoryCache" "workhorse" }}
+{{- if .instances }}
+{{- $redisInstances = splitList " " .instances }}
+{{- end }}
+{{- range $redis := $redisInstances -}}
 {{-   if index $.Values.global.redis $redis -}}
 {{-     $_ := set $ "redisConfigName" $redis }}
 {{      include "gitlab.redis.secret" $ }}
 {{-   end }}
 {{- end -}}
-{{/* reset 'redisConfigName', to get global.redis.password's Secret item */}}
-{{- $_ := set . "redisConfigName" "" }}
-{{- if .Values.global.redis.password.enabled }}
-{{    include "gitlab.redis.secret" . }}
+
+{{/* Include `global.redis.redisYmlOverride`'s secrets */}}
+{{/* reset 'redisConfigName', to get global.redis.redisYmlOverride's Secret item */}}
+{{- $_ := set $ "redisConfigName" "" }}
+{{- if and $mountRedisYmlOverrideSecrets $.Values.global.redis.redisYmlOverride -}}
+{{-   $_ := set $ "usingOverride" true }}
+{{-   range $key, $redis := $.Values.global.redis.redisYmlOverride }}
+{{-     $_ := set $ "redisConfigName" $key }}
+{{      include "gitlab.redis.secret" $ }}
+{{-   end }}
+{{- end -}}
+{{- $_ := set $ "usingOverride" false }}
+{{/* Include global Redis secrets */}}
+{{/* reset 'redisConfigName', to get global.redis.auth's Secret item */}}
+{{- $_ := set $ "redisConfigName" "" }}
+{{- if eq (include "gitlab.redis.password.enabled" $) "true" }}
+{{    include "gitlab.redis.secret" $ }}
 {{- end }}
 {{- end -}}
 
 {{- define "gitlab.redis.secret" -}}
 {{- include "gitlab.redis.configMerge" . -}}
 {{- if .redisMergedConfig.password.enabled }}
+{{-   $passwordPath := printf "%s-%spassword" (default "redis" .redisConfigName) (ternary "override-" "" (default false .usingOverride)) -}}
 - secret:
     name: {{ template "gitlab.redis.password.secret" . }}
     items:
       - key: {{ template "gitlab.redis.password.key" . }}
-        path: redis/{{ printf "%s-password" (default "redis" .redisConfigName) }}
+        path: redis/{{ $passwordPath }}
 {{- end }}
 {{- end -}}
+

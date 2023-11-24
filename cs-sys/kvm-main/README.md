@@ -7,7 +7,7 @@ Virtual machines are created on storage supported by LVM services.
 
 [comment]: <> (**Machine functional description goes here**)
 
-Machine `kvm-main` is deployed from template Ubuntu server 22.04 kvm base installation version 23-04-27.
+Machine `kvm-main` is deployed from template Ubuntu server 22.04 kvm base installation version 23-11-24.
 
 - [Prerequisites](#prerequisites)
   - [Hardware requirements](#hardware-requirements)

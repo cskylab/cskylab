@@ -1,14 +1,14 @@
 # x509 Certificate management for Kubernetes <!-- omit in toc -->
 
-## v23-04-27 <!-- omit in toc -->
+## v23-11-24 <!-- omit in toc -->
 
-## Helm charts: jetstack/cert-manager v1.11.1 <!-- omit in toc -->
+## Helm charts: jetstack/cert-manager v1.13.2 <!-- omit in toc -->
 
 [cert-manager](https://cert-manager.io/docs/) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing key pair, or self signed.
 
 > **Warning**: You should not install multiple instances of cert-manager on a single cluster. This will lead to undefined behavior and you may be banned from providers such as Let’s Encrypt.
 
-Configuration files are deployed from template x509 certificate management for Kubernetes version 23-04-27.
+Configuration files are deployed from template x509 certificate management for Kubernetes version 23-11-24.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)
@@ -83,9 +83,9 @@ You can obtain the base64 values `tls.crt` and `tls.key` from the private and pu
 ```bash
 # Base64 encoding with single line format
 # Public key
-base64 -i ca-test-internal.crt -o ca-test-internal.crt.b64
+base64 -w 0 ca-test-internal.crt > ca-test-internal.crt.b64
 # Private key
-base64 -i ca-test-internal.key -o ca-test-internal.key.b64
+base64 -w 0 ca-test-internal.key > ca-test-internal.key.b64
 ```
 
 To prepare a private `./clusterissuer-*.yaml` file, you can use the following example:
@@ -286,8 +286,8 @@ The following table lists template configuration parameters and their specified 
 | ------------------- | --------------------------- | -------------------------- |
 | `_tplname`          | template name               | `k8s-cert-manager`          |
 | `_tpldescription`   | template description        | `x509 certificate management for Kubernetes`   |
-| `_tplversion`       | template version            | `23-04-27`       |
-| `kubeconfig`        | kubeconfig file             | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod`        |
+| `_tplversion`       | template version            | `23-11-24`       |
+| `kubeconfig`        | kubeconfig file             | `config-k8s-pro`        |
 | `namespace.name`    | namespace name              | `cert-manager`    |
 | `letsencrypt.email` | Let's Encrypt contact email | `certadmin@cskylab.net` |
 

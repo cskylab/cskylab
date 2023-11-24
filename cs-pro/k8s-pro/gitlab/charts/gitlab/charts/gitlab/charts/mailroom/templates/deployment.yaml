@@ -1,6 +1,6 @@
 {{- if and .Values.enabled .Values.global.appConfig.incomingEmail.enabled }}
-{{- $imageCfg := dict "global" .Values.global.image "local" .Values.image -}}
-{{- $initImageCfg := dict "global" .Values.global.busybox.image "local" .Values.init.image -}}
+{{- $imageCfg := dict "global" .Values.global.image "local" .Values.image "context" $ -}}
+{{- $initImageCfg := include "gitlab.configure.config" .Values | fromYaml -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -62,8 +62,9 @@ spec:
         {{- include "gitlab.certificates.initContainer" . | nindent 8 }}
         - name: configure
           command: ['sh', '/config/configure']
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
+          image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
+          {{- include "gitlab.init.containerSecurityContext" $ | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
           {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 12 }}
@@ -85,8 +86,9 @@ spec:
       containers:
         {{- include "gitlab.extraContainers" . | nindent 8 }}
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ coalesce .Values.image.tag (include "gitlab.parseAppVersion" (dict "appVersion" .Chart.AppVersion "prepend" "false")) }}{{ include "gitlab.image.tagSuffix" . }}"
+          image: {{ include "gitlab.image.fullPath" $imageCfg }}
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
+          {{- include "gitlab.containerSecurityContext" $ | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" . | nindent 10 }}
           {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}

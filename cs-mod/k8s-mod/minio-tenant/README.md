@@ -1,8 +1,8 @@
 # Kubernetes MinIO Tenant <!-- omit in toc -->
 
-## v23-04-27 <!-- omit in toc -->
+## v23-11-24 <!-- omit in toc -->
 
-## Image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z <!-- omit in toc -->
+## Image: quay.io/minio/minio:RELEASE.2023-11-15T20-43-25Z <!-- omit in toc -->
 
 ---
 
@@ -10,7 +10,7 @@
 
 This service creates a X-node MinIO Tenant using MinIO for object storage.
 
-Configuration files are deployed from template Kubernetes MinIO Tenant version 23-04-27.
+Configuration files are deployed from template Kubernetes MinIO Tenant version 23-11-24.
 
   ![ ](./images/minio-console-2022-03-31_11-38-35.png)
 
@@ -191,7 +191,7 @@ Check versions and update if necesary, for the following image in `mod-tenant.ya
 
 ```yaml
   ## Registry location and Tag to download MinIO Server image
-  image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
+  image: quay.io/minio/minio:RELEASE.2023-11-15T20-43-25Z
 ```
 
 To check for the latest image version see:
@@ -445,8 +445,8 @@ The following table lists template configuration parameters and their specified 
 | --------------------------------- | ---------------------------------- | ---------------------------------------- |
 | `_tplname`                        | template name                      | `k8s-minio-tenant`                        |
 | `_tpldescription`                 | template description               | `Kubernetes MinIO Tenant`                 |
-| `_tplversion`                     | template version                   | `23-04-27`                     |
-| `kubeconfig`                      | kubeconfig file                    | `/Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod`                      |
+| `_tplversion`                     | template version                   | `23-11-24`                     |
+| `kubeconfig`                      | kubeconfig file                    | `config-k8s-mod`                      |
 | `namespace.name`                  | namespace name                     | `minio-tenant`                  |
 | `publishing.miniourl`             | publishing url                     | `minio-tenant.mod.cskylab.net`             |
 | `publishing.consoleurl`           | console url                        | `minio-tenant-console.mod.cskylab.net`           |

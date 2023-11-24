@@ -2,7 +2,7 @@
 {{- /* Placeholder to bridge MinIO chart values with "gitlab.image.*" helper templates */ -}}
 {{- $minioImageCfg := dict "pullPolicy" .Values.imagePullPolicy "pullSecrets" .Values.pullSecrets -}}
 {{- $imageCfg := dict "global" .Values.global.image "local" $minioImageCfg -}}
-{{- $initImageCfg := dict "global" .Values.global.busybox.image "local" .Values.init.image -}}
+{{- $initImageCfg := include "gitlab.configure.config" .Values | fromYaml -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -69,7 +69,7 @@ spec:
             medium: "Memory"
       initContainers:
         - name: configure
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
+          image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           command: ["sh", "/config/configure"]
           volumeMounts:

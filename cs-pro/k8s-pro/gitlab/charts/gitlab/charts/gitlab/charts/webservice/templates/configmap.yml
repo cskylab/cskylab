@@ -22,6 +22,10 @@ data:
     gitlab-helm-chart
   database.yml.erb: |
     {{- include "gitlab.database.yml" . | nindent 4 }}
+  {{- if $.Values.global.clickhouse.enabled }}
+  click_house.yml.erb: |
+    {{- include "gitlab.clickhouse.yml" . | nindent 4 }}
+  {{- end }}
   krb5.conf: |
     {{- .Values.global.appConfig.kerberos.krb5Config | nindent 4 }}
   smtp_settings.rb: |
@@ -44,7 +48,6 @@ data:
         application_settings_cache_seconds: {{ .applicationSettingsCacheSeconds | int }}
         usage_ping_enabled: {{ eq .enableUsagePing true }}
         seat_link_enabled: {{ eq .enableSeatLink true }}
-        default_can_create_group: {{ eq .defaultCanCreateGroup true }}
         username_changing_enabled: {{ eq .usernameChangingEnabled true }}
         issue_closing_pattern: {{ .issueClosingPattern | quote }}
         default_theme: {{ .defaultTheme }}
@@ -52,6 +55,7 @@ data:
         {{- if hasKey .initialDefaults "signupEnabled" }}
         signup_enabled: {{ .initialDefaults.signupEnabled }}
         {{- end }}
+        graphql_timeout: {{ .graphQlTimeout }}
         webhook_timeout: {{ .webhookTimeout }}
         {{- end }}
         trusted_proxies:
@@ -91,7 +95,6 @@ data:
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "packages" "config" $.Values.global.appConfig.packages) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "external_diffs" "config" $.Values.global.appConfig.externalDiffs) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "terraform_state" "config" $.Values.global.appConfig.terraformState) | nindent 10 -}}
-          {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "ci_secure_files" "config" $.Values.global.appConfig.ciSecureFiles) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "dependency_proxy" "config" $.Values.global.appConfig.dependencyProxy) | nindent 10 -}}
           {{- include "gitlab.appConfig.objectStorage.object" (dict "name" "pages" "config" $.Values.global.pages.objectStore) | nindent 10 -}}
       {{- end }}
@@ -122,6 +125,7 @@ data:
         path: "tmp/backups"   # Relative paths are relative to Rails.root (default: tmp/backups/)
       {{- include "gitlab.appConfig.kas" . | nindent 6 }}
       {{- include "gitlab.appConfig.suggested_reviewers" . | nindent 6 }}
+      {{- include "gitlab.appConfig.zoekt" . | nindent 6 }}
       {{- include "gitlab.appConfig.shell" . | nindent 6 }}
         {{- include "gitlab.appConfig.shell.ssh_port" . | nindent 8 }}
         {{- include "gitlab.appConfig.shell.secret_file" . | nindent 8 }}
@@ -139,7 +143,7 @@ data:
           enabled: {{ or .Values.monitoring.exporter.enabled (and .Values.metrics.enabled (eq .Values.metrics.port .Values.monitoring.exporter.port)) }}
           address: 0.0.0.0
           port: {{ .Values.monitoring.exporter.port }}
-          {{- if $.Values.metrics.tls.enabled }}
+          {{- if eq (include "webservice-metrics.tls.enabled" $) "true" }}
           tls_enabled: true
           tls_cert_path: "/etc/gitlab/webservice-metrics/webservice-metrics.crt"
           tls_key_path: "/etc/gitlab/webservice-metrics/webservice-metrics.key"
@@ -160,7 +164,7 @@ data:
       cp -v -L /init-config/puma/puma.crt /init-secrets/puma/puma.crt
       cp -v -L /init-config/puma/puma.key /init-secrets/puma/puma.key
     {{- end }}
-    {{- if $.Values.metrics.tls.enabled }}
+    {{- if eq (include "webservice-metrics.tls.enabled" $) "true" }}
       mkdir -p /init-secrets/webservice-metrics
       cp -v -L /init-config/webservice-metrics/webservice-metrics.crt /init-secrets/webservice-metrics/webservice-metrics.crt
       cp -v -L /init-config/webservice-metrics/webservice-metrics.key /init-secrets/webservice-metrics/webservice-metrics.key
@@ -196,16 +200,7 @@ data:
     {{- end }}
 
     {{- if .workhorse.keywatcher }}
-    [redis]
-    {{- if not $.Values.global.redis.sentinels }}
-    URL = "{{ template "gitlab.redis.scheme" $ }}://{{ template "gitlab.redis.host" $ }}:{{ template "gitlab.redis.port" $ }}"
-    {{- else }}
-    SentinelMaster = "{{ template "gitlab.redis.host" $ }}"
-    Sentinel = [ {{ template "gitlab.redis.workhorse.sentinel-list" $ }} ]
-    {{- end }}
-    {{- if $.Values.global.redis.password.enabled }}
-    Password = {% file.Read "/etc/gitlab/redis/redis-password" | strings.TrimSpace | data.ToJSON %}
-    {{- end }}
+    {{- include "workhorse.redis.config" $ | nindent 4 }}
     {{- end }}
     {{- include "workhorse.object_storage.config" $ | nindent 4 }}
     [image_resizer]
@@ -223,7 +218,8 @@ data:
     [metrics_listener]
     network = "tcp"
     addr = "0.0.0.0:{{ $.Values.workhorse.monitoring.exporter.port }}"
-    {{- if and $.Values.global.workhorse.tls.enabled $.Values.workhorse.monitoring.exporter.tls.enabled }}
+    {{- $workhorseExporterTlsEnabled := eq (include "workhorse.monitoring.exporter.tls.enabled" $ ) "true" }}
+    {{- if $workhorseExporterTlsEnabled }}
     [metrics_listener.tls]
     certificate = "/etc/gitlab/gitlab-workhorse/tls.crt"
     key = "/etc/gitlab/gitlab-workhorse/tls.key"
@@ -233,10 +229,7 @@ data:
       set -e
       mkdir -p /init-secrets-workhorse/gitlab-workhorse
       cp -v -r -L /init-config/gitlab-workhorse/secret /init-secrets-workhorse/gitlab-workhorse/secret
-      {{- if $.Values.global.redis.password.enabled }}
-      mkdir -p /init-secrets-workhorse/redis
-      cp -v -r -L /init-config/redis/redis-password /init-secrets-workhorse/redis/
-      {{- end }}
+      {{- include "workhorse.redis.secret-setup" $ | nindent 6 -}}
       {{- if $.Values.global.minio.enabled }}
       if [ -d /init-config/minio ]; then
         mkdir -p /init-secrets-workhorse/minio

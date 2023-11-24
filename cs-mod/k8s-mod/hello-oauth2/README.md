@@ -1,15 +1,15 @@
 # Kubernetes oauth2-proxy<!-- omit in toc -->
 
-## `k8s-hello-oauth2` v23-04-27 <!-- omit in toc -->
+## `k8s-hello-oauth2` v23-11-24 <!-- omit in toc -->
 
-## Helm charts: oauth2-proxy/oauth2-proxy v6.12.0 <!-- omit in toc -->
+## Helm charts: oauth2-proxy/oauth2-proxy v6.19.1 <!-- omit in toc -->
 
 
 This namespace is intended to deploy an example of oauth2-proxy deployment protecting a simple Hello World application for modeling purposes.
 
 To run this namespace, you must deploy before k8s-keycloakx to configure the example backend authentication client.
 
-Configuration files are deployed from template Kubernetes oauth2-proxy example app version 23-04-27.
+Configuration files are deployed from template Kubernetes oauth2-proxy example app version 23-11-24.
 
 - [TL;DR](#tldr)
 - [Prerequisites](#prerequisites)

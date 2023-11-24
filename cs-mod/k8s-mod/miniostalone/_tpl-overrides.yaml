@@ -1,12 +1,12 @@
 _tpldescription: MinIO standalone
 _tplname: k8s-miniostalone
-_tplversion: 23-04-27
+_tplversion: 23-11-24
 certificate:
   clusterissuer: ca-test-internal
 credentials:
   minio_accesskey: admin
   minio_secretkey: NoFear21
-kubeconfig: /Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube//Users/grenes/.kube/config-k8s-mod
+kubeconfig: config-k8s-mod
 localpvnodes:
   all_pv: k8s-mod-n1
   domain: cskylab.net

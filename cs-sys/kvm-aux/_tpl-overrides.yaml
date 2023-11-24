@@ -1,5 +1,5 @@
-_tpldescription: Ubuntu server 22.04 kvm base installation
-_tplname: ubt2204srv-kvm
+_tpldescription: Ubuntu server 20.04 kvm base installation
+_tplname: ubt2004srv-kvm
 _tplversion: 23-04-27
 machine:
   domainname: cskylab.net

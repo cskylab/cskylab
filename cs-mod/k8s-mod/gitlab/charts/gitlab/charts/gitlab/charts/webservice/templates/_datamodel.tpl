@@ -15,6 +15,7 @@ item, ensuring presence of all keys.
 {{- if not $.Values.deployments -}}
 {{-   $blank := fromYaml (include "webservice.datamodel.blank" $) -}}
 {{-   $_ := set $blank.ingress "path" (coalesce $.Values.ingress.path $.Values.global.ingress.path) -}}
+{{-   $_ := set $blank.extraIngress "path" (coalesce $.Values.extraIngress.path $.Values.global.ingress.path) -}}
 {{-   $_ := set $.Values "deployments" (dict "default" (dict)) -}}
 {{-   $_ := set $.Values.deployments "default" $blank -}}
 {{- end -}}
@@ -47,14 +48,17 @@ pulling default values from the appropriate items in `.Values.xyz`.
 This is output as YAML, it can be read back in as a dict via `toYaml`.
 */}}
 {{- define "webservice.datamodel.blank" -}}
-ingress:
+{{- range $k, $v := (dict "ingress" .Values.ingress "extraIngress" .Values.extraIngress) }}
+{{ $k }}:
   path: # intentionally not setting a value. User must set.
   pathType: Prefix
   annotations:
-    {{- .Values.ingress.annotations | toYaml | nindent 4 }}
-  proxyConnectTimeout: {{ .Values.ingress.proxyConnectTimeout }}
-  proxyReadTimeout: {{ .Values.ingress.proxyReadTimeout }}
-  proxyBodySize: {{ .Values.ingress.proxyBodySize | quote }}
+    {{- $v.annotations | toYaml | nindent 4 }}
+  proxyConnectTimeout: {{ $v.proxyConnectTimeout }}
+  proxyReadTimeout: {{ $v.proxyReadTimeout }}
+  proxyBodySize: {{ $v.proxyBodySize | quote }}
+  useGeoClass: {{ $v.useGeoClass }}
+{{- end }}
 common:
   labels: {{ mergeOverwrite (deepCopy .Values.global.common.labels) (deepCopy .Values.common.labels) | toYaml | nindent 4 }}
 deployment:
@@ -90,6 +94,8 @@ hpa:
   minReplicas: {{ .Values.minReplicas }} # defaults to .minReplicas
   maxReplicas: {{ .Values.maxReplicas }} # defaults to .maxReplicas
   {{- .Values.hpa | toYaml | nindent 2 }}
+keda:
+  {{- .Values.keda | toYaml | nindent 2 }}
 pdb:
   maxUnavailable: {{ .Values.maxUnavailable }} # defaults to .maxUnavailable
 resources: # resources for `webservice` container

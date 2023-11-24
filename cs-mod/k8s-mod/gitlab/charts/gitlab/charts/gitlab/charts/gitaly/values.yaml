@@ -12,7 +12,7 @@ global:
     hooks: {}
   # serviceName:
   redis:
-    password: {}
+    auth: {}
 
 gitaly: {}
 # serviceName:
@@ -50,7 +50,6 @@ logging:
   format: "json"
   # level:
   # sentryDsn:
-  # rubySentryDsn:
   # sentryEnvironment:
 git: {}
   # catFileCacheSize:
@@ -58,11 +57,6 @@ git: {}
   ## commands. Accepts configuration as documented in git-config(1).
   # config:
   #   - {key: "pack.threads", value: 4}
-ruby: {}
-  # maxRss:
-  # gracefulRestartTimeout:
-  # restartDelay:
-  # numWorkers:
 prometheus: {}
   # grpcLatencyBuckets: "[1.0, 1.5, 2.0, 2.5]"
 

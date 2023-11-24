@@ -1,6 +1,6 @@
 {{- if and .Values.enabled .Values.backups.cron.enabled }}
 {{- $imageCfg := dict "global" .Values.global.image "local" .Values.image -}}
-{{- $initImageCfg := dict "global" .Values.global.busybox.image "local" .Values.init.image -}}
+{{- $initImageCfg := include "gitlab.configure.config" .Values | fromYaml -}}
 {{- include "database.datamodel.prepare" . -}}
 {{ if or ($.Capabilities.APIVersions.Has "batch/v1/CronJob") (eq $.Values.global.batch.cronJob.apiVersion "batch/v1") -}}
 apiVersion: batch/v1
@@ -59,7 +59,7 @@ spec:
             {{- include "gitlab.certificates.initContainer" . | nindent 12 }}
             - name: configure
               command: ['sh', '/config/configure']
-              image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
+              image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
               {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 14 }}
               env:
                 {{- include "gitlab.extraEnv" $ | nindent 16 }}
@@ -190,7 +190,7 @@ spec:
                       - key: {{ template "gitlab.gitlab-shell.authToken.key" . }}
                         path: shell/.gitlab_shell_secret
                 {{- include "gitlab.gitaly.clientSecrets" . | nindent 16 }}
-                {{- include "gitlab.redis.secrets" . | nindent 16 }}
+                {{- include "gitlab.redis.secrets" (dict "globalContext" $) | nindent 16 }}
                 {{- range $.Values.local.psql }}
                 {{- include "gitlab.psql.secret" . | nindent 16 }}
                 {{- end }}
@@ -218,6 +218,7 @@ spec:
                 {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "pages" "config" $.Values.global.pages.objectStore) | nindent 16 }}
                 {{- include "gitlab.appConfig.ldap.servers.mountSecrets" $ | nindent 16 }}
                 {{- include "gitlab.appConfig.omniauth.mountSecrets" $ | nindent 16 }}
+                {{- include "gitlab.appConfig.microsoftGraphMailer.mountSecrets" $ | nindent 16 }}
             - name: toolbox-secrets
               emptyDir:
                 medium: "Memory"

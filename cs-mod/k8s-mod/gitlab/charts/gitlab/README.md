@@ -40,7 +40,7 @@ See [limitations](doc/index.md#limitations).
 
 ## Release Notes
 
-Check the [releases documentation](doc/releases/index.md) for information on important releases,
+Check the [version mappings documentation](doc/installation/version_mappings.md) for information on important releases,
 and see the [changelog](CHANGELOG.md) for the full details on any release.
 
 ## Contributing

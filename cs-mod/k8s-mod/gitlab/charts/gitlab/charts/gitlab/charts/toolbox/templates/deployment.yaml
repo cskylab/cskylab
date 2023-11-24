@@ -1,6 +1,6 @@
 {{- if .Values.enabled }}
 {{- $imageCfg := dict "global" .Values.global.image "local" .Values.image -}}
-{{- $initImageCfg := dict "global" .Values.global.busybox.image "local" .Values.init.image -}}
+{{- $initImageCfg := include "gitlab.configure.config" .Values | fromYaml -}}
 {{- include "database.datamodel.prepare" . -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -48,7 +48,7 @@ spec:
         {{- include "gitlab.certificates.initContainer" . | nindent 8 }}
         - name: configure
           command: ['sh', '/config/configure']
-          image: {{ include "gitlab.busybox.image" (dict "local" .Values.init "global" $.Values.global) | quote }}
+          image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
           {{- include "gitlab.init.containerSecurityContext" . | indent 10 }}
           env:
@@ -217,7 +217,10 @@ spec:
                 - key: {{ template "gitlab.gitlab-shell.authToken.key" . }}
                   path: shell/.gitlab_shell_secret
           {{- include "gitlab.gitaly.clientSecrets" . | nindent 10 }}
-          {{- include "gitlab.redis.secrets" . | nindent 10 }}
+          {{- if $.Values.global.clickhouse.enabled }}
+            {{- include "gitlab.clickhouse.main.secrets" $ | nindent 10 }}
+          {{- end }}
+          {{- include "gitlab.redis.secrets" (dict "globalContext" $) | nindent 10 }}
           {{- range $.Values.local.psql }}
           {{-   include "gitlab.psql.secret" . | nindent 10 }}
           {{- end }}
@@ -240,6 +243,7 @@ spec:
           {{- include "gitlab.pages.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.kas.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.suggestedReviewers.mountSecrets" $ | nindent 10 }}
+          {{- include "gitlab.zoekt.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.minio.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "object_store" "config" $.Values.global.appConfig.object_store) | nindent 10 }}
           {{- include "gitlab.appConfig.objectStorage.mountSecrets" (dict "name" "artifacts" "config" $.Values.global.appConfig.artifacts) | nindent 10 }}
@@ -254,20 +258,8 @@ spec:
           {{- include "gitlab.appConfig.ldap.servers.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.duo.mountSecrets" $ | nindent 10 }}
           {{- include "gitlab.appConfig.omniauth.mountSecrets" $ | nindent 10 }}
-          {{- if $.Values.global.appConfig.microsoft_graph_mailer.enabled }}
-          - secret:
-              name: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.secret | required "Missing required secret containing the OAuth2 Client ID for outgoing email. Make sure to set `global.appConfig.microsoft_graph_mailer.client_secret.secret`" }}
-              items:
-                - key: {{ $.Values.global.appConfig.microsoft_graph_mailer.client_secret.key }}
-                  path: microsoft_graph_mailer/client_secret
-          {{- end }}
-          {{- if and $.Values.global.smtp.enabled $.Values.global.smtp.authentication }}
-          - secret:
-              name: {{ $.Values.global.smtp.password.secret | required "Missing required secret containing the SMTP password. Make sure to set `global.smtp.password.secret`" }}
-              items:
-                - key: {{ $.Values.global.smtp.password.key }}
-                  path: smtp/smtp-password
-          {{- end }}
+          {{- include "gitlab.appConfig.microsoftGraphMailer.mountSecrets" $ | nindent 10 }}
+          {{- include "gitlab.smtp.mountSecrets" $ | nindent 10 }}
 {{- if .Values.global.email.smime.enabled }}
       - name: smime-creds
         projected:

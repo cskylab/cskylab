@@ -3,7 +3,7 @@
 #
 #   csdeploy.sh
 #
-#       MetalLB v0.13.4 configuration.
+#       MetalLB configuration.
 #
 #   Copyright © 2020 cSky.cloud authors
 #
@@ -34,7 +34,7 @@ usage_msg="$(
   cat <<EOF
 
 Purpose:
-  MetalLB v0.13.4 configuration.
+  MetalLB configuration.
   Use this script to deploy and configure metallb-system namespace.
 
 Usage:

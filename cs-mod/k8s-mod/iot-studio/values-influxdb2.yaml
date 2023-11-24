@@ -1,6 +1,6 @@
 image:
   repository: "harbor.cskylab.net/dockerhub/library/influxdb"
-  tag: 2.5.1
+  tag: 2.7-alpine
   pullPolicy: IfNotPresent
 
 podAnnotations: {}
@@ -92,7 +92,7 @@ adminUser:
   ## Leave empty to generate a random password and token.
   ## Or fill any of these values to use fixed values.
   password: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
-  token: ""
+  token: "5kiJuI5OUcRKPBH3KLSEQbqjAtdWhvBRM1GGALrw4Gy9iLRNHZv6BlaX3pNA8kQY"
 
   ## The password and token are obtained from an existing secret. The expected
   ## keys are `admin-password` and `admin-token`.
@@ -147,7 +147,7 @@ ingress:
   # ingressClassName: nginx
   tls: true
   secretName: influxdb-tls # only needed if tls above is true or default certificate is not configured for Nginx
-  hostname: influxdb-iot.mod.cskylab.net
+  hostname: influxdb-iot-studio.mod.cskylab.net
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: ca-test-internal

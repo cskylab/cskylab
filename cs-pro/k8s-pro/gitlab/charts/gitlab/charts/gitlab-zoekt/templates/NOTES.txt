@@ -1,0 +1,33 @@
+1. Index a repo:
+   With new indexer:
+   $ kubectl exec gitlab-zoekt-0 -- curl -s -XPOST -d '{"GitalyConnectionInfo":{"Address":"tcp://gitaly.host:2305","Storage":"default","Path":"@hashed/a/b/c.git"},"RepoId":7,"FileSizeLimit":2097152,"Timeout":"10m"}' 'http://127.0.0.1:{{ .Values.gateway.listen.port }}/indexer/index'
+
+   With legacy indexer:
+   $ kubectl exec gitlab-zoekt-0 -- curl -s -XPOST -d '{"CloneUrl":"https://gitlab.com/gitlab-org/gitlab-development-kit.git","RepoId":74823}' 'http://127.0.0.1:{{ .Values.gateway.listen.port }}/index'
+
+2. Search:
+   $ kubectl exec gitlab-zoekt-0 -- curl -s -XPOST -d '{"Q":"gitaly"}' 'http://127.0.0.1:{{ .Values.gateway.listen.port }}/api/search'
+
+3. Search with gateway service URL:
+
+   $ kubectl exec <some-pod> -- curl -s -XPOST -d '{"Q":"gitaly"}' 'http://gitlab-zoekt-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.listen.port }}/api/search'
+
+4. Index with gateway service URL:
+
+   $ kubectl exec <some-pod> -- curl -s -XPOST -d '{"GitalyConnectionInfo":{"Address":"tcp://gitaly.host:2305","Storage":"default","Path":"@hashed/a/b/c.git"},"RepoId":7,"FileSizeLimit":2097152,"Timeout":"10m"}' 'http://gitlab-zoekt-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.listen.port }}/indexer/index'
+
+   Please note that you need a Gitaly instance to actually index a repository. The example above can be used to verify that you can the indexer even though it errors out with 'cannot find a default branch'.
+
+5. You can also reach a specific replica through service URL:
+
+   $ kubectl exec <some-pod> -- curl -s -XPOST -d '{"Q":"gitaly"}' 'http://gitlab-zoekt-gateway.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.gateway.listen.port }}/nodes/gitlab-zoekt-0.gitlab-zoekt.{{ .Release.Namespace }}.svc.cluster.local/api/search'
+
+{{- if .Values.ingress.enabled }}
+6. Get the IP of the ingress by running these commands:
+   $ kubectl get ingress gitlab-zoekt
+
+   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+7. Then do a search via the Ingress
+
+   $ curl -H 'Host: gitlab-zoekt.local' -XPOST -d '{"Q":"gitaly"}' 'http://<IP_ADDRESS>:{{ .Values.gateway.listen.port }}/api/search'
+{{- end }}

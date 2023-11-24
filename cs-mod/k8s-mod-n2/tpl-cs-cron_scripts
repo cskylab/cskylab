@@ -44,7 +44,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 ## RSync path:  /srv/mydir
 ## To Node:     hostname.cskylab.net
 ## At minute 0 past every hour from 8 through 23.
-# 0 8-23 * * *     root run-one cs-rsync.sh -q -m rsync-to -d /srv/mydir  -t hostname.cskylab.net >> /var/log/cs-rsync.log 2>&1
+# 0 8-23 * * *     root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/mydir >> /var/log/cs-rsync.log 2>&1 ; run-one cs-rsync.sh -q -m rsync-to -d /srv/mydir  -t hostname.cskylab.net >> /var/log/cs-rsync.log 2>&1
 
 ################################################################################
 # Restic backup example
@@ -53,4 +53,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 ## Data service:  /srv/mydir
 ## At minute 30 past every hour from 8 through 23.
 ## Restic repo:   sftp:kos@hostname.cskylab.net:/media/data/restic/mydir
-# 30 8-23 * * *   root run-one cs-restic.sh -q -m restic-bck -d  /srv/mydir -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t mydir  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t mydir  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1
+# 30 8-23 * * *   root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/mydir >> /var/log/cs-rsync.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d  /srv/mydir -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t mydir  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r sftp:kos@hostname.cskylab.net:/media/data/restic/mydir -t mydir  -f "--keep-hourly 6 --keep-daily 31 --keep-weekly 5 --keep-monthly 13 --keep-yearly 10" >> /var/log/cs-restic.log 2>&1

@@ -73,36 +73,36 @@ ingress:
     ##
     tls: true
 
-  ## Configure the ingress resource that allows you to access Notary
-  ## ref: https://kubernetes.io/docs/user-guide/ingress/
-  ##
-  notary:
-    ## @param ingress.notary.hostname Default host for the ingress record
-    ##
-    hostname: notary.harbor.cskylab.net
-    ## @param ingress.notary.annotations [object] Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
-    ## Use this parameter to set the required annotations for cert-manager, see
-    ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
-    ## e.g:
-    ## annotations:
-    ##   kubernetes.io/ingress.class: nginx
-    ##   cert-manager.io/cluster-issuer: cluster-issuer-name
-    ##
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      cert-manager.io/cluster-issuer: ca-test-internal
-      ingress.kubernetes.io/ssl-redirect: 'true'
-      ingress.kubernetes.io/proxy-body-size: '0'
-      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
-      nginx.ingress.kubernetes.io/proxy-body-size: '0'
-    ## @param ingress.notary.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
-    ## TLS certificates will be retrieved from a TLS secret with name: `%!s(<nil>)-tls`
-    ## You can:
-    ##   - Use the `ingress.notary.secrets` parameter to create this TLS secret
-    ##   - Rely on cert-manager to create it by setting the corresponding annotations
-    ##   - Rely on Helm to create self-signed certificates by setting `ingress.notary.selfSigned=true`
-    ##
-    tls: true
+  # ## Configure the ingress resource that allows you to access Notary
+  # ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  # ##
+  # notary:
+  #   ## @param ingress.notary.hostname Default host for the ingress record
+  #   ##
+  #   hostname: notary.harbor.cskylab.net
+  #   ## @param ingress.notary.annotations [object] Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  #   ## Use this parameter to set the required annotations for cert-manager, see
+  #   ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  #   ## e.g:
+  #   ## annotations:
+  #   ##   kubernetes.io/ingress.class: nginx
+  #   ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  #   ##
+  #   annotations:
+  #     kubernetes.io/ingress.class: nginx
+  #     cert-manager.io/cluster-issuer: ca-test-internal
+  #     ingress.kubernetes.io/ssl-redirect: 'true'
+  #     ingress.kubernetes.io/proxy-body-size: '0'
+  #     nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+  #     nginx.ingress.kubernetes.io/proxy-body-size: '0'
+  #   ## @param ingress.notary.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  #   ## TLS certificates will be retrieved from a TLS secret with name: `%!s(<nil>)-tls`
+  #   ## You can:
+  #   ##   - Use the `ingress.notary.secrets` parameter to create this TLS secret
+  #   ##   - Rely on cert-manager to create it by setting the corresponding annotations
+  #   ##   - Rely on Helm to create self-signed certificates by setting `ingress.notary.selfSigned=true`
+  #   ##
+  #   tls: true
 
 ## The persistence is enabled by default and a default StorageClass
 ## is needed in the k8s cluster to provision volumes dynamicly.
@@ -173,24 +173,24 @@ persistence:
         size: 1Gi
         annotations: {}
         selector: {}
-    ## @param persistence.persistentVolumeClaim.chartmuseum.existingClaim Name of an existing PVC to use
-    ## @param persistence.persistentVolumeClaim.chartmuseum.storageClass PVC Storage Class for Chartmuseum data volume
-    ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
-    ## @param persistence.persistentVolumeClaim.chartmuseum.subPath The sub path used in the volume
-    ## @param persistence.persistentVolumeClaim.chartmuseum.accessModes The access mode of the volume
-    ## @param persistence.persistentVolumeClaim.chartmuseum.size The size of the volume
-    ## @param persistence.persistentVolumeClaim.chartmuseum.annotations Annotations for the PVC
-    ## @param persistence.persistentVolumeClaim.chartmuseum.selector Selector to match an existing Persistent Volume
-    ##
-    chartmuseum:
-      existingClaim: ""
-      storageClass: "harbor-chartmuseum"
-      subPath: ""
-      accessModes:
-        - ReadWriteOnce
-      size: 5Gi
-      annotations: {}
-      selector: {}
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.existingClaim Name of an existing PVC to use
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.storageClass PVC Storage Class for Chartmuseum data volume
+    # ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.subPath The sub path used in the volume
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.accessModes The access mode of the volume
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.size The size of the volume
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.annotations Annotations for the PVC
+    # ## @param persistence.persistentVolumeClaim.chartmuseum.selector Selector to match an existing Persistent Volume
+    # ##
+    # chartmuseum:
+    #   existingClaim: ""
+    #   storageClass: "harbor-chartmuseum"
+    #   subPath: ""
+    #   accessModes:
+    #     - ReadWriteOnce
+    #   size: 5Gi
+    #   annotations: {}
+    #   selector: {}
     ## @param persistence.persistentVolumeClaim.trivy.storageClass PVC Storage Class for Trivy data volume
     ## Note: The default StorageClass will be used if not defined. Set it to `-` to disable dynamic provisioning
     ## @param persistence.persistentVolumeClaim.trivy.accessModes The access mode of the volume
@@ -215,7 +215,7 @@ postgresql:
   image:
     registry: docker.io
     repository: bitnami/postgresql
-    tag: 11
+    tag: 13.12.0-debian-11-r57
   auth:
     enablePostgresUser: true
     postgresPassword: "NoFear21"
@@ -225,20 +225,25 @@ postgresql:
       max_connections = 1024
     initdb:
       scripts:
-        initial-notaryserver.sql: |
-          CREATE DATABASE notaryserver;
-          CREATE USER server;
-          alter user server with encrypted password 'password';
-          GRANT ALL PRIVILEGES ON DATABASE notaryserver TO server;
-        initial-notarysigner.sql: |
-          CREATE DATABASE notarysigner;
-          CREATE USER signer;
-          alter user signer with encrypted password 'password';
-          GRANT ALL PRIVILEGES ON DATABASE notarysigner TO signer;
         initial-registry.sql: |
           CREATE DATABASE registry ENCODING 'UTF8';
           \c registry;
           CREATE TABLE schema_migrations(version bigint not null primary key, dirty boolean not null);
+      # scripts:
+      #   initial-notaryserver.sql: |
+      #     CREATE DATABASE notaryserver;
+      #     CREATE USER server;
+      #     alter user server with encrypted password 'password';
+      #     GRANT ALL PRIVILEGES ON DATABASE notaryserver TO server;
+      #   initial-notarysigner.sql: |
+      #     CREATE DATABASE notarysigner;
+      #     CREATE USER signer;
+      #     alter user signer with encrypted password 'password';
+      #     GRANT ALL PRIVILEGES ON DATABASE notarysigner TO signer;
+      #   initial-registry.sql: |
+      #     CREATE DATABASE registry ENCODING 'UTF8';
+      #     \c registry;
+      #     CREATE TABLE schema_migrations(version bigint not null primary key, dirty boolean not null);
     persistence:
       enabled: true
       storageClass: harbor-postgresql
@@ -252,14 +257,22 @@ postgresql:
 ##
 redis:
   enabled: true
-  nameOverride:
-  ## image:
-  ##   tag:
-  ## password: ""
-  ##
-  usePassword: false
-  cluster:
+  auth:
     enabled: false
+    ## Redis&reg; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
+    ## It should always be set using the password value or in the existingSecret to avoid issues
+    ## with Harbor.
+    ## The password value is ignored if existingSecret is set
+    ##
+    password: ""
+    existingSecret: ""
+  architecture: standalone
+  sentinel:
+    enabled: false
+    masterSet: mymaster
+    service:
+      ports:
+        sentinel: 26379
   master:
     persistence:
       enabled: true

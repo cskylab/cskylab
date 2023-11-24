@@ -136,3 +136,27 @@ IngressClass parameters.
 {{- define "ingress-nginx.tcp-configmap" -}}
 {{ default (printf "%s-%s" (include "ingress-nginx.fullname" .) "tcp") .Values.tcpExternalConfig }}
 {{- end -}}
+
+{{/*
+  Returns the load balancer IP sourced .Values.externalIpTPl.
+  By default this template renders the value of .Values.global.hosts.externalIP.
+*/}}
+{{- define "ingress-nginx.controller.service.globalLoadBalancerIP" -}}
+{{ tpl .Values.externalIpTpl . }}
+{{- end -}}
+
+{{/*
+Returns the load balancer IP for the controller service.
+
+Uses the value rendered from `externalIpTPl` and falls back
+to the .Values.controller.service.loadBalancerIP.
+Ensures that the Geo Ingress Controller does not attempt to
+use the same IP address as the main ingress.
+*/}}
+{{- define "ingress-nginx.controller.service.loadBalancerIP" -}}
+{{- $globalLbIp := include "ingress-nginx.controller.service.globalLoadBalancerIP" . -}}
+{{- $lbIp := coalesce $globalLbIp .Values.controller.service.loadBalancerIP -}}
+{{- if $lbIp -}}
+loadBalancerIP: {{ $lbIp }}
+{{- end -}}
+{{- end -}}

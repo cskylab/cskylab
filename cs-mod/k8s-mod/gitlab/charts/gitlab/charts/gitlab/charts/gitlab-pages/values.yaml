@@ -27,6 +27,21 @@ hpa:
     scaleDown:
       stabilizationWindowSeconds: 300
 
+keda:
+  enabled: false
+  ## See https://keda.sh/docs/2.10/concepts/scaling-deployments/#scaledobject-spec
+  pollingInterval: 30
+  cooldownPeriod: 300
+  # minReplicaCount: 2
+  # maxReplicaCount: 10
+  # fallback:
+  #   failureThreshold: 3
+  #   replicas: 6
+  # hpaName: keda-hpa-{scaled-object-name}
+  # restoreToOriginalReplicaCount: false
+  # behavior: {}
+  # triggers: []
+
 networkpolicy:
   enabled: false
   egress:
@@ -47,12 +62,18 @@ service:
   type: ClusterIP
   externalPort: 8090
   internalPort: 8090
+  annotations: {}
   customDomains:
     type: LoadBalancer
     internalHttpsPort: 8091
     nodePort: {}
       # http
       # https
+    annotations: {}
+  metrics:
+    annotations: {}
+  primary:
+    annotations: {}
   # Set `sessionAffinity` to `ClientIP` to configure gitlab-pages with session affinity.
   # Note that this setting only affects traffic originating within the cluster.
   # To enable session affinity for traffic originating from outside the cluster
@@ -71,6 +92,7 @@ init:
   resources:
     requests:
       cpu: 50m
+  containerSecurityContext: {}
 
 deployment:
   strategy: {}
@@ -113,11 +135,15 @@ resources:
     cpu: 900m
     memory: 2G
 
-## Allow to overwrite under which User and Group we're running.
+## Allow to overwrite under which User and Group the Pod will be running.
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
   # fsGroupChangePolicy: OnRootMismatch
+
+## Allow to overwrite the specific security context under which the container is running.
+containerSecurityContext:
+  runAsUser: 1000
 
 ## Enable deployment to use a serviceAccount
 serviceAccount:
@@ -156,6 +182,7 @@ internalGitlabServer:
 logFormat: 'json'
 logVerbose: false
 maxConnections:
+#  maxURILength:
 #  propagateCorrelationId:
 redirectHttp: false
 sentry:
@@ -174,8 +201,10 @@ useProxyV2: false
 #   expiration:
 #   refresh:
 
+# zipOpenTimeout:
 # zipHTTPClientTimeout:
 
+# serverShutdownTimeout:
 # serverReadTimeout:
 # serverReadHeaderTimeout:
 # serverWriteTimeout:
@@ -204,3 +233,14 @@ workhorse: {}
 affinity:
   podAntiAffinity:
     topologyKey:
+
+# authCookieSessionTimeout:
+
+# rateLimitSourceIP:
+# rateLimitSourceIPBurst:
+# rateLimitDomain:
+# rateLimitDomainBurst:
+# rateLimitTLSSourceIP:
+# rateLimitTLSSourceIPBurst:
+# rateLimitTLSDomain:
+# rateLimitTLSDomainBurst:

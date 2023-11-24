@@ -11,7 +11,7 @@ Returns the contents of the `database.yml` blob for Rails pods
 datamodel: {{ .Values.local | toYaml | nindent 4 }}
 {{- end }}
 production:
-{{- range $database := without (keys .Values.local.psql) "main" | concat (list "main") }}
+{{- range $database := without (keys .Values.local.psql) "main" | sortAlpha | concat (list "main") }}
 {{-   $context := get $.Values.local.psql $database }}
 {{-   if eq (include "gitlab.psql.database.enabled" $context) "true" }}
   {{ $database }}:
