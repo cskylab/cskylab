@@ -58,8 +58,13 @@ alphaConfig:
   metricsConfigData: {}
   # Arbitrary configuration data to append
   configData: {}
-  # Use an existing config map (see configmap-alpha.yaml for required fields)
+  # Arbitrary configuration to append
+  # This is treated as a Go template and rendered with the root context
+  configFile: ""
+  # Use an existing config map (see secret-alpha.yaml for required fields)
   existingConfig: ~
+  # Use an existing secret
+  existingSecret: ~
 
 image:
   repository: "quay.io/oauth2-proxy/oauth2-proxy"
@@ -230,10 +235,17 @@ readinessProbe:
 # Configure Kubernetes security context for container
 # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 securityContext:
-  enabled: false
+  enabled: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
   runAsNonRoot: true
-  # allowPrivilegeEscalation: false
-  # runAsUser: 2000
+  runAsUser: 2000
+  runAsGroup: 2000
+  seccompProfile:
+    type: RuntimeDefault
 
 deploymentAnnotations: {}
 podAnnotations: {}
@@ -254,12 +266,39 @@ podSecurityContext: {}
 # whether to use http or https
 httpScheme: http
 
+initContainers:
+  # if the redis sub-chart is enabled, wait for it to be ready
+  # before starting the proxy
+  # creates a role binding to get, list, watch, the redis master pod
+  # if service account is enabled
+  waitForRedis:
+    enabled: true
+    image:
+      repository: "docker.io/bitnami/kubectl"
+      pullPolicy: "IfNotPresent"
+    # uses the kubernetes version of the cluster
+    # the chart is deployed on, if not set
+    kubectlVersion: ""
+    securityContext:
+      enabled: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 65534
+      runAsGroup: 65534
+      seccompProfile:
+        type: RuntimeDefault
+    timeout: 180
+
 # Additionally authenticate against a htpasswd file. Entries must be created with "htpasswd -B" for bcrypt encryption.
 # Alternatively supply an existing secret which contains the required information.
 htpasswdFile:
   enabled: false
   existingSecret: ""
-  entries: {}
+  entries: []
   # One row for each user
   # example:
   # entries:
@@ -320,7 +359,7 @@ metrics:
   # Protocol set on the service for the metrics port
   service:
     appProtocol: http
-  servicemonitor:
+  serviceMonitor:
     # Enable Prometheus Operator ServiceMonitor
     enabled: false
     # Define the namespace where to deploy the ServiceMonitor resource
@@ -333,6 +372,37 @@ metrics:
     scrapeTimeout: 30s
     # Add custom labels to the ServiceMonitor resource
     labels: {}
+
+    ## scheme: HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
+    scheme: ""
+
+    ## tlsConfig: TLS configuration to use when scraping the endpoint. For example if using istio mTLS.
+    ## Of type: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#tlsconfig
+    tlsConfig: {}
+
+    ## bearerTokenFile: Path to bearer token file.
+    bearerTokenFile: ""
+
+    ## Used to pass annotations that are used by the Prometheus installed in your cluster to select Service Monitors to work with
+    ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
+    annotations: {}
+
+    ## Metric relabel configs to apply to samples before ingestion.
+    ## [Metric Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs)
+    metricRelabelings: []
+    # - action: keep
+    #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
+    #   sourceLabels: [__name__]
+
+    ## Relabel configs to apply to samples before ingestion.
+    ## [Relabeling](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config)
+    relabelings: []
+    # - sourceLabels: [__meta_kubernetes_pod_node_name]
+    #   separator: ;
+    #   regex: ^(.*)$
+    #   targetLabel: nodename
+    #   replacement: $1
+    #   action: replace
 
 # Extra K8s manifests to deploy
 extraObjects: []

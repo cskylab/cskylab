@@ -13,10 +13,10 @@ _tplversion: 99-99-99
 #
 
 # Kubernetes version for kubectl
-k8s_version: "1.27.3-00"
+k8s_version: "1.28.2-00"
 
 # Go version
-go_version: "go1.20.6.linux-amd64.tar.gz"
+go_version: "go1.21.4.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:

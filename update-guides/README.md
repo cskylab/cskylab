@@ -34,7 +34,9 @@
 
 ### Release notes
 
-Welcome to cSkyLab release of v99-99-99.
+Welcome to cSkyLab release of v99-99-99. This release performs updates in all namespaces and upgrades kubernetes clusters to version 1.28.x with new k8s package repositories.
+
+The new namespace **k8s-iot-edge**, derived from **k8s-iot-studio** is intended to deploy an IOT Edge service environment.
 
 ### Ubuntu 22.04 Servers Updates
 
@@ -80,6 +82,7 @@ Application update procedures in this release:
 | [k8s-nextcloud](./k8s-nextcloud.md)                  |
 | [k8s-miniostalone](./k8s-miniostalone.md)            |
 | [k8s-minio-operator/tenant](./k8s-minio-operator.md) |
+| [k8s-hello-oauth2](./k8s-hello-oauth2.md)            |
 | [k8s-iot-studio / k8s-iot-edge](./k8s-iot-studio.md) |
 
 ---
