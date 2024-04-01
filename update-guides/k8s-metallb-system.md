@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v23-11-24](#v23-11-24)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace)
@@ -13,7 +13,7 @@
     - [4.- Install new metallb-namespace](#4--install-new-metallb-namespace)
     - [5.- Configure IP address pools](#5--configure-ip-address-pools)
   - [Reference](#reference)
-- [v23-04-27](#v23-04-27)
+- [v23-11-24](#v23-11-24)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
     - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace-1)
@@ -22,7 +22,7 @@
     - [4.- Install new metallb-namespace](#4--install-new-metallb-namespace-1)
     - [5.- Configure IP address pools](#5--configure-ip-address-pools-1)
   - [Reference](#reference-1)
-- [v22-12-19](#v22-12-19)
+- [v23-04-27](#v23-04-27)
   - [Background](#background-2)
   - [How-to guides](#how-to-guides-2)
     - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace-2)
@@ -31,7 +31,7 @@
     - [4.- Install new metallb-namespace](#4--install-new-metallb-namespace-2)
     - [5.- Configure IP address pools](#5--configure-ip-address-pools-2)
   - [Reference](#reference-2)
-- [v22-08-21](#v22-08-21)
+- [v22-12-19](#v22-12-19)
   - [Background](#background-3)
   - [How-to guides](#how-to-guides-3)
     - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace-3)
@@ -40,28 +40,131 @@
     - [4.- Install new metallb-namespace](#4--install-new-metallb-namespace-3)
     - [5.- Configure IP address pools](#5--configure-ip-address-pools-3)
   - [Reference](#reference-3)
-- [v22-03-23](#v22-03-23)
+- [v22-08-21](#v22-08-21)
   - [Background](#background-4)
   - [How-to guides](#how-to-guides-4)
     - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace-4)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory-4)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template-4)
-    - [4.- Deploy new metallb-namespace](#4--deploy-new-metallb-namespace)
+    - [4.- Install new metallb-namespace](#4--install-new-metallb-namespace-4)
+    - [5.- Configure IP address pools](#5--configure-ip-address-pools-4)
   - [Reference](#reference-4)
-- [v22-01-05](#v22-01-05)
+- [v22-03-23](#v22-03-23)
   - [Background](#background-5)
   - [How-to guides](#how-to-guides-5)
-    - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade)
+    - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace-5)
+    - [2.- Rename old configuration directory](#2--rename-old-configuration-directory-5)
+    - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template-5)
+    - [4.- Deploy new metallb-namespace](#4--deploy-new-metallb-namespace)
   - [Reference](#reference-5)
-- [v21-12-06](#v21-12-06)
+- [v22-01-05](#v22-01-05)
   - [Background](#background-6)
   - [How-to guides](#how-to-guides-6)
+    - [1.- Update configuration files](#1--update-configuration-files)
+    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade)
+  - [Reference](#reference-6)
+- [v21-12-06](#v21-12-06)
+  - [Background](#background-7)
+  - [How-to guides](#how-to-guides-7)
     - [1.- Update configuration files](#1--update-configuration-files-1)
     - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade-1)
-  - [Reference](#reference-6)
+  - [Reference](#reference-7)
 
 ---
+## v99-99-99
+
+### Background
+
+In this release, MetalLB configuration template has been changed from MetalLB manifest 0.13.12 to version 0.14.4
+
+This procedure migrates from old MetalLB template to the new one in k8s-mod cluster.
+
+### How-to guides
+
+#### 1.- Uninstall metallb-system namespace
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/metallb-system` repository directory.
+
+- Remove metallb-system namespace by running:
+
+```bash
+./csdeploy.sh -m remove
+```
+
+#### 2.- Rename old configuration directory
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/` repository directory.
+
+- Rename `cs-mod/k8s-mod/metallb-system` directory to `cs-mod/k8s-mod/metallb-system-dep`
+
+>**Note**: This configuration directory can be reused to reinstall the namespace in case the migration procedure fails.
+
+#### 3.- Create new configuration from new template
+
+From VS Code Remote connected to `mcc`, open  terminal at `_cfg-fabric` repository directory.
+
+- Update configuration runbook models following instructions in `README.md` file.
+- Generate new configuration directory following instructions in runbook `_rb-k8s-metallb-system.md` file.
+
+>**Note**: Check MetalLB static and dynamic ip addresses pools in overrides. They must match with the used in the old deployment.
+
+#### 4.- Install new metallb-namespace
+
+From VS Code Remote connected to `mcc`, open  terminal at new `cs-mod/k8s-mod/metallb-system` repository directory.
+
+Install metallb-system namespace by running:
+
+```bash
+# Install chart and namespace.  
+./csdeploy.sh -m install
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+>**Note**: Be sure all metallb pods are running before configuring IP address pools.
+
+#### 5.- Configure IP address pools
+
+- Review address-pools values in `resources.yaml` file.
+
+Configure IP address pools by running:
+
+```bash
+# Configure IP address pools
+./csdeploy.sh -m config
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+- Edit `README.md` configuration file, and change header as follows:
+
+``` bash
+## v99-99-99 <!-- omit in toc -->
+
+## MetalLB manifest version v0.14.4 <!-- omit in toc -->
+```
+
+- Save file
+
+- After migration, remove old configuration directory `cs-mod/k8s-mod/metallb-system-dep`
+
+### Reference
+
+- <https://metallb.universe.tf>
+
+---
+
+
 
 ## v23-11-24
 
