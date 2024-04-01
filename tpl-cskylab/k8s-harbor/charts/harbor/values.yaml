@@ -19,7 +19,15 @@ global:
   ##
   imagePullSecrets: []
   storageClass: ""
-
+  ## Compatibility adaptations for Kubernetes platforms
+  ##
+  compatibility:
+    ## Compatibility adaptations for Openshift
+    ##
+    openshift:
+      ## @param global.compatibility.openshift.adaptSecurityContext Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
+      ##
+      adaptSecurityContext: disabled
 ## @section Common Parameters
 ##
 
@@ -58,7 +66,6 @@ diagnosticMode:
   ##
   args:
     - infinity
-
 ## @section Harbor common parameters
 ##
 
@@ -120,7 +127,6 @@ ipFamily:
   ##
   ipv4:
     enabled: true
-
 ## @section Traffic Exposure Parameters
 ##
 
@@ -129,7 +135,6 @@ ipFamily:
 ## Use "ingress" to use an Ingress Controller as proxy
 ##
 exposureType: proxy
-
 ## Service parameters
 ##
 service:
@@ -152,7 +157,7 @@ service:
     https: ""
   ## @param service.sessionAffinity Control where client requests go, to the same pod or round-robin
   ## Values: ClientIP or None
-  ## ref: https://kubernetes.io/docs/user-guide/services/
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
   ##
   sessionAffinity: None
   ## @param service.sessionAffinityConfig Additional settings for the sessionAffinity
@@ -187,10 +192,9 @@ service:
   ## @param service.extraPorts Extra port to expose on NGINX proxy service
   ##
   extraPorts: []
-
 ingress:
   ## Configure the ingress resource that allows you to access Harbor Core
-  ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
   ##
   core:
     ## @param ingress.core.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
@@ -222,10 +226,10 @@ ingress:
     ##   cert-manager.io/cluster-issuer: cluster-issuer-name
     ##
     annotations:
-      ingress.kubernetes.io/ssl-redirect: 'true'
-      ingress.kubernetes.io/proxy-body-size: '0'
-      nginx.ingress.kubernetes.io/ssl-redirect: 'true'
-      nginx.ingress.kubernetes.io/proxy-body-size: '0'
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
     ## @param ingress.core.tls Enable TLS configuration for the host defined at `ingress.core.hostname` parameter
     ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.core.hostname }}`
     ## You can:
@@ -296,8 +300,7 @@ ingress:
     ##             name: http
     ##
     extraRules: []
-  ##
-
+    ##
 ## @section Persistence Parameters
 ##
 
@@ -316,7 +319,7 @@ persistence:
   ## Resource Policy
   ## @param persistence.resourcePolicy Setting it to `keep` to avoid removing PVCs during a helm delete operation. Leaving it empty will delete PVCs after the chart deleted
   ##
-  resourcePolicy: 'keep'
+  resourcePolicy: "keep"
   persistentVolumeClaim:
     ## @param persistence.persistentVolumeClaim.registry.existingClaim Name of an existing PVC to use
     ## @param persistence.persistentVolumeClaim.registry.storageClass PVC Storage Class for Harbor Registry data volume
@@ -516,7 +519,6 @@ persistence:
       chunksize: ""
       rootdirectory: ""
       secretkey: ""
-
 ## @section Tracing parameters
 ##
 
@@ -539,7 +541,6 @@ tracing:
   ##   application: harbor
   ##
   attributes: {}
-
   ## @extra tracing.jaeger Configuration for exporting to jaeger. If using jaeger collector mode, use endpoint, username and password. If using jaeger agent mode, use agentHostname and agentPort.
   ## e.g:
   ## jaeger:
@@ -576,7 +577,6 @@ tracing:
     compression: false
     timeout: 10s
     insecure: true
-
 ## @section Volume Permissions parameters
 ##
 
@@ -597,7 +597,7 @@ volumePermissions:
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 11-debian-11-r91
+    tag: 12-debian-12-r16
     digest: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -609,26 +609,35 @@ volumePermissions:
     ##
     pullSecrets: []
   ## Init container resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param volumePermissions.resources.limits Init container volume-permissions resource limits
-  ## @param volumePermissions.resources.requests Init container volume-permissions resource requests
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param volumePermissions.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if volumePermissions.resources is set (volumePermissions.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resources:
-    limits: {}
-    requests: {}
+  resourcesPreset: "none"
+  ## @param volumePermissions.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
   ## Init container' Security Context
   ## Note: the chown of the data folder is done to containerSecurityContext.runAsUser
   ## and not the below volumePermissions.containerSecurityContext.runAsUser
   ## @param volumePermissions.containerSecurityContext.enabled Enable init container Security Context
+  ## @param volumePermissions.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
   ## @param volumePermissions.containerSecurityContext.runAsUser User ID for the init container
   ##
   containerSecurityContext:
     enabled: true
+    seLinuxOptions: null
     runAsUser: 0
-
 ## @section NGINX Parameters
 ##
-
 nginx:
   ## Bitnami NGINX image
   ## ref: https://hub.docker.com/r/bitnami/nginx/tags/
@@ -643,11 +652,11 @@ nginx:
   image:
     registry: docker.io
     repository: bitnami/nginx
-    tag: 1.25.3-debian-11-r1
+    tag: 1.25.4-debian-12-r3
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -761,35 +770,54 @@ nginx:
   ##
   customStartupProbe: {}
   ## NGINX resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param nginx.resources.limits The resources limits for the NGINX containers
-  ## @param nginx.resources.requests The requested resources for the NGINX containers
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param nginx.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if nginx.resources is set (nginx.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resources:
-    limits: {}
-    requests: {}
+  resourcesPreset: "none"
+  ## @param nginx.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
   ## Configure NGINX pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param nginx.podSecurityContext.enabled Enabled NGINX pods' Security Context
+  ## @param nginx.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy
+  ## @param nginx.podSecurityContext.sysctls Set kernel settings using the sysctl interface
+  ## @param nginx.podSecurityContext.supplementalGroups Set filesystem extra groups
   ## @param nginx.podSecurityContext.fsGroup Set NGINX pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
     fsGroup: 1001
   ## Configure NGINX containers (only main one) Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-## @param nginx.containerSecurityContext.enabled Enabled containers' Security Context
-## @param nginx.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
-## @param nginx.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
-## @param nginx.containerSecurityContext.privileged Set container's Security Context privileged
-## @param nginx.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
-## @param nginx.containerSecurityContext.allowPrivilegeEscalation Set container's Security Context allowPrivilegeEscalation
-## @param nginx.containerSecurityContext.capabilities.drop List of capabilities to be dropped
-## @param nginx.containerSecurityContext.seccompProfile.type Set container's Security Context seccomp profile
+  ## @param nginx.containerSecurityContext.enabled Enabled containers' Security Context
+  ## @param nginx.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
+  ## @param nginx.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+  ## @param nginx.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
+  ## @param nginx.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
+  ## @param nginx.containerSecurityContext.privileged Set container's Security Context privileged
+  ## @param nginx.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
+  ## @param nginx.containerSecurityContext.allowPrivilegeEscalation Set container's Security Context allowPrivilegeEscalation
+  ## @param nginx.containerSecurityContext.capabilities.drop List of capabilities to be dropped
+  ## @param nginx.containerSecurityContext.seccompProfile.type Set container's Security Context seccomp profile
   ##
   containerSecurityContext:
     enabled: true
+    seLinuxOptions: null
     runAsUser: 1001
+    runAsGroup: 0
     runAsNonRoot: true
     privileged: false
     readOnlyRootFilesystem: false
@@ -808,6 +836,12 @@ nginx:
   ## @param nginx.lifecycleHooks LifecycleHook for the NGINX container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
+  ## @param nginx.serviceAccountName Set the service account name for the NGINX pods
+  ## 
+  serviceAccountName: ""
+  ## @param nginx.automountServiceAccountToken Mount Service Account token in pod
+  ##
+  automountServiceAccountToken: false
   ## @param nginx.hostAliases NGINX pods host aliases
   ##
   hostAliases: []
@@ -853,7 +887,7 @@ nginx:
   ##
   affinity: {}
   ## @param nginx.nodeSelector NGINX Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
   nodeSelector: {}
   ## @param nginx.tolerations NGINX Tolerations for pod assignment
@@ -900,10 +934,63 @@ nginx:
   ## @param nginx.extraVolumes Optionally specify extra list of additional volumes for the NGINX pods
   ##
   extraVolumes: []
-
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param nginx.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param nginx.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param nginx.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: true
+    ## @param nginx.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolice
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param nginx.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param nginx.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces
+    ## @param nginx.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
 ## @section Harbor Portal Parameters
 ##
-
 portal:
   ## Bitnami Harbor Portal image
   ## ref: https://hub.docker.com/r/bitnami/harbor-portal/tags/
@@ -918,11 +1005,11 @@ portal:
   image:
     registry: docker.io
     repository: bitnami/harbor-portal
-    tag: 2.9.1-debian-11-r1
+    tag: 2.10.1-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -1022,25 +1109,42 @@ portal:
   ##
   customStartupProbe: {}
   ## Harbor Portal resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param portal.resources.limits The resources limits for the Harbor Portal containers
-  ## @param portal.resources.requests The requested resources for the Harbor Portal containers
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param portal.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if portal.resources is set (portal.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resources:
-    limits: {}
-    requests: {}
+  resourcesPreset: "none"
+  ## @param portal.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
   ## Configure Harbor Portal pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param portal.podSecurityContext.enabled Enabled Harbor Portal pods' Security Context
+  ## @param portal.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy
+  ## @param portal.podSecurityContext.sysctls Set kernel settings using the sysctl interface
+  ## @param portal.podSecurityContext.supplementalGroups Set filesystem extra groups
   ## @param portal.podSecurityContext.fsGroup Set Harbor Portal pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
     fsGroup: 1001
   ## Configure Harbor Portal containers (only main one) Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param portal.containerSecurityContext.enabled Enabled containers' Security Context
+  ## @param portal.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
   ## @param portal.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+  ## @param portal.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
   ## @param portal.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
   ## @param portal.containerSecurityContext.privileged Set container's Security Context privileged
   ## @param portal.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
@@ -1050,7 +1154,9 @@ portal:
   ##
   containerSecurityContext:
     enabled: true
+    seLinuxOptions: null
     runAsUser: 1001
+    runAsGroup: 0
     runAsNonRoot: true
     privileged: false
     readOnlyRootFilesystem: false
@@ -1113,7 +1219,7 @@ portal:
   ##
   affinity: {}
   ## @param portal.nodeSelector Harbor Portal Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
   nodeSelector: {}
   ## @param portal.tolerations Harbor Portal Tolerations for pod assignment
@@ -1160,6 +1266,9 @@ portal:
   ## @param portal.extraVolumes Optionally specify extra list of additional volumes for the Harbor Portal pods
   ##
   extraVolumes: []
+  ## @param portal.serviceAccountName Set the service account name for the Harbor Portal pods
+  ## 
+  serviceAccountName: ""
   ## @param portal.automountServiceAccountToken Automount service account token
   ##
   automountServiceAccountToken: false
@@ -1172,10 +1281,63 @@ portal:
     ports:
       http: 80
       https: 443
-
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param portal.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param portal.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param portal.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: true
+    ## @param portal.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolice
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param portal.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param portal.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces
+    ## @param portal.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
 ## @section Harbor Core Parameters
 ##
-
 core:
   ## Bitnami Harbor Core image
   ## ref: https://hub.docker.com/r/bitnami/harbor-core/tags/
@@ -1190,11 +1352,11 @@ core:
   image:
     registry: docker.io
     repository: bitnami/harbor-core
-    tag: 2.9.1-debian-11-r1
+    tag: 2.10.1-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -1208,7 +1370,6 @@ core:
     ## Enable debug mode
     ##
     debug: false
-
   ## @param core.sessionLifetime Explicitly set a session timeout (in seconds) overriding the backend default.
   ##
   sessionLifetime: ""
@@ -1353,25 +1514,42 @@ core:
   ##
   customStartupProbe: {}
   ## Harbor Core resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param core.resources.limits The resources limits for the Harbor Core containers
-  ## @param core.resources.requests The requested resources for the Harbor Core containers
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param core.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if core.resources is set (core.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resources:
-    limits: {}
-    requests: {}
+  resourcesPreset: "none"
+  ## @param core.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
   ## Configure Harbor Core pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param core.podSecurityContext.enabled Enabled Harbor Core pods' Security Context
+  ## @param core.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy
+  ## @param core.podSecurityContext.sysctls Set kernel settings using the sysctl interface
+  ## @param core.podSecurityContext.supplementalGroups Set filesystem extra groups
   ## @param core.podSecurityContext.fsGroup Set Harbor Core pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
     fsGroup: 1001
   ## Configure Harbor Core containers (only main one) Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param core.containerSecurityContext.enabled Enabled containers' Security Context
+  ## @param core.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
   ## @param core.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+  ## @param core.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
   ## @param core.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
   ## @param core.containerSecurityContext.privileged Set container's Security Context privileged
   ## @param core.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
@@ -1381,7 +1559,9 @@ core:
   ##
   containerSecurityContext:
     enabled: true
+    seLinuxOptions: null
     runAsUser: 1001
+    runAsGroup: 0
     runAsNonRoot: true
     privileged: false
     readOnlyRootFilesystem: false
@@ -1444,7 +1624,7 @@ core:
   ##
   affinity: {}
   ## @param core.nodeSelector Harbor Core Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
   nodeSelector: {}
   ## @param core.tolerations Harbor Core Tolerations for pod assignment
@@ -1491,6 +1671,9 @@ core:
   ## @param core.extraVolumes Optionally specify extra list of additional volumes for the Harbor Core pods
   ##
   extraVolumes: []
+  ## @param core.serviceAccountName Set the service account name for the Harbor Core pods
+  ## 
+  serviceAccountName: ""
   ## @param core.automountServiceAccountToken Automount service account token
   ##
   automountServiceAccountToken: false
@@ -1505,10 +1688,63 @@ core:
       http: 80
       https: 443
       metrics: 8001
-
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param core.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param core.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param core.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: true
+    ## @param core.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolice
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param core.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param core.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces
+    ## @param core.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
 ## @section Harbor Jobservice Parameters
 ##
-
 jobservice:
   ## Bitnami Harbor Jobservice image
   ## ref: https://hub.docker.com/r/bitnami/harbor-jobservice/tags/
@@ -1523,11 +1759,11 @@ jobservice:
   image:
     registry: docker.io
     repository: bitnami/harbor-jobservice
-    tag: 2.9.1-debian-11-r1
+    tag: 2.10.1-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -1648,25 +1884,42 @@ jobservice:
   ##
   customStartupProbe: {}
   ## Harbor Jobservice resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param jobservice.resources.limits The resources limits for the Harbor Jobservice containers
-  ## @param jobservice.resources.requests The requested resources for the Harbor Jobservice containers
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param jobservice.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if jobservice.resources is set (jobservice.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resources:
-    limits: {}
-    requests: {}
+  resourcesPreset: "none"
+  ## @param jobservice.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
   ## Configure Harbor Jobservice pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param jobservice.podSecurityContext.enabled Enabled Harbor Jobservice pods' Security Context
+  ## @param jobservice.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy
+  ## @param jobservice.podSecurityContext.sysctls Set kernel settings using the sysctl interface
+  ## @param jobservice.podSecurityContext.supplementalGroups Set filesystem extra groups
   ## @param jobservice.podSecurityContext.fsGroup Set Harbor Jobservice pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
     fsGroup: 1001
   ## Configure Harbor Jobservice containers (only main one) Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param jobservice.containerSecurityContext.enabled Enabled containers' Security Context
+  ## @param jobservice.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
   ## @param jobservice.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+  ## @param jobservice.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
   ## @param jobservice.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
   ## @param jobservice.containerSecurityContext.privileged Set container's Security Context privileged
   ## @param jobservice.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
@@ -1676,7 +1929,9 @@ jobservice:
   ##
   containerSecurityContext:
     enabled: true
+    seLinuxOptions: null
     runAsUser: 1001
+    runAsGroup: 0
     runAsNonRoot: true
     privileged: false
     readOnlyRootFilesystem: false
@@ -1739,7 +1994,7 @@ jobservice:
   ##
   affinity: {}
   ## @param jobservice.nodeSelector Harbor Jobservice Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
   nodeSelector: {}
   ## @param jobservice.tolerations Harbor Jobservice Tolerations for pod assignment
@@ -1786,6 +2041,9 @@ jobservice:
   ## @param jobservice.extraVolumes Optionally specify extra list of additional volumes for the Harbor Jobservice pods
   ##
   extraVolumes: []
+  ## @param jobservice.serviceAccountName Set the service account name for the Harbor Jobservice pods
+  ## 
+  serviceAccountName: ""
   ## @param jobservice.automountServiceAccountToken Automount service account token
   ##
   automountServiceAccountToken: false
@@ -1800,7 +2058,61 @@ jobservice:
       http: 80
       https: 443
       metrics: 8001
-
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param jobservice.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param jobservice.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param jobservice.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: true
+    ## @param jobservice.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolice
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param jobservice.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param jobservice.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces
+    ## @param jobservice.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
 ## @section Harbor Registry Parameters
 ##
 
@@ -1829,12 +2141,12 @@ registry:
   ## @param registry.credentials.htpasswd The content of htpasswd file based on the value of `registry.credentials.username` `registry.credentials.password`.  Currently `helm` does not support bcrypt in the template script, if the credential is updated you need to manually generated by calling
   ##
   credentials:
-    username: 'harbor_registry_user'
-    password: 'harbor_registry_password'
+    username: harbor_registry_user
+    password: harbor_registry_password
     ## If you update the username or password of registry, make sure use cli tool htpasswd to generate the bcrypt hash
     ## e.g. "htpasswd -nbBC10 $username $password"
     ##
-    htpasswd: 'harbor_registry_user:$2y$10$9L4Tc0DJbFFMB6RdSCunrOpTHdwhid4ktBJmLD00bYgqkkGOvll3m'
+    htpasswd: harbor_registry_user:$2y$10$9L4Tc0DJbFFMB6RdSCunrOpTHdwhid4ktBJmLD00bYgqkkGOvll3m
   middleware:
     ## @param registry.middleware.enabled Middleware is used to add support for a CDN between backend storage and `docker pull` recipient.  See
     ##
@@ -1856,7 +2168,7 @@ registry:
       ## The secret key that should be present is CLOUDFRONT_KEY_DATA, which should be the encoded private key
       ## that allows access to CloudFront
       ##
-      privateKeySecret: 'my-secret'
+      privateKeySecret: my-secret
   ## Use TLS in the container
   ##
   tls:
@@ -1871,10 +2183,16 @@ registry:
   ## Configure Harbor Registry pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param registry.podSecurityContext.enabled Enabled Harbor Registry pods' Security Context
+  ## @param registry.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy
+  ## @param registry.podSecurityContext.sysctls Set kernel settings using the sysctl interface
+  ## @param registry.podSecurityContext.supplementalGroups Set filesystem extra groups
   ## @param registry.podSecurityContext.fsGroup Set Harbor Registry pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
     fsGroup: 1001
   ## @param registry.updateStrategy.type Harbor Registry deployment strategy type - only really applicable for deployments with RWO PVs attached
   ## If replicas = 1, an update can get "stuck", as the previous pod remains attached to the
@@ -1927,7 +2245,7 @@ registry:
   ##
   affinity: {}
   ## @param registry.nodeSelector Harbor Registry Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
   nodeSelector: {}
   ## @param registry.tolerations Harbor Registry Tolerations for pod assignment
@@ -1971,9 +2289,67 @@ registry:
   ## @param registry.extraVolumes Optionally specify extra list of additional volumes for the Harbor Registry pods
   ##
   extraVolumes: []
+  ## @param registry.serviceAccountName Set the service account name for the Registry pods
+  ## 
+  serviceAccountName: ""
   ## @param registry.automountServiceAccountToken Automount service account token
   ##
   automountServiceAccountToken: false
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param registry.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param registry.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param registry.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: true
+    ## @param registry.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolice
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param registry.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param registry.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces
+    ## @param registry.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
   ## Harbor Registry main container parameters
   ##
   server:
@@ -1990,11 +2366,11 @@ registry:
     image:
       registry: docker.io
       repository: bitnami/harbor-registry
-      tag: 2.9.1-debian-11-r1
+      tag: 2.10.1-debian-12-r0
       digest: ""
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-      ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+      ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
       ##
       pullPolicy: IfNotPresent
       ## Optionally specify an array of imagePullSecrets.
@@ -2087,17 +2463,28 @@ registry:
     ##
     customStartupProbe: {}
     ## Harbor Registry main resource requests and limits
-    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-    ## @param registry.server.resources.limits The resources limits for the Harbor Registry main containers
-    ## @param registry.server.resources.requests The requested resources for the Harbor Registry main containers
+    ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+    ## @param registry.server.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if registry.server.resources is set (registry.server.resources is recommended for production).
+    ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
     ##
-    resources:
-      limits: {}
-      requests: {}
+    resourcesPreset: "none"
+    ## @param registry.server.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+    ## Example:
+    ## resources:
+    ##   requests:
+    ##     cpu: 2
+    ##     memory: 512Mi
+    ##   limits:
+    ##     cpu: 3
+    ##     memory: 1024Mi
+    ##
+    resources: {}
     ## Configure Harbor Registry main containers (only main one) Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
     ## @param registry.server.containerSecurityContext.enabled Enabled containers' Security Context
+    ## @param registry.server.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
     ## @param registry.server.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+    ## @param registry.server.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
     ## @param registry.server.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
     ## @param registry.server.containerSecurityContext.privileged Set container's Security Context privileged
     ## @param registry.server.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
@@ -2107,7 +2494,9 @@ registry:
     ##
     containerSecurityContext:
       enabled: true
+      seLinuxOptions: null
       runAsUser: 1001
+      runAsGroup: 0
       runAsNonRoot: true
       privileged: false
       readOnlyRootFilesystem: false
@@ -2149,11 +2538,11 @@ registry:
     image:
       registry: docker.io
       repository: bitnami/harbor-registryctl
-      tag: 2.9.1-debian-11-r1
+      tag: 2.10.1-debian-12-r0
       digest: ""
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-      ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+      ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
       ##
       pullPolicy: IfNotPresent
       ## Optionally specify an array of imagePullSecrets.
@@ -2242,17 +2631,28 @@ registry:
     ##
     customStartupProbe: {}
     ## Harbor Registryctl resource requests and limits
-    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-    ## @param registry.controller.resources.limits The resources limits for the Harbor Registryctl containers
-    ## @param registry.controller.resources.requests The requested resources for the Harbor Registryctl containers
+    ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+    ## @param registry.controller.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if registry.controller.resources is set (registry.controller.resources is recommended for production).
+    ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
     ##
-    resources:
-      limits: {}
-      requests: {}
+    resourcesPreset: "none"
+    ## @param registry.controller.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+    ## Example:
+    ## resources:
+    ##   requests:
+    ##     cpu: 2
+    ##     memory: 512Mi
+    ##   limits:
+    ##     cpu: 3
+    ##     memory: 1024Mi
+    ##
+    resources: {}
     ## Configure Harbor Registryctl containers (only main one) Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
     ## @param registry.controller.containerSecurityContext.enabled Enabled containers' Security Context
+    ## @param registry.controller.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
     ## @param registry.controller.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+    ## @param registry.controller.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
     ## @param registry.controller.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
     ## @param registry.controller.containerSecurityContext.privileged Set container's Security Context privileged
     ## @param registry.controller.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
@@ -2262,7 +2662,9 @@ registry:
     ##
     containerSecurityContext:
       enabled: true
+      seLinuxOptions: null
       runAsUser: 1001
+      runAsGroup: 0
       runAsNonRoot: true
       privileged: false
       readOnlyRootFilesystem: false
@@ -2286,10 +2688,8 @@ registry:
       ports:
         http: 8080
         https: 8443
-
 ## @section Harbor Adapter Trivy Parameters
 ##
-
 trivy:
   ## Bitnami Harbor Adapter Trivy image
   ## ref: https://hub.docker.com/r/bitnami/harbor-adapter-trivy/tags/
@@ -2304,11 +2704,11 @@ trivy:
   image:
     registry: docker.io
     repository: bitnami/harbor-adapter-trivy
-    tag: 2.9.1-debian-11-r0
+    tag: 2.10.1-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -2330,10 +2730,10 @@ trivy:
   debugMode: false
   ## @param trivy.vulnType Comma-separated list of vulnerability types. Possible values `os` and `library`.
   ##
-  vulnType: 'os,library'
+  vulnType: "os,library"
   ## @param trivy.severity Comma-separated list of severities to be checked
   ##
-  severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+  severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
   ## @param trivy.ignoreUnfixed The flag to display only fixed vulnerabilities
   ##
   ignoreUnfixed: false
@@ -2365,7 +2765,7 @@ trivy:
   skipUpdate: false
   ## @param trivy.cacheDir Directory to store the cache
   ##
-  cacheDir: '/bitnami/harbor-adapter-trivy/.cache'
+  cacheDir: "/bitnami/harbor-adapter-trivy/.cache"
   ## Use TLS in the container
   ##
   tls:
@@ -2452,29 +2852,42 @@ trivy:
   ##
   customStartupProbe: {}
   ## Trivy resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param trivy.resources.limits [object] The resources limits for the Trivy containers
-  ## @param trivy.resources.requests [object] The requested resources for the Trivy containers
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param trivy.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if trivy.resources is set (trivy.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      cpu: 1
-      memory: 1Gi
+  resourcesPreset: "none"
+  ## @param trivy.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
   ## Configure Trivy pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param trivy.podSecurityContext.enabled Enabled Trivy pods' Security Context
+  ## @param trivy.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy
+  ## @param trivy.podSecurityContext.sysctls Set kernel settings using the sysctl interface
+  ## @param trivy.podSecurityContext.supplementalGroups Set filesystem extra groups
   ## @param trivy.podSecurityContext.fsGroup Set Trivy pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
     fsGroup: 1001
   ## Configure Trivy containers (only main one) Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param trivy.containerSecurityContext.enabled Enabled containers' Security Context
+  ## @param trivy.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
   ## @param trivy.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+  ## @param trivy.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
   ## @param trivy.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
   ## @param trivy.containerSecurityContext.privileged Set container's Security Context privileged
   ## @param trivy.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
@@ -2484,7 +2897,9 @@ trivy:
   ##
   containerSecurityContext:
     enabled: true
+    seLinuxOptions: null
     runAsUser: 1001
+    runAsGroup: 0
     runAsNonRoot: true
     privileged: false
     readOnlyRootFilesystem: false
@@ -2547,7 +2962,7 @@ trivy:
   ##
   affinity: {}
   ## @param trivy.nodeSelector Trivy Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
   nodeSelector: {}
   ## @param trivy.tolerations Trivy Tolerations for pod assignment
@@ -2594,6 +3009,9 @@ trivy:
   ## @param trivy.extraVolumes Optionally specify extra list of additional volumes for the Trivy pods
   ##
   extraVolumes: []
+  ## @param trivy.serviceAccountName Set the service account name for the Trivy pods
+  ## 
+  serviceAccountName: ""
   ## @param trivy.automountServiceAccountToken Automount service account token
   ##
   automountServiceAccountToken: false
@@ -2606,10 +3024,63 @@ trivy:
     ports:
       http: 8080
       https: 8443
-
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param trivy.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param trivy.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param trivy.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: true
+    ## @param trivy.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolice
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param trivy.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param trivy.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces
+    ## @param trivy.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
 ## @section Harbor Exporter Parameters
 ##
-
 exporter:
   ## Bitnami Harbor Exporter image
   ## ref: https://hub.docker.com/r/bitnami/harbor-exporter/tags/
@@ -2624,11 +3095,11 @@ exporter:
   image:
     registry: docker.io
     repository: bitnami/harbor-exporter
-    tag: 2.9.1-debian-11-r1
+    tag: 2.10.1-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -2723,25 +3194,42 @@ exporter:
   ##
   customStartupProbe: {}
   ## Harbor Exporter resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param exporter.resources.limits The resources limits for the Harbor Exporter containers
-  ## @param exporter.resources.requests The requested resources for the Harbor Exporter containers
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param exporter.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if exporter.resources is set (exporter.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resources:
-    limits: {}
-    requests: {}
+  resourcesPreset: "none"
+  ## @param exporter.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
   ## Configure Exporter pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param exporter.podSecurityContext.enabled Enabled Exporter pods' Security Context
+  ## @param exporter.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy
+  ## @param exporter.podSecurityContext.sysctls Set kernel settings using the sysctl interface
+  ## @param exporter.podSecurityContext.supplementalGroups Set filesystem extra groups
   ## @param exporter.podSecurityContext.fsGroup Set Exporter pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
     fsGroup: 1001
   ## Configure Exporter containers (only main one) Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param exporter.containerSecurityContext.enabled Enabled containers' Security Context
+  ## @param exporter.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in container
   ## @param exporter.containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+  ## @param exporter.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
   ## @param exporter.containerSecurityContext.runAsNonRoot Set container's Security Context runAsNonRoot
   ## @param exporter.containerSecurityContext.privileged Set container's Security Context privileged
   ## @param exporter.containerSecurityContext.readOnlyRootFilesystem Set container's Security Context readOnlyRootFilesystem
@@ -2751,7 +3239,9 @@ exporter:
   ##
   containerSecurityContext:
     enabled: true
+    seLinuxOptions: null
     runAsUser: 1001
+    runAsGroup: 0
     runAsNonRoot: true
     privileged: false
     readOnlyRootFilesystem: false
@@ -2826,7 +3316,7 @@ exporter:
   ##
   serviceAccountName: ""
   ## @param exporter.nodeSelector Harbor Exporter Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
   nodeSelector: {}
   ## @param exporter.tolerations Harbor Exporter Tolerations for pod assignment
@@ -2859,7 +3349,61 @@ exporter:
     ##
     ports:
       metrics: 8001
-
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param exporter.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param exporter.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param exporter.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: true
+    ## @param exporter.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolice
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param exporter.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param exporter.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces
+    ## @param exporter.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
 ## @section PostgreSQL Parameters
 ##
 
@@ -2885,7 +3429,7 @@ postgresql:
   image:
     registry: docker.io
     repository: bitnami/postgresql
-    tag: 13.13.0-debian-11-r8
+    tag: 13.14.0-debian-12-r8
     digest: ""
   auth:
     enablePostgresUser: true
@@ -2917,7 +3461,6 @@ externalDatabase:
   password: ""
   sslmode: disable
   coreDatabase: ""
-
 ## @section Redis&reg; parameters
 ##
 
@@ -2950,7 +3493,6 @@ redis:
     service:
       ports:
         sentinel: 26379
-
 ## External Redis&reg; configuration
 ## All of these values are only used when redis.enabled is set to false
 ## @param externalRedis.host Redis&reg; host
@@ -2965,10 +3507,10 @@ externalRedis:
   host: localhost
   port: 6379
   password: ""
-  coreDatabaseIndex: '0'
-  jobserviceDatabaseIndex: '1'
-  registryDatabaseIndex: '2'
-  trivyAdapterDatabaseIndex: '5'
+  coreDatabaseIndex: "0"
+  jobserviceDatabaseIndex: "1"
+  registryDatabaseIndex: "2"
+  trivyAdapterDatabaseIndex: "5"
   ## Redis&reg; sentinel configuration
   ## @param externalRedis.sentinel.enabled If external redis with sentinal is used, set it to `true`
   ## @param externalRedis.sentinel.masterSet Name of sentinel masterSet if sentinel is used
@@ -2976,9 +3518,8 @@ externalRedis:
   ##
   sentinel:
     enabled: false
-    masterSet: 'mymaster'
+    masterSet: "mymaster"
     hosts: ""
-
 ## @section Harbor metrics parameters
 ##
 metrics:
