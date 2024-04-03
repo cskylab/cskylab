@@ -8,8 +8,9 @@
   - [Background](#background)
     - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
-    - [1.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14](#1--perform-all-intermediate-gitlab-charts-upgrades-with-postgresql-v14)
-    - [2.- Perform final configuration steps after upgrade](#2--perform-final-configuration-steps-after-upgrade)
+    - [1.- Update PostgreSQL chart and appVersion to latest v14](#1--update-postgresql-chart-and-appversion-to-latest-v14)
+    - [2.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14](#2--perform-all-intermediate-gitlab-charts-upgrades-with-postgresql-v14)
+    - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade)
   - [Reference](#reference)
 - [v23-11-24](#v23-11-24)
   - [Background](#background-1)
@@ -27,7 +28,7 @@
   - [How-to guides](#how-to-guides-2)
     - [1.- Upgrade postgresql chart](#1--upgrade-postgresql-chart)
     - [2.- Perform all intermediate gitlab charts upgrades](#2--perform-all-intermediate-gitlab-charts-upgrades)
-    - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade)
+    - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade-1)
   - [Reference](#reference-2)
 - [v22-12-19](#v22-12-19)
   - [Background](#background-3)
@@ -35,7 +36,7 @@
   - [How-to guides](#how-to-guides-3)
     - [1.- Change image section in values-postgresql.yaml](#1--change-image-section-in-values-postgresqlyaml)
     - [2.- Perform all intermediate gitlab charts upgrades](#2--perform-all-intermediate-gitlab-charts-upgrades-1)
-    - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade-1)
+    - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade-2)
   - [Reference](#reference-3)
 - [v22-08-21](#v22-08-21)
   - [Background](#background-4)
@@ -91,9 +92,9 @@
 ### Background
 
 This procedure updates to the following versions:
-- GitLab chart to version v7.6.0 with appVersion 16.6.0. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- GitLab chart to version v7.10.1 with appVersion 16.10.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- Postgresql chart v13.2.16, with application version 14.x
+- Postgresql chart v15.2.5, with application version 14.11.0
 
 This procedure updates gitlab installation in k8s-mod cluster.
 
@@ -105,7 +106,53 @@ You must be running at least:
 
 ### How-to guides
 
-#### 1.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14
+#### 1.- Update PostgreSQL chart and appVersion to latest v14
+
+- Edit `csdeploy.sh` file and change the gitlab chart version on `source_charts` variable with the appropriate values:
+
+```bash
+# Command to paste
+...
+...
+helm pull bitnami/postgresql --version 15.2.2 --untar
+...
+...
+```
+
+- Edit `values-postgresql.yaml` file to download the appropriate image of postgresql:
+```yaml
+## Bitnami PostgreSQL image version
+## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
+## @param image.tag PostgreSQL image tag (immutable tags are recommended)
+##
+image:
+  # tag: 12.12.0-debian-11-r1
+  tag: 14.11.0
+```
+
+- Pull new chart by running:
+
+```bash
+# Pull new chart versions
+./csdeploy.sh -m pull-charts
+```
+
+- Update gitlab namespace by running:
+
+```bash
+# Redeploy upgraded chart.  
+./csdeploy.sh -m update
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+
+#### 2.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14
 
 Gitlab charts updates must be made one at a time from the latest minor version of the previous.
 
@@ -122,12 +169,16 @@ helm pull gitlab/gitlab --version x.x.x --untar
 ...
 ```
 
-- Update gitlab namespace by running:
+- Pull new chart by running:
 
 ```bash
 # Pull new chart versions
 ./csdeploy.sh -m pull-charts
+```
 
+- Update gitlab namespace by running:
+
+```bash
 # Redeploy upgraded chart.  
 ./csdeploy.sh -m update
 ```
@@ -143,11 +194,16 @@ helm pull gitlab/gitlab --version x.x.x --untar
 
 You must perform all intermediate gitlab chart upgrades for every of these chart versions:
 
-| Version                           | Command to paste                                |
-| --------------------------------- | ----------------------------------------------- |
-| From chart 7.6.0 to chart 7.6.1   | helm pull gitlab/gitlab --version 7.6.1 --untar |
+| Version                          | Command to paste                                 |
+| -------------------------------- | ------------------------------------------------ |
+| From chart 7.6.0 to chart 7.6.7  | helm pull gitlab/gitlab --version 7.6.7 --untar  |
+| From chart 7.6.7 to chart 7.7.7  | helm pull gitlab/gitlab --version 7.7.7 --untar  |
+| From chart 7.7.7 to chart 7.8.5  | helm pull gitlab/gitlab --version 7.8.5 --untar  |
+| From chart 7.8.5 to chart 7.9.3  | helm pull gitlab/gitlab --version 7.9.3 --untar  |
+| From chart 7.9.3 to chart 7.10.1 | helm pull gitlab/gitlab --version 7.10.1 --untar |
 
-#### 2.- Perform final configuration steps after upgrade
+
+#### 3.- Perform final configuration steps after upgrade
 
 - After migration, you must save rail secrets to rail-secrets.yaml
 
@@ -155,6 +211,19 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 # Save rail secrets to rail-secrets.yaml
 kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.yml']}" | base64 --decode > rail-secrets.yaml
 ```
+
+- Edit `README.md` documentation file, and change header as follows:
+
+``` md
+## v99-99-99 <!-- omit in toc -->
+
+## Helm charts<!-- omit in toc -->
+
+- **GitLab** chart v7.10.1 with appVersion 16.10.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+
+- **Postgresql** chart v15.2.5, with application version 14.11.0
+```
+
 
 ### Reference
 
@@ -392,12 +461,12 @@ helm pull gitlab/gitlab --version x.x.x --untar
 
 You must perform all intermediate gitlab chart upgrades for every of these chart versions:
 
-| Version                           | Command to paste                                |
-| --------------------------------- | ----------------------------------------------- |
-| From chart 7.2.8 to chart 7.3.6   | helm pull gitlab/gitlab --version 7.3.6 --untar |
-| From chart 7.3.6 to chart 7.4.2   | helm pull gitlab/gitlab --version 7.4.2 --untar |
-| From chart 7.4.2 to chart 7.5.2   | helm pull gitlab/gitlab --version 7.5.2 --untar |
-| From chart 7.5.2 to chart 7.6.0   | helm pull gitlab/gitlab --version 7.6.0 --untar |
+| Version                         | Command to paste                                |
+| ------------------------------- | ----------------------------------------------- |
+| From chart 7.2.8 to chart 7.3.6 | helm pull gitlab/gitlab --version 7.3.6 --untar |
+| From chart 7.3.6 to chart 7.4.2 | helm pull gitlab/gitlab --version 7.4.2 --untar |
+| From chart 7.4.2 to chart 7.5.2 | helm pull gitlab/gitlab --version 7.5.2 --untar |
+| From chart 7.5.2 to chart 7.6.0 | helm pull gitlab/gitlab --version 7.6.0 --untar |
 
 #### 5.- Perform final configuration steps after upgrade
 
