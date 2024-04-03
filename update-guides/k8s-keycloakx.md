@@ -4,29 +4,173 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v23-11-24](#v23-11-24)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
-    - [PostgreSQL migration](#postgresql-migration)
-    - [Keycloak migration](#keycloak-migration)
+    - [PostgreSQL backup](#postgresql-backup)
+    - [Pull new charts](#pull-new-charts)
+    - [Update PostgreSQL version](#update-postgresql-version)
+    - [Keycloak migration to v23.0.7](#keycloak-migration-to-v2307)
+    - [Keycloak migration to v24.0.2](#keycloak-migration-to-v2402)
   - [Reference](#reference)
-- [v23-04-27](#v23-04-27)
+- [v23-11-24](#v23-11-24)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
+    - [PostgreSQL migration](#postgresql-migration)
+    - [Keycloak migration](#keycloak-migration)
+  - [Reference](#reference-1)
+- [v23-04-27](#v23-04-27)
+  - [Background](#background-2)
+  - [How-to guides](#how-to-guides-2)
     - [1.- Uninstall keycloakx namespace](#1--uninstall-keycloakx-namespace)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
     - [4.- Install new keycloakx namespace](#4--install-new-keycloakx-namespace)
-  - [Reference](#reference-1)
+  - [Reference](#reference-2)
 - [v22-12-19](#v22-12-19)
-  - [Background](#background-2)
-  - [How-to guides](#how-to-guides-2)
+  - [Background](#background-3)
+  - [How-to guides](#how-to-guides-3)
     - [1.- Change image section in values-postgresql.yaml](#1--change-image-section-in-values-postgresqlyaml)
     - [2.- Update script cs-deploy.sh](#2--update-script-cs-deploysh)
     - [3.- Pull charts \& update](#3--pull-charts--update)
-  - [Reference](#reference-2)
+  - [Reference](#reference-3)
 
 ---
+## v99-99-99
+
+### Background
+
+Chart codecentric/keycloakx 2.3.0 updates chart components in keycloak appVersion 22.0.4. This procedure modifies chart values to upgrade to appVersion 24.0.2 (image selected in `values-keycloakx.yaml`)
+
+Chart bitnami/postgresql 15.2.1 updates chart components in postgresql appVersion 16.2.0 This procedure modifies chart values to upgrade to appVersion 15 (image selected in `values-posgresql.yaml`).   
+
+### How-to guides
+
+#### PostgreSQL backup
+
+Before migration, you should backup the database. After migration, database is changed and it is not possible to roll back unless you restore the original database.
+
+To backup or restore your PostgreSQL follow the procedures in `README.md` file.
+
+#### Pull new charts
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add codecentric https://codecentric.github.io/helm-charts
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull codecentric/keycloakx --version 2.3.0 --untar
+helm pull bitnami/postgresql --version 15.2.1 --untar
+
+EOF
+)"
+```
+
+- Pull new charts executing:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+```
+
+#### Update PostgreSQL version
+
+- Change the following sections in helm chart values file `values-postgresql.yaml`:
+  
+```yaml
+## Bitnami PostgreSQL image version
+## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
+## @param image.tag PostgreSQL image tag (immutable tags are recommended)
+##
+image:
+  tag: 15
+```
+
+
+#### Keycloak migration to v23.0.7
+
+- Change the following sections in helm chart values file `values-keycloakx.yaml`:
+
+```yaml
+image:
+  # The Keycloak image repository
+  repository: quay.io/keycloak/keycloak
+  # Overrides the Keycloak image tag whose default is the chart appVersion
+  tag: "23.0.7"
+  # Overrides the Keycloak image tag with a specific digest
+  digest: ""
+  # The Keycloak image pull policy
+  pullPolicy: IfNotPresent
+```
+
+- Start application to upgrade to v 23.0.7 by running:
+
+```bash
+# Start application namespace
+./csdeploy.sh -m install
+```
+
+#### Keycloak migration to v24.0.2
+
+- Stop application by running:
+
+```bash
+# Stop application namespace
+./csdeploy.sh -m uninstall
+```
+
+
+- Change the following sections in helm chart values file `values-keycloakx.yaml`:
+
+```yaml
+image:
+  # The Keycloak image repository
+  repository: quay.io/keycloak/keycloak
+  # Overrides the Keycloak image tag whose default is the chart appVersion
+  tag: "24.0.2"
+  # Overrides the Keycloak image tag with a specific digest
+  digest: ""
+  # The Keycloak image pull policy
+  pullPolicy: IfNotPresent
+```
+
+- Start application by running:
+
+```bash
+# Start application namespace
+./csdeploy.sh -m install
+```
+
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v99-99-99 <!-- omit in toc -->
+
+## Helm charts: <!-- omit in toc -->
+
+- codecentric/keycloakx v2.3.0 appVersion 24.0.2 (Note that this chart is the logical successor of the Wildfly based codecentric/keycloak chart.)
+- bitnami/postgresql 15.2.1 appVersion 15      
+```
+
+
+### Reference
+
+- <https://github.com/codecentric/helm-charts/tree/master/charts/keycloakx>
+- <https://www.keycloak.org/>
+
+---
+
 ## v23-11-24
 
 ### Background

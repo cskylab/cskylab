@@ -96,7 +96,7 @@ helm repo update
 
 # Charts
 helm pull codecentric/keycloakx --version 2.3.0 --untar
-helm pull bitnami/postgresql --version 13.2.16 --untar
+helm pull bitnami/postgresql --version 15.2.1 --untar
 
 EOF
 )"

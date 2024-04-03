@@ -27,4 +27,4 @@ global:
 ## @param image.tag PostgreSQL image tag (immutable tags are recommended)
 ##
 image:
-  tag: 15.4.0-debian-11-r54
+  tag: 15
