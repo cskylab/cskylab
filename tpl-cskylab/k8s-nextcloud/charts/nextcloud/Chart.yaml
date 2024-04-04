@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 27.1.3
+appVersion: 28.0.4
 dependencies:
 - condition: postgresql.enabled
   name: postgresql
@@ -34,4 +34,4 @@ name: nextcloud
 sources:
 - https://github.com/nextcloud/helm
 - https://github.com/nextcloud/docker
-version: 4.5.2
+version: 4.6.5

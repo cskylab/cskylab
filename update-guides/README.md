@@ -80,7 +80,9 @@ Application update procedures in this release:
 | [k8s-cert-manager](./k8s-cert-manager.md)     |
 | [k8s-harbor](./k8s-harbor.md)                 |
 | [k8s-keycloakx](./k8s-keycloakx.md)           |
-| [k8s-gitlab.md](./k8s-gitlab.md)                     |
+| [k8s-gitlab.md](./k8s-gitlab.md)              |
+| [k8s-nextcloud](./k8s-nextcloud.md)           |
+
 
 
 

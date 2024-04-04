@@ -95,8 +95,8 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Charts
-helm pull nextcloud/nextcloud --version 4.5.2 --untar
-helm pull bitnami/mariadb --version 14.1.4 --untar
+helm pull nextcloud/nextcloud --version 4.6.5 --untar
+helm pull bitnami/mariadb --version 18.0.1 --untar
 
 EOF
 )"
