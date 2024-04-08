@@ -67,10 +67,6 @@ It is highly recommended to update zone `cs-mod`, before proceeding to update zo
 
 ### Application updates
 
-New templates in this release:
-
-- `k8s-iot-edge`: Edge version of k8s-iot-studio featuring oauth2 proxy authentication with keycloakx.
-
 Application update procedures in this release:
 
 | Procedures                                           |
@@ -85,14 +81,7 @@ Application update procedures in this release:
 | [k8s-miniostalone](./k8s-miniostalone.md)            |
 | [k8s-minio-operator/tenant](./k8s-minio-operator.md) |
 | [k8s-hello-oauth2](./k8s-hello-oauth2.md)            |
-
-
-
-
-
-
-
-
+| [k8s-iot-studio / k8s-iot-edge](./k8s-iot-studio.md) |
 
 ---
 
