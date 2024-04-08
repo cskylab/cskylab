@@ -115,3 +115,26 @@ apiIngress:
   ##   - Relay on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
   ##
   tls: true
+
+## @param automountServiceAccountToken Mount Service Account token in pod
+##
+automountServiceAccountToken: true
+
+## @section RBAC parameters
+
+## Specifies whether a ServiceAccount should be created
+##
+serviceAccount:
+  ## @param serviceAccount.create Enable the creation of a ServiceAccount for MinIO&reg; pods
+  ##
+  create: true
+  ## @param serviceAccount.name Name of the created ServiceAccount
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  name: ""
+  ## @param serviceAccount.automountServiceAccountToken Enable/disable auto mounting of the service account token
+  ##
+  automountServiceAccountToken: true
+  ## @param serviceAccount.annotations Custom annotations for MinIO&reg; ServiceAccount
+  ##
+  annotations: {}

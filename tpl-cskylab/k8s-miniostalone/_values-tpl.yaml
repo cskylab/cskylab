@@ -6,7 +6,7 @@
 
 _tplname: k8s-miniostalone
 _tpldescription: MinIO standalone
-_tplversion: 23-11-24
+_tplversion: 99-99-99
 
 #
 # Values to override

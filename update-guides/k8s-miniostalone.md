@@ -4,57 +4,159 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v23-11-24](#v23-11-24)
+- [v99-99-99](#v99-99-99)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update configuration files](#1--update-configuration-files)
     - [3.- Pull charts \& update](#3--pull-charts--update)
   - [Reference](#reference)
-- [v23-04-27](#v23-04-27)
+- [v23-11-24](#v23-11-24)
   - [Background](#background-1)
   - [How-to guides](#how-to-guides-1)
+    - [1.- Update configuration files](#1--update-configuration-files-1)
+    - [3.- Pull charts \& update](#3--pull-charts--update-1)
+  - [Reference](#reference-1)
+- [v23-04-27](#v23-04-27)
+  - [Background](#background-2)
+  - [How-to guides](#how-to-guides-2)
     - [1.- Uninstall miniostalone namespace](#1--uninstall-miniostalone-namespace)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template)
     - [4.- Copy buckets directory](#4--copy-buckets-directory)
     - [5.- Install miniostalone namespace](#5--install-miniostalone-namespace)
     - [6.- Update new restic backup and rsync procedures](#6--update-new-restic-backup-and-rsync-procedures)
-  - [Reference](#reference-1)
-- [v22-12-19](#v22-12-19)
-  - [Background](#background-2)
-  - [How-to guides](#how-to-guides-2)
-    - [1.- Update configuration files](#1--update-configuration-files-1)
-    - [3.- Pull charts \& update](#3--pull-charts--update-1)
   - [Reference](#reference-2)
-- [v22-08-21](#v22-08-21)
+- [v22-12-19](#v22-12-19)
   - [Background](#background-3)
   - [How-to guides](#how-to-guides-3)
+    - [1.- Update configuration files](#1--update-configuration-files-2)
+    - [3.- Pull charts \& update](#3--pull-charts--update-2)
+  - [Reference](#reference-3)
+- [v22-08-21](#v22-08-21)
+  - [Background](#background-4)
+  - [How-to guides](#how-to-guides-4)
     - [1.- Uninstall miniostalone namespace](#1--uninstall-miniostalone-namespace-1)
     - [2.- Rename old configuration directory](#2--rename-old-configuration-directory-1)
     - [3.- Create new configuration from new template](#3--create-new-configuration-from-new-template-1)
     - [4.- Prepare configuration files in the new directory](#4--prepare-configuration-files-in-the-new-directory)
     - [5.- Install miniostalone namespace](#5--install-miniostalone-namespace-1)
     - [6.- Update new restic backup and rsync procedures](#6--update-new-restic-backup-and-rsync-procedures-1)
-  - [Reference](#reference-3)
-- [v22-03-23](#v22-03-23)
-  - [Background](#background-4)
-  - [How-to guides](#how-to-guides-4)
-    - [1.- Update chart values file](#1--update-chart-values-file)
-    - [2.- Update configuration files](#2--update-configuration-files)
-    - [3.- Pull charts \& update](#3--pull-charts--update-2)
   - [Reference](#reference-4)
-- [v22-01-05](#v22-01-05)
+- [v22-03-23](#v22-03-23)
   - [Background](#background-5)
   - [How-to guides](#how-to-guides-5)
-    - [1.- Update configuration files](#1--update-configuration-files-2)
-    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade)
+    - [1.- Update chart values file](#1--update-chart-values-file)
+    - [2.- Update configuration files](#2--update-configuration-files)
+    - [3.- Pull charts \& update](#3--pull-charts--update-3)
   - [Reference](#reference-5)
-- [v21-12-06](#v21-12-06)
+- [v22-01-05](#v22-01-05)
   - [Background](#background-6)
   - [How-to guides](#how-to-guides-6)
     - [1.- Update configuration files](#1--update-configuration-files-3)
-    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade-1)
+    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade)
   - [Reference](#reference-6)
+- [v21-12-06](#v21-12-06)
+  - [Background](#background-7)
+  - [How-to guides](#how-to-guides-7)
+    - [1.- Update configuration files](#1--update-configuration-files-4)
+    - [2.- Pull charts \& upgrade](#2--pull-charts--upgrade-1)
+  - [Reference](#reference-7)
+
+---
+
+## v99-99-99
+
+### Background
+
+MinIO chart 14.1.7 updates components versions in MinIO appVersion 2024.4.6
+
+This procedure updates MinIO installation in k8s-mod cluster.
+
+### How-to guides
+
+#### 1.- Update configuration files
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/miniostalone` folder repository.
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull bitnami/minio --version 14.1.7 --untar
+
+EOF
+)"
+```
+
+- Save file
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v99-99-99 <!-- omit in toc -->
+
+## Helm charts: bitnami/minio v14.1.7<!-- omit in toc -->
+```
+
+- Add the following section in helm chart values file `values-minio.yaml`:
+  
+```yaml
+## @param automountServiceAccountToken Mount Service Account token in pod
+##
+automountServiceAccountToken: true
+
+## @section RBAC parameters
+
+## Specifies whether a ServiceAccount should be created
+##
+serviceAccount:
+  ## @param serviceAccount.create Enable the creation of a ServiceAccount for MinIO&reg; pods
+  ##
+  create: true
+  ## @param serviceAccount.name Name of the created ServiceAccount
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  name: ""
+  ## @param serviceAccount.automountServiceAccountToken Enable/disable auto mounting of the service account token
+  ##
+  automountServiceAccountToken: true
+  ## @param serviceAccount.annotations Custom annotations for MinIO&reg; ServiceAccount
+  ##
+  annotations: {}
+```
+
+- Save file
+
+#### 3.- Pull charts & update
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/miniostalone` repository directory.
+
+Execute the following commands to pull charts and update:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+```
+
+### Reference
+
+- <https://github.com/bitnami/charts/tree/master/bitnami/minio>
 
 ---
 

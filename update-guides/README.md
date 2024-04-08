@@ -82,6 +82,8 @@ Application update procedures in this release:
 | [k8s-keycloakx](./k8s-keycloakx.md)           |
 | [k8s-gitlab.md](./k8s-gitlab.md)              |
 | [k8s-nextcloud](./k8s-nextcloud.md)           |
+| [k8s-miniostalone](./k8s-miniostalone.md)            |
+
 
 
 
