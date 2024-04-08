@@ -1,5 +1,5 @@
 ##
-## Release v5.0.11
+## Release v5.0.14
 ## Modified from https://github.com/minio/operator/blob/master/examples/kustomization/base/tenant.yaml
 ##
 
@@ -149,7 +149,7 @@ spec:
   externalClientCertSecrets: [ ]
 
   ## Registry location and Tag to download MinIO Server image
-  image: quay.io/minio/minio:RELEASE.2023-11-15T20-43-25Z
+  image: quay.io/minio/minio:RELEASE.2024-04-06T05-26-02Z
   imagePullSecret: { }
   ## Mount path where PV will be mounted inside container(s).
   mountPath: /export

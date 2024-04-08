@@ -73,16 +73,18 @@ New templates in this release:
 
 Application update procedures in this release:
 
-| Procedures                                    |
-| --------------------------------------------- |
-| [k8s-metallb-system](./k8s-metallb-system.md) |
-| [k8s-ingress-nginx](./k8s-ingress-nginx.md)   |
-| [k8s-cert-manager](./k8s-cert-manager.md)     |
-| [k8s-harbor](./k8s-harbor.md)                 |
-| [k8s-keycloakx](./k8s-keycloakx.md)           |
-| [k8s-gitlab.md](./k8s-gitlab.md)              |
-| [k8s-nextcloud](./k8s-nextcloud.md)           |
+| Procedures                                           |
+| ---------------------------------------------------- |
+| [k8s-metallb-system](./k8s-metallb-system.md)        |
+| [k8s-ingress-nginx](./k8s-ingress-nginx.md)          |
+| [k8s-cert-manager](./k8s-cert-manager.md)            |
+| [k8s-harbor](./k8s-harbor.md)                        |
+| [k8s-keycloakx](./k8s-keycloakx.md)                  |
+| [k8s-gitlab.md](./k8s-gitlab.md)                     |
+| [k8s-nextcloud](./k8s-nextcloud.md)                  |
 | [k8s-miniostalone](./k8s-miniostalone.md)            |
+| [k8s-minio-operator/tenant](./k8s-minio-operator.md) |
+
 
 
 
