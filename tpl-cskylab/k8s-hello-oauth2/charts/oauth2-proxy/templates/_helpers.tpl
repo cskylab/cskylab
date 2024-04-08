@@ -117,7 +117,7 @@ Compute the redis url if not set explicitly.
 Returns the version
 */}}
 {{- define "oauth2-proxy.version" -}}
-{{ trimPrefix "v" (lower (.Values.image.tag | default (printf "v%s" .Chart.AppVersion))) }}
+{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}
 {{- end -}}
 
 {{/*
@@ -130,4 +130,32 @@ Workaround for EKS https://github.com/aws/eks-distro/issues/1128
 {{- else -}}
 {{- printf "%s.%s" .Capabilities.KubeVersion.Major (.Capabilities.KubeVersion.Minor | replace "+" "") -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "oauth2-proxy.alpha-config" -}}
+---
+server:
+  BindAddress: '0.0.0.0:4180'
+{{- if .Values.alphaConfig.serverConfigData }}
+{{- toYaml .Values.alphaConfig.serverConfigData | nindent 2 }}
+{{- end }}
+{{- if .Values.metrics.enabled }}
+metricsServer:
+  BindAddress: '0.0.0.0:44180'
+{{- if .Values.alphaConfig.metricsConfigData }}
+{{- toYaml .Values.alphaConfig.metricsConfigData | nindent 2 }}
+{{- end }}
+{{- end }}
+{{- if .Values.alphaConfig.configData }}
+{{- toYaml .Values.alphaConfig.configData | nindent 0 }}
+{{- end }}
+{{- if .Values.alphaConfig.configFile }}
+{{- tpl .Values.alphaConfig.configFile $ | nindent 0 }}
+{{- end }}
+{{- end -}}
+
+{{- define "oauth2-proxy.secrets" -}}
+cookie-secret: {{ tpl .Values.config.cookieSecret $ | b64enc | quote }}
+client-secret: {{ tpl .Values.config.clientSecret $ | b64enc | quote }}
+client-id: {{ tpl .Values.config.clientID $ | b64enc | quote }}
 {{- end -}}
