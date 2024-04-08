@@ -47,9 +47,10 @@ The new namespace **k8s-iot-edge**, derived from **k8s-iot-studio** is intended 
 
 Updated server templates in this release:
 
-| Template |     |
-| -------- | --- |
-|          |     |
+| Template       |                                                                          |
+| -------------- | ------------------------------------------------------------------------ |
+| ubt2204srv-k8s | Kubernetes master / node on Ubuntu Server 22.04 LTS                      |
+| ubt2204srv-mcc | Management host (mcc: Mission Control Center) on Ubuntu Server 22.04 LTS |
 
 To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
 
