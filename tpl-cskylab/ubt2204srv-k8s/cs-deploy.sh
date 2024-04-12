@@ -415,6 +415,17 @@ EOF
   systemctl daemon-reload
   systemctl restart kubelet
 
+  # Install etcdctl
+  # Ref: https://etcd.io/docs/v3.5/install/
+  cd
+  wget https://github.com/etcd-io/etcd/releases/download/v3.5.13/etcd-v3.5.13-linux-amd64.tar.gz
+  tar xvf etcd-v3.5.13-linux-amd64.tar.gz
+  cd etcd-v3.5.13-linux-amd64
+  sudo mv etcdctl /usr/local/bin/
+  cd
+  rm -r ./etcd-v3.5.13-linux-amd64
+  rm etcd-v3.5.13-linux-amd64.tar.gz
+
 fi
 
 ################################################################################
