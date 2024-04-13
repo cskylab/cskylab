@@ -421,7 +421,8 @@ EOF
   wget https://github.com/etcd-io/etcd/releases/download/v3.5.13/etcd-v3.5.13-linux-amd64.tar.gz
   tar xvf etcd-v3.5.13-linux-amd64.tar.gz
   cd etcd-v3.5.13-linux-amd64
-  sudo mv etcdctl /usr/local/bin/
+  mv etcdctl /usr/local/bin/
+  mv etcdutl /usr/local/bin/
   cd
   rm -r ./etcd-v3.5.13-linux-amd64
   rm etcd-v3.5.13-linux-amd64.tar.gz

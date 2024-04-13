@@ -50,6 +50,8 @@ Updated server templates in this release:
 | ubt2204srv-k8s | Kubernetes master / node on Ubuntu Server 22.04 LTS                      |
 | ubt2204srv-mcc | Management host (mcc: Mission Control Center) on Ubuntu Server 22.04 LTS |
 
+New Kubernetes master / node templates incorporate snippets to backup and restore cluster configuration into new master node machines.
+
 To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
 
 ```bash
