@@ -69,21 +69,21 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Main svc name
+External Gateway svc name
 */}}
 {{- define "gitlab-zoekt.gatewaySvc" -}}
 {{- printf "%s-gateway" (include "gitlab-zoekt.fullname" .) }}
 {{- end }}
 
 {{/*
-Main svc fqdn
+External Gateway svc fqdn
 */}}
 {{- define "gitlab-zoekt.gatewaySvcFqdn" -}}
 {{- include "gitlab-zoekt.gatewaySvc" . }}.{{ .Release.Namespace }}.svc.{{ include "gitlab-zoekt.clusterDomain" . }}
 {{- end }}
 
 {{/*
-Main svc URL
+External Gateway svc URL
 */}}
 {{- define "gitlab-zoekt.gatewaySvcUrl" -}}
 http{{ .Values.gateway.tls.certificate.enabled | ternary "s" "" }}://{{ include "gitlab-zoekt.gatewaySvcFqdn" . }}:{{ .Values.gateway.listen.port }}
@@ -177,3 +177,10 @@ Create the name of the map to use for zoekt gateway
 {{- include "gitlab-zoekt.gatewaySvcUrl" .}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Template used in NOTES.txt for the default pod name
+*/}}
+{{- define "gitlab-zoekt.notesDefaultPodName" -}}
+{{ printf "%s-0" (include "gitlab-zoekt.backendSvc" .) }}
+{{- end }}

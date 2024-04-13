@@ -111,6 +111,9 @@ data:
     auth-secret={% file.Read "/etc/gitlab-secrets/pages/auth_secret" %}
     auth-scope={{ template "oauth.gitlab-pages.authScope" . }}
     {{- end }}
+    {{- if .Values.authTimeout }}
+    auth-timeout={{ .Values.authTimeout }}
+    {{- end }}
     {{- if .Values.authCookieSessionTimeout }}
     auth-cookie-session-timeout={{ .Values.authCookieSessionTimeout }}
     {{- end }}

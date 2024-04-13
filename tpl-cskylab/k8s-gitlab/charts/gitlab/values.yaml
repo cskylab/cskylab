@@ -51,7 +51,7 @@ global:
   edition: ee
 
   ## https://docs.gitlab.com/charts/charts/globals#gitlab-version
-  gitlabVersion: "16.6.1"
+  gitlabVersion: "16.10.2"
 
   ## https://docs.gitlab.com/charts/charts/globals#application-resource
   application:
@@ -77,6 +77,7 @@ global:
   ingress:
     apiVersion: ""
     configureCertmanager: true
+    useNewIngressForCerts: false
     provider: nginx
     # class:
     annotations: {}
@@ -143,6 +144,22 @@ global:
     # applicationName:
     # preparedStatements: false
     # databaseTasks: true
+    main: {}
+      # host: postgresql.hostedsomewhere.else
+      # port: 123
+      # username: gitlab
+      # database: gitlabhq_production
+      # applicationName:
+      # preparedStatements: false
+      # databaseTasks: true
+    ci: {}
+      # host: postgresql.hostedsomewhere.else
+      # port: 123
+      # username: gitlab
+      # database: gitlabhq_production_ci
+      # applicationName:
+      # preparedStatements: false
+      # databaseTasks: false
 
   ## https://docs.gitlab.com/charts/charts/globals#configure-redis-settings
   redis:
@@ -1293,7 +1310,7 @@ gitlab-zoekt:
       secretName: '{{ include "gitlab.zoekt.gateway.basicAuth.secretName" $ }}'
   indexer:
     internalApi:
-      enabled: false
+      enabled: true
       secretName: '{{ include "gitlab.zoekt.indexer.internalApi.secretName" $ }}'
       secretKey: '{{ include "gitlab.zoekt.indexer.internalApi.secretKey" $ }}'
       gitlabUrl: '{{ include "gitlab.zoekt.indexer.internalApi.gitlabUrl" $ }}'

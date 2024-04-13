@@ -47,29 +47,6 @@ spec:
               mountPath: /etc/nginx/basicauth-credentials
       {{- end }}
       containers:
-        - name: zoekt-dynamic-indexserver
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: {{ .Values.dynamicIndexserver.image.repository }}:{{ .Values.dynamicIndexserver.image.tag | default "latest" }}
-          imagePullPolicy: {{ coalesce .Values.dynamicIndexserver.image.pullPolicy .Values.image.pullPolicy }}
-          ports:
-          - containerPort: {{ .Values.dynamicIndexserver.listen.port }}
-            name: indexserver
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.dynamicIndexserver.listen.port }}
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.dynamicIndexserver.listen.port }}
-          resources:
-            {{- toYaml (merge .Values.dynamicIndexserver.resources .Values.resources) | nindent 12 }}
-          volumeMounts:
-          - name: zoekt-data
-            mountPath: /data/repos
-          - name: zoekt-index
-            mountPath: /data/index
         - name: zoekt-indexer
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -102,9 +79,9 @@ spec:
           - name: GOOGLE_CLOUD_PROFILER_ENABLED
             value: "true"
           {{- end }}
-          {{- if .Values.indexer.goGc.enabled }}
-          - name: GOGC
-            value: {{ .Values.indexer.goGc.value | quote }}
+          {{- range $envName, $envValue := .Values.indexer.environment }}
+          - name: {{ $envName }}
+            value: {{ $envValue | quote }}
           {{- end }}
           {{- if .Values.indexer.internalApi.enabled }}
           - name: GITLAB_URL
@@ -138,11 +115,11 @@ spec:
           - name: GOOGLE_CLOUD_PROFILER_ENABLED
             value: "true"
           {{- end }}
-          {{- if .Values.webserver.goGc.enabled }}
-          - name: GOGC
-            value: {{ .Values.webserver.goGc.value | quote }}
+          {{- range $envName, $envValue := .Values.webserver.environment }}
+          - name: {{ $envName }}
+            value: {{ $envValue | quote }}
           {{- end }}
-        - name: zoekt-gateway
+        - name: zoekt-internal-gateway
           securityContext:
             {{- toYaml .Values.gateway.securityContext | nindent 12 }}
           image: {{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}
@@ -231,14 +208,6 @@ spec:
                 path: ".gitlab_shell_secret"
       {{- end }}
   volumeClaimTemplates:
-  - metadata:
-      name: zoekt-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ .Values.bareRepoStorageClassName }}
-      resources:
-        requests:
-          storage: {{ .Values.bareRepoStorage }}
   - metadata:
       name: zoekt-index
     spec:

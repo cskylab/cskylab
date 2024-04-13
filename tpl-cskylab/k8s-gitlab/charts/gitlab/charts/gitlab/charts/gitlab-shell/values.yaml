@@ -63,6 +63,10 @@ maxUnavailable: 1
 minReplicas: 2
 maxReplicas: 10
 
+# When using traefik ingress
+traefik:
+  entrypoint: gitlab-shell
+
 hpa:
   # targetAverageValue: 100m  # DEPRECATED: in favor of `hpa.cpu.targetAverageValue` below
   cpu:

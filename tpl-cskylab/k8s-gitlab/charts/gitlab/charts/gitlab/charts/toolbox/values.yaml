@@ -18,6 +18,7 @@ init:
 tolerations: []
 
 extraEnv: {}
+extraEnvFrom: {}
 
 antiAffinityLabels:
   matchLabels: {}

@@ -92,7 +92,7 @@
 ### Background
 
 This procedure updates to the following versions:
-- GitLab chart to version v7.10.1 with appVersion 16.10.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- GitLab chart to version v7.10.2 with appVersion 16.10.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
 - Postgresql chart v15.2.5, with application version 14.11.0
 
@@ -200,7 +200,7 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | From chart 7.6.7 to chart 7.7.7  | helm pull gitlab/gitlab --version 7.7.7 --untar  |
 | From chart 7.7.7 to chart 7.8.5  | helm pull gitlab/gitlab --version 7.8.5 --untar  |
 | From chart 7.8.5 to chart 7.9.3  | helm pull gitlab/gitlab --version 7.9.3 --untar  |
-| From chart 7.9.3 to chart 7.10.1 | helm pull gitlab/gitlab --version 7.10.1 --untar |
+| From chart 7.9.3 to chart 7.10.2 | helm pull gitlab/gitlab --version 7.10.2 --untar |
 
 
 #### 3.- Perform final configuration steps after upgrade
@@ -219,7 +219,7 @@ kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.y
 
 ## Helm charts<!-- omit in toc -->
 
-- **GitLab** chart v7.10.1 with appVersion 16.10.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- **GitLab** chart v7.10.2 with appVersion 16.10.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
 - **Postgresql** chart v15.2.5, with application version 14.11.0
 ```

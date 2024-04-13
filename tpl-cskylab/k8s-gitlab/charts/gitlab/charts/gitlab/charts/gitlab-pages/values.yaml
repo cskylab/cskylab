@@ -234,6 +234,7 @@ affinity:
   podAntiAffinity:
     topologyKey:
 
+# authTimeout:
 # authCookieSessionTimeout:
 
 # rateLimitSourceIP:

@@ -1,11 +1,3 @@
-# --  The size of storage mounted to the gitlab-zoekt-indexer that will be used to store bare repos.<br>
-# The bare repos are stored as an intermediate step in calculating the
-# resulting index and treated like a cache as they will be refetched if
-# missing.
-# @raw
-bareRepoStorage: 5Gi
-bareRepoStorageClassName: ""
-
 # --  The size of storage mounted to the gitlab-zoekt-indexer and zoekt-webserver that will be used to store index files.<br>
 # The index files are those with the `.zoekt` extension and used to serve
 # search results.
@@ -16,18 +8,10 @@ indexStorageClassName: ""
 replicas: 1
 image:
   pullPolicy: IfNotPresent
-dynamicIndexserver:
-  image:
-    repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-dynamic-indexserver
-    tag: v0.0.1-5f25b
-    # pullPolicy:
-  listen:
-    port: 6060
-  resources: {}
 indexer:
   image:
     repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-indexer
-    tag: v0.1.1-10574
+    tag: v0.4.0-d4157
   listen:
     port: 6065
   resources: {}
@@ -39,9 +23,7 @@ indexer:
     secretKey: ''
     gitlabUrl: '' # Internal URL to connect to GitLab
     serviceUrl: '' # URL to reach Zoekt service
-  goGc:
-    enabled: false
-    value: 100
+  environment: {}
 webserver:
   image:
     repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-webserver
@@ -52,9 +34,7 @@ webserver:
   resources: {}
   googleCloudProfiler:
     enabled: false
-  goGc:
-    enabled: false
-    value: 100
+  environment: {}
 gateway:
   image:
     repository: nginx
@@ -117,6 +97,9 @@ service:
     # cloud.google.com/load-balancer-type: Internal
     # networking.gke.io/internal-load-balancer-allow-global-access: "true"
   # loadBalancerIP: 123.123.123.123
+
+serviceBackend:
+  annotations: {}
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
