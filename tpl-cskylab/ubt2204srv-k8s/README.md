@@ -41,10 +41,11 @@ Machine `{{ .machine.hostname }}` is deployed from template {{ ._tpldescription 
   - [k8s Raspberry Pi](#k8s-raspberry-pi)
     - [Enable cgroups limit support](#enable-cgroups-limit-support)
   - [Force delete namespace](#force-delete-namespace)
-  - [Backup kubernetes keys \& etcd database in master node](#backup-kubernetes-keys--etcd-database-in-master-node)
-  - [Restore kubernetes keys \& etcd database into a new master node](#restore-kubernetes-keys--etcd-database-into-a-new-master-node)
-    - [Step 1: Inject keys into /etc/kubernetes directory in new master node](#step-1-inject-keys-into-etckubernetes-directory-in-new-master-node)
-    - [Step 2: Initialize the cluster](#step-2-initialize-the-cluster)
+  - [Backup kubernetes master configuration and restore it to a new master node](#backup-kubernetes-master-configuration-and-restore-it-to-a-new-master-node)
+    - [Step 1: Backup /etc/kubernetes \& take snapshot from etcd database](#step-1-backup-etckubernetes--take-snapshot-from-etcd-database)
+    - [Step 2: Restore etcd snapshot locally](#step-2-restore-etcd-snapshot-locally)
+    - [Step 3: Inject configuration into the new master node](#step-3-inject-configuration-into-the-new-master-node)
+    - [Step 4: Initialize the cluster](#step-4-initialize-the-cluster)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
     - [Abridged ‘find’ command examples](#abridged-find-command-examples)
@@ -721,15 +722,17 @@ kubectl get namespace $NAMESPACE -o json |jq '.spec = {"finalizers":[]}' >temp.j
 curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json 127.0.0.1:8001/api/v1/namespaces/$NAMESPACE/finalize
 ```
 
-### Backup kubernetes keys & etcd database in master node
+### Backup kubernetes master configuration and restore it to a new master node
 
 This procedure is intended to perform a backup of kubernetes cluster confirguration that can be restored into a new master node machine.
+
+#### Step 1: Backup /etc/kubernetes & take snapshot from etcd database
 
 To perform a backup of kubernetes keys & etcd database execute from `mcc`, open terminal at configuration directory `k8s-xxx` (cluster level) and execute:
 
 ```bash
 #
-# Backup /etc/kubernetes directory
+# Backup /etc/kubernetes & snapshot etcd database
 #
 echo \
 && echo "******** START of snippet execution ********" \
@@ -746,9 +749,28 @@ echo \
 && sudo chown -R kos:kos ./${BACKUP_DIR} \
 && echo "\
 && scp -rp {{ .machine.localadminusername }}@{{ .machine.hostname }}.{{ .machine.domainname }}:~/${BACKUP_DIR}/* ./${BACKUP_DIR}/ \
+&& echo \
+&& echo "******** END of snippet execution ********" \
+&& echo
+```
+
+#### Step 2: Restore etcd snapshot locally
+
+The etcd snapshot from previous step will be restored locally, in configuration management directory, running a docker container.
+
+>**Note:** In order to run the docker container, you must run this step from a local or a virtual mcc machine. Container based mcc may not run docker in docker.
+
+```bash
+#
+# Restore etcd snapshot locally
+#
+echo \
+&& echo "******** START of snippet execution ********" \
+&& echo \
+&& export BACKUP_DIR="_k8s-backup" \
 && docker run --rm \
-    -v './_k8s-backup:/backup' \
-    -v './_k8s-backup/etcd:/var/lib/etcd' \
+    -v ./${BACKUP_DIR}:/backup \
+    -v ./${BACKUP_DIR}/etcd:/var/lib/etcd \
     --env ETCDCTL_API=3 \
     'k8s.gcr.io/etcd-amd64:3.1.12' \
     /bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot.db' ; mv /default.etcd/member/ /var/lib/etcd/" \
@@ -758,17 +780,15 @@ echo \
 && echo
 ```
 
-### Restore kubernetes keys & etcd database into a new master node
+#### Step 3: Inject configuration into the new master node
 
-#### Step 1: Inject keys into /etc/kubernetes directory in new master node
-
-Before executing `kubeadm init` you must copy the cluster keys & etcd database into the new master node.
+After creating and installing the new master node, before executing `kubeadm init` you must copy the cluster keys & etcd database into the new master node.
 
 From `mcc`, open terminal at configuration directory `k8s-xxx` (cluster level) and execute:
 
 ```bash
 #
-# Inject keys into /etc/kubernetes directory in new master node
+# Inject configuration into th new master node
 #
 echo \
 && echo "******** START of snippet execution ********" \
@@ -794,11 +814,13 @@ echo \
 && echo
 ```
 
-#### Step 2: Initialize the cluster
+#### Step 4: Initialize the cluster
 
 Initialize a the new master node following the procedures in section [Initialize a new kubernetes cluster](#initialize-a-new-kubernetes-cluster)
 
 After initialization, all previous cluster configuration should work, including admin access keys.
+
+**Reference:**
 
 Ref: https://labs.consol.de/kubernetes/2018/05/25/kubeadm-backup.html
 https://medium.com/@werkjober/how-to-backup-and-restore-etcd-snapshot-on-kubernetes-cluster-c612ce5b6147
