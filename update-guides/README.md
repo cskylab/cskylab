@@ -244,6 +244,7 @@ Application update procedures in this release:
 | [kubeadm-clusters.md](./kubeadm-clusters.md)         |
 
 ---
+
 ## v22-08-21
 
 ### Release notes
