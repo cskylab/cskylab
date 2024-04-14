@@ -1,0 +1,27 @@
+## @section Global parameters
+## Please, note that this will override the parameters, including dependencies, configured to use the global value
+##
+global:
+  ## @param global.imageRegistry Global Docker image registry
+  ##
+  ## imageRegistry: "harbor.cskylab.net/dockerhub"
+  ## @param global.storageClass Global StorageClass for Persistent Volume(s)
+  ##
+  storageClass: {{ .namespace.name }}-postgresql
+  postgresql:
+    ## @param global.postgresql.auth.postgresPassword Password for the "postgres" admin user (overrides `auth.postgresPassword`)
+    ## @param global.postgresql.auth.username Name for a custom user to create (overrides `auth.username`)
+    ## @param global.postgresql.auth.password Password for the custom user to create (overrides `auth.password`)
+    ## @param global.postgresql.auth.database Name for a custom database to create (overrides `auth.database`)
+    ##
+    auth:
+      postgresPassword: "{{ .publishing.password }}"
+## @section PostgreSQL common parameters
+##
+
+## Bitnami PostgreSQL image version
+## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
+## @param image.tag PostgreSQL image tag (immutable tags are recommended)
+##
+image:
+  tag: 14

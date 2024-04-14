@@ -34,7 +34,11 @@ Create chart name and version as used by the chart label.
 Define the name of the secret containing the tokens
 */}}
 {{- define "gitlab-runner.secret" -}}
-{{- default (include "gitlab-runner.fullname" .) .Values.runners.secret | quote -}}
+{{- if .Values.runners.secret -}}
+{{-   tpl .Values.runners.secret $ | quote -}}
+{{- else -}}
+{{-   include "gitlab-runner.fullname" $ -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -59,8 +63,10 @@ Define the image, using .Chart.AppVersion and GitLab Runner image as a default v
 {{- define "gitlab-runner.image" }}
 {{- $appVersion := ternary "bleeding" (print "v" .Chart.AppVersion) (eq .Chart.AppVersion "bleeding") -}}
 {{- $appVersionImageTag := printf "alpine-%s" $appVersion -}}
+{{- $imageRegistry := ternary "" (print .Values.image.registry "/") (eq .Values.image.registry "") -}}
 {{- $imageTag := default $appVersionImageTag .Values.image.tag -}}
-{{- printf "%s/%s:%s" .Values.image.registry .Values.image.image $imageTag }}
+{{- $imageTpl := printf "%s%s:%s" $imageRegistry .Values.image.image $imageTag -}}
+{{- tpl $imageTpl $ }}
 {{- end -}}
 
 {{/*
@@ -104,7 +110,19 @@ is an authentication token or not
 {{- $isAuthToken := false -}}
 {{- $hasRegistrationToken := hasKey .Values "runnerRegistrationToken" -}}
 {{- if $hasRegistrationToken -}}
-{{-   $isAuthToken = (hasPrefix "glrt-" .Values.runnerRegistrationToken) -}}
+{{-   $token := .Values.runnerRegistrationToken -}}
+{{-   $isAuthToken = or (empty $token) (hasPrefix "glrt-" $token) -}}
+{{- else -}}
+{{-   $token := default "" .Values.runnerToken -}}
+{{-   $isAuthToken = and (not (empty $token)) (hasPrefix "glrt-" $token) -}}
 {{- end -}}
 {{- $isAuthToken -}}
+{{- end -}}
+
+{{/*
+Define if session server can be enabled by checking
+if the number of replicas is eq to 1
+*/}}
+{{- define "gitlab-runner.isSessionServerAllowed" -}}
+{{- and (eq (default 1 (.Values.replicas | int64)) 1) .Values.sessionServer .Values.sessionServer.enabled -}}
 {{- end -}}

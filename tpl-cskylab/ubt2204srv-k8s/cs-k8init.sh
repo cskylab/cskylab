@@ -288,7 +288,7 @@ if [[ "${execution_mode}" == "init-master" ]] ||
   echo
   echo "${msg_info} Initializing kubernetes cluster with Kubeadm init"
   echo
-  kubeadm init --config "${setup_dir}/kubeadm-config.yaml"
+  kubeadm init --ignore-preflight-errors=DirAvailable--var-lib-etcd --config "${setup_dir}/kubeadm-config.yaml"
 
   # Copy .kube/config key store for administrative user
   echo

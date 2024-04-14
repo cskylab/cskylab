@@ -175,7 +175,7 @@ sidekiq.pods[{{ $index }}] ({{ $pod.name }}):
 {{ $NOTICE }}
 redis:
     The configuration key `global.redis.password` has been renamed. Please use
-    `globa.redis.auth` instead. This is the source of the `coalesce.go` warning
+    `global.redis.auth` instead. This is the source of the `coalesce.go` warning
     message from Helm as well. For more details, please see:
     https://docs.gitlab.com/charts/installation/upgrade.html#use-of-globalredispassword
 {{- end -}}

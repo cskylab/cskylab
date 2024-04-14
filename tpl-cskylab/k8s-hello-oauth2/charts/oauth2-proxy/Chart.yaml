@@ -1,18 +1,18 @@
 annotations:
   artifacthub.io/changes: |
-    - kind: fixed
-      description: Fix typo for automountServiceAccountToken parameter
+    - kind: changed
+      description: Fix link in readme to existingSecret needed fields
       links:
         - name: Github PR
-          url: https://github.com/oauth2-proxy/manifests/pull/173
+          url: https://github.com/oauth2-proxy/manifests/pull/193
 apiVersion: v2
-appVersion: 7.5.1
+appVersion: 7.6.0
 dependencies:
 - alias: redis
   condition: redis.enabled
   name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: ~18.3.2
+  version: 19.1.0
 description: A reverse proxy that provides authentication with Google, Github or other
   providers
 home: https://oauth2-proxy.github.io/oauth2-proxy/
@@ -39,4 +39,4 @@ name: oauth2-proxy
 sources:
 - https://github.com/oauth2-proxy/oauth2-proxy
 - https://github.com/oauth2-proxy/manifests
-version: 6.19.1
+version: 7.4.1

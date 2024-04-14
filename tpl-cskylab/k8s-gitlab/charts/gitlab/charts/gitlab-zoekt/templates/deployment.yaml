@@ -22,7 +22,7 @@ spec:
         {{- include "gitlab-zoekt.gatewaySelectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: zoekt-gateway
+        - name: zoekt-external-gateway
           securityContext:
             {{- toYaml .Values.gateway.securityContext | nindent 12 }}
           image: {{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}

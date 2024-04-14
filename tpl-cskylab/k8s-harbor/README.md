@@ -1,8 +1,8 @@
 # [Harbor](https://goharbor.io/) registry <!-- omit in toc -->
 
-## v23-11-24 <!-- omit in toc -->
+## v24-04-20 <!-- omit in toc -->
 
-## Helm charts: bitnami/harbor v19.2.1 <!-- omit in toc -->
+## Helm charts: bitnami/harbor v20.1.3 <!-- omit in toc -->
 
 [Harbor](https://goharbor.io/) is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. Harbor, a CNCF Graduated project, delivers compliance, performance, and interoperability to help you consistently and securely manage artifacts across cloud native compute platforms like Kubernetes and Docker.
 
@@ -31,7 +31,9 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
     - [2.- Uninstall harbor namespace](#2--uninstall-harbor-namespace)
     - [3.- Deploy New Postgres Image in a limited namespace](#3--deploy-new-postgres-image-in-a-limited-namespace)
     - [4.- Import PostgreSQL Dump into the new pod](#4--import-postgresql-dump-into-the-new-pod)
-    - [5.- Uninstall \& Reinstall the namespace](#5--uninstall--reinstall-the-namespace)
+    - [5.- Uninstall namespace](#5--uninstall-namespace)
+    - [6.- Update configuration files](#6--update-configuration-files)
+    - [7.- Pull charts \& install](#7--pull-charts--install)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
 - [Reference](#reference)
@@ -420,7 +422,79 @@ To deploy the new version on an empty volume:
 
 - Delete the PostgreSQL data service (view snippets in README.md)
 - Re-Create the PostgreSQL data service (view snippets in README.md)
-- Change the following section of `values-harbor` to update PostgreSQL:
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts (postgresql chart only used for database migration purpose)
+# helm pull bitnami/harbor --version 20.1.3 --untar
+helm pull bitnami/postgresql --version 15.2.0 --untar
+
+EOF
+)"
+```
+
+- Save file
+
+- Pull postgresql chart by running `csdeploy.sh -m pull-charts`
+- Change the following section of `values-postgresql.yaml` to update PostgreSQL:
+
+```yaml
+image:
+  tag: 14
+...
+```
+
+- Deploy the namespace by running `csdeploy.sh -m install`
+
+#### 4.- Import PostgreSQL Dump into the new pod
+With the new Postgres container running with a new volume mount for the data directory, you will use the psql command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
+
+```bash
+kubectl -n {{ .namespace.name }} exec -i postgresql-0 -- /bin/bash -c "PGPASSWORD='{{ .publishing.password }}' psql -U postgres" < postgresql.dump
+```
+
+#### 5.- Uninstall namespace
+
+- Uninstall the namespace by running `csdeploy.sh -m uninstall`
+
+#### 6.- Update configuration files
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts (postgresql chart only used for database migration purpose)
+helm pull bitnami/harbor --version 20.1.3 --untar
+# helm pull bitnami/postgresql --version 15.2.0 --untar
+
+EOF
+)"
+```
+
+- Save file
+
+- Change the following section of `values-harbor.yaml` to update PostgreSQL:
 
 ```yaml
 postgresql:
@@ -428,23 +502,26 @@ postgresql:
   image:
     registry: docker.io
     repository: bitnami/postgresql
-    tag: 13.12.0-debian-11-r57
+    tag: 14
 ...
 ```
 
-- Install the namespace by running `csdeploy.sh -m install`
+- Save file
 
-#### 4.- Import PostgreSQL Dump into the new pod
-With the new Postgres container running with a new volume mount for the data directory, you will use the psql command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
+#### 7.- Pull charts & install
+
+Execute the following commands to pull charts and install namespace:
 
 ```bash
-kubectl -n {{ .namespace.name }} exec -i {{ .namespace.name }}-postgresql-0 -- /bin/bash -c "PGPASSWORD='{{ .publishing.password }}' psql -U postgres" < postgresql.dump
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m install
+
+# Check status
+./csdeploy.sh -l
 ```
-
-#### 5.- Uninstall & Reinstall the namespace
-
-- Uninstall the namespace by running `csdeploy.sh -m uninstall`
-- Install the namespace by running `csdeploy.sh -m install`
 
 ### Utilities
 

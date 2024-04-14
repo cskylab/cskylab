@@ -93,8 +93,9 @@ source_charts="$(
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
-# Charts
-helm pull bitnami/harbor --version 19.2.1 --untar
+# Charts (postgresql chart only used for database migration purpose)
+helm pull bitnami/harbor --version 20.1.3 --untar
+# helm pull bitnami/postgresql --version 15.2.0 --untar
 
 EOF
 )"

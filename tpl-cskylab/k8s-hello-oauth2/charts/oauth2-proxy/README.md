@@ -98,7 +98,7 @@ Parameter | Description | Default
 `config.clientID` | oauth client ID | `""`
 `config.clientSecret` | oauth client secret | `""`
 `config.cookieSecret` | server specific cookie for the secret; create a new one with `openssl rand -base64 32 \| head -c 32 \| base64` | `""`
-`config.existingSecret` | existing Kubernetes secret to use for OAuth2 credentials. See [secret template](https://github.com/oauth2-proxy/manifests/blob/master/helm/oauth2-proxy/templates/secret.yaml) for the required values | `nil`
+`config.existingSecret` | existing Kubernetes secret to use for OAuth2 credentials. See [oauth2-proxy.secrets helper](https://github.com/oauth2-proxy/manifests/blob/main/helm/oauth2-proxy/templates/_helpers.tpl#L157C13-L157C33) for the required values | `nil`
 `config.configFile` | custom [oauth2_proxy.cfg](https://github.com/oauth2-proxy/oauth2-proxy/blob/master/contrib/oauth2-proxy.cfg.example) contents for settings not overridable via environment nor command line | `""`
 `config.existingConfig` | existing Kubernetes configmap to use for the configuration file. See [config template](https://github.com/oauth2-proxy/manifests/blob/master/helm/oauth2-proxy/templates/configmap.yaml) for the required values | `nil`
 `config.cookieName` | The name of the cookie that oauth2-proxy will create. | `""`
@@ -123,9 +123,7 @@ Parameter | Description | Default
 `extraEnv` | key:value list of extra environment variables to give the binary | `[]`
 `extraVolumes` | list of extra volumes | `[]`
 `extraVolumeMounts` | list of extra volumeMounts | `[]`
-`hostAlias.enabled`  | provide extra ip:hostname alias for network name resolution.
-`hostAlias.ip`  | `ip` address `hostAliases.hostname` should resolve to.
-`hostAlias.hostname`  | `hostname` associated to `hostAliases.ip`.
+`hostAliases`  | hostAliases is a list of aliases to be added to /etc/hosts for network name resolution.
 `htpasswdFile.enabled` | enable htpasswd-file option | `false`
 `htpasswdFile.entries` | list of [encrypted user:passwords](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview#command-line-options) | `{}`
 `htpasswdFile.existingSecret` | existing Kubernetes secret to use for OAuth2 htpasswd file | `""`
@@ -149,6 +147,7 @@ Parameter | Description | Default
 `initContainers.waitForRedis.kubectlVersion` | kubectl version to use for the init container | `printf "%s.%s" .Capabilities.KubeVersion.Major (.Capabilities.KubeVersion.Minor | replace "+" "")`
 `initContainers.waitForRedis.securityContext.enabled` | enable Kubernetes security context on container | `true`
 `initContainers.waitForRedis.timeout` | number of seconds | 180
+`initContainers.waitForRedis.resources` | pod resource requests & limits | `{}`
 `livenessProbe.enabled`  | enable Kubernetes livenessProbe. Disable to use oauth2-proxy with Istio mTLS. See [Istio FAQ](https://istio.io/help/faq/security/#k8s-health-checks) | `true`
 `livenessProbe.initialDelaySeconds` | number of seconds | 0
 `livenessProbe.timeoutSeconds` | number of seconds | 1
@@ -179,6 +178,7 @@ Parameter | Description | Default
 `serviceAccount.enabled` | create a service account | `true`
 `serviceAccount.name` | the service account name | ``
 `serviceAccount.annotations` | (optional) annotations for the service account | `{}`
+`strategy` | configure deployment strategy | `{}`
 `tolerations` | list of node taints to tolerate | `[]`
 `securityContext.enabled` | enable Kubernetes security context on container | `true`
 `proxyVarsAsSecrets` | choose between environment values or secrets for setting up OAUTH2_PROXY variables. When set to false, remember to add the variables OAUTH2_PROXY_CLIENT_ID, OAUTH2_PROXY_CLIENT_SECRET, OAUTH2_PROXY_COOKIE_SECRET in extraEnv | `true`

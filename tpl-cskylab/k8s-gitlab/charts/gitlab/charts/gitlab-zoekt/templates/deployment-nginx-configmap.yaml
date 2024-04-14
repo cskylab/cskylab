@@ -44,6 +44,8 @@ data:
               {{- with .Values.gateway }}
               proxy_pass http{{ .tls.certificate.enabled | ternary "s" "" }}://$backend_gateway;
               {{- end }}
+
+              proxy_read_timeout 30m;
             }
 
             location ~ ^/nodes/([^/]+)/(.*) {
@@ -52,6 +54,7 @@ data:
               {{- end }}
 
               proxy_pass   $target_host;
+              proxy_read_timeout 30m;
             }
         }
     }

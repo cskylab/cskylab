@@ -2,7 +2,7 @@
 
 ## Virtual data center in-a-box
 
-**v23-11-24**
+**v24-04-20**
 
 
 [cSkyLab](https://www.cskylab.com/) is a virtual data center model that allows fast application deployment and gives you the choice to scale up your services in any combination of private, public or hybrid cloud.

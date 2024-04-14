@@ -10,7 +10,7 @@ metadata:
     {{- include "gitlab.commonLabels" . | nindent 4 }}
 spec:
   entryPoints:
-    - gitlab-shell
+    - {{ .Values.traefik.entrypoint }}
   routes:
   - match: HostSNI(`*`)
     services:

@@ -6,17 +6,17 @@
 
 _tplname: ubt2204srv-mcc
 _tpldescription: Ubuntu server 22.04 Mission Control Center
-_tplversion: 23-11-24
+_tplversion: 24-04-20
 
 #
 # Values to override
 #
 
 # Kubernetes version for kubectl
-k8s_version: "1.28.2-00"
+k8s_version: "1.29.3-1.1"
 
 # Go version
-go_version: "go1.21.4.linux-amd64.tar.gz"
+go_version: "go1.22.2.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:

@@ -14,6 +14,10 @@ helm install gitlab-zoekt .
 lefthook install
 ```
 
+## Detailed documentation
+
+- [How to enable LoadBalancer](doc/load_balancer.md)
+
 ## Decision Making
 
 Changes to this repository are first reviewed using the [merge request workflow](https://about.gitlab.com/handbook/engineering/development/enablement/systems/distribution/merge_requests.html) then merged by project maintainers.
@@ -42,6 +46,5 @@ All changes need to result in a working chart, and the impact of the change in d
 
 | Username |
 | -- |
-| @dgruzd |
 | @terrichu |
 | @johnmason |

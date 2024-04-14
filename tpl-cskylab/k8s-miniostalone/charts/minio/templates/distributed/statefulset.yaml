@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{- if (eq .Values.mode "distributed") }}
 {{- $fullname := include "common.names.fullname" . }}
 {{- $headlessService := printf "%s-headless" (include "common.names.fullname" .) | trunc 63 }}
-{{- $releaseNamespace := .Release.Namespace }}
+{{- $releaseNamespace := include "common.names.namespace" . }}
 {{- $clusterDomain := .Values.clusterDomain }}
 {{- $apiPort := toString .Values.containerPorts.api }}
 {{- $replicaCount := int .Values.statefulset.replicaCount }}
@@ -61,6 +61,7 @@ spec:
       {{- if .Values.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
       {{- if .Values.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
       {{- end }}
@@ -73,8 +74,11 @@ spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName | quote }}
       {{- end }}
+      {{- if .Values.runtimeClassName }}
+      runtimeClassName: {{ .Values.runtimeClassName | quote }}
+      {{- end}}
       {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.podSecurityContext "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
@@ -100,8 +104,13 @@ spec:
           securityContext: {{- .Values.volumePermissions.containerSecurityContext | toYaml | nindent 12 }}
           {{- if .Values.volumePermissions.resources }}
           resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
+          {{- else if ne .Values.volumePermissions.resourcesPreset "none" }}
+          resources: {{- include "common.resources.preset" (dict "type" .Values.volumePermissions.resourcesPreset) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
             {{- if and .Values.persistence.enabled (gt $drivesPerNode 1) }}
             {{- range $diskId := until $drivesPerNode }}
             - name: data-{{ $diskId }}
@@ -118,7 +127,7 @@ spec:
           image: {{ include "minio.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.containerSecurityContext "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.command "context" $) | nindent 12 }}
@@ -180,7 +189,11 @@ spec:
               value: {{ .Values.tls.mountPath | quote }}
             - name: MINIO_CONSOLE_PORT_NUMBER
               value: {{ .Values.containerPorts.console | quote }}
+            - name: MINIO_API_PORT_NUMBER
+              value: {{ .Values.containerPorts.api | quote }}
             {{- end }}
+            - name: MINIO_DATA_DIR
+              value: {{ $mountPath | quote }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -240,11 +253,22 @@ spec:
           {{- end }}
           {{- if .Values.resources }}
           resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- else if ne .Values.resourcesPreset "none" }}
+          resources: {{- include "common.resources.preset" (dict "type" .Values.resourcesPreset) | nindent 12 }}
           {{- end }}
           {{- if .Values.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/minio/tmp
+              subPath: app-tmp-dir
+            - name: empty-dir
+              mountPath: /.mc
+              subPath: app-mc-dir
             {{- if .Values.auth.useCredentialsFiles }}
             - name: minio-credentials
               mountPath: /opt/bitnami/minio/secrets/
@@ -269,6 +293,8 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: empty-dir
+          emptyDir: {}
         {{- if .Values.auth.useCredentialsFiles }}
         - name: minio-credentials
           secret:

@@ -6,7 +6,7 @@
 
 _tplname: k8s-hello-oauth2
 _tpldescription: Kubernetes oauth2-proxy example app
-_tplversion: 23-11-24
+_tplversion: 24-04-20
 
 #
 # Values to override

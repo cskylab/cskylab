@@ -16,10 +16,6 @@ data:
     }
 
     http {
-        upstream dynamic_index_server {
-          server 127.0.0.1:{{ .Values.dynamicIndexserver.listen.port }};
-        }
-
         upstream indexer {
           server 127.0.0.1:{{ .Values.indexer.listen.port }};
         }
@@ -56,11 +52,6 @@ data:
             location = /metrics {
               auth_basic off;
               proxy_pass http://webserver/metrics;
-            }
-
-            location /index {
-              proxy_pass http://dynamic_index_server;
-              proxy_read_timeout 30m;
             }
 
             location = /indexer/metrics {
