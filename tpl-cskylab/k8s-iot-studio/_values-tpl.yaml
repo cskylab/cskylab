@@ -6,7 +6,7 @@
 
 _tplname: k8s-iot-studio
 _tpldescription: Kubernetes IOT Studio
-_tplversion: 99-99-99
+_tplversion: 24-04-20
 
 #
 # Values to override

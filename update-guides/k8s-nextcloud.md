@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-04-20](#v24-04-20)
   - [Background](#background)
   - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
@@ -69,7 +69,7 @@
 
 ---
 
-## v99-99-99
+## v24-04-20
 
 ### Background
 
@@ -138,7 +138,7 @@ EOF
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v24-04-20 <!-- omit in toc -->
 
 ## Helm charts: nextcloud/nextcloud v4.6.5 bitnami/mariadb v18.0.1 <!-- omit in toc -->
 ```

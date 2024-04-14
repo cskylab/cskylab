@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-04-20](#v24-04-20)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update configuration files](#1--update-configuration-files)
@@ -54,7 +54,7 @@
   - [Reference](#reference-7)
 
 ---
-## v99-99-99
+## v24-04-20
 
 ### Background
 
@@ -93,7 +93,7 @@ EOF
 - Edit `README.md` configuration file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v24-04-20 <!-- omit in toc -->
 
 ## Helm charts: ingress-nginx/ingress-nginx v4.10.0 <!-- omit in toc -->
 ```

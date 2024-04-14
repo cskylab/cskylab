@@ -1,6 +1,6 @@
 # Kubernetes MinIO Operator <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v24-04-20 <!-- omit in toc -->
 
 ## Helm charts: minio/operator v5.0.14 <!-- omit in toc -->
 

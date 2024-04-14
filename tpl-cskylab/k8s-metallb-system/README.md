@@ -1,6 +1,6 @@
 # MetalLB Load-balancer for kubernetes<!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v24-04-20 <!-- omit in toc -->
 
 ## MetalLB manifest version v0.14.4 <!-- omit in toc -->
 

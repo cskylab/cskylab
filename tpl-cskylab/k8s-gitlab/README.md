@@ -1,6 +1,6 @@
 # Gitlab open DevOps platform <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v24-04-20 <!-- omit in toc -->
 
 ## Helm charts<!-- omit in toc -->
 

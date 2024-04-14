@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-04-20](#v24-04-20)
   - [Background](#background)
     - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
@@ -87,7 +87,7 @@
 
 ---
 
-## v99-99-99
+## v24-04-20
 
 ### Background
 
@@ -215,7 +215,7 @@ kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.y
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` md
-## v99-99-99 <!-- omit in toc -->
+## v24-04-20 <!-- omit in toc -->
 
 ## Helm charts<!-- omit in toc -->
 

@@ -2,7 +2,7 @@
 
 # cSkyLab Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-04-20](#v24-04-20)
   - [Release notes](#release-notes)
   - [Ubuntu 22.04 Servers Updates](#ubuntu-2204-servers-updates)
   - [Application updates](#application-updates)
@@ -35,11 +35,11 @@
 
 ---
 
-## v99-99-99
+## v24-04-20
 
 ### Release notes
 
-Welcome to cSkyLab release of v99-99-99. This release performs updates in all namespaces and upgrades kubernetes clusters to version 1.29.x.
+Welcome to cSkyLab release of v24-04-20. This release performs updates in all namespaces and upgrades kubernetes clusters to version 1.29.x.
 
 ### Ubuntu 22.04 Servers Updates
 

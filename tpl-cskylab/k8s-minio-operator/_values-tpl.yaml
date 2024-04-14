@@ -6,7 +6,7 @@
 
 _tplname: k8s-minio-operator
 _tpldescription: Kubernetes MinIO Operator
-_tplversion: 99-99-99
+_tplversion: 24-04-20
 
 #
 # Values to override
