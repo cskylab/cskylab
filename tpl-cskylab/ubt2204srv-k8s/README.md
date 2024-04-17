@@ -774,7 +774,7 @@ echo \
     --env ETCDCTL_API=3 \
     'k8s.gcr.io/etcd-amd64:3.1.12' \
     /bin/sh -c "etcdctl snapshot restore '/backup/etcd-snapshot.db' ; mv /default.etcd/member/ /var/lib/etcd/" \
-&& sudo chown -R ${USER}:${USER} ./${BACKUP_DIR} \
+&& sudo chown -R ${USER} ./${BACKUP_DIR} \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
