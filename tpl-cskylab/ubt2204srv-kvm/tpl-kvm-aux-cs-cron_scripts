@@ -44,6 +44,10 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 ## Download cloud images
 ## “At 02:00.”
+## Ubuntu noble server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
+## Ubuntu jammy server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
 ## Ubuntu focal server
 0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
 ## Ubuntu bionic server
