@@ -49,9 +49,11 @@ Welcome to cSkyLab release of v99-99-99. This release performs updates in all na
 
 Updated server templates in this release:
 
-| Template       |                                     |
-| -------------- | ----------------------------------- |
-| ubt2204srv-kvm | KVM host on Ubuntu Server 22.04 LTS |
+| Template       |                                                                          |
+| -------------- | ------------------------------------------------------------------------ |
+| ubt2204srv-kvm | KVM host on Ubuntu Server 22.04 LTS                                      |
+| ubt2204srv-mcc | Management host (mcc: Mission Control Center) on Ubuntu Server 22.04 LTS |
+
 
 New Kubernetes master / node templates incorporate snippets to backup and restore cluster configuration into new master node machines.
 
