@@ -264,9 +264,9 @@ echo \
 
 Mosquitto broker is configured to listen port 1883 for unencrypted MQTT and port 8883 for encrypted TLS over MQTT. You must provide a mosquitto certificate with the appropriate SAN's for your mosquitto server and customize the following files in your deployment:
 
-- `mosquito_ca.crt`: Public certificate of the CA that issues the mosquitto certificate.
-- `mosquito_cert.crt`: Public certificate of the mosquitto certificate.
-- `mosquito_cert.key`: Private key of the mosquitto certificate.
+- `mosquitto_ca.crt`: Public certificate of the CA that issues the mosquitto certificate.
+- `mosquitto_cert.crt`: Public certificate of the mosquitto certificate.
+- `mosquitto_cert.key`: Private key of the mosquitto certificate.
 
 To can create this certificate with your opnsense server see section **Create and sign certificates** in your opnsense cluster documentation README.md file.
 
@@ -306,7 +306,7 @@ echo \
 && ls -lah ./mosquitto_* \
 && echo \
 && echo \
-&& touch ./mosquitto_passwd.txt && rm ./mosquitto_passwd.txt && touch ./mosquitto_passwd.txt \
+&& touch ./mosquitto_passwd.txt && rm ./mosquitto_passwd.txt && touch ./mosquitto_passwd.txt && chmod 0700 ./mosquitto_passwd.txt \
 && mosquitto_passwd -b mosquitto_passwd.txt ${RB_MOSQUITTO_USER} ${RB_MOSQUITTO_PASSWORD}  \
 && echo \
 && echo "******** Injecting files in mosquitto configuration" \
@@ -324,7 +324,7 @@ echo \
 
 >**Note:** You must have installed mosquitto package to generate the obfuscated password. Keep the original password to authenticate at login.
 
-To learn more about **mosquito_passwd** see https://mosquitto.org/man/mosquitto_passwd-1.html
+To learn more about **mosquitto_passwd** see https://mosquitto.org/man/mosquitto_passwd-1.html
 
 ## How-to guides
 
