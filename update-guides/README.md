@@ -4,15 +4,15 @@
 
 - [v99-99-99](#v99-99-99)
   - [Release notes](#release-notes)
-  - [Ubuntu 22.04 Servers Updates](#ubuntu-2204-servers-updates)
+  - [Ubuntu 24.04 Servers](#ubuntu-2404-servers)
   - [Application updates](#application-updates)
 - [v24-04-20](#v24-04-20)
   - [Release notes](#release-notes-1)
-  - [Ubuntu 22.04 Servers Updates](#ubuntu-2204-servers-updates-1)
+  - [Ubuntu 22.04 Servers Updates](#ubuntu-2204-servers-updates)
   - [Application updates](#application-updates-1)
 - [v23-11-24](#v23-11-24)
   - [Release notes](#release-notes-2)
-  - [Ubuntu 22.04 Servers Updates](#ubuntu-2204-servers-updates-2)
+  - [Ubuntu 22.04 Servers Updates](#ubuntu-2204-servers-updates-1)
   - [Application updates](#application-updates-2)
 - [v23-04-27](#v23-04-27)
   - [Release notes](#release-notes-3)
@@ -45,17 +45,19 @@
 
 Welcome to cSkyLab release of v99-99-99. This release performs updates in all namespaces and upgrades kubernetes clusters to version 1.29.x.
 
-### Ubuntu 22.04 Servers Updates
+### Ubuntu 24.04 Servers
 
-Updated server templates in this release:
+New server templates in this release:
 
-| Template       |                                                                          |
-| -------------- | ------------------------------------------------------------------------ |
-| ubt2204srv-kvm | KVM host on Ubuntu Server 22.04 LTS                                      |
-| ubt2204srv-mcc | Management host (mcc: Mission Control Center) on Ubuntu Server 22.04 LTS |
-
-
-New Kubernetes master / node templates incorporate snippets to backup and restore cluster configuration into new master node machines.
+| Template         |                                                                          |
+| ---------------- | ------------------------------------------------------------------------ |
+| ubt2404srv-naked | Basic installation of Ubuntu Server 24.04 LTS                            |
+| ubt2404srv-ca    | Certification Authority on Ubuntu Server 24.04 LTS                       |
+| ubt2404srv-dns   | Bind 9 DNS Services on Ubuntu Server 24.04 LTS                           |
+| ubt2404srv-lvm   | Basic installation of Ubuntu Server 24.04 LTS with LVM storage services  |
+| ubt2404srv-k8s   | Kubernetes master / node on Ubuntu Server 24.04 LTS                      |
+| ubt2404srv-kvm   | KVM host on Ubuntu Server 24.04 LTS                                      |
+| ubt2404srv-mcc   | Management host (mcc: Mission Control Center) on Ubuntu Server 24.04 LTS |
 
 To perform any upgrade, you must first update your tpl-cskylab template library in your installation git repository by running:
 
