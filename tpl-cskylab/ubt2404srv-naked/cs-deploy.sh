@@ -263,7 +263,7 @@ if [[ "${execution_mode}" == "net-config" ]]; then
   done
   # Deploy /etc/netplan/01-netcfg.yaml
   cp -v "${setup_dir}"/01-netcfg.yaml /etc/netplan/01-netcfg.yaml
-  chmod 644 /etc/netplan/01-netcfg.yaml
+  chmod 600 /etc/netplan/01-netcfg.yaml
   chown root:root /etc/netplan/01-netcfg.yaml
 
   # Flag that signals that cloud-init should not run
@@ -370,12 +370,16 @@ if [[ "${execution_mode}" == "install" ]] ||
   echo
   echo "${msg_info} Set keyboard to '${system_keyboard}'"
   echo
-  localectl set-x11-keymap "${system_keyboard}"
-  echo
-  echo "${msg_info} Locale status:"
-  echo
-  localectl status
-  echo
+    cp -v "${setup_dir}"/keyboard /etc/default/keyboard
+    chmod 644 /etc/default/keyboard
+    chown root:root /etc/default/keyboard
+    loadkeys es
+  # localectl set-x11-keymap "${system_keyboard}"
+  # echo
+  # echo "${msg_info} Locale status:"
+  # echo
+  # localectl status
+  # echo
 
   # Deploy sudoers file
   if [[ -f "${setup_dir}"/domadminsudo ]]; then
