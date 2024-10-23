@@ -1,0 +1,14 @@
+# KEYBOARD CONFIGURATION FILE
+
+# Consult the keyboard(5) manual page.
+
+XKBMODEL="pc105"
+# XKBLAYOUT="us"
+XKBLAYOUT="{{ .machine.systemkeyboard }}"
+XKBVARIANT=""
+XKBOPTIONS=""
+
+BACKSPACE="guess"
+
+# vconsole.conf parameter
+KEYMAP={{ .machine.systemkeyboard }}

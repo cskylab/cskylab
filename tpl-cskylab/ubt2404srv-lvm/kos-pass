@@ -1,0 +1,1 @@
+{{ .machine.localadminusername }}:{{ .machine.localadminpassword }}

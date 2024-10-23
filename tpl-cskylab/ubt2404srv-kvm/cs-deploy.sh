@@ -272,8 +272,8 @@ if [[ "${execution_mode}" == "net-config" ]]; then
   fi
 
   # Change systemd-resolved
-  rm -f /etc/resolv.conf
-  ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+	rm -f /etc/resolv.conf
+	ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
   # Try netplan network configuration and reboot
   if [[ ${quiet_mode} == false ]]; then
@@ -341,15 +341,44 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   apt -y install chrony
 
-  #
-  # CA section
-  #
+  # Install Restic Backup
+  echo
+  echo "${msg_info} Install Restic backup"
+  echo
+  apt -y install restic && restic self-update
 
-  # rng-tools
+  # Install MinIO client
   echo
-  echo "${msg_info} Installing rng-tools package for entropy"
+  echo "${msg_info} Install MinIO client"
   echo
-  apt -y install rng-tools
+
+  wget https://dl.min.io/client/mc/release/linux-amd64/mc
+  cp -v ./mc /usr/local/sbin/
+  rm ./mc
+  chown root:root /usr/local/sbin/mc
+  chmod 755 /usr/local/sbin/mc
+
+  # Install kvm
+  echo
+  echo "${msg_info} Install kvm"
+  echo
+  apt -y install qemu-kvm
+  apt -y install libvirt-daemon-system
+  apt -y install libvirt-clients
+  apt -y install bridge-utils
+  apt -y install virtinst
+  apt -y install libguestfs-tools
+  # Bug libguestfs https://bugzilla.redhat.com/show_bug.cgi?id=1591617
+  echo dash >/usr/lib/x86_64-linux-gnu/guestfs/supermin.d/zz-dash-packages
+  apt -y install libosinfo-bin
+  apt -y install cloud-image-utils
+
+  # Smartmontools
+  # https://help.ubuntu.com/community/Smartmontools
+  echo
+  echo "${msg_info} Install smartmontools"
+  echo
+  apt -y install smartmontools
 
 fi
 

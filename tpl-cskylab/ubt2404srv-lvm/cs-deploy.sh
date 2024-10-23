@@ -341,15 +341,11 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   apt -y install chrony
 
-  #
-  # CA section
-  #
-
-  # rng-tools
+  # Install Restic Backup
   echo
-  echo "${msg_info} Installing rng-tools package for entropy"
+  echo "${msg_info} Install Restic backup"
   echo
-  apt -y install rng-tools
+  apt -y install restic && restic self-update
 
 fi
 

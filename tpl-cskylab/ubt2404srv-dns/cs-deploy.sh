@@ -190,8 +190,21 @@ fi
 # Validate execution modes
 case "${execution_mode}" in
 "net-config") ;;
-"install") ;;
-"config") ;;
+"install" | "config")
+  # Check DNS configuration files exist
+  if ! [[ -f "${setup_dir}"/named.conf.options ]]; then
+    echo
+    echo "${msg_error} Bind9 configuration file [named.conf.options] must exist." >&2
+    echo
+    exit 1
+  fi
+  if ! [[ -f "${setup_dir}"/named.conf.local ]]; then
+    echo
+    echo "${msg_error} Bind9 configuration file [named.conf.local] must exist." >&2
+    echo
+    exit 1
+  fi
+  ;;
 *)
   echo
   echo "${msg_error} Execution mode not valid ${command_line}" >&2
@@ -342,7 +355,7 @@ if [[ "${execution_mode}" == "install" ]]; then
   apt -y install chrony
 
   #
-  # CA section
+  # DNS package section
   #
 
   # rng-tools
@@ -350,6 +363,12 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo "${msg_info} Installing rng-tools package for entropy"
   echo
   apt -y install rng-tools
+
+  # bind9
+  echo
+  echo "${msg_info} Installing bind9 package"
+  echo
+  apt -y install bind9
 
 fi
 
@@ -408,6 +427,10 @@ if [[ "${execution_mode}" == "install" ]] ||
   echo "${msg_info} UFW firewall configuration"
   echo
   ufw allow ssh
+  # DNS: Check if bind9 has been installed (/etc/bind/ exist)
+  if [[ -d /etc/bind/ ]]; then
+    ufw allow bind9
+  fi
   # ufw disable
   ufw --force enable
   ufw status
@@ -541,6 +564,49 @@ if [[ "${execution_mode}" == "install" ]] ||
   # Restart cron.server and diplay status
   systemctl restart cron.service
   systemctl status cron.service
+
+  #
+  # DNS config section
+  #
+
+  # Check if bind9 has been installed (/etc/bind/ exist)
+  if [[ -d /etc/bind/ ]]; then
+
+    # Deploy bind9 configuration files
+    echo
+    echo "${msg_info}  Deploy bind9 configuration files"
+    echo
+
+    cp -v "${setup_dir}"/named.conf.options /etc/bind/named.conf.options
+    chmod 644 /etc/bind/named.conf.options
+    chown root:bind /etc/bind/named.conf.options
+
+    cp -v "${setup_dir}"/named.conf.local /etc/bind/named.conf.local
+    chmod 644 /etc/bind/named.conf.local
+    chown root:bind /etc/bind/named.conf.local
+
+    # DNS static primary zones
+    # Check for [db.*.dns] files in setup directory
+    shopt -s nullglob
+    declare -a dns_files=("${setup_dir}"/db.*.dns)
+    shopt -u nullglob
+    count=${#dns_files[@]}
+    if ((count > 0)); then
+      echo
+      echo "${msg_info}  Deploying static primary zones [db.*.dns files]"
+      echo
+      cp -v "${setup_dir}"/db.*.dns /etc/bind/
+      chmod 644 /etc/bind/db.*.dns
+      chown root:root /etc/bind/db.*.dns
+    fi
+
+    # Bind9 restart and zone configuration check
+    echo
+    echo "${msg_info} Restart bind9 service and zone file syntax checking"
+    echo
+    systemctl restart bind9.service
+    named-checkconf -zj
+  fi
 fi
 
 ################################################################################

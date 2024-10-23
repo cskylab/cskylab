@@ -1,0 +1,70 @@
+//
+// 	named.conf.options for dns stealth master
+//
+//	Copyright © 2024 cSkyLab.com
+//
+
+masters "authNS" {
+	// dns-stealth-master.cskylab.net (Master)
+	192.168.82.71;
+	// dns1.cskylab.net (AuthSlave)   
+	192.168.82.72; 
+	// dns2.cskylab.net (AuthSlave)
+	192.168.82.73; 
+}; 
+
+acl "aclRFC1918" {
+	10.0.0.0/8;
+	172.16.0.0/12;
+	192.168.0.0/16;
+};
+
+options {
+	directory "/var/cache/bind";
+
+// DNS stealth master server configuration options
+	// Access to cache
+	allow-query-cache { none; };
+
+	// Address allowed to query (Internal)
+	allow-query { "aclRFC1918"; };
+	// Address allowed to query (External)
+	// allow-query { any; };
+
+	// NOTIFY only to also-notify IPs
+	notify explicit;
+	// Explicit also-notify clause
+	also-notify { "authNS"; };
+	// Address allowed to notify (Required in Kubernetes)
+	allow-notify { "aclRFC1918"; };
+	// Do not provide recursive service
+	recursion no;
+	// IP addresses of slave servers allowed to transfer
+	allow-transfer { "aclRFC1918"; };
+
+
+	// If there is a firewall between you and nameservers you want
+	// to talk to, you may need to fix the firewall to allow multiple
+	// ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+	// If your ISP provided one or more IP addresses for stable 
+	// nameservers, you probably want to use them as forwarders.  
+	// Uncomment the following block, and insert the addresses replacing 
+	// the all-0's placeholder.
+
+	// forwarders 	{
+	//  			8.8.8.8;	# Google
+	// 				8.8.4.4;	# Google
+	//  			};
+
+	//========================================================================
+	// If BIND logs error messages about the root key being expired,
+	// you will need to update your keys.  See https://www.isc.org/bind-keys
+	//========================================================================
+	dnssec-validation auto;
+
+	auth-nxdomain no;    # conform to RFC1035
+	listen-on-v6 { any; };
+};
+
+// EOF (This line is required)

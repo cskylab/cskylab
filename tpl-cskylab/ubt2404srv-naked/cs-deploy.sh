@@ -212,7 +212,7 @@ if [[ ${quiet_mode} == false ]]; then
   echo
   echo "      ${command_line}"
   echo
-  echo "  Ubuntu 22.04 server naked installation"
+  echo "  Ubuntu 24.04 server naked installation"
   echo
   echo "      Execution mode:     ${execution_mode}"
   if [[ "${execution_mode}" = "net-config" ]]; then

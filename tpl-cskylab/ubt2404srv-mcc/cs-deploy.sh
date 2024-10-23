@@ -3,7 +3,7 @@
 #
 #   cs-deploy.sh
 #
-#       Machine installation and configuration deployment
+#       Mission Control Center
 #
 #   Copyright © 2024 cSkyLab.com
 #
@@ -34,9 +34,8 @@ usage_msg="$(
   cat <<EOF
 
 Purpose:
-  Machine installation and configuration deployment.
-  This script is usually called by csinject.sh when executing Inject & Deploy
-  operations. Exceptionally, it can also be run manually from inside the machine.
+  Mission Control Center.
+  Datacenter Management Machine.
 
 Usage:
   sudo cs-deploy.sh [-m <execution_mode>] [-h] [-q]
@@ -93,6 +92,12 @@ system_keyboard="{{ .machine.systemkeyboard }}"
 
 # Netplan Try timeout in seconds
 netplan_timeout="30"
+
+# Kubernetes version for kubectl
+k8s_version="{{ .k8s_version }}"
+
+# Go version
+go_version="{{ .go_version }}"
 
 # Color code for messages
 # https://robotmoon.com/256-colors/
@@ -318,6 +323,7 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   echo "${msg_info} Update installed packages"
   echo
+
   apt update
   apt -y dist-upgrade
   apt -y autoremove
@@ -329,6 +335,7 @@ if [[ "${execution_mode}" == "install" ]]; then
     echo
     echo "${msg_info} Deploy /etc/locale.gen"
     echo
+
     cp -v "${setup_dir}"/locale.gen /etc/locale.gen
     chown root:root /etc/locale.gen
     chmod 0644 /etc/locale.gen
@@ -339,17 +346,175 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   echo "${msg_info} Install Chrony time synchronization"
   echo
+
   apt -y install chrony
 
-  #
-  # CA section
-  #
+  # Install Docker-ce
+  echo
+  echo "${msg_info} Install Docker-ce"
+  echo
 
-  # rng-tools
+  apt -y install \
+    apt-transport-https \
+    ca-certificates \
+    software-properties-common \
+    curl \
+    gnupg \
+    lsb-release
+
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+  apt update
+  apt -y install docker-ce
+
+  # Add user to docker administration group
+  usermod -aG docker "${sudo_username}"
+
+  # Install OpenJDK JRE
+  # echo
+  # echo "${msg_info} Install Java Runtime Environment"
+  # echo
+  # apt -y install default-jre
+
+  # Install shfmt shell formatter
   echo
-  echo "${msg_info} Installing rng-tools package for entropy"
+  echo "${msg_info} Install shfmt shell formatter"
   echo
-  apt -y install rng-tools
+  snap install shfmt
+
+  # Install jq JSON processor
+  echo
+  echo "${msg_info} Install jq JSON processor"
+  echo
+  apt -y install jq
+
+  # Install go
+  echo
+  echo "${msg_info} Install Go"
+  echo
+
+  wget https://golang.org/dl/"${go_version}"
+
+  # Remove previous installation
+  if [[ -d /usr/local/go ]]; then
+    rm -rf /usr/local/go
+  fi
+
+  # Extract files in /usr/local
+  tar -C /usr/local -xzf "${go_version}"
+
+  # Remove downloaded file
+  rm ./"${go_version}"
+
+  # Update ./.bashrc to remove line (space needed behind /usr/local/go/bin )
+  sed -i "\#/usr/local/go/bin #d" ./.bashrc
+  # Update ./.bashrc
+  # shellcheck disable=SC2016
+  echo 'export PATH=$PATH:/usr/local/go/bin:${HOME}/go/bin' | sudo tee -a ./.bashrc
+
+  # Install direnv shell extension
+  echo
+  echo "${msg_info} Install direnv shell extension"
+  echo
+
+  curl -sfL https://direnv.net/install.sh | bash
+
+  # Update ./.bashrc to remove line (space needed behind /usr/local/go/bin )
+  sed -i "\#direnv #d" ./.bashrc
+  # Update ./.bashrc
+  # shellcheck disable=SC2016
+  echo 'eval "$(direnv hook bash)"' | sudo tee -a ./.bashrc
+
+  # Install kubectl
+  echo
+  echo "${msg_info} Install kubectl"
+  echo
+
+  # Install kubectl
+  # Ref.: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
+  apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+  apt-get update
+
+  set +e
+  apt-mark unhold kubectl
+  set -e
+  apt-get install -y kubectl="${k8s_version}"
+  kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
+  apt-mark hold kubectl
+
+  # Install helm
+  echo
+  echo "${msg_info} Install Helm"
+  echo
+  snap install helm --classic
+
+  # Install tree directory
+  echo
+  echo "${msg_info} Install tree directory"
+  echo
+  apt -y install tree
+
+  # Install restic
+  echo
+  echo "${msg_info} Install restic"
+  echo
+  snap install restic --classic
+
+  # Install MinIO client
+  echo
+  echo "${msg_info} Install MinIO client"
+  echo
+
+  wget https://dl.min.io/client/mc/release/linux-amd64/mc
+  cp -v ./mc /usr/local/sbin/
+  rm ./mc
+  chown root:root /usr/local/sbin/mc
+  chmod 755 /usr/local/sbin/mc
+
+  # Install shellcheck
+  echo
+  echo "${msg_info} Install shellcheck"
+  echo
+  snap install shellcheck
+
+  # Install kustomize
+  echo
+  echo "${msg_info} Install kustomize"
+  echo
+  snap install kustomize
+
+  # Install wireguard
+  # Ref: https://www.wireguard.com/install/#ubuntu-module-tools
+  echo
+  echo "${msg_info} Install wireguard"
+  echo
+  apt -y install wireguard
+
+  # Install keycloak admin
+  # Ref: https://cloudinfrastructureservices.co.uk/install-keycloak-sso-on-ubuntu-20-04/
+  apt-get install default-jdk -y
+  wget https://github.com/keycloak/keycloak/releases/download/22.0.1/keycloak-22.0.1.tar.gz
+  tar -xvzf keycloak-22.0.1.tar.gz
+  mv keycloak-22.0.1 /opt/keycloak
+  chmod +x /opt/keycloak/bin/
+  echo "# Keycloak admin" | sudo tee -a "$HOME/.bashrc"
+  # shellcheck disable=SC2016
+  echo 'export PATH=/opt/keycloak/bin:$PATH' | sudo tee -a "$HOME/.bashrc"
+
+  # Install influxdb client
+  # Ref: https://docs.influxdata.com/influxdb/v2.7/tools/influx-cli/?t=Linux
+  wget https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.7.3-linux-amd64.tar.gz
+  
+  ##
+  ## WARNING!!!!!
+  ## tar must be run manually WITHOUT SUDO
+  ##
+  # tar -xvzf ./influxdb2-client-2.7.3-linux-amd64.tar.gz
+  # sudo mv ./influx /usr/local/bin/
 
 fi
 
@@ -401,6 +566,18 @@ if [[ "${execution_mode}" == "install" ]] ||
     chown root:root /etc/sudoers.d/domadminsudo
     chmod 0440 /etc/sudoers.d/domadminsudo
     visudo -c
+  fi
+
+  # Git profile configuration
+  if [[ -f "${setup_dir}"/gitconfig ]]; then
+    echo
+    echo "${msg_info} Git profile configuration"
+    echo
+
+    cp -v "${setup_dir}"/gitconfig /home/"${sudo_username}"/.gitconfig
+    chown "${sudo_username}":"${sudo_username}" /home/"${sudo_username}"/.gitconfig
+    chmod 0644 /home/"${sudo_username}"/.gitconfig
+
   fi
 
   # UFW firewall configuration

@@ -1,0 +1,51 @@
+;    
+;   168.192.in-addr.arpa. DNS zone
+;               
+;   Copyright © 2024 cSkyLab.com
+;
+
+;
+; TTL directive for zone
+;       (3600-1h)  	default 
+;       (600-10min) for changes
+;       (60-1min) 	for changes and internal
+;
+$TTL	60
+
+;
+; ORIGIN directive (Base domain name)
+;
+$ORIGIN 168.192.in-addr.arpa.
+
+;
+; Start of Authority record - UPDATE SERIAL!!! YYYYMMDDNN
+;
+@		IN	SOA	dns1.cskylab.net. hostmaster.cskylab.net. (
+				2020112000	; Serial
+				7200		; Refresh (2 hours)
+				900			; Retry (15 minutes)
+				1209600		; Expire (2 weeks)
+				60	        ; Minimum negative caching
+            	)
+
+;
+; Name server records
+;
+@		IN	NS	dns1.cskylab.net.
+@		IN	NS	dns2.cskylab.net.
+
+;
+; PTR records (Address and $ORIGIN in ascencding order)
+;
+
+$ORIGIN 82.168.192.in-addr.arpa.
+
+71       PTR		dns-stealth-master.cskylab.net.
+72       PTR		dns1.cskylab.net.
+73       PTR		dns2.cskylab.net.
+74       PTR		dns-cache.cskylab.net.
+
+; $ORIGIN xx.168.192.in-addr.arpa.
+
+; 1       PTR		xxx.cskylab.net.
+; 2       PTR		yyy.cskylab.net.

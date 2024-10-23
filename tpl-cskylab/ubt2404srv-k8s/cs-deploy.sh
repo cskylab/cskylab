@@ -94,6 +94,9 @@ system_keyboard="{{ .machine.systemkeyboard }}"
 # Netplan Try timeout in seconds
 netplan_timeout="30"
 
+# Kubernetes version to install
+k8s_version="{{ .k8s_version }}"
+
 # Color code for messages
 # https://robotmoon.com/256-colors/
 msg_info="$(tput setaf 2 -T xterm-256color)[$(hostname)] [$(basename "$0")] $(date -R)
@@ -341,15 +344,88 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   apt -y install chrony
 
+  # Install Restic Backup
+  echo
+  echo "${msg_info} Install Restic backup"
+  echo
+  apt -y install restic && restic self-update
+
   #
-  # CA section
+  # Kubernetes section
   #
 
-  # rng-tools
   echo
-  echo "${msg_info} Installing rng-tools package for entropy"
+  echo "${msg_info} Install ContainerD and Kubernetes"
   echo
-  apt -y install rng-tools
+
+  # Disable swap
+  swapoff -a
+  sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+
+  # Install ContainerD
+  # Ref.: https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+
+  # Install and configure prerequisites
+
+  cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
+
+  modprobe overlay
+  modprobe br_netfilter
+
+  # Setup required sysctl params, these persist across reboots.
+  cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+
+  # Apply sysctl params without reboot
+  sysctl --system
+
+  # (Install containerd)
+  apt-get update && sudo apt-get install -y containerd
+
+  # Configure containerd
+  if ! [[ -d /etc/containerd/ ]]; then
+    mkdir -p /etc/containerd
+  fi
+
+  containerd config default >/etc/containerd/config.toml
+
+  # Update /etc/containerd/config.toml
+  sed -i "s/SystemdCgroup = false/SystemdCgroup = true/g" /etc/containerd/config.toml
+
+  # Restart containerd
+  systemctl restart containerd
+
+  # Install kubeadm, kubelet and kubectl
+  # Ref.: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
+  apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+  apt-get update
+  apt-get install -y kubelet="${k8s_version}" kubeadm="${k8s_version}" kubectl="${k8s_version}"
+  apt-mark hold kubelet kubeadm kubectl
+
+  # Restarting the kubelet is required
+  systemctl daemon-reload
+  systemctl restart kubelet
+
+  # Install etcdctl
+  # Ref: https://etcd.io/docs/v3.5/install/
+  cd
+  wget https://github.com/etcd-io/etcd/releases/download/v3.5.13/etcd-v3.5.13-linux-amd64.tar.gz
+  tar xvf etcd-v3.5.13-linux-amd64.tar.gz
+  cd etcd-v3.5.13-linux-amd64
+  mv etcdctl /usr/local/bin/
+  mv etcdutl /usr/local/bin/
+  cd
+  rm -r ./etcd-v3.5.13-linux-amd64
+  rm etcd-v3.5.13-linux-amd64.tar.gz
 
 fi
 
@@ -408,8 +484,32 @@ if [[ "${execution_mode}" == "install" ]] ||
   echo "${msg_info} UFW firewall configuration"
   echo
   ufw allow ssh
-  # ufw disable
-  ufw --force enable
+
+  ##
+  ## Kubernetes ufw required ports
+  ##
+
+  # ## Required ports on master node
+  # ufw allow 6443/tcp  # Kubernetes API server
+  # ufw allow 2379/tcp  # etcd server client API
+  # ufw allow 2380/tcp  # etcd server client API
+  # ufw allow 10250/tcp # Kubelet API
+  # ufw allow 10259/tcp # kube-scheduler
+  # ufw allow 10257/tcp # kube-controller-manager
+
+  # ## Required ports on worker nodes
+  # ufw allow 10250/tcp       # Kubelet API
+  # ufw allow 30000:32767/tcp # NodePort Services
+
+  # ## Required ports for MetalLB
+  # ## https://metallb.universe.tf
+  # ufw allow 7472/tcp  # MetalLB
+  # ufw allow 7472/udp  # MetalLB
+  # ufw allow 7946/tcp  # MetalLB
+  # ufw allow 7946/udp  # MetalLB
+
+  ufw disable
+  # ufw --force enable
   ufw status
 
   # Change local passwords
