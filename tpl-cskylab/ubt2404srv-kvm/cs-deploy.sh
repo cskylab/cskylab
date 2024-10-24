@@ -345,7 +345,7 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   echo "${msg_info} Install Restic backup"
   echo
-  apt -y install restic && restic self-update
+  apt -y install restic
 
   # Install MinIO client
   echo
