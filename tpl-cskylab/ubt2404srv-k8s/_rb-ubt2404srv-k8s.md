@@ -39,7 +39,8 @@ echo \
 #
 
 ## Kubernetes version to install
-k8s_version: "1.29.3-1.1"
+k8s_version: "1.31.2-1.1"
+k8s_repository: "v1.31"
 
 ## Machine related configuration values
 machine:

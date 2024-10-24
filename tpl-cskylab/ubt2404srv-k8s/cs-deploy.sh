@@ -364,6 +364,7 @@ if [[ "${execution_mode}" == "install" ]]; then
 
   # Install ContainerD
   # Ref.: https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+  # Ref.: https://www.nocentino.com/posts/2021-12-27-installing-and-configuring-containerd-as-a-kubernetes-container-runtime/
 
   # Install and configure prerequisites
 
@@ -404,8 +405,8 @@ EOF
   # Install kubeadm, kubelet and kubectl
   # Ref.: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
   apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
-  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ .k8s_repository }}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/{{ .k8s_repository }}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
   apt-get update
   apt-get install -y kubelet="${k8s_version}" kubeadm="${k8s_version}" kubectl="${k8s_version}"
@@ -418,14 +419,14 @@ EOF
   # Install etcdctl
   # Ref: https://etcd.io/docs/v3.5/install/
   cd
-  wget https://github.com/etcd-io/etcd/releases/download/v3.5.13/etcd-v3.5.13-linux-amd64.tar.gz
-  tar xvf etcd-v3.5.13-linux-amd64.tar.gz
-  cd etcd-v3.5.13-linux-amd64
+  wget https://github.com/etcd-io/etcd/releases/download/v3.5.16/etcd-v3.5.16-linux-amd64.tar.gz
+  tar xvf etcd-v3.5.16-linux-amd64.tar.gz
+  cd etcd-v3.5.16-linux-amd64
   mv etcdctl /usr/local/bin/
   mv etcdutl /usr/local/bin/
   cd
-  rm -r ./etcd-v3.5.13-linux-amd64
-  rm etcd-v3.5.13-linux-amd64.tar.gz
+  rm -r ./etcd-v3.5.16-linux-amd64
+  rm etcd-v3.5.16-linux-amd64.tar.gz
 
 fi
 
