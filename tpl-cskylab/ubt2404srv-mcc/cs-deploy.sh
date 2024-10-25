@@ -434,8 +434,8 @@ if [[ "${execution_mode}" == "install" ]]; then
   # Install kubectl
   # Ref.: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
   apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
-  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ .k8s_repository }}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/{{ .k8s_repository }}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
   apt-get update
 
@@ -458,11 +458,18 @@ if [[ "${execution_mode}" == "install" ]]; then
   echo
   apt -y install tree
 
-  # Install restic
+  # # Install Restic (snap)
+  # echo
+  # echo "${msg_info} Install restic"
+  # echo
+  # snap install restic --classic
+
+  # Install Restic (apt)
   echo
-  echo "${msg_info} Install restic"
+  echo "${msg_info} Install Restic backup"
   echo
-  snap install restic --classic
+  apt -y install restic
+
 
   # Install MinIO client
   echo
@@ -497,9 +504,9 @@ if [[ "${execution_mode}" == "install" ]]; then
   # Install keycloak admin
   # Ref: https://cloudinfrastructureservices.co.uk/install-keycloak-sso-on-ubuntu-20-04/
   apt-get install default-jdk -y
-  wget https://github.com/keycloak/keycloak/releases/download/22.0.1/keycloak-22.0.1.tar.gz
-  tar -xvzf keycloak-22.0.1.tar.gz
-  mv keycloak-22.0.1 /opt/keycloak
+  wget https://github.com/keycloak/keycloak/releases/download/26.0.2/keycloak-26.0.2.tar.gz
+  tar -xvzf keycloak-26.0.2.tar.gz
+  mv keycloak-26.0.2 /opt/keycloak
   chmod +x /opt/keycloak/bin/
   echo "# Keycloak admin" | sudo tee -a "$HOME/.bashrc"
   # shellcheck disable=SC2016
@@ -507,13 +514,13 @@ if [[ "${execution_mode}" == "install" ]]; then
 
   # Install influxdb client
   # Ref: https://docs.influxdata.com/influxdb/v2.7/tools/influx-cli/?t=Linux
-  wget https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.7.3-linux-amd64.tar.gz
+  wget https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.7.5-linux-amd64.tar.gz
   
   ##
   ## WARNING!!!!!
   ## tar must be run manually WITHOUT SUDO
   ##
-  # tar -xvzf ./influxdb2-client-2.7.3-linux-amd64.tar.gz
+  # tar -xvzf ./influxdb2-client-2.7.5-linux-amd64.tar.gz
   # sudo mv ./influx /usr/local/bin/
 
 fi

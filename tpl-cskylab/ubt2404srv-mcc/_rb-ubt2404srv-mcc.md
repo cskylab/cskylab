@@ -38,11 +38,12 @@ echo \
 # Values to override
 #
 
-## Kubernetes version for kubectl
-k8s_version: "1.29.3-1.1"
+## Kubernetes version to install
+k8s_version: "1.31.2-1.1"
+k8s_repository: "v1.31"
 
-## Go version
-go_version: "go1.22.2.linux-amd64.tar.gz"
+# Go version
+go_version: "go1.23.2.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:
