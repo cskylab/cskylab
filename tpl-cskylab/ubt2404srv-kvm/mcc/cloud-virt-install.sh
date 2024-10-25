@@ -16,4 +16,5 @@ virt-install --name "${vmachine_name}" \
     --os-variant ubuntu24.04 \
     --network network=br_sys \
     --console pty,target_type=serial \
-    --noautoconsole
+    --noautoconsole \
+    --import

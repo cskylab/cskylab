@@ -22,4 +22,5 @@ virt-install --name "${vmachine_name}" \
     --network network=br_usr \
     --network network=br_setup \
     --console pty,target_type=serial \
-    --noautoconsole
+    --noautoconsole \
+    --import
