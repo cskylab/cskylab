@@ -4,11 +4,11 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99 (k8s v1.31.x-00)](#v99-99-99-k8s-v131x-00)
+- [v99-99-99 (From v1.29 to v1.30)](#v99-99-99-from-v129-to-v130)
   - [Prerequisites](#prerequisites)
     - [Containerd configuration (Not neccesary after Ubuntu 22.04)](#containerd-configuration-not-neccesary-after-ubuntu-2204)
     - [Change kubernetes package repository](#change-kubernetes-package-repository)
-  - [k8s version 1.29.x-\*](#k8s-version-129x-)
+  - [k8s version 1.30.x-\*](#k8s-version-130x-)
   - [List available kubeadm versions](#list-available-kubeadm-versions)
   - [Upgrading k8s master node](#upgrading-k8s-master-node)
   - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes)
@@ -23,7 +23,7 @@
   - [Prerequisites](#prerequisites-1)
     - [Containerd configuration (Not neccesary in Ubuntu 22.04)](#containerd-configuration-not-neccesary-in-ubuntu-2204)
     - [Change kubernetes package repository](#change-kubernetes-package-repository-1)
-  - [k8s version 1.29.x-\*](#k8s-version-129x--1)
+  - [k8s version 1.29.x-\*](#k8s-version-129x-)
   - [List available kubeadm versions](#list-available-kubeadm-versions-1)
   - [Upgrading k8s master node](#upgrading-k8s-master-node-1)
   - [Upgrading k8s worker nodes](#upgrading-k8s-worker-nodes-1)
@@ -126,7 +126,7 @@
 
 ---
 
-## v99-99-99 (k8s v1.31.x-00)
+## v99-99-99 (From v1.29 to v1.30)
 
 ### Prerequisites 
 
@@ -163,13 +163,13 @@ cgroupDriver: systemd
 >**Important from September 13, 2023!**: The new kubernetes package repository must be introduced in all nodes (master & workers):
 
 ```bash
-sudo echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+sudo echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 ```
 
-### k8s version 1.29.x-*
+### k8s version 1.30.x-*
 
-This page explains how to upgrade a Kubernetes cluster created with kubeadm from version 1.28.x to version 1.29.x, and from version 1.29.x to 1.29.y (where y > x). Skipping MINOR versions when upgrading is unsupported.
+This page explains how to upgrade a Kubernetes cluster created with kubeadm from version 1.29.x to version 1.30.x, and from version 1.30.x to 1.30.y (where y > x). Skipping MINOR versions when upgrading is unsupported.
 
 The complete procedures to upgrade kubeadm kubernetes clusters are covered in: <https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade>
 
@@ -178,9 +178,10 @@ The complete procedures to upgrade kubeadm kubernetes clusters are covered in: <
 To view all available kubeadm versions:
 
 ```bash
-# Find the latest 1.29 version in the list.
-# It should look like 1.29.x-*, where x is the latest patch.
-sudo apt update && sudo apt-cache madison kubeadm
+# Find the latest 1.30 version in the list.
+# It should look like 1.30.x-*, where x is the latest patch.
+sudo apt update
+sudo apt-cache madison kubeadm
 ```
 
 ### Upgrading k8s master node
@@ -193,7 +194,7 @@ Connect to k8s master machine and follow the next steps:
 # Kubeadm upgrade
 sudo apt-mark unhold kubeadm \
   && sudo apt-get update \
-  && sudo apt-get install -y kubeadm=1.29.x-* \
+  && sudo apt-get install -y kubeadm=1.30.6-1.1 \
   && sudo apt-mark hold kubeadm \
   && sudo apt-mark showhold
 ```
@@ -218,13 +219,13 @@ sudo kubeadm upgrade plan
 
 ```bash
 # replace x with the patch version you picked for this upgrade
-sudo kubeadm upgrade apply v1.29.x
+sudo kubeadm upgrade apply v1.30.6
 ```
 
 - Once the command finishes you should see:
 
 ```bash
-[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.29.x". Enjoy!
+[upgrade/successful] SUCCESS! Your cluster was upgraded to "v1.30.x". Enjoy!
 ```
 
 Upgrade Weave Net CNI provider:
@@ -238,10 +239,10 @@ kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/we
 
 ```bash
 # Upgrade kubelet and kubectl
-# replace x in 1.29.x-* with the latest patch version
+# replace x in 1.30.x-* with the latest patch version
 sudo apt-mark unhold kubelet kubectl \
   && sudo apt-get update \
-  && sudo apt-get install -y kubelet=1.29.x-* kubectl=1.29.x-* \
+  && sudo apt-get install -y kubelet=1.30.6-1.1 kubectl=1.30.6-1.1 \
   && sudo apt-mark hold kubelet kubectl \
   && sudo apt-mark showhold
 ```
@@ -290,7 +291,7 @@ Connect to k8s worker node machine and follow the next steps:
 # Kubeadm upgrade
 sudo apt-mark unhold kubeadm \
   && sudo apt-get update \
-  && sudo apt-get install -y kubeadm=1.29.x-* \
+  && sudo apt-get install -y kubeadm=1.30.6-1.1 \
   && sudo apt-mark hold kubeadm \
   && sudo apt-mark showhold
 ```
@@ -321,7 +322,7 @@ sudo kubeadm upgrade node
 # Upgrade kubelet and kubectl
 sudo apt-mark unhold kubelet kubectl \
   && sudo apt-get update \
-  && sudo apt-get install -y kubelet=1.29.x-* kubectl=1.29.x-* \
+  && sudo apt-get install -y kubelet=1.30.6-1.1 kubectl=1.30.6-1.1 \
   && sudo apt-mark hold kubelet kubectl \
   && sudo apt-mark showhold
 ```
@@ -377,10 +378,10 @@ kubectl get nodes
 
 ```bash
 # Kubernetes version for kubectl
-k8s_version="1.29.x-*"
+k8s_version="1.30.6-1.1"
 
 # Go version
-go_version="go1.22.2.linux-amd64.tar.gz"
+go_version="go1.23.2.linux-amd64.tar.gz"
 ```
 
 - Save the file, commit changes and synchronize repository with remote
