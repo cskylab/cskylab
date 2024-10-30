@@ -9,6 +9,7 @@ metadata:
     {{- include "gitlab.commonLabels" . | nindent 4 }}
 data:
   mail_room.yml: |
+    {{- $sentinel_password := include "gitlab.redis.sentinel.password" . }}
     :health_check:
       :address: 0.0.0.0
       :port: 8080
@@ -51,6 +52,9 @@ data:
           :queue: email_receiver
           :worker: EmailReceiverWorker
           {{- include "gitlab.mailroom.redis.sentinels" $ | nindent 10 }}
+          {{- if $sentinel_password }}
+          :sentinel_password: "{{ $sentinel_password }}"
+          {{- end }}
         {{- else if eq .deliveryMethod "webhook" }}
         :delivery_method: postback
         :delivery_options:
@@ -67,6 +71,9 @@ data:
           :redis_url: {{ include "gitlab.mailroom.redis.url" . }}
           :namespace: mail_room:gitlab
           {{- include "gitlab.mailroom.redis.sentinels" . | nindent 10 }}
+          {{- if $sentinel_password }}
+          :sentinel_password: "{{ $sentinel_password }}"
+          {{- end }}
       {{- if .Values.global.appConfig.serviceDeskEmail.enabled }}
       -
         {{- with .Values.global.appConfig.serviceDeskEmail }}
@@ -106,6 +113,9 @@ data:
           :queue: service_desk_email_receiver
           :worker: ServiceDeskEmailReceiverWorker
           {{- include "gitlab.mailroom.redis.sentinels" $ | nindent 10 }}
+          {{- if $sentinel_password }}
+          :sentinel_password: "{{ $sentinel_password }}"
+          {{- end }}
         {{- else if eq .deliveryMethod "webhook" }}
         :delivery_method: postback
         :delivery_options:
@@ -122,9 +132,12 @@ data:
           :redis_url: {{ template "gitlab.redis.url" . }}
           :namespace: mail_room:gitlab
           {{- include "gitlab.mailroom.redis.sentinels" . | nindent 10 }}
+          {{- if $sentinel_password }}
+          :sentinel_password: "{{ $sentinel_password }}"
+          {{- end }}
       {{- end }}
 
   configure: |
-    {{- include "gitlab.scripts.configure.secrets" (dict "required" "mailroom" "optional" "redis") | nindent 4 }}
+    {{- include "gitlab.scripts.configure.secrets" (dict "required" "mailroom" "optional" "redis redis-sentinel") | nindent 4 }}
 # Leave this here - This line denotes end of block to the parser.
 {{- end }}

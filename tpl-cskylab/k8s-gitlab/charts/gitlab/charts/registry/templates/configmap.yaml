@@ -10,7 +10,7 @@ metadata:
 data:
   configure: |-
     {{- .Values.init.script | nindent 4 }}
-  config.yml: |
+  config.yml.tpl: |
     version: 0.1
     log:
       {{ toYaml .Values.log | nindent 6 | trim }}
@@ -155,7 +155,7 @@ data:
     {{- include "registry.redis.config" $ | nindent 4}}
 
   # minimal configuration, in order to do database migrations
-  migrations-config.yml: |
+  migrations-config.yml.tpl: |
     version: 0.1
     log:
       {{ toYaml .Values.log | nindent 6 | trim }}

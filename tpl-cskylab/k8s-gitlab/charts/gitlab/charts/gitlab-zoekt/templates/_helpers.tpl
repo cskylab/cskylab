@@ -69,6 +69,17 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Gateway image
+*/}}
+{{- define "gitlab-zoekt.gatewayImage" -}}
+{{- if .Values.gateway.image.digest }}
+{{- printf "%s@%s" .Values.gateway.image.repository .Values.gateway.image.digest }}
+{{- else }}
+{{- printf "%s:%s" .Values.gateway.image.repository .Values.gateway.image.tag }}
+{{- end }}
+{{- end}}
+
+{{/*
 External Gateway svc name
 */}}
 {{- define "gitlab-zoekt.gatewaySvc" -}}

@@ -1,6 +1,6 @@
 image:
   repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry
-  tag: 'v3.90.0-gitlab'
+  tag: 'v4.10.0-gitlab'
   # pullPolicy: IfNotPresent
   # pullSecrets: []
 
@@ -132,12 +132,15 @@ init:
   resources:
     requests:
       cpu: 50m
-  containerSecurityContext: {}
+  containerSecurityContext:
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    capabilities:
+      drop: [ "ALL" ]
   script: |-
     if [ -e /config/accesskey ] ; then
-      sed -e 's@ACCESS_KEY@'"$(cat /config/accesskey)"'@' -e 's@SECRET_KEY@'"$(cat /config/secretkey)"'@' /config/config.yml > /registry/config.yml
-    else
-      cp -v -r -L /config/config.yml  /registry/config.yml
+      sed -i -e 's@ACCESS_KEY@'"$(cat /config/accesskey)"'@' -e 's@SECRET_KEY@'"$(cat /config/secretkey)"'@' /registry/config.yml
     fi
     # Place the `http.secret` value from the kubernetes secret
     sed -i -e 's@HTTP_SECRET@'"$(cat /config/httpSecret)"'@' /registry/config.yml
@@ -182,9 +185,13 @@ init:
     if [ -f /config/database_password ] ; then
       sed -i -e 's@DB_PASSWORD_FILE@'"$(cat /config/database_password)"'@' /registry/config.yml
     fi
-    # Insert Redis password, if enabled
+    # Insert Redis(cache) password, if enabled
     if [ -f /config/registry/redis-password ] ; then
       sed -i -e 's@REDIS_CACHE_PASSWORD@'"$(cat /config/registry/redis-password)"'@' /registry/config.yml
+    fi
+    # Insert Redis(rate-limiter) password, if enabled
+    if [ -f /config/registry/redis-rateLimiting-password ] ; then
+      sed -i -e 's@REDIS_RATE_LIMITING_PASSWORD@'"$(cat /config/registry/redis-rateLimiting-password)"'@' /registry/config.yml
     fi
     # Copy the database TLS connection files to the expected location and set permissions
     if [ -d /config/ssl ]; then
@@ -215,6 +222,9 @@ nodeSelector: {}
 affinity:
   podAntiAffinity:
     topologyKey:
+  nodeAffinity:
+    key:
+    values:
 
 # Protocol/Host only. '/jwt/auth' will be appended.
 authEndpoint:
@@ -342,10 +352,16 @@ securityContext:
   runAsUser: 1000
   fsGroup: 1000
   # fsGroupChangePolicy: OnRootMismatch
+  seccompProfile:
+    type: "RuntimeDefault"
 
 ## Allow to overwrite the specific security context under which the container is running.
 containerSecurityContext:
   runAsUser: 1000
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  capabilities:
+    drop: [ "ALL" ]
 
 # Disable reporting by default
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#reporting
@@ -365,13 +381,17 @@ profiling:
 
 serviceAccount:
   create: false
+  ## Used for local override of global ServiceAccount token mounting
+  # automountServiceAccountToken: false
+
+
 
 # Disable metadata database by default
-# NOTE: The metadata database is a beta feature from version 16.4 and later. Please
-# review the [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/423459)
+# Please review the [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/423459)
 # and associated documentation before enabling this feature.
 # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#database
 database:
+  configure: false
   enabled: false
   user: registry
   password: {}
@@ -384,12 +404,23 @@ database:
     enabled: true
     activeDeadlineSeconds: 3600
     backoffLimit: 6
+    # Annotations for the job
+    annotations: {}
+  backgroundMigrations:
+    enabled: false
 
-# Redis cache to be used in conjunction with the metadata database.
-# NOTE: This is an experimental feature and must not be used in production.
-# https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#cache-1
 redis:
+  # Redis cache to be used in conjunction with the metadata database.
+  # NOTE: This is an experimental feature and must not be used in production.
+  # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md#cache-1
   cache:
+    enabled: false
+    password:
+      enabled: false
+  # Redis rate-limiter connection settings
+  # https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md?ref_type=heads#ratelimiter
+  # TODO: add behavior settings https://gitlab.com/gitlab-org/container-registry/-/issues/1224
+  rateLimiting:
     enabled: false
     password:
       enabled: false

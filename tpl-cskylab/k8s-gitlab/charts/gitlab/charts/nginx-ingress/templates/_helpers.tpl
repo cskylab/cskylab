@@ -110,6 +110,24 @@ Create the name of the backend service account to use - only used when podsecuri
 {{- end -}}
 {{- end -}}
 
+
+{{/*
+Set if the default ServiceAccount token should be mounted by Kubernetes or not.
+
+Default is 'true'
+*/}}
+{{- define "ingress-nginx.automountServiceAccountToken" -}}
+automountServiceAccountToken: {{ pluck "automountServiceAccountToken" .Values.serviceAccount .Values.global.serviceAccount | first }}
+{{- end -}}
+{{/*
+Set if the default ServiceAccount token should be mounted by Kubernetes or not.
+
+Default is 'true'
+*/}}
+{{- define "ingress-nginx.defaultBackend.automountServiceAccountToken" -}}
+automountServiceAccountToken: {{ pluck "automountServiceAccountToken" .Values.defaultBackend.serviceAccount .Values.global.serviceAccount | first }}
+{{- end -}}
+
 {{/*
 Return the appropriate apiGroup for PodSecurityPolicy.
 */}}

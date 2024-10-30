@@ -21,6 +21,14 @@ rules:
       - list
       - watch
   - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - list
+      - watch
+      - get
+  - apiGroups:
       - coordination.k8s.io
     resources:
       - leases

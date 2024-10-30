@@ -158,6 +158,10 @@ data:
     {{- if .Values.rateLimitTLSDomainBurst }}
     rate-limit-tls-domain-burst={{ .Values.rateLimitTLSDomainBurst }}
     {{- end }}
+    {{- if not (empty .Values.rateLimitSubnetsAllowList) }}
+    {{- $rateLimitSubnetsAllowList := .Values.rateLimitSubnetsAllowList | join "," }}
+    rate-limit-subnets-allow-list={{ $rateLimitSubnetsAllowList }}
+    {{- end }}
     {{- if .Values.serverReadTimeout }}
     server-read-timeout={{ .Values.serverReadTimeout }}
     {{- end }}
@@ -169,6 +173,9 @@ data:
     {{- end }}
     {{- if .Values.serverKeepAlive }}
     server-keep-alive={{ .Values.serverKeepAlive }}
+    {{- end }}
+    {{- if $.Values.global.pages.namespaceInPath }}
+    namespace-in-path={{ $.Values.global.pages.namespaceInPath }}
     {{- end }}
   configure: |
     {{- include "gitlab.scripts.configure.secrets" (dict "required" "pages" "optional" "none") | nindent 4 }}

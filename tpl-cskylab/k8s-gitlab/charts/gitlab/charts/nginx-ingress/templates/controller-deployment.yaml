@@ -79,7 +79,13 @@ spec:
       containers:
         - name: {{ .Values.controller.containerName }}
           {{- with .Values.controller.image }}
-          image: "{{- if .repository -}}{{ .repository }}{{ else }}{{ .registry }}/{{ .image }}{{- end -}}:{{ .tag }}{{ include "gitlab.image.tagSuffix" $ }}{{- if (.digest) -}} @{{.digest}} {{- end -}}"
+          {{- $tag := .tag }}
+          {{- $digest := .digest }}
+          {{- if and (not $.Values.rbac.create) (not .disableFallback) }}
+          {{- $tag = .fallbackTag }}
+          {{- $digest = .fallbackDigest }}
+          {{- end }}
+          image: "{{- if .repository -}}{{ .repository }}{{ else }}{{ .registry }}/{{ .image }}{{- end -}}:{{ $tag }}{{ include "gitlab.image.tagSuffix" $ }}{{- if ($digest) -}} @{{$digest}} {{- end -}}"
           {{- end }}
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
         {{- if .Values.controller.lifecycle }}
@@ -146,6 +152,11 @@ spec:
                 - NET_BIND_SERVICE
             runAsUser: {{ .Values.controller.image.runAsUser }}
             allowPrivilegeEscalation: {{ .Values.controller.image.allowPrivilegeEscalation }}
+            runAsNonRoot: {{ .Values.controller.image.runAsNonRoot }}
+            {{- if .Values.controller.image.seccompProfile }}
+            seccompProfile:
+              {{- toYaml .Values.controller.image.seccompProfile | nindent 14 }}
+            {{- end }}
           env:
             - name: POD_NAME
               valueFrom:

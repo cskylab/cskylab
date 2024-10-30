@@ -16,7 +16,7 @@ metadata:
     {{- toYaml .Values.deploymentAnnotations | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and (not .Values.hpa) (not (eq nil .Values.replicas)) }}
+  {{- if and (not .Values.hpa) (not (quote .Values.replicas | empty)) }}
   replicas: {{ .Values.replicas }}
   {{- end}}
   revisionHistoryLimit: {{ default 10 .Values.revisionHistoryLimit }}
@@ -33,8 +33,8 @@ spec:
         chart: {{ include "gitlab-runner.chart" . }}
         release: "{{ .Release.Name }}"
         heritage: "{{ .Release.Service }}"
-        {{- range $key, $value := .Values.podLabels }}
-        {{   $key }}: {{ $value | quote }}
+        {{- if .Values.podLabels }}
+        {{- tpl (toYaml .Values.podLabels) . | nindent 8 }}
         {{- end }}
       annotations:
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
@@ -60,7 +60,7 @@ spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName | quote }}
       {{- end }}
-      serviceAccountName: {{ if .Values.rbac.create }}{{ include "gitlab-runner.fullname" . }}{{ else }}"{{ .Values.rbac.serviceAccountName }}"{{ end }}
+      serviceAccountName: {{ include "gitlab-runner.serviceAccountName" . }}
       containers:
       - name: {{ include "gitlab-runner.fullname" . }}
         image: {{ include "gitlab-runner.image" . }}
@@ -72,24 +72,30 @@ spec:
         {{- else }}
         command: ["/usr/bin/dumb-init", "--", "/bin/bash", "/configmaps/entrypoint"]
         {{- end }}
+        {{- if .Values.deploymentLifecycle }}
+        lifecycle: {{ toYaml .Values.deploymentLifecycle | nindent 10 }}
+        {{- end }}
         env:
         {{- include "gitlab-runner.runner-env-vars" . | indent 8 }}
         livenessProbe:
           exec:
-            command: ["/bin/bash", "/configmaps/check-live"]
-          initialDelaySeconds: 60
-          timeoutSeconds: {{ default 3 .Values.probeTimeoutSeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
+            command: ["/bin/bash", "/configmaps/check-live", "{{ default 4 .Values.probeTimeoutSeconds | add -1 | max 1 }}"]
+          initialDelaySeconds: {{ default 60 .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ default 4 .Values.probeTimeoutSeconds }}
+          periodSeconds: {{ default 10 .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ default 1 .Values.livenessProbe.successThreshold }}
+          failureThreshold: {{ default 3 .Values.livenessProbe.failureThreshold }}
+          {{- if .Values.livenessProbe.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.livenessProbe.terminationGracePeriodSeconds }}
+          {{- end }}
         readinessProbe:
           exec:
             command: ["/usr/bin/pgrep","gitlab.*runner"]
-          initialDelaySeconds: 10
-          timeoutSeconds: {{ default 3 .Values.probeTimeoutSeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
+          initialDelaySeconds: {{ default 60 .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ default 4 .Values.probeTimeoutSeconds }}
+          periodSeconds: {{ default 10 .Values.readinessProbe.periodSeconds }}
+          successThreshold: {{ default 1 .Values.readinessProbe.successThreshold }}
+          failureThreshold: {{ default 3 .Values.readinessProbe.failureThreshold }}
         ports:
         - name: {{ .Values.metrics.portName | quote }}
           containerPort: {{ .Values.metrics.port }}
@@ -168,6 +174,9 @@ spec:
     {{- if .Values.topologySpreadConstraints }}
       topologySpreadConstraints:
 {{ toYaml .Values.topologySpreadConstraints | indent 8 }}
+    {{- end }}
+    {{- if .Values.runtimeClassName }}
+      runtimeClassName: {{ .Values.runtimeClassName | quote }}
     {{- end }}
     {{- if .Values.nodeSelector }}
       nodeSelector:

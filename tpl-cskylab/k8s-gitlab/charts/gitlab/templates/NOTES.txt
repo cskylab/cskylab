@@ -16,13 +16,30 @@ https://docs.gitlab.com/charts/installation/index.html#use-the-reference-archite
 
 {{- /* PostgreSQL minimum version change */}}
 {{ $NOTICE }}
-The minimum required version of PostgreSQL is now 13. See https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/doc/installation/upgrade.md for more details.
+The minimum required version of PostgreSQL is now 14. See https://docs.gitlab.com/charts/installation/upgrade.html for more details.
 
-{{- /* If the Container Registry metadata database is enabled, note it is not production ready */}}
+{{- /* If the Container Registry metadata database is enabled */}}
 {{- if eq .Values.registry.database.enabled true }}
 {{ $WARNING }}
-The Container Registry metadata database has been enabled. Please note that it is an experimental feature and must not be used in production.
+The Container Registry metadata database has been enabled.
+Carefully review the documentation https://docs.gitlab.com/charts/charts/registry/metadata_database.html before enabling the registry database in production!
+If you encounter a problem with either the import or operation of the registry, please add a comment in the feedback issue https://gitlab.com/gitlab-org/gitlab/-/issues/423459#supported-feature-status.
 {{- end }}
+
+{{- /* Notifications endpoint threshold should use maxretries instead */ -}}
+{{- $usesThreshold := false }}
+{{- range $v := .Values.global.registry.notifications.endpoints }}
+    {{- if hasKey $v "threshold" }}
+        {{- $usesThreshold = true}}
+    {{- end }}
+{{- end }}
+{{- if $usesThreshold }}
+{{ $NOTICE }}
+registry:
+    The configuration of `global.registry.notifications.endpoints[].threshold` has been deprecated and is planned for removal in GitLab 18.0.
+    Please use `global.registry.notifications.endpoints[].maxretries` instead https://gitlab.com/gitlab-org/container-registry/-/issues/1243.
+{{- end -}}
+{{- /* END gitlab.deprecate.registry.notifications.endpoints.threshold */}}
 
 {{- /* If shared-secrets is disable, manual secret creation will be needed */}}
 {{- if not (index .Values "shared-secrets").enabled }}
@@ -120,56 +137,6 @@ Using `PAGES_UPDATE_LEGACY_STORAGE` environment variable with bundled Pages serv
 {{-   end }}
 {{- end }}
 
-{{- /* Deprecation notice for `gitlab.deprecate.kas.privateApi.tls.enabled` setting */}}
-{{- if eq true $.Values.gitlab.kas.privateApi.tls.enabled }}
-{{ $NOTICE }}
-kas:
-    The configuration of `gitlab.kas.privateApi.tls.enabled` has moved. Please use `global.kas.tls.enabled` instead.
-    Other components of the GitLab chart other than KAS also need to be configured to talk to KAS via TLS.
-    With a global value the chart can take care of these configurations without the need for other specific values.
-{{- end }}
-
-{{- /* Deprecation notice for `gitlab.deprecate.kas.privateApi.tls.secretName` setting */}}
-{{- if hasKey $.Values.gitlab.kas.privateApi.tls "secretName" }}
-{{ $NOTICE }}
-kas:
-    The configuration of `gitlab.kas.privateApi.tls.secretName` has moved. Please use `global.kas.tls.secretName` instead.
-    Other components of the GitLab chart other than KAS also need to be configured to talk to KAS via TLS.
-    With a global value the chart can take care of these configurations without the need for other specific values.
-{{- end }}
-
-{{- /* Deprecation notice for `gitlab.deprecate.sidekiq.queueSelector` setting */}}
-{{- if and (hasKey .Values.gitlab.sidekiq "queueSelector") (eq true .Values.gitlab.sidekiq.queueSelector) -}}
-{{ $NOTICE }}
-sidekiq:
-    The configuration of 'gitlab.sidekiq.queueSelector' should be removed. Please follow the steps at https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html#start-multiple-processes, to run Sidekiq with multiple processes while listening to all queues.
-{{- end }}
-
-{{- /* Deprecation notice for `gitlab.deprecate.sidekiq.pods.queueSelector` setting */}}
-{{- range $index, $pod := .Values.gitlab.sidekiq.pods -}}
-{{-   if and (hasKey $pod "queueSelector") -}}
-{{ $NOTICE }}
-sidekiq.pods[{{ $index }}] ({{ $pod.name }}):
-    The configuration of 'gitlab.sidekiq.pods[{{ $index }}].queueSelector' should be removed. Please follow the steps at https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html#start-multiple-processes, to run Sidekiq with multiple processes while listening to all queues.
-{{-   end -}}
-{{- end }}
-
-{{- /* Deprecation notice for `gitlab.deprecate.sidekiq.negateQueues` setting */}}
-{{- if hasKey .Values.gitlab.sidekiq "negateQueues" -}}
-{{ $NOTICE }}
-sidekiq:
-    The configuration of 'gitlab.sidekiq.negateQueues' should be removed. Please follow the steps at https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html#start-multiple-processes, to run Sidekiq with multiple processes while listening to all queues.
-{{- end }}
-
-{{- /* Deprecation notice for `gitlab.deprecate.sidekiq.pods.negateQueues` setting */}}
-{{- range $index, $pod := .Values.gitlab.sidekiq.pods -}}
-{{-   if hasKey $pod "negateQueues" -}}
-{{ $NOTICE }}
-sidekiq.pods[{{ $index }}] ({{ $pod.name }}):
-    The configuration of 'gitlab.sidekiq.pods[{{ $index }}].negateQueues' should be removed. Please follow the steps at https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html#start-multiple-processes, to run Sidekiq with multiple processes while listening to all queues.
-{{-   end -}}
-{{- end }}
-
 {{- /* Deprecation notice for global.redis.password */}}
 {{- if kindIs "map" .Values.global.redis.password }}
 {{ $NOTICE }}
@@ -180,16 +147,21 @@ redis:
     https://docs.gitlab.com/charts/installation/upgrade.html#use-of-globalredispassword
 {{- end -}}
 
-{{- /* Deprecation notice for global.busybox */}}
-{{- if hasKey .Values.global "busybox" }}
-{{ $NOTICE }}
-global.busybox:
-    The configuration key `global.busybox` is deprecated in favor of `global.gitlabBase`.
-    For more details, please see:
-    https://docs.gitlab.com/charts/charts/globals#gitlab-base-image
+{{- /* If the user is managing RBAC externally with NGINX chart 4.0.6 */}}
+{{- if or (and (index .Values "nginx-ingress" "enabled")     (not (index .Values "nginx-ingress" "rbac" "create")))
+          (and (index .Values "nginx-ingress-geo" "enabled") (not (index .Values "nginx-ingress-geo" "rbac" "create"))) }}
+{{ $WARNING }}
+NGINX Ingress Controller: Default RBAC rules creation has been disabled.
+Updates to NGINX Ingress Controller require RBAC changes. Without these,
+the installation will fallback to version v1.3.1.
+
+Read more on https://docs.gitlab.com/charts/releases/8_0.html#upgrade-to-85x
+
+From GitLab chart 8.8+ the NGINX controller image 1.11.2+ will be the default for
+any configuration.
 {{- end -}}
 
-{{- /* run deprecations */}}
-{{ include "gitlab.deprecations" . }}
+{{- /* run removals */}}
+{{ include "gitlab.removals" . }}
 {{- /* run checkConfig */}}
 {{ include "gitlab.checkConfig" . }}

@@ -50,9 +50,18 @@ data:
           - probe_retries
           - probe_stats
         opts:
-          redis_url: {{ template "gitlab.redis.url" . }}
+          redis_url: {{ include "gitlab.gitlab-exporter.redis.url" . }}
           redis_enable_client: false
           probe_non_namespaced: true
+          {{- $sentinels := include "gitlab.gitlab-exporter.redis.sentinelsList" . }}
+          {{- if $sentinels }}
+          redis_sentinels:
+            {{- $sentinels | nindent 12 }}
+          {{- $sentinel_password := include "gitlab.redis.sentinel.password" . }}
+          {{-   if $sentinel_password }}
+          redis_sentinel_password: "{{ $sentinel_password }}"
+          {{-   end }}
+          {{- end }}
 
       ruby: &ruby
         methods:
@@ -77,6 +86,6 @@ data:
           <<: *db_common
 
   configure: |
-    {{- include "gitlab.scripts.configure.secrets" (dict "required" "none" "optional" "redis postgres gitlab-exporter") | nindent 4 }}
+    {{- include "gitlab.scripts.configure.secrets" (dict "required" "none" "optional" "redis redis-sentinel postgres gitlab-exporter") | nindent 4 }}
 # Leave this here - This line denotes end of block to the parser.
 {{- end }}

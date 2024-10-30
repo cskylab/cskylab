@@ -8,7 +8,7 @@ dependencies:
 - name: registry
   version: '*.*.*'
 - name: cert-manager
-  version: 1.12.8
+  version: v1.12.13
   repository: https://charts.jetstack.io/
   condition: certmanager.install
   alias: certmanager
@@ -21,7 +21,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   condition: postgresql.install
 - name: gitlab-runner
-  version: 0.63.0
+  version: 0.70.0
   repository: https://charts.gitlab.io/
   condition: gitlab-runner.install
 - name: redis
@@ -36,7 +36,7 @@ dependencies:
   version: '*.*.*'
   alias: nginx-ingress-geo
 - name: gitlab-zoekt
-  version: 1.0.1
+  version: 1.4.1
   repository: https://charts.gitlab.io/
   condition: gitlab-zoekt.install
 - name: traefik
