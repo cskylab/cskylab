@@ -9,7 +9,7 @@
     - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
     - [1.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14](#1--perform-all-intermediate-gitlab-charts-upgrades-with-postgresql-v14)
-    - [2.- Update PostgreSQL chart and appVersion to latest v14](#2--update-postgresql-chart-and-appversion-to-latest-v14)
+    - [2.- Update PostgreSQL chart and appVersion to v16.4.0](#2--update-postgresql-chart-and-appversion-to-v1640)
     - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade)
   - [Reference](#reference)
 - [v24-04-20](#v24-04-20)
@@ -102,7 +102,7 @@
 This procedure updates to the following versions:
 - GitLab chart to version v8.5.1 with appVersion 17.5.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- Postgresql chart v16.0.6, with application version 14.11
+- Postgresql chart v16.0.6, with application version 16.4.0
 
 This procedure updates gitlab installation in k8s-mod cluster.
 
@@ -167,7 +167,7 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | From chart 8.3.6  to chart 8.4.3    | helm pull gitlab/gitlab --version 8.4.3 --untar   |
 | From chart 8.4.3 to chart 8.5.1     | helm pull gitlab/gitlab --version 8.5.1 --untar   |
 
-#### 2.- Update PostgreSQL chart and appVersion to latest v14
+#### 2.- Update PostgreSQL chart and appVersion to v16.4.0
 
 - Edit `csdeploy.sh` file and change the gitlab chart version on `source_charts` variable with the appropriate values:
 
