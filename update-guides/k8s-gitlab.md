@@ -212,11 +212,6 @@ image:
 ./csdeploy.sh -l
 ```
 
-
-
-
-
-
 #### 3.- Perform final configuration steps after upgrade
 
 - After migration, you must save rail secrets to rail-secrets.yaml
@@ -229,13 +224,13 @@ kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.y
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` md
-## v24-04-20 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
 ## Helm charts<!-- omit in toc -->
 
-- **GitLab** chart v7.10.2 with appVersion 16.10.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- **GitLab** chart v8.5.1 with appVersion 17.5.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- **Postgresql** chart v15.2.5, with application version 14.11.0
+- **Postgresql** chart v16.0.6, with application version 16.4.0
 ```
 
 
