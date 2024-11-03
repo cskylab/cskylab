@@ -8,8 +8,10 @@
   - [Background](#background)
     - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
-    - [1.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14](#1--perform-all-intermediate-gitlab-charts-upgrades-with-postgresql-v14)
-    - [2.- Update PostgreSQL chart and appVersion to v16.4.0](#2--update-postgresql-chart-and-appversion-to-v1640)
+    - [1.- Perform intermediate gitlab charts upgrades with PostgreSQL v14 until chart 7.11.10](#1--perform-intermediate-gitlab-charts-upgrades-with-postgresql-v14-until-chart-71110)
+    - [2.- Check values-gitlab.yaml](#2--check-values-gitlabyaml)
+    - [3.- Perform intermediate gitlab charts upgrades with PostgreSQL v14 from chart 7.11.10](#3--perform-intermediate-gitlab-charts-upgrades-with-postgresql-v14-from-chart-71110)
+    - [4.- Update PostgreSQL chart and appVersion to v16.4.0](#4--update-postgresql-chart-and-appversion-to-v1640)
     - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade)
   - [Reference](#reference)
 - [v24-04-20](#v24-04-20)
@@ -114,7 +116,7 @@ You must be running at least:
 
 ### How-to guides
 
-#### 1.- Perform all intermediate gitlab charts upgrades with PostgreSQL v14
+#### 1.- Perform intermediate gitlab charts upgrades with PostgreSQL v14 until chart 7.11.10
 
 Gitlab charts updates must be made one at a time from the latest minor version of the previous.
 
@@ -160,6 +162,371 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | ----------------------------------- | ------------------------------------------------- |
 | From chart 7.10.2 to chart 7.10.10  | helm pull gitlab/gitlab --version 7.10.10 --untar |
 | From chart 7.10.10 to chart 7.11.10 | helm pull gitlab/gitlab --version 7.11.10 --untar |
+
+#### 2.- Check values-gitlab.yaml
+
+- Edit `values-gitlab.yaml` file and change values following this model:
+
+```yaml
+## NOTICE
+#
+# Due to the scope and complexity of this chart, all possible values are
+# not documented in this file. Extensive documentation is available.
+#
+# Please read the docs: https://docs.gitlab.com/charts/
+#
+# Because properties are regularly added, updated, or relocated, it is
+# _strongly suggest_ to not "copy and paste" this YAML. Please provide
+# Helm only those properties you need, and allow the defaults to be
+# provided by the version of this chart at the time of deployment.
+
+## Advanced Configuration
+## https://docs.gitlab.com/charts/advanced
+#
+# Documentation for advanced configuration, such as
+# - External PostgreSQL
+# - External Gitaly
+# - External Redis
+# - External NGINX
+# - External Object Storage providers
+# - PersistentVolume configuration
+
+## The global properties are used to configure multiple charts at once.
+## https://docs.gitlab.com/charts/charts/globals
+global:
+  ## doc/installation/deployment.md#deploy-the-community-edition
+  edition: ee
+  ## doc/charts/globals.md#configure-host-settings
+  hosts:
+    domain: cskylab.net
+    hostSuffix:
+    https: true
+    externalIP:
+    ssh: ~
+    gitlab:
+      name: gitlab.mod.cskylab.net
+      https: true
+    minio:
+      name: minio-gitlab.mod.cskylab.net
+      https: true
+    registry:
+      name: registry-gitlab.mod.cskylab.net
+      https: true
+    tls: {}
+    smartcard:
+      name: smartcard-gitlab.mod.cskylab.net
+    kas:
+      name: kas-gitlab.mod.cskylab.net
+    pages:
+      name: pages-gitlab.mod.cskylab.net
+      https: true
+
+  ## doc/charts/globals.md#configure-ingress-settings
+  ingress:
+    configureCertmanager: false
+    class: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: trantortech
+    enabled: true
+    tls:
+      enabled: true
+      secretName: gitlab-tls
+
+  gitlab:
+    ## Enterprise license for this GitLab installation
+    ## Secret created according to doc/installation/secrets.md#initial-enterprise-license
+    ## If allowing shared-secrets generation, this is OPTIONAL.
+    license: {}
+      # secret: RELEASE-gitlab-license
+      # key: license
+
+  ## Initial root password for this GitLab installation
+  ## Secret created according to doc/installation/secrets.md#initial-root-password
+  ## If allowing shared-secrets generation, this is OPTIONAL.
+  initialRootPassword:
+    secret: gitlab-initial-root-password
+    key: password
+
+  ## doc/charts/globals.md#configure-postgresql-settings
+  psql:
+    # host: psql-gitlab.mod.cskylab.net
+    serviceName: postgresql
+    port: 5432
+    database: gitlabhq_production
+    username: postgres
+    applicationName:
+    preparedStatements: false
+    connectTimeout:
+    password:
+      useSecret: true
+      secret: gitlab-postgresql-password
+      key: postgresql-password
+      file:
+
+  ## https://docs.gitlab.com/charts/charts/globals#configure-redis-settings
+  redis:
+    auth:
+      enabled: true
+      secret: gitlab-redis-password
+      key: password
+    # host: redis.hostedsomewhere.else
+    # port: 6379
+    # sentinels:
+    #   - host:
+    #     port:
+
+  ## doc/charts/globals.md#configure-gitaly-settings
+  gitaly:
+    enabled: true
+    # authToken: {}
+    #   # secret:
+    #   # key:
+    # # serviceName:
+    # internal:
+    #   names: ['default']
+    # external: []
+    # service:
+    #   name: gitaly
+    #   type: ClusterIP
+    #   externalPort: 8075
+    #   internalPort: 8075
+    #   tls:
+    #     externalPort: 8076
+    #     internalPort: 8076
+    # persistence:
+    #   enabled: true
+    #   storageClass: gitlab-gitaly
+    #   accessMode: ReadWriteOnce
+    #   size: 8Gi
+
+  ## https://docs.gitlab.com/charts/charts/globals#configure-appconfig-settings
+  ## Rails based portions of this chart share many settings
+  appConfig:
+    ## https://docs.gitlab.com/charts/charts/globals#omniauth
+    omniauth:
+      ## OIDC
+      enabled: false
+      allowSingleSignOn: ['openid_connect']
+      autoSignInWithProvider: 
+      syncProfileFromProvider: ['openid_connect']
+      syncProfileAttributes: ['email']
+      blockAutoCreatedUsers: false
+      autoLinkLdapUser: false
+      autoLinkSamlUser: false
+      autoLinkUser: ['openid_connect']
+      externalProviders: []
+      allowBypassTwoFactor: true
+      providers:
+      - secret: gitlab-keycloak-secret
+        key: provider
+
+  ## Rails application secrets
+  ## Secret created according to https://docs.gitlab.com/charts/installation/secrets#gitlab-rails-secret
+  ## If allowing shared-secrets generation, this is OPTIONAL.
+  railsSecrets: {}
+    # secret:
+
+  ## Rails generic setting, applicable to all Rails-based containers
+  rails:
+    bootsnap: # Enable / disable Shopify/Bootsnap cache
+      enabled: true
+    sessionStore:
+      sessionCookieTokenPrefix: ""
+
+  ## https://docs.gitlab.com/charts/charts/globals#outgoing-email
+  ## Outgoing email server settings
+  smtp:
+    enabled: true
+    address: mail.cskylab.net
+    port: 25
+    authentication: ""
+
+  ## https://docs.gitlab.com/charts/charts/globals#outgoing-email
+  ## Email persona used in email sent by GitLab
+  email:
+    from: gitlab@cskylab.net
+    reply_to: noreply@cskylab.net
+
+  ## Timezone for containers.
+  # time_zone: UTC
+  time_zone: 'Europe/Madrid'
+
+  ## doc/charts/globals.md#custom-certificate-authorities
+  # configuration of certificates container & custom CA injection
+  # NOTE: Only one secret with customCA
+  certificates:
+    customCAs:
+    - secret: customca-secret
+    # - secret: carootlestaging-secret
+    # - secret: carootleprod-secret
+
+  ## DEPRECATED
+  # busybox:
+  #   image:
+  #     repository: harbor.cskylab.net/dockerhub/library/busybox
+  #     tag: latest
+
+## End of global
+
+nginx-ingress:
+  enabled: false
+
+cert-manager:
+  install: false
+
+certmanager:
+  install: false
+
+prometheus:
+  install: false
+
+## Configuration of Redis
+## doc/architecture/decisions.md#redis
+## doc/charts/redis
+redis:
+  ## Cluster settings
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      storageClass: gitlab-redis-master
+      accessModes:
+      - ReadWriteOnce
+      size: 8Gi
+
+minio:
+  ingress:
+    enabled: true
+    tls:
+      secretName: gitlab-minio-tls
+      enabled: true
+  persistence:
+    enabled: true
+    storageClass: gitlab-minio
+    accessMode: ReadWriteOnce
+    size: 8Gi
+
+## Installation & configuration of stable/prostgresql
+## See requirements.yaml for current version
+postgresql:
+  install: false
+
+## Installation & configuration charts/registry
+## doc/architecture/decisions.md#registry
+## doc/charts/registry/
+registry:
+  enabled: true
+  ingress:
+    tls:
+      secretName: gitlab-registry-tls
+
+
+## Automatic shared secret generation
+## doc/installation/secrets.md
+## doc/charts/shared-secrets
+shared-secrets:
+  enabled: true
+  rbac:
+    create: true
+
+## Installation & configuration of gitlab/gitlab-runner
+## See requirements.yaml for current version
+gitlab-runner:
+  install: false
+
+## Settings for individual sub-charts under GitLab
+## Note: Many of these settings are configurable via globals
+gitlab:
+  ## doc/charts/gitlab/toolbox
+  toolbox:
+    replicas: 1
+    antiAffinityLabels:
+      matchLabels:
+        app: 'gitaly'
+    backups:
+      cron:
+        enabled: false
+        concurrencyPolicy: Replace
+        failedJobsHistoryLimit: 1
+        # Backup every day at 23:55
+        schedule: "55 23 * * *"
+        successfulJobsHistoryLimit: 3
+        extraArgs: "-t daily"
+        persistence:
+          enabled: true
+          storageClass: gitlab-task-runner
+          accessMode: ReadWriteOnce
+          size: 8Gi
+
+## doc/charts/gitlab/migrations
+#   migrations:
+#     enabled: false
+## doc/charts/gitlab/webservice
+#   webservice:
+#     enabled: false
+## doc/charts/gitlab/sidekiq
+#   sidekiq:
+#     enabled: false
+## doc/charts/gitlab/gitaly
+  gitaly:
+    persistence:
+      enabled: true
+      storageClass: gitlab-gitaly
+      accessMode: ReadWriteOnce
+      size: 8Gi
+
+## doc/charts/gitlab/gitlab-shell
+#   gitlab-shell:
+#     enabled: false
+## doc/charts/gitlab/gitlab-grafana
+#   gitlab-grafana:
+```
+
+#### 3.- Perform intermediate gitlab charts upgrades with PostgreSQL v14 from chart 7.11.10
+
+Gitlab charts updates must be made one at a time from the latest minor version of the previous.
+
+To do so, repeat the following steps for every intermediate chart version:
+
+- Edit `csdeploy.sh` file and change the gitlab chart version on `source_charts` variable with the appropriate values:
+
+```bash
+# Command to paste
+...
+...
+helm pull gitlab/gitlab --version x.x.x --untar
+...
+...
+```
+
+- Pull new chart by running:
+
+```bash
+# Pull new chart versions
+./csdeploy.sh -m pull-charts
+```
+
+- Update gitlab namespace by running:
+
+```bash
+# Redeploy upgraded chart.  
+./csdeploy.sh -m update
+```
+
+- Check deployment status:
+
+```bash
+# Check namespace status.  
+./csdeploy.sh -l
+```
+
+>**Note**: In every upgrade, you must wait at least 10 minutes until pod `gitlab-migrations-X-xxxxx` status is **COMPLETED**. Before to perform the next one, check the application is running properly with its data.
+
+You must perform all intermediate gitlab chart upgrades for every of these chart versions:
+
+| Version                             | Command to paste                                  |
+| ----------------------------------- | ------------------------------------------------- |
 | From chart 7.11.10 to chart 8.0.8   | helm pull gitlab/gitlab --version 8.0.8 --untar   |
 | From chart 8.0.8 to chart 8.1.8     | helm pull gitlab/gitlab --version 8.1.8 --untar   |
 | From chart 8.1.8 to chart 8.2.9     | helm pull gitlab/gitlab --version 8.2.9 --untar   |
@@ -167,7 +534,7 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | From chart 8.3.6  to chart 8.4.3    | helm pull gitlab/gitlab --version 8.4.3 --untar   |
 | From chart 8.4.3 to chart 8.5.1     | helm pull gitlab/gitlab --version 8.5.1 --untar   |
 
-#### 2.- Update PostgreSQL chart and appVersion to v16.4.0
+#### 4.- Update PostgreSQL chart and appVersion to v16.4.0
 
 - Edit `csdeploy.sh` file and change the gitlab chart version on `source_charts` variable with the appropriate values:
 
