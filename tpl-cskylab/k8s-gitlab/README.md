@@ -6,7 +6,7 @@
 
 - **GitLab** chart v8.5.1 with appVersion 17.5.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- **Postgresql** chart v16.0.6, with application version 16.4.0
+- **Postgresql** chart v16.1.0, with application version 16.4.0
 
 
 [Gitlab](https://about.gitlab.com/what-is-gitlab/) is the open DevOps platform, delivered as a single application. GitLab is a web-based DevOps lifecycle tool that provides a Git repository manager providing wiki, issue-tracking and continuous integration and deployment pipeline features, using an open-source license, developed by GitLab Inc.

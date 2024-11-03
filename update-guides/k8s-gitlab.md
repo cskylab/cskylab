@@ -11,7 +11,7 @@
     - [1.- Perform intermediate gitlab charts upgrades with PostgreSQL v14 until chart 7.11.10](#1--perform-intermediate-gitlab-charts-upgrades-with-postgresql-v14-until-chart-71110)
     - [2.- Check values-gitlab.yaml](#2--check-values-gitlabyaml)
     - [3.- Perform intermediate gitlab charts upgrades with PostgreSQL v14 from chart 7.11.10](#3--perform-intermediate-gitlab-charts-upgrades-with-postgresql-v14-from-chart-71110)
-    - [4.- Update PostgreSQL chart and appVersion to v16.4.0](#4--update-postgresql-chart-and-appversion-to-v1640)
+    - [4.- Upgrade postgresql from v14 to v16 database](#4--upgrade-postgresql-from-v14-to-v16-database)
     - [3.- Perform final configuration steps after upgrade](#3--perform-final-configuration-steps-after-upgrade)
   - [Reference](#reference)
 - [v24-04-20](#v24-04-20)
@@ -104,7 +104,7 @@
 This procedure updates to the following versions:
 - GitLab chart to version v8.5.1 with appVersion 17.5.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- Postgresql chart v16.0.6, with application version 16.4.0
+- Postgresql chart v16.1.0, with application version 16.4.0
 
 This procedure updates gitlab installation in k8s-mod cluster.
 
@@ -534,19 +534,42 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | From chart 8.3.6  to chart 8.4.3    | helm pull gitlab/gitlab --version 8.4.3 --untar   |
 | From chart 8.4.3 to chart 8.5.1     | helm pull gitlab/gitlab --version 8.5.1 --untar   |
 
-#### 4.- Update PostgreSQL chart and appVersion to v16.4.0
+#### 4.- Upgrade postgresql from v14 to v16 database
 
-- Edit `csdeploy.sh` file and change the gitlab chart version on `source_charts` variable with the appropriate values:
+1. **Backup Running Container**
+
+The `pg_dumpall` utility is used for writing out (dumping) all of your PostgreSQL databases of a cluster. It accomplishes this by calling the pg_dump command for each database in a cluster, while also dumping global objects that are common to all databases, such as database roles and tablespaces.
+
+The official PostgreSQL Docker image come bundled with all of the standard utilities, such as pg_dumpall, and it is what we will use in this tutorial to perform a complete backup of our database server.
+
+If your Postgres server is running as a Kubernetes Pod, you will execute the following command:
 
 ```bash
-# Command to paste
+kubectl -n gitlab exec -i postgresql-0 -- /bin/bash -c "PGPASSWORD='NoFear21' pg_dumpall -U postgres" > postgresql-v14.dump
+```
+
+2. **Deploy New Postgres Image in a limited namespace**
+
+The second step is to deploy a new Postgress container using the updated image version. This container MUST NOT mount the same volume from the older Postgress container. It will need to mount a new volume for the database.
+
+>**Note**: If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
+
+To deploy the new version on an empty volume:
+
+- Uninstall the namespace containing the PostgreSQL service (GitLab)
+- Perform a manual backup and delete the PostgreSQL data service
+- Re-Create an empty PostgreSQL data service
+- Change `csdeploy.sh` file with the appropriate values:
+```bash
 ...
 ...
-helm pull bitnami/postgresql --version 16.0.6 --untar
+helm pull bitnami/postgresql --version 16.1.0 --untar
 ...
 ...
 ```
+Change `csdeploy.sh` file commenting all helm pull deploying charts lines except `helm pull bitnami/postgresql`
 
+- Remove all charts and pull only `bitnami/postgresql` chart by running `csdeploy.sh - m pull-charts`
 - Edit `values-postgresql.yaml` file to download the appropriate image of postgresql:
 ```yaml
 ## Bitnami PostgreSQL image version
@@ -554,30 +577,26 @@ helm pull bitnami/postgresql --version 16.0.6 --untar
 ## @param image.tag PostgreSQL image tag (immutable tags are recommended)
 ##
 image:
-  # tag: 12.12.0-debian-11-r1
   tag: 16.4.0
 ```
+- Deploy the namespace by running `csdeploy.sh -m install`
 
-- Pull new chart by running:
-
-```bash
-# Pull new chart versions
-./csdeploy.sh -m pull-charts
-```
-
-- Update gitlab namespace by running:
+3. **Import PostgreSQL Dump into New Pod**
+With the new Postgres container running with a new volume mount for the data directory, you will use the psql command to import the database dump file. During the import process Postgres will migrate the databases to the latest system schema.
 
 ```bash
-# Redeploy upgraded chart.  
-./csdeploy.sh -m update
+kubectl -n gitlab exec -i postgresql-0 -- /bin/bash -c "PGPASSWORD='NoFear21' psql -U postgres" < postgresql-v14.dump
 ```
 
-- Check deployment status:
+4. **Deploy the namespace with all charts**
 
-```bash
-# Check namespace status.  
-./csdeploy.sh -l
-```
+Once the PosgreSQL container is running with the new version and dumped data successfully restored, the namespace can be re-started with all its charts:
+
+- Uninstall the namespace
+- Change `csdeploy.sh` file un-commenting all helm pull deploying charts lines
+- Re-Import all charts by running `csdeploy.sh - m pull-charts`
+- Deploy the namespace by running `csdeploy.sh -m install`
+
 
 #### 3.- Perform final configuration steps after upgrade
 
@@ -597,7 +616,7 @@ kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.y
 
 - **GitLab** chart v8.5.1 with appVersion 17.5.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- **Postgresql** chart v16.0.6, with application version 16.4.0
+- **Postgresql** chart v16.1.0, with application version 16.4.0
 ```
 
 

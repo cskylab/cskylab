@@ -96,7 +96,7 @@ helm repo update
 
 # Charts
 helm pull gitlab/gitlab --version 8.5.1 --untar
-helm pull bitnami/postgresql --version 16.0.6 --untar
+helm pull bitnami/postgresql --version 16.1.0 --untar
 
 EOF
 )"
