@@ -4,7 +4,7 @@
 
 ## Helm charts<!-- omit in toc -->
 
-- **GitLab** chart v8.5.1 with appVersion 17.5.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- **GitLab** chart v8.5.2 with appVersion 17.5.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
 - **Postgresql** chart v16.1.0, with application version 16.4.0
 
