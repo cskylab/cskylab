@@ -101,7 +101,7 @@
 ### Background
 
 This procedure updates to the following versions:
-- GitLab chart to version v8.5.2 with appVersion 17.5.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- GitLab chart to version v8.6.1 with appVersion v17.6.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
 - Postgresql chart v16.2.1, with application version 14
 
@@ -529,9 +529,10 @@ You must perform all intermediate gitlab chart upgrades for every of these chart
 | From chart 7.11.10 to chart 8.0.8   | helm pull gitlab/gitlab --version 8.0.8 --untar   |
 | From chart 8.0.8 to chart 8.1.8     | helm pull gitlab/gitlab --version 8.1.8 --untar   |
 | From chart 8.1.8 to chart 8.2.9     | helm pull gitlab/gitlab --version 8.2.9 --untar   |
-| From chart 8.2.9 to chart 8.3.6     | helm pull gitlab/gitlab --version 8.3.6  --untar  |
-| From chart 8.3.6  to chart 8.4.3    | helm pull gitlab/gitlab --version 8.4.3 --untar   |
-| From chart 8.4.3 to chart 8.5.2     | helm pull gitlab/gitlab --version 8.5.2 --untar   |
+| From chart 8.2.9 to chart 8.3.7     | helm pull gitlab/gitlab --version 8.3.7  --untar  |
+| From chart 8.3.7  to chart 8.4.5    | helm pull gitlab/gitlab --version 8.4.5 --untar   |
+| From chart 8.4.5 to chart 8.5.3     | helm pull gitlab/gitlab --version 8.5.2 --untar   |
+| From chart 8.5.3 to chart 8.6.1     | helm pull gitlab/gitlab --version 8.6.1 --untar   |
 
 
 #### 3.- Perform final configuration steps after upgrade
@@ -550,9 +551,9 @@ kubectl -n=gitlab get secret gitlab-rails-secret -o jsonpath="{.data['secrets\.y
 
 ## Helm charts<!-- omit in toc -->
 
-- **GitLab** chart v8.5.2 with appVersion 17.5.2. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
+- **GitLab** chart v8.6.1 with appVersion v17.6.1. Following Gitlab recommendations, updates to a new release must be made from the latest minor version of the previous release.
 
-- **Postgresql** chart v16.2.1, with application version 14
+- **Postgresql** chart v16.2.3, with application version 14
 ```
 
 
