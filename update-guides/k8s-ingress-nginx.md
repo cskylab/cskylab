@@ -64,7 +64,7 @@
 
 ### Background
 
-ingress-nginx chart 4.10.0 updates chart parameters in appVersion 1.10.0
+ingress-nginx chart 4.11.3 updates chart parameters in appVersion 1.11.3
 
 This procedure updates ingress-nginx installation in k8s-mod cluster.
 
@@ -89,7 +89,7 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
 # Charts
-helm pull ingress-nginx/ingress-nginx --version 4.10.0 --untar
+helm pull ingress-nginx/ingress-nginx --version 4.11.3 --untar
 
 EOF
 )"
@@ -99,9 +99,9 @@ EOF
 - Edit `README.md` configuration file, and change header as follows:
 
 ``` bash
-## v24-04-20 <!-- omit in toc -->
+## v99-99-99 <!-- omit in toc -->
 
-## Helm charts: ingress-nginx/ingress-nginx v4.10.0 <!-- omit in toc -->
+## Helm charts: ingress-nginx/ingress-nginx v4.11.3 <!-- omit in toc -->
 ```
 
 - Save file
