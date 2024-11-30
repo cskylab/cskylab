@@ -119,10 +119,12 @@ The second step is to deploy a new Postgress container using the updated image v
 
 >**Note**: If you mount to a previous volume used by the older Postgres server, the new Postgres server will fail. Postgres requires the data to be migrated before it can load it.
 
+> **Note**: Delete only contents in PostgreSQL data service. **DO NOT DELETE OTHER DATASERVICES** 
+
 To deploy the new version on an empty volume:
 
-- Delete the PostgreSQL data service (view snippets in README.md)
-- Re-Create the PostgreSQL data service (view snippets in README.md)
+- Delete the PostgreSQL data service (view README.md)
+- Re-Create the PostgreSQL data service (view README.md)
 - Edit `csdeploy.sh` file
 - Change `source_charts` variable to the following values:
 
