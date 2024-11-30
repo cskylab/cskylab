@@ -218,3 +218,13 @@ affinity:
 {{- end -}}
 {{- end }}
 
+{{/*
+Render the standard labels for resources related to the registry migration.
+These differ from the standard labels so the migration related Pod's are not
+matched by the registry PDB and Deployment selectors.
+*/}}
+{{- define "registry.migration.standardLabels" -}}
+{{- $labels := (include "gitlab.standardLabels" .) | fromYaml }}
+{{- $_ := set $labels "app" "registry-migrations" }}
+{{- toYaml $labels }}
+{{- end -}}

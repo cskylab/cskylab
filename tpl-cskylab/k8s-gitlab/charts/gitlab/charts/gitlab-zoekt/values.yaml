@@ -11,7 +11,7 @@ image:
 indexer:
   image:
     repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-indexer
-    tag: v0.8.3-e2027
+    tag: v0.8.5-64175
   listen:
     port: 6065
   resources: {}

@@ -99,6 +99,9 @@ data:
     {{- end }}
     lfs:
       pure_ssh_protocol: {{ .Values.config.lfs.pureSSHProtocol }}
+    pat:
+      enabled: {{ .Values.config.pat.enabled }}
+      allowed_scopes: {{- .Values.config.pat.allowedScopes | toYaml | nindent 8 }}
   krb5.conf: |
     {{- .Values.config.gssapi.krb5Config | nindent 4 }}
 # Leave this here - This line denotes end of block to the parser.

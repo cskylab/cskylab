@@ -54,6 +54,22 @@ database:
     maxjobretries: {{ .Values.database.backgroundMigrations.maxJobRetries }}
     {{- end }}
   {{- end }}
+  {{- if .Values.database.loadBalancing.enabled }}
+  loadbalancing:
+    enabled: {{ .Values.database.loadBalancing.enabled }}
+    {{- if .Values.database.loadBalancing.nameserver }}
+    {{-   if .Values.database.loadBalancing.nameserver.host }}
+    nameserver: {{ .Values.database.loadBalancing.nameserver.host | quote }}
+    {{-   end }}
+    {{-   if .Values.database.loadBalancing.nameserver.port }}
+    port: {{ .Values.database.loadBalancing.nameserver.port | int }}
+    {{-   end }}
+    {{- end }}
+    record: {{ .Values.database.loadBalancing.record | required "`database.loadBalancing` requires `record` to be provided." | quote }}
+    {{- if .Values.database.loadBalancing.replicaCheckInterval }}
+    replicacheckinterval: {{ .Values.database.loadBalancing.replicaCheckInterval | quote }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 {{- end -}}
 

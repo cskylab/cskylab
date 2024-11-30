@@ -2,6 +2,37 @@
 documentation](doc/development/changelog.md) for instructions on adding your own
 entry.
 
+## 8.6.1 (2024-11-26)
+
+No changes.
+
+## 8.6.0 (2024-11-20)
+
+### Added (2 changes)
+
+- [Support new PAT feature in GitLab Shell](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/7741ec22bdbede136cb8c06e488aa025765a2b0b) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3997))
+- [Add annotations support to mailroom chart](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/46665cd8f93b351bb240cf716c9345e866e915d1) by @loliee ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3946))
+
+### Changed (11 changes)
+
+- [Update Helm release cert-manager to v1.12.14](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/0c024b2dd34be3c2e72360cbf3605987e27878f6) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/4005))
+- [Update dependency gitlab-qa to v14.20.0](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/d58309f363d2490c354620359a4431f7f1eb6ba9) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3992))
+- [Update dependency gitlab-qa to v14.19.2](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/7e84c8fbbdff92cbba243750c7366d56b0fb5a99) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3981))
+- [Update dependency container-registry to v4.13.0-gitlab](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/43a990baa13a5bdd0c4368b0b5e8b76d5c3331ba) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3980))
+- [Update Helm release gitlab-runner to v0.70.3](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/8f17dfb74a2b6fb3daf686da81fb7488c677d276) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3965))
+- [Update dependency container-registry to v4.12.0-gitlab](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/15c6836b1401f90d377c8d3ed53ce22d70f34347) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3970))
+- [Update dependency gitlab-qa to v14.19.1](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/08d2813a4acb78c73f394d6abd857a185ae84ebf) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3962))
+- [Update dependency container-registry to v4.11.0-gitlab](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/3811c509baf363e79227629b1471beea7dc99048) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3961))
+- [Update Helm release gitlab-runner to v0.70.1](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/b82f0a50ae6ec26a79fe9cc307c862c816f3ac78) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3958))
+- [Update Helm release gitlab-runner to v0.70.0](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/ea3833fd35e5d201c96e9da5b4892b610df19781) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3955))
+- [Bump nginx-controller from 1.3.1 to 1.11.2](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/c8f6090ec807dde86d4f6fd92803ada8b125868e) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3901))
+
+## 8.5.2 (2024-11-12)
+
+### Changed (1 change)
+
+- [Update Helm release gitlab-runner to v0.70.1](https://gitlab.com/gitlab-org/security/charts/gitlab/-/commit/c25959ffaa4e8377938c22c19e651549e6f07839)
+
 ## 8.5.1 (2024-10-22)
 
 No changes.
@@ -33,6 +64,14 @@ No changes.
 
 - [Remove 'ci_jwt_signing_key' secret migrated to ApplicationSetting](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/b23acb2484f63ebb7e0f461033f5a3542519b3c9) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3910))
 
+## 8.4.4 (2024-11-12)
+
+No changes.
+
+## 8.4.3 (2024-10-22)
+
+No changes.
+
 ## 8.4.2 (2024-10-09)
 
 No changes.
@@ -58,6 +97,14 @@ No changes.
 - [Update Helm release gitlab-runner to v0.68.0](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/3408142be8a458faccfe61ff5299fbe9e37076ec) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3880))
 - [Update Helm release cert-manager to v1.12.13](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/e45d38f61348f8fae9c824a58a9e3551b91a7d5b) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3876))
 - [Update dependency container-registry to v4.7.0-gitlab](https://gitlab.com/gitlab-org/charts/gitlab/-/commit/9da185ee884ef15ce5be7f032d734bfa654ef630) ([merge request](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/3872))
+
+## 8.3.7 (2024-11-12)
+
+No changes.
+
+## 8.3.6 (2024-10-22)
+
+No changes.
 
 ## 8.3.5 (2024-10-09)
 

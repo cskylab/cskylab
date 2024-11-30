@@ -26,6 +26,12 @@ Carefully review the documentation https://docs.gitlab.com/charts/charts/registr
 If you encounter a problem with either the import or operation of the registry, please add a comment in the feedback issue https://gitlab.com/gitlab-org/gitlab/-/issues/423459#supported-feature-status.
 {{- end }}
 
+{{- /* If the Container Registry database load balancing is enabled */}}
+{{- if eq .Values.registry.database.loadBalancing.enabled true }}
+{{ $WARNING }}
+The Container Registry database load balancing feature has been enabled. This is an experimental feature under active development and must not be used in production.
+{{- end }}
+
 {{- /* Notifications endpoint threshold should use maxretries instead */ -}}
 {{- $usesThreshold := false }}
 {{- range $v := .Values.global.registry.notifications.endpoints }}
@@ -155,7 +161,7 @@ NGINX Ingress Controller: Default RBAC rules creation has been disabled.
 Updates to NGINX Ingress Controller require RBAC changes. Without these,
 the installation will fallback to version v1.3.1.
 
-Read more on https://docs.gitlab.com/charts/releases/8_0.html#upgrade-to-85x
+Read more on https://docs.gitlab.com/charts/releases/8_0.html#upgrade-to-86x-851-843-836
 
 From GitLab chart 8.8+ the NGINX controller image 1.11.2+ will be the default for
 any configuration.

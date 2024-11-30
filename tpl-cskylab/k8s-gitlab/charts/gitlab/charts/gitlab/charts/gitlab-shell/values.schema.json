@@ -156,6 +156,20 @@
           },
           "title": "LFS related settings",
           "type": "object"
+        },
+        "pat": {
+          "properties": {
+            "enabled": {
+              "title": "Enable PAT using SSH",
+              "type": "boolean"
+            },
+            "allowedScopes": {
+              "title": "An array of scopes allowed for PATs generated with SSH",
+              "type": "array"
+            }
+          },
+          "title": "Personal access token (PAT) related settings",
+          "type": "object"
         }
       },
       "required": [

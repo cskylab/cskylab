@@ -16,6 +16,8 @@ init:
       cpu: 50m
   containerSecurityContext: {}
 
+annotations: {}
+
 # Tolerations for pod scheduling
 tolerations: []
 

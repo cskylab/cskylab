@@ -7,7 +7,7 @@ metadata:
   name: {{ template "registry.migrations.jobname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "gitlab.standardLabels" . | nindent 4 }}
+    {{- include "registry.migration.standardLabels" . | nindent 4 }}
     {{- include "gitlab.commonLabels" . | nindent 4 }}
   {{- if .Values.database.migrations.annotations }}
   annotations:
@@ -27,7 +27,7 @@ spec:
       {{-   end }}
       {{- end }}
       labels:
-        {{- include "gitlab.standardLabels" . | nindent 8 }}
+        {{- include "registry.migration.standardLabels" . | nindent 8 }}
         {{- include "gitlab.commonLabels" . | nindent 8 }}
         {{- include "gitlab.podLabels" . | nindent 8 }}
     spec:

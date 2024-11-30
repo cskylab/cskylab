@@ -150,6 +150,9 @@ config:
     servicePrincipalName: ""
   lfs:
     pureSSHProtocol: false
+  pat:
+    enabled: true
+    allowedScopes: []
 
 ## Allow to overwrite under which User and Group the Pod will be running.
 securityContext:

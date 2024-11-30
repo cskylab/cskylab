@@ -46,6 +46,31 @@ registry:
 {{/* END gitlab.checkConfig.registry.database */}}
 
 {{/*
+Ensure Registry database load balancing is configured properly and dependencies are met
+*/}}
+{{- define "gitlab.checkConfig.registry.database.loadBalancing" -}}
+{{- if $.Values.registry.database.loadBalancing.enabled }}
+  {{- if not $.Values.registry.database.enabled }}
+registry:
+    Enabling database load balancing requires the metadata database to be enabled.
+    See https://docs.gitlab.com/charts/charts/registry#load-balancing
+  {{- end }}
+  {{- if not $.Values.registry.redis.cache.enabled }}
+registry:
+    Enabling database load balancing requires Redis caching to be enabled.
+    See https://docs.gitlab.com/charts/charts/registry/#redis-cache
+  {{- end }}
+  {{- if and (kindIs "string" $.Values.registry.database.loadBalancing.record) (empty $.Values.registry.database.loadBalancing.record) }}
+registry:
+    Enabling database load balancing requires the record to not be empty.
+    See https://docs.gitlab.com/charts/charts/registry#load-balancing
+  {{- end }}
+{{- end -}}
+
+{{- end -}}
+{{/* END gitlab.checkConfig.registry.database.loadBalancing */}}
+
+{{/*
 Ensure Registry Redis cache is configured properly and dependencies are met
 */}}
 {{- define "gitlab.checkConfig.registry.redis.cache" -}}

@@ -51,7 +51,7 @@ global:
   edition: ee
 
   ## https://docs.gitlab.com/charts/charts/globals#gitlab-version
-  gitlabVersion: "17.5.1"
+  gitlabVersion: "17.6.1"
 
   ## https://docs.gitlab.com/charts/charts/globals#application-resource
   application:
@@ -1212,6 +1212,8 @@ prometheus:
 ## https://docs.gitlab.com/charts/installation/deployment.html#redis
 redis:
   install: true
+  image:
+    tag: "6.2.16-debian-12-r1"
   auth:
     existingSecret: gitlab-redis-secret
     existingSecretKey: redis-password
@@ -1221,6 +1223,8 @@ redis:
     enabled: false
   metrics:
     enabled: true
+    image:
+      tag: "1.46.0-debian-11-r8"
 
 ## Installation & configuration of stable/postgresql
 ## See requirements.yaml for current version
