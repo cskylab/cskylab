@@ -345,7 +345,7 @@ Application update procedures in this release:
 | [k8s-ingress-nginx](./k8s-ingress-nginx.md)      |
 | [k8s-cert-manager](./k8s-cert-manager.md)        |
 | [k8s-harbor.md](./k8s-harbor.md)                 |
-| [k8s-keycloak.md](./k8s-keycloak.md)             |
+| [k8s-keycloakx.md](./k8s-keycloakx.md)             |
 | [k8s-gitlab.md](./k8s-gitlab.md)                 |
 | [k8s-nextcloud.md](./k8s-nextcloud.md)           |
 | [k8s-miniostalone.md](./k8s-miniostalone.md)     |
