@@ -10,7 +10,7 @@
     - [PostgreSQL backup](#postgresql-backup)
     - [Pull new charts](#pull-new-charts)
     - [Update PostgreSQL version](#update-postgresql-version)
-    - [Keycloak migration to v26.0.6](#keycloak-migration-to-v2606)
+    - [Keycloak migration to v26.0](#keycloak-migration-to-v260)
   - [Reference](#reference)
 - [v24-04-20](#v24-04-20)
   - [Background](#background-1)
@@ -49,9 +49,9 @@
 
 ### Background
 
-Chart codecentric/keycloakx 2.6.0 updates chart components in keycloak appVersion 25.0.0. This procedure modifies chart values to upgrade to appVersion 26.0.6 (image selected in `values-keycloakx.yaml`)
+Chart codecentric/keycloakx 2.6.0 updates chart components in keycloak appVersion 25.0.0. This procedure modifies chart values to upgrade to appVersion 26.0 (image selected in `values-keycloakx.yaml`)
 
-Chart bitnami/postgresql 16.2.3 updates chart components in postgresql appVersion 17.2.0 This procedure modifies chart values to upgrade to appVersion 17.0.2 (image selected in `values-posgresql.yaml`).   
+Chart bitnami/postgresql 16.2.3 updates chart components in postgresql appVersion 17.2.0 This procedure modifies chart values to upgrade to appVersion 16 (image selected in `values-posgresql.yaml`).   
 
 ### How-to guides
 
@@ -103,10 +103,10 @@ EOF
 ## @param image.tag PostgreSQL image tag (immutable tags are recommended)
 ##
 image:
-  tag: 17.0.2
+  tag: 16
 ```
 
-#### Keycloak migration to v26.0.6
+#### Keycloak migration to v26.0
 
 - Stop application by running:
 
@@ -123,11 +123,34 @@ image:
   # The Keycloak image repository
   repository: quay.io/keycloak/keycloak
   # Overrides the Keycloak image tag whose default is the chart appVersion
-  tag: "26.0.6"
+  tag: "26.0"
   # Overrides the Keycloak image tag with a specific digest
   digest: ""
   # The Keycloak image pull policy
   pullPolicy: IfNotPresent
+```
+
+```yaml
+# Additional environment variables for Keycloak
+extraEnv: |
+  - name: KEYCLOAK_ADMIN
+    value: keycloak
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    value: "NoFear21"
+  - name: JAVA_OPTS_APPEND
+    value: >-
+      -Djgroups.dns.query=keycloakx-headless
+      -XX:MaxRAMPercentage=50.0
+```
+
+```yaml
+# Overrides the default entrypoint of the Keycloak container
+command:
+command:
+  - "/opt/keycloak/bin/kc.sh"
+  - "start"
+  - "--hostname=keycloakx.mod.cskylab.net"
+  - "--proxy-headers=xforwarded"
 ```
 
 - Start application by running:

@@ -27,4 +27,4 @@ global:
 ## @param image.tag PostgreSQL image tag (immutable tags are recommended)
 ##
 image:
-  tag: 17.0.2
+  tag: 16
