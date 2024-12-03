@@ -133,9 +133,9 @@ image:
 ```yaml
 # Additional environment variables for Keycloak
 extraEnv: |
-  - name: KEYCLOAK_ADMIN
+  - name: KC_BOOTSTRAP_ADMIN_USERNAME
     value: keycloak
-  - name: KEYCLOAK_ADMIN_PASSWORD
+  - name: KC_BOOTSTRAP_ADMIN_PASSWORD
     value: "NoFear21"
   - name: JAVA_OPTS_APPEND
     value: >-
