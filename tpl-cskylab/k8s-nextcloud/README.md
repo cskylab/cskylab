@@ -29,6 +29,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Nextcloud occ commands](#nextcloud-occ-commands)
     - [Add missing indexes](#add-missing-indexes)
     - [List custom certificates](#list-custom-certificates)
+    - [Complete a failed upgrade](#complete-a-failed-upgrade)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
 - [Reference](#reference)
@@ -449,6 +450,24 @@ runuser --user www-data -- php occ db:add-missing-indices
 # List custom certificates
 runuser --user www-data -- php occ security:certificates
 ```
+
+#### Complete a failed upgrade
+
+```bash
+# Complete a failed upgrade
+runuser --user www-data -- php occ upgrade
+```
+
+```bash
+# Get Status
+runuser --user www-data -- php occ status
+```
+
+```bash
+# Disable maintenance mode
+runuser --user www-data -- php occ maintenance:mode --off
+```
+
 
 ### Utilities
 

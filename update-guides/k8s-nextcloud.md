@@ -207,6 +207,8 @@ Pull charts & update:
 ./csdeploy.sh -l
 ```
 
+>**NOTE**: In case the update fails or nexcloud starts in maintenance mode, refer to the section **Nextcloud occ commands** in documentation file `README.md`.
+
 #### 4.- Update to chart 6.2.4 app version 30.0.2
 
 Prepare deploy script:
@@ -247,6 +249,7 @@ Pull charts & update;
 # Check status
 ./csdeploy.sh -l
 ```
+>**NOTE**: In case the update fails or nexcloud starts in maintenance mode, refer to the section **Nextcloud occ commands** in documentation file `README.md`.
 
 **Update README.md**
 
