@@ -8,38 +8,38 @@
   - [Background](#background)
   - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
-    - [1.- Update configuration files in ingress-nginx namespace](#1--update-configuration-files-in-ingress-nginx-namespace)
-    - [2.- Update configuration files in nextcloud namespace](#2--update-configuration-files-in-nextcloud-namespace)
-    - [2.- Pull charts \& update](#2--pull-charts--update)
+    - [1.- Check configuration files in ingress-nginx namespace](#1--check-configuration-files-in-ingress-nginx-namespace)
+    - [2.- Update to chart 5.5.6 app version 29.0.6](#2--update-to-chart-556-app-version-2906)
+    - [3.- Update to chart 6.2.4 app version 30.0.2](#3--update-to-chart-624-app-version-3002)
   - [Reference](#reference)
 - [v24-04-20](#v24-04-20)
   - [Background](#background-1)
   - [Prerequisites](#prerequisites-1)
   - [How-to guides](#how-to-guides-1)
-    - [1.- Update configuration files in ingress-nginx namespace](#1--update-configuration-files-in-ingress-nginx-namespace-1)
-    - [2.- Update configuration files in nextcloud namespace](#2--update-configuration-files-in-nextcloud-namespace-1)
-    - [2.- Pull charts \& update](#2--pull-charts--update-1)
+    - [1.- Update configuration files in ingress-nginx namespace](#1--update-configuration-files-in-ingress-nginx-namespace)
+    - [2.- Update configuration files in nextcloud namespace](#2--update-configuration-files-in-nextcloud-namespace)
+    - [2.- Pull charts \& update](#2--pull-charts--update)
   - [Reference](#reference-1)
 - [v23-11-24](#v23-11-24)
   - [Background](#background-2)
   - [Prerequisites](#prerequisites-2)
   - [How-to guides](#how-to-guides-2)
     - [1.- Update configuration files](#1--update-configuration-files)
-    - [2.- Pull charts \& update](#2--pull-charts--update-2)
+    - [2.- Pull charts \& update](#2--pull-charts--update-1)
   - [Reference](#reference-2)
 - [v23-04-27](#v23-04-27)
   - [Background](#background-3)
   - [Prerequisites](#prerequisites-3)
   - [How-to guides](#how-to-guides-3)
     - [1.- Update configuration files](#1--update-configuration-files-1)
-    - [2.- Pull charts \& update](#2--pull-charts--update-3)
+    - [2.- Pull charts \& update](#2--pull-charts--update-2)
   - [Reference](#reference-3)
 - [v22-12-19](#v22-12-19)
   - [Background](#background-4)
   - [Prerequisites](#prerequisites-4)
   - [How-to guides](#how-to-guides-4)
     - [1.- Update configuration files](#1--update-configuration-files-2)
-    - [2.- Pull charts \& update](#2--pull-charts--update-4)
+    - [2.- Pull charts \& update](#2--pull-charts--update-3)
   - [Reference](#reference-4)
 - [v22-08-21](#v22-08-21)
   - [Background](#background-5)
@@ -59,7 +59,7 @@
   - [Prerequisites](#prerequisites-6)
   - [How-to guides](#how-to-guides-6)
     - [1.- Update configuration files](#1--update-configuration-files-3)
-    - [2.- Pull charts \& update](#2--pull-charts--update-5)
+    - [2.- Pull charts \& update](#2--pull-charts--update-4)
   - [Reference](#reference-6)
 - [v22-01-05](#v22-01-05)
   - [Background](#background-7)
@@ -90,7 +90,7 @@ Previous v24-04-20 deployment of the namespace is needed.
 
 ### How-to guides
 
-#### 1.- Update configuration files in ingress-nginx namespace
+#### 1.- Check configuration files in ingress-nginx namespace
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/ingress-nginx` folder repository.
 
@@ -116,7 +116,50 @@ Execute the following commands to pull charts and update ingress-nginx namespace
 ```
 
 
-#### 2.- Update configuration files in nextcloud namespace
+#### 2.- Update to chart 5.5.6 app version 29.0.6
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 5.5.6 --untar
+helm pull bitnami/mariadb --version 20.1.1 --untar
+
+EOF
+)"
+```
+- Save file
+
+**Pull charts & update**
+
+From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` repository directory.
+
+Execute the following commands to pull charts and update:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Update
+./csdeploy.sh -m update
+
+# Check status
+./csdeploy.sh -l
+```
+
+#### 3.- Update to chart 6.2.4 app version 30.0.2
 
 - Edit `csdeploy.sh` file
 - Change `source_charts` variable to the following values:
@@ -140,19 +183,9 @@ helm pull bitnami/mariadb --version 20.1.1 --untar
 EOF
 )"
 ```
-
-- Save file
-- Edit `README.md` documentation file, and change header as follows:
-
-``` bash
-## v99-99-99 <!-- omit in toc -->
-
-## Helm charts: nextcloud/nextcloud v6.2.4 bitnami/mariadb v20.1.1 <!-- omit in toc -->
-```
-
 - Save file
 
-#### 2.- Pull charts & update
+**Pull charts & update**
 
 From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` repository directory.
 
@@ -168,6 +201,18 @@ Execute the following commands to pull charts and update:
 # Check status
 ./csdeploy.sh -l
 ```
+
+**Update README.md**
+
+- Edit `README.md` documentation file, and change header as follows:
+
+``` bash
+## v99-99-99 <!-- omit in toc -->
+
+## Helm charts: nextcloud/nextcloud v6.2.4 bitnami/mariadb v20.1.1 <!-- omit in toc -->
+```
+- Save file
+
 
 ### Reference
 
