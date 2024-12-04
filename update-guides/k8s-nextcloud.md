@@ -9,8 +9,9 @@
   - [Prerequisites](#prerequisites)
   - [How-to guides](#how-to-guides)
     - [1.- Check configuration files in ingress-nginx namespace](#1--check-configuration-files-in-ingress-nginx-namespace)
-    - [2.- Update to chart 5.5.6 app version 29.0.6](#2--update-to-chart-556-app-version-2906)
-    - [3.- Update to chart 6.2.4 app version 30.0.2](#3--update-to-chart-624-app-version-3002)
+    - [2.- Update mariadb chart to version 20.1.1 app version 11.4.4](#2--update-mariadb-chart-to-version-2011-app-version-1144)
+    - [3.- Update to chart 5.5.6 app version 29.0.6](#3--update-to-chart-556-app-version-2906)
+    - [4.- Update to chart 6.2.4 app version 30.0.2](#4--update-to-chart-624-app-version-3002)
   - [Reference](#reference)
 - [v24-04-20](#v24-04-20)
   - [Background](#background-1)
@@ -114,9 +115,60 @@ Execute the following commands to pull charts and update ingress-nginx namespace
 # Check status
 ./csdeploy.sh -l
 ```
+#### 2.- Update mariadb chart to version 20.1.1 app version 11.4.4
+
+>**Note**: To upgrade mariadb chart you must uninstall and reinstall the namespace.
+
+Uninstall namespace
+
+```bash
+# Uninstall namespace
+./csdeploy.sh -m uninstall
+```
+
+Prepare deploy script:
+
+- Edit `csdeploy.sh` file
+- Change `source_charts` variable to the following values:
+
+```bash
+# Source script to pull charts
+source_charts="$(
+  cat <<EOF
+
+## Pull helm charts from repositories
+
+# Repositories
+helm repo add nextcloud https://nextcloud.github.io/helm/
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Charts
+helm pull nextcloud/nextcloud --version 4.6.5 --untar
+helm pull bitnami/mariadb --version 20.1.1 --untar
+
+EOF
+)"
+```
+- Save file
+
+Pull charts & reinstall:
+
+```bash
+# Pull charts to './charts/' directory
+./csdeploy.sh -m pull-charts
+
+# Install
+./csdeploy.sh -m install
+
+# Check status
+./csdeploy.sh -l
+```
 
 
-#### 2.- Update to chart 5.5.6 app version 29.0.6
+#### 3.- Update to chart 5.5.6 app version 29.0.6
+
+Prepare deploy script:
 
 - Edit `csdeploy.sh` file
 - Change `source_charts` variable to the following values:
@@ -142,11 +194,7 @@ EOF
 ```
 - Save file
 
-**Pull charts & update**
-
-From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` repository directory.
-
-Execute the following commands to pull charts and update:
+Pull charts & update:
 
 ```bash
 # Pull charts to './charts/' directory
@@ -159,7 +207,9 @@ Execute the following commands to pull charts and update:
 ./csdeploy.sh -l
 ```
 
-#### 3.- Update to chart 6.2.4 app version 30.0.2
+#### 4.- Update to chart 6.2.4 app version 30.0.2
+
+Prepare deploy script:
 
 - Edit `csdeploy.sh` file
 - Change `source_charts` variable to the following values:
@@ -185,11 +235,7 @@ EOF
 ```
 - Save file
 
-**Pull charts & update**
-
-From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/nextcloud` repository directory.
-
-Execute the following commands to pull charts and update:
+Pull charts & update;
 
 ```bash
 # Pull charts to './charts/' directory
