@@ -27,9 +27,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Keycloak Client Configuration](#keycloak-client-configuration)
   - [Nextcloud OIDC Configuration](#nextcloud-oidc-configuration)
   - [Nextcloud occ commands](#nextcloud-occ-commands)
-    - [Add missing indexes](#add-missing-indexes)
-    - [List custom certificates](#list-custom-certificates)
-    - [Complete a failed upgrade](#complete-a-failed-upgrade)
+    - [occ commands examples](#occ-commands-examples)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
 - [Reference](#reference)
@@ -437,21 +435,17 @@ To run occ commands, open a terminal into nextcloud pod and run commands with th
 runuser --user www-data -- php occ <command>
 ```
 
-#### Add missing indexes
+#### occ commands examples
 
 ```bash
 # Add missing indexes
 runuser --user www-data -- php occ db:add-missing-indices
 ```
 
-#### List custom certificates
-
 ```bash
 # List custom certificates
 runuser --user www-data -- php occ security:certificates
 ```
-
-#### Complete a failed upgrade
 
 ```bash
 # Complete a failed upgrade
@@ -468,6 +462,25 @@ runuser --user www-data -- php occ status
 runuser --user www-data -- php occ maintenance:mode --off
 ```
 
+```bash
+# Perform mimetype migrations
+runuser --user www-data -- php occ maintenance:repair --include-expensive
+```
+
+```bash
+# View last log entries
+runuser --user www-data -- php /var/www/html/occ log:tail
+```
+
+```bash
+# View log by type and number of entries
+runuser --user www-data -- php /var/www/html/occ log:file --level=error --lines=100
+```
+
+```bash
+# Check for database inconsistencies
+runuser --user www-data -- php /var/www/html/occ files:scan --all
+```
 
 ### Utilities
 
