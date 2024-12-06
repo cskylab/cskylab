@@ -1,6 +1,6 @@
-# k8s-mod-hello
+# k8s-mod-mailu
 
-This namespace is intended to deploy a simple Hello World application in Kubernetes for testing purposes.
+This namespace installs the Mailu mail system on kubernetes.
 
 ## Generate configuration files with cskygen
 

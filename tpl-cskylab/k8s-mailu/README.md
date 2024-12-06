@@ -76,7 +76,9 @@ echo \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
-&& mkdir "/srv/{{ .namespace.name }}/data/postgresql"' \
+&& mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
+&& mkdir "/srv/{{ .namespace.name }}/data/mailu" \
+&& mkdir "/srv/{{ .namespace.name }}/data/redis"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -91,7 +93,9 @@ echo \
 && echo \
 && ssh {{ .localrsyncnodes.localadminusername }}@{{ .localrsyncnodes.all_pv }}.{{ .localrsyncnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
-&& mkdir "/srv/{{ .namespace.name }}/data/postgresql"' \
+&& mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
+&& mkdir "/srv/{{ .namespace.name }}/data/mailu" \
+&& mkdir "/srv/{{ .namespace.name }}/data/redis"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
