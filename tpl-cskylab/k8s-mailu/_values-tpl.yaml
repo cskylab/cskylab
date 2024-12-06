@@ -1,0 +1,54 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: k8s-mailu
+_tpldescription: Mailu mail system on kubernetes
+_tplversion: 99-99-99
+
+#
+# Values to override
+#
+
+## k8s cluster credentials kubeconfig file
+kubeconfig: config-k8s-mod
+
+namespace:
+  ## k8s namespace name
+  name: mailu
+    ## Service domain name
+  domain: cskylab.net
+
+publishing:
+  ## External url
+  url: mailu.mod.cskylab.net
+  ## Password for administrative user
+  password: 'NoFear21'
+
+certificate:
+  ## Cert-manager clusterissuer
+  clusterissuer: ca-test-internal
+
+registry:
+  ## Proxy Repository for Docker
+  proxy: harbor.cskylab.net/dockerhub
+  ## Private Repository for private images uploading
+  private: harbor.cskylab.net/cskylab
+  username: admin
+  password: 'NoFear21'
+
+## Local storage PV's node affinity (Configured in pv*.yaml)
+localpvnodes:    # (k8s node names)
+  all_pv: k8s-mod-n1
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
+localrsyncnodes: # (k8s node names)
+  all_pv: k8s-mod-n2
+  # k8s nodes domain name
+  domain: cskylab.net
+  # k8s nodes local administrator
+  localadminusername: kos
