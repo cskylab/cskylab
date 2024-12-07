@@ -76,13 +76,14 @@ echo \
 && echo \
 && ssh {{ .localpvnodes.localadminusername }}@{{ .localpvnodes.all_pv }}.{{ .localpvnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
-&& mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
-&& mkdir "/srv/{{ .namespace.name }}/data/postfix" \
-&& mkdir "/srv/{{ .namespace.name }}/data/dovecot" \
-&& mkdir "/srv/{{ .namespace.name }}/data/rspamd" \
+&& mkdir "/srv/{{ .namespace.name }}/data/admin" \
 && mkdir "/srv/{{ .namespace.name }}/data/clamav" \
-&& mkdir "/srv/{{ .namespace.name }}/data/webmail" \
-&& mkdir "/srv/{{ .namespace.name }}/data/redis"' \
+&& mkdir "/srv/{{ .namespace.name }}/data/dovecot" \
+&& mkdir "/srv/{{ .namespace.name }}/data/postfix" \
+&& mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
+&& mkdir "/srv/{{ .namespace.name }}/data/redis" \
+&& mkdir "/srv/{{ .namespace.name }}/data/rspamd" \
+&& mkdir "/srv/{{ .namespace.name }}/data/webmail"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -97,13 +98,14 @@ echo \
 && echo \
 && ssh {{ .localrsyncnodes.localadminusername }}@{{ .localrsyncnodes.all_pv }}.{{ .localrsyncnodes.domain }} \
   'sudo cs-lvmserv.sh -m create -qd "/srv/{{ .namespace.name }}" \
-&& mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
-&& mkdir "/srv/{{ .namespace.name }}/data/postfix" \
-&& mkdir "/srv/{{ .namespace.name }}/data/dovecot" \
-&& mkdir "/srv/{{ .namespace.name }}/data/rspamd" \
+&& mkdir "/srv/{{ .namespace.name }}/data/admin" \
 && mkdir "/srv/{{ .namespace.name }}/data/clamav" \
-&& mkdir "/srv/{{ .namespace.name }}/data/webmail" \
-&& mkdir "/srv/{{ .namespace.name }}/data/redis"' \
+&& mkdir "/srv/{{ .namespace.name }}/data/dovecot" \
+&& mkdir "/srv/{{ .namespace.name }}/data/postfix" \
+&& mkdir "/srv/{{ .namespace.name }}/data/postgresql" \
+&& mkdir "/srv/{{ .namespace.name }}/data/redis" \
+&& mkdir "/srv/{{ .namespace.name }}/data/rspamd" \
+&& mkdir "/srv/{{ .namespace.name }}/data/webmail"' \
 && echo \
 && echo "******** END of snippet execution ********" \
 && echo
@@ -148,7 +150,14 @@ The following PersistentVolume & StorageClass manifests are applied:
 
 ```bash
 # PV manifests
+pv-admin.yaml
+pv-clamav.yaml
+pv-dovecot.yaml
+pv-postfix.yaml
 pv-postgresql.yaml
+pv-redis.yaml
+pv-rspamd.yaml
+pv-webmail.yaml
 ```
 
 The node assigned in `nodeAffinity` section of the PV manifest, will be used when scheduling the pod that holds the service.

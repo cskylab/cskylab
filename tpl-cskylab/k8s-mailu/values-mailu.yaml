@@ -187,6 +187,11 @@ front:
 admin:
   ## @param admin.enabled Enable access to the admin interface
   enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: "{{ .namespace.name }}-admin"
+    accessModes: [ReadWriteOnce]
 
 
 ## @section Redis parameters
