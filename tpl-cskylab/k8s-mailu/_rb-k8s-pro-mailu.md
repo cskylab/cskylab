@@ -58,6 +58,11 @@ certificate:
   ## Cert-manager clusterissuer
   clusterissuer: ca-test-internal
 
+ingressnginx:
+  ## LoadBanancer IP static address
+  ## Must be previously configured in MetalLB
+  loadbalancerip: 192.168.83.23
+
 registry:
   ## Proxy Repository for Docker
   proxy: harbor.cskylab.net/dockerhub
