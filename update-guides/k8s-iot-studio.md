@@ -44,11 +44,11 @@
 
 This update covers the following charts:
 
-- **k8s-at-home/mosquitto v4.8.2**: appVersion v2.0.19
-- **k8s-at-home/node-red v10.3.2**: appVersion v3.1.8
-- **oauth2-proxy/oauth2-proxy v7.4.1**: appVersion v7.6.0
-- **influxdata/influxdb2 v2.1.2**: appVersion v2.7.5-alpine
-- **bitnami/grafana v10.0.6**: appVersion v10.4.1
+- **k8s-at-home/mosquitto v4.8.2**: appVersion v2.0.20
+- **k8s-at-home/node-red v10.3.2**: appVersion v4.0.5
+- **oauth2-proxy/oauth2-proxy v7.8.1**: appVersion v7.7.1
+- **influxdata/influxdb2 v2.1.2**: appVersion v2.7
+- **bitnami/grafana v11.3.26**: appVersion v11.3.0
 
 This procedure updates iot-studio installation in k8s-mod cluster.
 
@@ -70,6 +70,7 @@ source_charts="$(
 
 ## Repositories
 helm repo add k8s-at-home https://k8s-at-home.com/charts/
+helm repo add oauth2-proxy https://oauth2-proxy.github.io/manifests
 helm repo add influxdata https://helm.influxdata.com/
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
@@ -77,9 +78,9 @@ helm repo update
 ## Charts
 helm pull k8s-at-home/mosquitto --version 4.8.2 --untar
 helm pull k8s-at-home/node-red --version 10.3.2 --untar
-# helm pull oauth2-proxy/oauth2-proxy --version 7.4.1 --untar
+# helm pull oauth2-proxy/oauth2-proxy --version 7.8.1 --untar
 helm pull influxdata/influxdb2 --version 2.1.2 --untar
-helm pull bitnami/grafana --version 10.0.6 --untar
+helm pull bitnami/grafana --version 11.3.26 --untar
 
 EOF
 )"
@@ -99,7 +100,7 @@ image:
   repository: {{ .registry.proxy }}/library/eclipse-mosquitto
 
   # -- image tag
-  tag: 2.0.18
+  tag: 2.0.20
   # -- image pull policy
   # pullPolicy: IfNotPresent
 ```
@@ -111,7 +112,7 @@ image:
   # -- image repository
   repository: harbor.csky.cloud/dockerhub/nodered/node-red
   # -- image tag
-  tag: "3.1.8"
+  tag: "4.0.5"
   # -- image pull policy
   # pullPolicy: IfNotPresent
 ```
@@ -121,14 +122,14 @@ image:
 ```yaml
 image:
   repository: "harbor.csky.cloud/dockerhub/library/influxdb"
-  tag: 2.7.5-alpine
+  tag: 2.7
   pullPolicy: IfNotPresent
 ```
 
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## k8s-iot-studio v24-04-20 <!-- omit in toc -->
+## k8s-iot-studio v99-99-99 <!-- omit in toc -->
 ```
 
 - Save file
