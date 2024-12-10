@@ -1,6 +1,6 @@
 # [Harbor](https://goharbor.io/) registry <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v24-12-11 <!-- omit in toc -->
 
 ## Helm charts: bitnami/harbor v24.0.2 <!-- omit in toc -->
 

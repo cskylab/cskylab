@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99 (From v1.30 to v1.31)](#v99-99-99-from-v130-to-v131)
+- [v24-12-11 (From v1.30 to v1.31)](#v24-12-11-from-v130-to-v131)
   - [Prerequisites](#prerequisites)
     - [Containerd configuration (Not neccesary after Ubuntu 22.04)](#containerd-configuration-not-neccesary-after-ubuntu-2204)
     - [Change kubernetes package repository](#change-kubernetes-package-repository)
@@ -19,7 +19,7 @@
     - [Update mcc configuration](#update-mcc-configuration)
     - [Connect with mcc](#connect-with-mcc)
     - [Inject \& Deploy configuration to mcc](#inject--deploy-configuration-to-mcc)
-- [v99-99-99 (From v1.29 to v1.30)](#v99-99-99-from-v129-to-v130)
+- [v24-12-11 (From v1.29 to v1.30)](#v24-12-11-from-v129-to-v130)
   - [Prerequisites](#prerequisites-1)
     - [Containerd configuration (Not neccesary after Ubuntu 22.04)](#containerd-configuration-not-neccesary-after-ubuntu-2204-1)
     - [Change kubernetes package repository](#change-kubernetes-package-repository-1)
@@ -141,7 +141,7 @@
 
 ---
 
-## v99-99-99 (From v1.30 to v1.31)
+## v24-12-11 (From v1.30 to v1.31)
 
 ### Prerequisites 
 
@@ -443,7 +443,7 @@ Host mcc.cskylab.net
 
 
 
-## v99-99-99 (From v1.29 to v1.30)
+## v24-12-11 (From v1.29 to v1.30)
 
 ### Prerequisites 
 

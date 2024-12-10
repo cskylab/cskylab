@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-12-11](#v24-12-11)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [PostgreSQL backup](#postgresql-backup)
@@ -45,7 +45,7 @@
 
 ---
 
-## v99-99-99
+## v24-12-11
 
 ### Background
 
@@ -163,7 +163,7 @@ command:
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v24-12-11 <!-- omit in toc -->
 
 ## Helm charts: <!-- omit in toc -->
 

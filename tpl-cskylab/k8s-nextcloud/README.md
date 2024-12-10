@@ -1,6 +1,6 @@
 # [Nextcloud](https://nextcloud.com/) file sharing server <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v24-12-11 <!-- omit in toc -->
 
 ## Helm charts: nextcloud/nextcloud v4.6.5 bitnami/mariadb v20.1.1 <!-- omit in toc -->
 

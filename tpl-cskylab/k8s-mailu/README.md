@@ -1,6 +1,6 @@
 # Kubernetes Mailu<!-- omit in toc -->
 
-## `k8s-mailu` v99-99-99 <!-- omit in toc -->
+## `k8s-mailu` v24-12-11 <!-- omit in toc -->
 
 This namespace installs the Mailu mail system on kubernetes.
 

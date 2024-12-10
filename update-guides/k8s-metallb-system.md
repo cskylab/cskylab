@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-12-11](#v24-12-11)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Uninstall metallb-system namespace](#1--uninstall-metallb-system-namespace)
@@ -81,7 +81,7 @@
 
 ---
 
-## v99-99-99
+## v24-12-11
 
 ### Background
 
@@ -159,7 +159,7 @@ Configure IP address pools by running:
 - Edit `README.md` configuration file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v24-12-11 <!-- omit in toc -->
 
 ## MetalLB manifest version v0.14.8 <!-- omit in toc -->
 ```

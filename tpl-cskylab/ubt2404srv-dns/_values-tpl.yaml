@@ -6,7 +6,7 @@
 
 _tplname: ubt2404srv-dns
 _tpldescription: Ubuntu server 24.04 DNS bind9 installation
-_tplversion: 99-99-99
+_tplversion: 24-12-11
 
 #
 # Values to override

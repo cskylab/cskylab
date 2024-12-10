@@ -6,7 +6,7 @@
 
 _tplname: k8s-mailu
 _tpldescription: Mailu mail system on kubernetes
-_tplversion: 99-99-99
+_tplversion: 24-12-11
 
 #
 # Values to override

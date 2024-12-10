@@ -6,7 +6,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-12-11](#v24-12-11)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Update script cs-deploy.sh](#1--update-script-cs-deploysh)
@@ -38,7 +38,7 @@
     - [3.- Pull charts \& update](#3--pull-charts--update-4)
 
 ---
-## v99-99-99
+## v24-12-11
 
 ### Background
 
@@ -129,7 +129,7 @@ image:
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## k8s-iot-studio v99-99-99 <!-- omit in toc -->
+## k8s-iot-studio v24-12-11 <!-- omit in toc -->
 ```
 
 - Save file

@@ -1,6 +1,6 @@
 # x509 Certificate management for Kubernetes <!-- omit in toc -->
 
-## v99-99-99 <!-- omit in toc -->
+## v24-12-11 <!-- omit in toc -->
 
 ## Helm charts: jetstack/cert-manager v1.16.2 <!-- omit in toc -->
 

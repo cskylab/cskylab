@@ -6,7 +6,7 @@
 
 _tplname: ubt2404srv-lvm
 _tpldescription: Ubuntu server 24.04 LVM base installation
-_tplversion: 99-99-99
+_tplversion: 24-12-11
 
 #
 # Values to override

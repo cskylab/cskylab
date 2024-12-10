@@ -4,7 +4,7 @@
 
 ## Update Guides <!-- omit in toc -->
 
-- [v99-99-99](#v99-99-99)
+- [v24-12-11](#v24-12-11)
   - [Background](#background)
   - [How-to guides](#how-to-guides)
     - [1.- Backup PostgreSQL database version](#1--backup-postgresql-database-version)
@@ -80,7 +80,7 @@
   - [Reference](#reference-8)
 
 ---
-## v99-99-99
+## v24-12-11
 
 ### Background
 
@@ -213,7 +213,7 @@ postgresql:
 - Edit `README.md` documentation file, and change header as follows:
 
 ``` bash
-## v99-99-99 <!-- omit in toc -->
+## v24-12-11 <!-- omit in toc -->
 
 ## Helm charts: bitnami/harbor v24.0.2 <!-- omit in toc -->
 ```
