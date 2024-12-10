@@ -95,7 +95,7 @@ helm repo add oauth2-proxy https://oauth2-proxy.github.io/manifests
 helm repo update
 
 ## Charts
-helm pull oauth2-proxy/oauth2-proxy --version 7.4.1 --untar
+helm pull oauth2-proxy/oauth2-proxy --version 7.8.1 --untar
 
 EOF
 )"

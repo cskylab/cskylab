@@ -1,3 +1,10 @@
+global: {}
+# To help compatibility with other charts which use global.imagePullSecrets.
+# global:
+#   imagePullSecrets:
+#   - name: pullSecret1
+#   - name: pullSecret2
+
 ## Override the deployment namespace
 ##
 namespaceOverride: ""
@@ -71,11 +78,12 @@ image:
   # appVersion is used by default
   tag: ""
   pullPolicy: "IfNotPresent"
+  command: []
 
 # Optionally specify an array of imagePullSecrets.
 # Secrets must be manually created in the namespace.
 # ref: https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
-# imagePullSecrets:
+imagePullSecrets: []
   # - name: myRegistryKeySecretName
 
 # Set a custom containerPort if required.
@@ -85,6 +93,19 @@ image:
 
 extraArgs: {}
 extraEnv: []
+
+envFrom: []
+# Load environment variables from a ConfigMap(s) and/or Secret(s)
+# that already exists (created and managed by you).
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables
+#
+# PS: Changes in these ConfigMaps or Secrets will not be automatically
+#     detected and you must manually restart the relevant Pods after changes.
+#
+#  - configMapRef:
+#      name: special-config
+#  - secretRef:
+#      name: special-config-secret
 
 # -- Custom labels to add into metadata
 customLabels: {}
@@ -128,6 +149,10 @@ service:
   appProtocol: http
   annotations: {}
   # foo.io/bar: "true"
+  # configure externalTrafficPolicy
+  externalTrafficPolicy: ""
+  # configure internalTrafficPolicy
+  internalTrafficPolicy: ""
 
 ## Create or use ServiceAccount
 serviceAccount:
@@ -264,6 +289,16 @@ podDisruptionBudget:
   enabled: true
   minAvailable: 1
 
+## Horizontal Pod Autoscaling
+## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+#  targetMemoryUtilizationPercentage: 80
+  annotations: {}
+
 # Configure Kubernetes security context for pod
 # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 podSecurityContext: {}
@@ -279,7 +314,8 @@ initContainers:
   waitForRedis:
     enabled: true
     image:
-      repository: "docker.io/bitnami/kubectl"
+      repository: "alpine"
+      tag: "latest"
       pullPolicy: "IfNotPresent"
     # uses the kubernetes version of the cluster
     # the chart is deployed on, if not set
@@ -354,9 +390,7 @@ redis:
   # Redis specific helm chart settings, please see:
   # https://github.com/bitnami/charts/tree/master/bitnami/redis#parameters
   # redisPort: 6379
-  # cluster:
-  #   enabled: false
-  #   slaveCount: 1
+  # architecture: standalone
 
 # Enables apiVersion deprecation checks
 checkDeprecation: true

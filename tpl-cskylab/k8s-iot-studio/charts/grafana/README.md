@@ -14,7 +14,7 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 helm install my-release oci://registry-1.docker.io/bitnamicharts/grafana
 ```
 
-Looking to use Grafana in production? Try [VMware Tanzu Application Catalog](https://bitnami.com/enterprise), the enterprise edition of Bitnami Application Catalog.
+Looking to use Grafana in production? Try [VMware Tanzu Application Catalog](https://bitnami.com/enterprise), the commercial edition of the Bitnami catalog.
 
 ## Introduction
 
@@ -134,7 +134,7 @@ Bitnami charts allow setting resource requests and limits for all containers ins
 
 To make this process easier, the chart contains the `resourcesPreset` values, which automatically sets the `resources` section according to different presets. Check these presets in [the bitnami/common chart](https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15). However, in production workloads using `resourcePreset` is discouraged as it may not fully adapt to your specific needs. Find more information on container resource management in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
-### [Rolling VS Immutable tags](https://docs.bitnami.com/tutorials/understand-rolling-tags-containers)
+### [Rolling VS Immutable tags](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html)
 
 It is strongly recommended to use immutable tags in a production environment. This ensures your deployment does not change automatically if the same tag is updated with a different image.
 
@@ -368,7 +368,8 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
 | `global.imageRegistry`                                | Global Docker image registry                                                                                                                                                                                                                                                                                                                                        | `""`   |
 | `global.imagePullSecrets`                             | Global Docker registry secret names as an array                                                                                                                                                                                                                                                                                                                     | `[]`   |
-| `global.storageClass`                                 | Global StorageClass for Persistent Volume(s)                                                                                                                                                                                                                                                                                                                        | `""`   |
+| `global.defaultStorageClass`                          | Global default StorageClass for Persistent Volume(s)                                                                                                                                                                                                                                                                                                                | `""`   |
+| `global.storageClass`                                 | DEPRECATED: use global.defaultStorageClass instead                                                                                                                                                                                                                                                                                                                  | `""`   |
 | `global.compatibility.openshift.adaptSecurityContext` | Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation) | `auto` |
 
 ### Common parameters
@@ -483,8 +484,6 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | `grafana.resourcesPreset`                                   | Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if grafana.resources is set (grafana.resources is recommended for production). | `nano`           |
 | `grafana.resources`                                         | Set container requests and limits for different resources like CPU or memory (essential for production workloads)                                                                                                                 | `{}`             |
 | `grafana.livenessProbe.enabled`                             | Enable livenessProbe                                                                                                                                                                                                              | `true`           |
-| `grafana.livenessProbe.path`                                | Path for livenessProbe                                                                                                                                                                                                            | `/api/health`    |
-| `grafana.livenessProbe.scheme`                              | Scheme for livenessProbe                                                                                                                                                                                                          | `HTTP`           |
 | `grafana.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                                                                                                                                           | `120`            |
 | `grafana.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                                                                                                                                                  | `10`             |
 | `grafana.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                                                                                                                                                 | `5`              |
@@ -512,6 +511,7 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | `grafana.lifecycleHooks`                                    | for the Grafana container(s) to automate configuration before or after startup                                                                                                                                                    | `{}`             |
 | `grafana.sidecars`                                          | Attach additional sidecar containers to the Grafana pod                                                                                                                                                                           | `[]`             |
 | `grafana.initContainers`                                    | Add additional init containers to the Grafana pod(s)                                                                                                                                                                              | `[]`             |
+| `grafana.enableServiceLinks`                                | Whether information about services should be injected into pod's environment variable                                                                                                                                             | `true`           |
 | `grafana.extraVolumes`                                      | Additional volumes for the Grafana pod                                                                                                                                                                                            | `[]`             |
 | `grafana.extraVolumeMounts`                                 | Additional volume mounts for the Grafana container                                                                                                                                                                                | `[]`             |
 | `grafana.extraEnvVarsCM`                                    | Name of existing ConfigMap containing extra env vars for Grafana nodes                                                                                                                                                            | `""`             |
@@ -520,6 +520,9 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | `grafana.extraConfigmaps`                                   | Array to mount extra ConfigMaps to configure Grafana                                                                                                                                                                              | `[]`             |
 | `grafana.command`                                           | Override default container command (useful when using custom images)                                                                                                                                                              | `[]`             |
 | `grafana.args`                                              | Override default container args (useful when using custom images)                                                                                                                                                                 | `[]`             |
+| `grafana.pdb.create`                                        | Enable/disable a Pod Disruption Budget creation                                                                                                                                                                                   | `true`           |
+| `grafana.pdb.minAvailable`                                  | Minimum number/percentage of pods that should remain scheduled                                                                                                                                                                    | `""`             |
+| `grafana.pdb.maxUnavailable`                                | Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `grafana.pdb.minAvailable` and `grafana.pdb.maxUnavailable` are empty.                                                                    | `""`             |
 
 ### Persistence parameters
 
@@ -561,10 +564,12 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | `networkPolicy.enabled`                 | Specifies whether a NetworkPolicy should be created                                                                              | `true`                   |
 | `networkPolicy.allowExternal`           | Don't require server label for connections                                                                                       | `true`                   |
 | `networkPolicy.allowExternalEgress`     | Allow the pod to access any range of port and all destinations.                                                                  | `true`                   |
-| `networkPolicy.extraIngress`            | Add extra ingress rules to the NetworkPolice                                                                                     | `[]`                     |
+| `networkPolicy.addExternalClientAccess` | Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.                        | `true`                   |
+| `networkPolicy.extraIngress`            | Add extra ingress rules to the NetworkPolicy                                                                                     | `[]`                     |
 | `networkPolicy.extraEgress`             | Add extra ingress rules to the NetworkPolicy                                                                                     | `[]`                     |
-| `networkPolicy.ingressNSMatchLabels`    | Labels to match to allow traffic from other namespaces                                                                           | `{}`                     |
-| `networkPolicy.ingressNSPodMatchLabels` | Pod labels to match to allow traffic from other namespaces                                                                       | `{}`                     |
+| `networkPolicy.ingressPodMatchLabels`   | Labels to match to allow traffic from other pods. Ignored if `networkPolicy.allowExternal` is true.                              | `{}`                     |
+| `networkPolicy.ingressNSMatchLabels`    | Labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.                        | `{}`                     |
+| `networkPolicy.ingressNSPodMatchLabels` | Pod labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.                    | `{}`                     |
 | `ingress.enabled`                       | Set to true to enable ingress record generation                                                                                  | `false`                  |
 | `ingress.pathType`                      | Ingress Path type                                                                                                                | `ImplementationSpecific` |
 | `ingress.apiVersion`                    | Override API Version (automatically detected if not set)                                                                         | `""`                     |
@@ -653,6 +658,10 @@ Find more information about how to deal with common errors related to Bitnami's 
 
 ## Upgrading
 
+### To 11.0.0
+
+This major release only bumps the Grafana version to 11.x. No major issues are expected during the upgrade. See the upstream documentation <https://grafana.com/docs/grafana/latest/whatsnew/whats-new-in-v11-0/> for more info about the changes included in this new major version of the application
+
 ### To 10.0.0
 
 This major bump changes the following security defaults:
@@ -706,7 +715,7 @@ This version also introduces `bitnami/common`, a [library chart](https://helm.sh
 
 #### Useful links
 
-- <https://docs.bitnami.com/tutorials/resolve-helm2-helm3-post-migration-issues/>
+- <https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-resolve-helm2-helm3-post-migration-issues-index.html>
 - <https://helm.sh/docs/topics/v2_v3_migration/>
 - <https://helm.sh/blog/migrate-from-helm-v2-to-helm-v3/>
 
