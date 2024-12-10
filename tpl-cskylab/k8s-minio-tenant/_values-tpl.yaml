@@ -6,7 +6,7 @@
 
 _tplname: k8s-minio-tenant
 _tpldescription: Kubernetes MinIO Tenant
-_tplversion: 24-04-20
+_tplversion: 99-99-99
 
 #
 # Values to override

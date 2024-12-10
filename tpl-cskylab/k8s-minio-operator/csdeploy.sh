@@ -95,7 +95,7 @@ helm repo add minio https://operator.min.io/
 helm repo update
 
 ## Charts
-helm pull minio/operator --version 5.0.14 --untar
+helm pull minio/operator --version 6.0.4 --untar
 
 EOF
 )"

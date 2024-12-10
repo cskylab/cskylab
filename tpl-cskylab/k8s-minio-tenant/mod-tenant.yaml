@@ -1,5 +1,5 @@
 ##
-## Release v5.0.14
+## Release v6.0.4
 ## Modified from https://github.com/minio/operator/blob/master/examples/kustomization/base/tenant.yaml
 ##
 
@@ -149,7 +149,7 @@ spec:
   externalClientCertSecrets: [ ]
 
   ## Registry location and Tag to download MinIO Server image
-  image: quay.io/minio/minio:RELEASE.2024-04-06T05-26-02Z
+  image: quay.io/minio/minio:RELEASE.2024-10-02T17-50-41Z
   imagePullSecret: { }
   ## Mount path where PV will be mounted inside container(s).
   mountPath: /export
@@ -238,53 +238,3 @@ spec:
   #   labels:
   #     app: minio-sm
   ## Audit Logs will be deprecated soon, commenting out for now!.
-  ## LogSearch API setup for MinIO Tenant.
-  # log:
-  #   image: "" # defaults to minio/operator:v5.0.4
-  #   env: [ ]
-  #   resources: { }
-  #   nodeSelector: { }
-  #   affinity:
-  #     nodeAffinity: { }
-  #     podAffinity: { }
-  #     podAntiAffinity: { }
-  #   tolerations: [ ]
-  #   annotations: { }
-  #   labels: { }
-  #   audit:
-  #     diskCapacityGB: 1
-  #   ## Postgres setup for LogSearch API
-  #   db:
-  #     image: "" # defaults to library/postgres
-  #     env: [ ]
-  #     initimage: "" # defaults to busybox:1.33.1
-  #     volumeClaimTemplate:
-  #       metadata: { }
-  #       spec:
-  #         storageClassName: standard
-  #         accessModes:
-  #           - ReadWriteOnce
-  #         resources:
-  #           requests:
-  #             storage: 1Gi
-  #     resources: { }
-  #     nodeSelector: { }
-  #     affinity:
-  #       nodeAffinity: { }
-  #       podAffinity: { }
-  #       podAntiAffinity: { }
-  #     tolerations: [ ]
-  #     annotations: { }
-  #     labels: { }
-  #     serviceAccountName: ""
-  #     securityContext:
-  #       runAsUser: 999
-  #       runAsGroup: 999
-  #       runAsNonRoot: true
-  #       fsGroup: 999
-  #   serviceAccountName: ""
-  #   securityContext:
-  #     runAsUser: 1000
-  #     runAsGroup: 1000
-  #     runAsNonRoot: true
-  #     fsGroup: 1000
