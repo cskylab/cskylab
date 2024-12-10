@@ -63,7 +63,7 @@
 
 ### Background
 
-This procedure upgrades minio-operator to version `5.0.14` and minio-tenant to version `quay.io/minio/minio:RELEASE.2024-04-06T05-26-02Z`.
+This procedure upgrades minio-operator to version `6.0.4` and minio-tenant to version `quay.io/minio/minio:RELEASE.2024-10-02T17-50-41Z`.
 
 This procedure updates the installation in k8s-mod cluster.
 
@@ -79,7 +79,7 @@ From VS Code Remote connected to `mcc`, open  terminal at `cs-mod/k8s-mod/minio-
 
 ```yaml
 ##
-## Release v5.0.14
+## Release v6.0.4
 ## Modified from https://github.com/minio/operator/blob/master/examples/kustomization/base/tenant.yaml
 ##
 
