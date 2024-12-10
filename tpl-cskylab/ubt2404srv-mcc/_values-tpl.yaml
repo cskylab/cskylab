@@ -17,7 +17,7 @@ k8s_version: "1.31.3-1.1"
 k8s_repository: "v1.31"
 
 # Go version
-go_version: "go1.23.2.linux-amd64.tar.gz"
+go_version: "go1.23.4.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:
