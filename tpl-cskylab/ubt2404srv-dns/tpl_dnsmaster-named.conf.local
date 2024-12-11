@@ -1,0 +1,45 @@
+//
+//  named.conf.local for dns stealth master
+//
+//  Copyright © 2024 cSkyLab.com
+//
+
+//
+// Reverse Zones INTERNAL
+// Reverse internal zones are defined in these groups
+// Change "db.empty" to "db.xxx.in-addr.arpa.dns" in case zone is used.
+//
+
+// zone "10.in-addr.arpa"      { type master; file "/etc/bind/db.empty"; };
+ 
+// zone "16.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "17.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "18.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "19.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "20.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "21.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "22.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "23.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "24.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "25.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "26.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "27.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "28.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "29.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "30.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+// zone "31.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
+
+// zone "168.192.in-addr.arpa" { type master; file "/etc/bind/db.168.192.in-addr.arpa.dns"; };
+
+//
+// Reverse Zones EXTERNAL
+//
+// zone "xxx.xxx.xxx.in-addr.arpa" { type master; file "/etc/bind/db.xxx.xxx.xxx.in-addr.arpa.dns"; };
+
+
+//
+// Direct Zones
+//
+zone "cskylab.net"  { type master; file "/etc/bind/db.cskylab.net.dns"; };
+
+// EOF (This line is required)

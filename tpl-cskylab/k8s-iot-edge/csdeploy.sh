@@ -98,7 +98,7 @@ helm repo update
 ## Charts
 helm pull k8s-at-home/mosquitto --version 4.8.2 --untar
 helm pull k8s-at-home/node-red --version 10.3.2 --untar
-# helm pull oauth2-proxy/oauth2-proxy --version 7.4.1 --untar
+# helm pull oauth2-proxy/oauth2-proxy --version 7.8.1 --untar
 
 EOF
 )"

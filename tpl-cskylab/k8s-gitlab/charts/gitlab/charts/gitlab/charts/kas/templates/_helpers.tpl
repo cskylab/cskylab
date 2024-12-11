@@ -24,7 +24,10 @@ Build Redis config for KAS
 {{-   $_ := set $ "redisConfigName" "sharedState" -}}
 {{- end -}}
 {{- include "gitlab.redis.selectedMergedConfig" . -}}
-{{- if .redisMergedConfig.password.enabled -}}
+{{- if .redisMergedConfig.user }}
+username: {{ .redisMergedConfig.user }}
+{{- end -}}
+{{- if .redisMergedConfig.password.enabled }}
 password_file: /etc/kas/redis/{{ printf "%s-password" (default "redis" .redisConfigName) }}
 {{- end -}}
 {{- if not .redisMergedConfig.sentinels }}
@@ -37,10 +40,21 @@ sentinel:
     - {{ quote (print (trim $entry.host) ":" ( default 26379 $entry.port | int ) ) -}}
   {{ end }}
   master_name: {{ template "gitlab.redis.host" . }}
+{{- if .redisMergedConfig.sentinelAuth.enabled }}
+  sentinel_password_file: "/etc/kas/redis-sentinel/redis-sentinel-password"
+{{- end -}}
 {{- end -}}
 {{- if eq (.redisMergedConfig.scheme | default "") "rediss" }}
 tls:
   enabled: true
 {{- end -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Labels to select Pods created by the KAS Deployment. Used for Service, PodMonitor, ServiceMonitor, etc.
+*/}}
+{{- define "kas.podSelectorLabels" -}}
+app: {{ template "name" . }}
+release: {{ .Release.Name }}
 {{- end -}}

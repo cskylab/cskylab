@@ -4,14 +4,16 @@ metadata:
   labels:
     app: {{ template "oauth2-proxy.name" . }}
 {{- include "oauth2-proxy.labels" . | indent 4 }}
-  {{- if .Values.deploymentAnnotations }}
+  {{- with .Values.deploymentAnnotations }}
   annotations:
-{{ toYaml .Values.deploymentAnnotations | indent 8 }}
+{{ tpl ( toYaml . ) $ | indent 4 }}
   {{- end }}
   name: {{ template "oauth2-proxy.fullname" . }}
   namespace: {{ template "oauth2-proxy.namespace" $ }}
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   {{- with .Values.strategy }}
   strategy:
@@ -23,7 +25,9 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if .Values.config.configFile }}
         checksum/config: {{ tpl .Values.config.configFile $ | sha256sum }}
+        {{- end }}
         {{- if .Values.alphaConfig.enabled }}
         checksum/alpha-config: {{ include "oauth2-proxy.alpha-config" . | sha256sum }}
         {{- end }}
@@ -62,13 +66,26 @@ spec:
       {{- if and .Values.redis.enabled .Values.initContainers.waitForRedis.enabled }}
       initContainers:
       - name: wait-for-redis
-        image: "{{ .Values.initContainers.waitForRedis.image.repository }}:{{ include "kubectl.version" . }}"
+        image: "{{ .Values.initContainers.waitForRedis.image.repository }}:{{ .Values.initContainers.waitForRedis.image.tag }}"
         imagePullPolicy: {{ .Values.initContainers.waitForRedis.image.pullPolicy }}
-        args:
-          - wait
-          - pod/{{ include "oauth2-proxy.redis.fullname" . }}-master-0
-          - --for=condition=ready
-          - --timeout={{ .Values.initContainers.waitForRedis.timeout }}s
+        command: ["/bin/sh", "-c", "/scripts/check-redis.sh"]
+        env:
+        - name: TOTAL_RETRY_TIME
+          value: "{{ .Values.initContainers.waitForRedis.timeout }}"
+        {{- if eq (default "" .Values.sessionStorage.redis.clientType) "standalone" }}
+        - name: OAUTH2_PROXY_REDIS_CONNECTION_URL
+          value: {{ include "oauth2-proxy.redis.StandaloneUrl" . }}
+        {{- else if eq (default "" .Values.sessionStorage.redis.clientType) "cluster" }}
+        - name: OAUTH2_PROXY_REDIS_USE_CLUSTER
+          value: "true"
+        - name: OAUTH2_PROXY_REDIS_CLUSTER_CONNECTION_URLS
+          value: {{ .Values.sessionStorage.redis.cluster.connectionUrls }}
+        {{- else if eq (default "" .Values.sessionStorage.redis.clientType) "sentinel" }}
+        - name: OAUTH2_PROXY_REDIS_USE_SENTINEL
+          value: "true"
+        - name: OAUTH2_PROXY_REDIS_SENTINEL_CONNECTION_URLS
+          value: {{ .Values.sessionStorage.redis.sentinel.connectionUrls }}
+        {{- end }}
       {{- if .Values.initContainers.waitForRedis.securityContext.enabled }}
       {{- $securityContext := unset .Values.initContainers.waitForRedis.securityContext "enabled" }}
         securityContext:
@@ -76,6 +93,9 @@ spec:
       {{- end }}
         resources:
           {{- toYaml .Values.initContainers.waitForRedis.resources | nindent 10 }}
+        volumeMounts:
+        - name: redis-script
+          mountPath: /scripts
       {{- end }}
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
@@ -84,6 +104,12 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ include "oauth2-proxy.version" . }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.image.command }}
+        command:
+          {{- range .Values.image.command }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
         args:
         {{- if .Values.alphaConfig.enabled }}
           - --alpha-config=/etc/oauth2_proxy/oauth2_proxy.yml
@@ -118,7 +144,7 @@ spec:
         {{- if .Values.authenticatedEmailsFile.template }}
           - --authenticated-emails-file=/etc/oauth2-proxy/{{ .Values.authenticatedEmailsFile.template }}
         {{- else }}
-          - --authenticated-emails-file=/etc/oauth2-proxy/authenticated-emails-list
+          - --authenticated-emails-file=/etc/oauth2-proxy/{{ template "oauth2-proxy.fullname" . }}-accesslist
         {{- end }}
         {{- end }}
         {{- with .Values.config.google }}
@@ -210,6 +236,10 @@ spec:
         {{- end }}
         {{- if .Values.extraEnv }}
 {{ tpl (toYaml .Values.extraEnv) . | indent 8 }}
+        {{- end }}
+        {{- if .Values.envFrom }}
+        envFrom:
+{{ tpl (toYaml .Values.envFrom) . | indent 8 }}
         {{- end }}
         ports:
         {{- if .Values.containerPort }}
@@ -311,7 +341,7 @@ spec:
 {{- if .Values.authenticatedEmailsFile.template }}
             path: {{ .Values.authenticatedEmailsFile.template }}
 {{- else }}
-            path: authenticated-emails-list
+            path: {{ template "oauth2-proxy.fullname" . }}-accesslist
 {{- end }}
 {{- if .Values.authenticatedEmailsFile.template }}
           secretName: {{ .Values.authenticatedEmailsFile.template }}
@@ -319,7 +349,12 @@ spec:
           secretName: {{ template "oauth2-proxy.fullname" . }}-accesslist
 {{- end }}
 {{- end }}
-
+{{- if and .Values.redis.enabled .Values.initContainers.waitForRedis.enabled }}
+      - name: redis-script
+        configMap:
+          name: {{ template "oauth2-proxy.fullname" . }}-wait-for-redis
+          defaultMode: 0775
+{{- end }}
 {{- if or .Values.config.existingConfig .Values.config.configFile }}
       - configMap:
           defaultMode: 420
@@ -340,7 +375,7 @@ spec:
 {{- end }}
 {{- end }}
 {{- if ne (len .Values.extraVolumes) 0 }}
-{{ toYaml .Values.extraVolumes | indent 6 }}
+{{ tpl (toYaml .Values.extraVolumes) . | indent 6 }}
 {{- end }}
 {{- if and (.Values.authenticatedEmailsFile.enabled) (eq .Values.authenticatedEmailsFile.persistence "configmap") }}
       - configMap:
@@ -354,26 +389,28 @@ spec:
 {{- if .Values.authenticatedEmailsFile.template }}
             path: {{ .Values.authenticatedEmailsFile.template }}
 {{- else }}
-            path: authenticated-emails-list
+            path: {{ template "oauth2-proxy.fullname" . }}-accesslist
 {{- end }}
         name: configaccesslist
 {{- end }}
 
-      {{- if .Values.imagePullSecrets }}
+    {{- with (.Values.imagePullSecrets | default .Values.global.imagePullSecrets) }}
       imagePullSecrets:
-{{ toYaml .Values.imagePullSecrets | indent 8 }}
-      {{- end }}
-    {{- if .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
       affinity:
-{{ toYaml .Values.affinity | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- if .Values.nodeSelector }}
+    {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.nodeSelector | indent 8 }}
+        {{ toYaml . | nindent 8 }}
     {{- end }}
+    {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
-      {{- with .Values.topologySpreadConstraints }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.topologySpreadConstraints }}
       topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+    {{- end }}

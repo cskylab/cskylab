@@ -1,5 +1,5 @@
 {{/*
-Copyright VMware, Inc.
+Copyright Broadcom, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
@@ -9,15 +9,11 @@ Return the proper image name
 {{ include "common.images.image" ( dict "imageRoot" .Values.path.to.the.image "global" .Values.global ) }}
 */}}
 {{- define "common.images.image" -}}
-{{- $registryName := .imageRoot.registry -}}
+{{- $registryName := default .imageRoot.registry ((.global).imageRegistry) -}}
 {{- $repositoryName := .imageRoot.repository -}}
 {{- $separator := ":" -}}
 {{- $termination := .imageRoot.tag | toString -}}
-{{- if .global }}
-    {{- if .global.imageRegistry }}
-     {{- $registryName = .global.imageRegistry -}}
-    {{- end -}}
-{{- end -}}
+
 {{- if .imageRoot.digest }}
     {{- $separator = "@" -}}
     {{- $termination = .imageRoot.digest | toString -}}
@@ -36,15 +32,21 @@ Return the proper Docker Image Registry Secret Names (deprecated: use common.ima
 {{- define "common.images.pullSecrets" -}}
   {{- $pullSecrets := list }}
 
-  {{- if .global }}
-    {{- range .global.imagePullSecrets -}}
+  {{- range ((.global).imagePullSecrets) -}}
+    {{- if kindIs "map" . -}}
+      {{- $pullSecrets = append $pullSecrets .name -}}
+    {{- else -}}
       {{- $pullSecrets = append $pullSecrets . -}}
-    {{- end -}}
+    {{- end }}
   {{- end -}}
 
   {{- range .images -}}
     {{- range .pullSecrets -}}
-      {{- $pullSecrets = append $pullSecrets . -}}
+      {{- if kindIs "map" . -}}
+        {{- $pullSecrets = append $pullSecrets .name -}}
+      {{- else -}}
+        {{- $pullSecrets = append $pullSecrets . -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 
@@ -64,15 +66,21 @@ Return the proper Docker Image Registry Secret Names evaluating values as templa
   {{- $pullSecrets := list }}
   {{- $context := .context }}
 
-  {{- if $context.Values.global }}
-    {{- range $context.Values.global.imagePullSecrets -}}
+  {{- range (($context.Values.global).imagePullSecrets) -}}
+    {{- if kindIs "map" . -}}
+      {{- $pullSecrets = append $pullSecrets (include "common.tplvalues.render" (dict "value" .name "context" $context)) -}}
+    {{- else -}}
       {{- $pullSecrets = append $pullSecrets (include "common.tplvalues.render" (dict "value" . "context" $context)) -}}
     {{- end -}}
   {{- end -}}
 
   {{- range .images -}}
     {{- range .pullSecrets -}}
-      {{- $pullSecrets = append $pullSecrets (include "common.tplvalues.render" (dict "value" . "context" $context)) -}}
+      {{- if kindIs "map" . -}}
+        {{- $pullSecrets = append $pullSecrets (include "common.tplvalues.render" (dict "value" .name "context" $context)) -}}
+      {{- else -}}
+        {{- $pullSecrets = append $pullSecrets (include "common.tplvalues.render" (dict "value" . "context" $context)) -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 

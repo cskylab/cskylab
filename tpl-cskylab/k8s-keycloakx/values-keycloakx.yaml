@@ -5,7 +5,7 @@ image:
   # The Keycloak image repository
   repository: quay.io/keycloak/keycloak
   # Overrides the Keycloak image tag whose default is the chart appVersion
-  tag: "24.0.2"
+  tag: "26.0"
   # Overrides the Keycloak image tag with a specific digest
   digest: ""
   # The Keycloak image pull policy
@@ -45,17 +45,14 @@ extraInitContainers: |
 
 # Additional environment variables for Keycloak
 extraEnv: |
-  - name: KEYCLOAK_ADMIN
+  - name: KC_BOOTSTRAP_ADMIN_USERNAME
     value: keycloak
-  - name: KEYCLOAK_ADMIN_PASSWORD
+  - name: KC_BOOTSTRAP_ADMIN_PASSWORD
     value: "{{ .publishing.password }}"
   - name: JAVA_OPTS_APPEND
     value: >-
       -Djgroups.dns.query={{ .namespace.name }}-headless
-      -XX:+UseContainerSupport
       -XX:MaxRAMPercentage=50.0
-      -Djava.net.preferIPv4Stack=true
-      -Djava.awt.headless=true
 
 # Add additional volumes, e. g. for custom themes
 extraVolumes: |
@@ -91,10 +88,8 @@ extraVolumeMounts: |
 command:
   - "/opt/keycloak/bin/kc.sh"
   - "start"
-  - "--http-enabled=true"
-  - "--http-port=8080"
-  - "--hostname-strict=false"
-  - "--hostname-strict-https=false"
+  - "--hostname={{ .publishing.url }}"
+  - "--proxy-headers=xforwarded"
 
 ingress:
   # If `true`, an Ingress is created

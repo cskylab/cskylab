@@ -1,0 +1,291 @@
+## Deploying values for mailu.
+
+## @section Global parameters
+## Global common parameters (see Bitnamis common chart)
+## @param global.imageRegistry Global container image registry
+## @param global.imagePullSecrets Global container image pull secret
+## @param global.storageClass Global storageClass to use for persistent volumes
+global:
+
+  database:
+    ## @param global.database.roundcube.database Name of the roundcube database
+    ## @param global.database.roundcube.username Username to use for the roundcube database
+    ## @param global.database.roundcube.password Password to use for the roundcube database
+    ## @param global.database.roundcube.existingSecret Name of an existing secret to use for the roundcube database
+    ## @param global.database.roundcube.existingSecretPasswordKey Name of the key in the existing secret to use for the roundcube database password
+    roundcube:
+      database: roundcube
+      username: roundcube
+      password: "{{ .publishing.password }}"
+
+## @section Mailu parameters
+
+## e.g.:
+## hostnames:
+##   - mail.example.com
+##   - imap.example.com
+## @param hostnames List of hostnames to generate certificates and ingresses for. The first will be used as primary mail hostname.
+hostnames:
+  - "{{ .publishing.url }}"
+
+## e.g.:
+## domain: example.com
+## @param domain Mail domain name. See https://github.com/Mailu/Mailu/blob/master/docs/faq.rst#what-is-the-difference-between-domain-and-hostnames
+domain: "{{ .publishing.url }}"
+
+## e.g.:
+## secretKey: chang3m3!
+## @param secretKey The secret key is required for protecting authentication cookies and must be set individually for each deployment
+## If empty, a random secret key will be generated and saved in a secret
+secretKey: "{{ .publishing.url }}"
+
+## @param timezone Timezone to use for the containers
+# timezone: "Etc/UTC"
+timezone: "Europe/Madrid"
+
+## e.g.:
+## initialAccount:
+##   username: mailadmin
+##   domain: mydomain.com
+##   password: ""
+##   existingSecret: mailu-secret
+##
+## @param initialAccount.enabled Enable the creation of the initial account
+## @param initialAccount.username Username of the initial account
+## @param initialAccount.domain Domain of the initial account
+## @param initialAccount.password Password of the initial account; ignored if using existing secret; if empty, a random password will be generated and saved in a secret
+## @param initialAccount.existingSecret Name of the existing secret to retrieve the initial account's password
+## @param initialAccount.existingSecretPasswordKey Name of the key in the existing secret to use for the initial account's password
+## @param initialAccount.mode How to treat the creationg of the initial account. Possible values: "create", "update" or "ifmissing"
+initialAccount:
+  enabled: true
+  username: admin
+  domain: "{{ .publishing.url }}"
+  password: "{{ .publishing.password }}"
+
+## @param api.enabled Enable the API interface
+## @param api.token Token to use for the API interface - if empty, a random token will be generated and saved in a secret
+## @param api.existingSecret Name of the existing secret to retrieve the API token - if set, the token will be ignored
+## @param api.existingSecretTokenKey Name of the key in the existing secret to use for the API token
+## @param api.webPath Path for the API interface
+api:
+  enabled: true
+  token: "{{ .publishing.password }}"
+
+## @param subnet Change this if you're using different address ranges for pods (IPv4)
+# subnet: 10.42.0.0/16
+# Default for weave-net pods network:
+subnet: 10.32.0.0/12
+
+## @param logLevel default log level. can be overridden globally or per service
+# logLevel: WARNING
+logLevel: INFO
+
+
+## @section Storage parameters
+
+## If deploying mariadb or postgresql from this chart (see `mariadb.enabled` and `postgresql.enabled`),
+## the username, password and database name for the `mailu` database needs to be configured in the respective sections.
+## If using an external database, the `mailu` database needs to be created manually and the credentials need to be configured here.
+## The `roundcube` database needs to be configured under the `global.database` section.
+## If using the built-in MariaDB or PostgreSQL, the `roundcube` database will be created automatically.
+externalDatabase:
+  ## @param externalDatabase.enabled Set to true to use an external database
+  enabled: true
+
+  ## @param externalDatabase.type Type of the external database for mailu and roundcube (`mysql`/`postgresql`)
+  ## Use `mysql` for MariaDB
+  type: "postgresql"
+
+  ## @param externalDatabase.host Hostname of the database
+  host: "postgresql"
+
+  ## @param externalDatabase.port Port of the database
+  port: 5432
+
+  ## @param externalDatabase.database Name of the database
+  database: mailu
+
+  ## @param externalDatabase.username Username to use for the database
+  username: mailu
+
+  ## @param externalDatabase.password Password to use for the database
+  password: "{{ .publishing.password }}"
+
+## @param persistence.single_pvc Setings for a single volume for all apps.
+## Set single_pvc: false to use a per app volume and set the properties in <app>.persistence (ex. admin.persistence)
+## @param persistence.size Size of the persistent volume claim (for single PVC)
+## @param persistence.accessModes Access mode of backing PVC (for single PVC)
+## @param persistence.annotations Annotations for the PVC (for single PVC)
+## @param persistence.hostPath Path to mount the volume at on the host
+## @param persistence.existingClaim Name of existing PVC (for single PVC)
+## @param persistence.storageClass Storage class of backing PVC (for single PVC)
+## @param persistence.claimNameOverride Override the name of the PVC (for single PVC)
+persistence:
+  single_pvc: false
+
+## @section Ingress settings
+
+## Set external ingress config
+ingress:
+  ## @param ingress.enabled Enable external ingress
+  enabled: true
+
+  ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ingressClassName: "nginx"
+
+  ## @param ingress.annotations [object] Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .certificate.clusterissuer }}
+
+## @section Frontend load balancer for non-HTTP(s) services
+front:
+
+  ## @param front.hostPort.enabled Expose front mail ports via hostPort
+  hostPort:
+    enabled: false
+
+  ## Expose front mail ports via external service (ClusterIP or LoadBalancer)
+  ## @param front.externalService.enabled Expose front mail ports via external service (ClusterIP or LoadBalancer)
+  ## @param front.externalService.type Service type (ClusterIP or LoadBalancer)
+  ## @param front.externalService.externalTrafficPolicy Service externalTrafficPolicy (Cluster or Local)
+  ## @param front.externalService.loadBalancerIP Service loadBalancerIP
+  ## @param front.externalService.annotations Service annotations
+  ## @param front.externalService.ports.pop3 Expose POP3 port - 110/tcp
+  ## @param front.externalService.ports.pop3s Expose POP3 port (TLS) - 995/tcp
+  ## @param front.externalService.ports.imap Expose IMAP port - 143/tcp
+  ## @param front.externalService.ports.imaps Expose IMAP port (TLS) - 993/tcp
+  ## @param front.externalService.ports.smtp Expose SMTP port - 25/tcp
+  ## @param front.externalService.ports.smtps Expose SMTP port (TLS) - 465/tcp
+  ## @param front.externalService.ports.submission Expose Submission port - 587/tcp
+  ## @param front.externalService.ports.manageSieve Expose ManageSieve port - 4190/tcp
+  externalService:
+    enabled: true
+    type: LoadBalancer
+    loadBalancerIP: "{{ .ingressnginx.loadbalancerip }}"
+    externalTrafficPolicy: Local
+    annotations: {}
+    ports:
+      pop3: false
+      pop3s: true
+      imap: false
+      imaps: true
+      smtp: true
+      smtps: true
+      submission: false
+      manageSieve: true
+
+## @section Admin parameters
+admin:
+  ## @param admin.enabled Enable access to the admin interface
+  enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: "{{ .namespace.name }}-admin"
+    accessModes: [ReadWriteOnce]
+
+
+## @section Redis parameters
+## Redis chart configuration
+## for more options see https://github.com/bitnami/charts/tree/master/bitnami/redis
+redis:
+  ## @param redis.enabled Enable redis deployment through the redis subchart
+  enabled: true
+
+  ## @param redis.architecture Redis architecture. Allowed values: `standalone` or `replication`
+  architecture: standalone
+
+  ## @param redis.auth.enabled DON'T CHANGE THIS VALUE. Mailu doesn't support Redis authentication
+  auth:
+    enabled: false
+
+  master:
+    ## @param redis.master.enabled DON'T CHANGE THIS VALUE. Enable redis master
+    enabled: true
+
+    ## @param redis.master.count Number of redis master replicas
+    count: 1
+
+    ## @param redis.master.persistence.enabled Enable persistence using Persistent Volume Claims
+    ## @param redis.master.persistence.size Pod pvc size
+    ## @param redis.master.persistence.storageClass Pod pvc storage class
+    ## @param redis.master.persistence.accessModes Pod pvc access modes
+    ## @param redis.master.persistence.annotations Pod pvc annotations
+    ## @param redis.master.persistence.existingClaim Pod pvc existing claim; necessary if using single_pvc
+    ## @param redis.master.persistence.subPath Subpath in PVC; necessary if using single_pvc (set it to `/redis`)
+    persistence:
+      enabled: true
+      size: 8Gi
+      storageClass: "{{ .namespace.name }}-redis"
+      accessModes: [ReadWriteOnce]
+
+  ## @param redis.replica.count Number of redis replicas (only if `redis.architecture=replication`)
+  ## Don't forget to configure replicas persistence if changing this value
+  replica:
+    count: 0
+
+## @section Postfix parameters
+postfix:
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: "{{ .namespace.name }}-postfix"
+    accessModes: [ReadWriteOnce]
+
+## @section Dovecot parameters
+dovecot:
+  ## @param dovecot.enabled Enable dovecot
+  enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: "{{ .namespace.name }}-dovecot"
+    accessModes: [ReadWriteOnce]
+
+## @section rspamd parameters
+rspamd:
+  ## @param rspamd.enabled Enable rspamd
+  enabled: true
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: "{{ .namespace.name }}-rspamd"
+    accessModes: [ReadWriteOnce]
+
+
+## @section clamav parameters
+clamav:
+  ## @param clamav.enabled Enable ClamAV
+  enabled: true
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClass: "{{ .namespace.name }}-clamav"
+    accessModes: [ReadWriteOnce]
+
+## @section webmail parameters
+webmail:
+  ## @param webmail.enabled Enable deployment of Roundcube webmail
+  enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: "{{ .namespace.name }}-webmail"
+    accessModes: [ReadWriteOnce]
+
+## @section Tika parameters
+tika:
+  ## @param tika.languages Array of languages to enable (sets the FULL_TEXT_SEARCH environment variable); "off" to disable
+  ## See https://doc.dovecot.org/settings/plugin/fts-plugin/#fts-languages for all available languages
+  languages:
+    - en
+    - es

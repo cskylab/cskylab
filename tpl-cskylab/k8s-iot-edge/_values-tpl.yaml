@@ -6,7 +6,7 @@
 
 _tplname: k8s-iot-edge
 _tpldescription: Kubernetes IOT Edge
-_tplversion: 24-04-20
+_tplversion: 24-12-11
 
 #
 # Values to override

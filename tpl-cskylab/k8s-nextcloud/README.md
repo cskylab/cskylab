@@ -1,8 +1,8 @@
 # [Nextcloud](https://nextcloud.com/) file sharing server <!-- omit in toc -->
 
-## v24-04-20 <!-- omit in toc -->
+## v24-12-11 <!-- omit in toc -->
 
-## Helm charts: nextcloud/nextcloud v4.6.5 bitnami/mariadb v18.0.1 <!-- omit in toc -->
+## Helm charts: nextcloud/nextcloud v6.2.4 bitnami/mariadb v20.1.1 <!-- omit in toc -->
 
 [Nextcloud](https://nextcloud.com/) is a file sharing server that puts the control and security of your own data back into your hands.
 
@@ -27,8 +27,7 @@ Configuration files are deployed from template {{ ._tpldescription }} version {{
   - [Keycloak Client Configuration](#keycloak-client-configuration)
   - [Nextcloud OIDC Configuration](#nextcloud-oidc-configuration)
   - [Nextcloud occ commands](#nextcloud-occ-commands)
-    - [Add missing indexes](#add-missing-indexes)
-    - [List custom certificates](#list-custom-certificates)
+    - [occ commands examples](#occ-commands-examples)
   - [Utilities](#utilities)
     - [Passwords and secrets](#passwords-and-secrets)
 - [Reference](#reference)
@@ -436,18 +435,51 @@ To run occ commands, open a terminal into nextcloud pod and run commands with th
 runuser --user www-data -- php occ <command>
 ```
 
-#### Add missing indexes
+#### occ commands examples
 
 ```bash
 # Add missing indexes
 runuser --user www-data -- php occ db:add-missing-indices
 ```
 
-#### List custom certificates
-
 ```bash
 # List custom certificates
 runuser --user www-data -- php occ security:certificates
+```
+
+```bash
+# Complete a failed upgrade
+runuser --user www-data -- php occ upgrade
+```
+
+```bash
+# Get Status
+runuser --user www-data -- php occ status
+```
+
+```bash
+# Disable maintenance mode
+runuser --user www-data -- php occ maintenance:mode --off
+```
+
+```bash
+# Perform mimetype migrations
+runuser --user www-data -- php occ maintenance:repair --include-expensive
+```
+
+```bash
+# View last log entries
+runuser --user www-data -- php /var/www/html/occ log:tail
+```
+
+```bash
+# View log by type and number of entries
+runuser --user www-data -- php /var/www/html/occ log:file --level=error --lines=100
+```
+
+```bash
+# Check for database inconsistencies
+runuser --user www-data -- php /var/www/html/occ files:scan --all
 ```
 
 ### Utilities

@@ -17,9 +17,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       {{- include "gitlab.nodeSelector" . | nindent 6 }}
-      securityContext:
-        runAsUser: {{ .Values.global.kubectl.securityContext.runAsUser }}
-        fsGroup: {{ .Values.global.kubectl.securityContext.fsGroup }}
+      {{- include "gitlab.podSecurityContext" .Values.global.kubectl.securityContext | nindent 6 }}
       {{- if .Values.rbac.create }}
       serviceAccountName: {{ template "fullname" . }}
       {{- end }}
@@ -31,6 +29,7 @@ spec:
           image: {{ include "gitlab.kubectl.image" . }}
           command: ['/bin/bash', '/scripts/create-issuer', '/scripts/issuer.yml']
           {{- include "gitlab.image.pullPolicy" $imageCfg | indent 10 }}
+          {{- include "gitlab.containerSecurityContext" $ | indent 10 }}
           volumeMounts:
             - name: scripts
               mountPath: /scripts

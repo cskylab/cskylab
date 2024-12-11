@@ -1,0 +1,82 @@
+#
+#   crontab file
+#   
+#       These file contains jobs for every cs_* script suitable for crontab
+#       Modify or comment jobs as needed
+#
+#       To set the appropriate schedule see: https://crontab.guru
+#
+#       Independent files can also be created with the name pattern cron-cs_*
+#       to be deployed in /etc/cron.d directory
+#               
+#   Copyright © 2024 cSkyLab.com
+#
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+#
+# Warning: Do not break lines in cron files
+#
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name   command to be executed >> log file redirection for stderr and stdout
+
+################################################################################
+# Thin-Pool Maintenance
+################################################################################
+
+## Free space inside thinpools
+## At 00:00.
+0 0 * * *       root        run-one cs-lvmserv.sh -q -m trim-space >> /var/log/cs-lvmserv.log 2>&1
+## At 06:00.
+0 6 * * *       root        run-one cs-lvmserv.sh -q -m trim-space >> /var/log/cs-lvmserv.log 2>&1
+
+################################################################################
+# Download updated cloud images
+################################################################################
+
+## Download cloud images
+## “At 02:00.”
+## Ubuntu noble server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
+## Ubuntu jammy server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
+## Ubuntu focal server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
+## Ubuntu bionic server
+0 2 * * *       root        cd /srv/setup && curl --silent --remote-name https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img >> /var/log/cs-cloudimg-curl.log 2>&1
+
+################################################################################
+# (kvm-aux) Synchronize Setup directory from (kvm-main)
+################################################################################
+## Synchronize setup directory
+## “At 02:30.”
+30 2 * * *      root        run-one cs-rsync.sh -q -m rsync-from -d /srv/setup/  -t kvm-main.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+
+################################################################################
+# (kvm-aux) - RSync virtual machines
+################################################################################
+## Running mode normal [kvm-main + kvm-aux]
+##
+## Dump virtual machines xml configurations in path /srv/vm-aux
+## RSync path:  /srv/vm-aux/
+## TO HOST:     kvm-main.cskylab.net
+## At 03:00.
+0 3 * * *      root     run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-rsync.log 2>&1 ; run-one cs-kvmserv.sh -q -m vm-dumpcfg -p /srv/vm-aux/   >> /var/log/cs-rsync.log 2>&1 && run-one cs-rsync.sh -q -m rsync-to -d /srv/vm-aux/  -t kvm-main.cskylab.net  >> /var/log/cs-rsync.log 2>&1
+
+################################################################################
+# (kvm-aux) Restic backups
+################################################################################
+##
+## Data service:      /srv/vm-aux/
+## At 03:30.
+## Local restic repo
+30 3 * * *    root run-one cs-lvmserv.sh -q -m snap-remove -d /srv/vm-aux/ >> /var/log/cs-restic.log 2>&1 ; run-one cs-restic.sh -q -m restic-bck -d /srv/vm-aux/ -r {{ .restic.repo }} -t vm-aux  >> /var/log/cs-restic.log 2>&1 && run-one cs-restic.sh -q -m restic-forget -r {{ .restic.repo }} -t vm-aux  -f "--keep-last 10 --prune" >> /var/log/cs-restic.log 2>&1
+

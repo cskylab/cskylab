@@ -93,6 +93,8 @@ resources:
 serviceAccount:
   enabled: false
   create: false
+  ## Used for local override of global ServiceAccount token mounting
+  # automountServiceAccountToken: false
 
 # Tolerations for pod scheduling
 tolerations: []
@@ -106,3 +108,6 @@ securityContext:
 affinity:
   podAntiAffinity:
     topologyKey:
+  nodeAffinity:
+       key:
+       values:

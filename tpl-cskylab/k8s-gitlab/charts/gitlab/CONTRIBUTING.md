@@ -6,10 +6,10 @@ all contributions. By participating in this project, you agree to abide by the
 
 ## Developer Certificate of Origin + License
 
-By contributing to GitLab B.V., You accept and agree to the following terms and
-conditions for Your present and future Contributions submitted to GitLab B.V.
-Except for the license granted herein to GitLab B.V. and recipients of software
-distributed by GitLab B.V., You reserve all right, title, and interest in and to
+By contributing to GitLab Inc., You accept and agree to the following terms and
+conditions for Your present and future Contributions submitted to GitLab Inc.
+Except for the license granted herein to GitLab Inc. and recipients of software
+distributed by GitLab Inc., You reserve all right, title, and interest in and to
 Your Contributions. All Contributions are subject to the following DCO + License
 terms.
 
@@ -67,8 +67,8 @@ request is as follows:
     1. If you are contributing code, fill in the template already provided in the
      "Description" field.
     1. If you are contributing documentation
-      1. Choose `Documentation` from the "Choose a template" menu and fill in the template.
-      1. Ensure the branch name starts with `docs-` or ends with `-docs`
+       1. Choose `Documentation` from the "Choose a template" menu and fill in the template.
+       1. Ensure the branch name starts with `docs-` or ends with `-docs`
     1. Mention the issue(s) your merge request solves, using the `Solves #XXX` or
     `Closes #XXX` syntax to auto-close the issue(s) once the merge request will
     be merged.

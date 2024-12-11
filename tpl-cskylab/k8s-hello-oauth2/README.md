@@ -1,8 +1,8 @@
 # Kubernetes oauth2-proxy<!-- omit in toc -->
 
-## `k8s-hello-oauth2` v24-04-20 <!-- omit in toc -->
+## `k8s-hello-oauth2` v24-12-11 <!-- omit in toc -->
 
-## Helm charts: oauth2-proxy/oauth2-proxy v7.4.1 <!-- omit in toc -->
+## Helm charts: oauth2-proxy/oauth2-proxy v7.8.1 <!-- omit in toc -->
 
 
 This namespace is intended to deploy an example of oauth2-proxy deployment protecting a simple Hello World application for modeling purposes.

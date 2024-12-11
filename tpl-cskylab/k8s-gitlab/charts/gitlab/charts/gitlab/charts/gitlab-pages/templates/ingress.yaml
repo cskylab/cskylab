@@ -21,7 +21,12 @@ metadata:
 spec:
   {{ include "ingress.class.field" $ingressCfg }}
   rules:
-    - host: "*.{{ $hostname }}"
+    - host:
+        {{- if $.Values.global.pages.namespaceInPath }}
+          {{ $hostname }}
+        {{- else }}
+          "*.{{ $hostname }}"
+        {{- end }}
       http:
         paths:
           - path: {{ coalesce $.Values.ingress.path $.Values.global.ingress.path }}
@@ -41,7 +46,9 @@ spec:
   tls:
     - hosts:
       - {{ $hostname }}
+      {{- if not $.Values.global.pages.namespaceInPath }}
       - "*.{{ $hostname }}"
+      {{- end }}
       secretName: {{ $tlsSecret }}
   {{- else }}
   tls: []

@@ -6,7 +6,7 @@
 
 _tplname: k8s-cert-manager
 _tpldescription: x509 certificate management for Kubernetes
-_tplversion: 24-04-20
+_tplversion: 24-12-11
 
 #
 # Values to override

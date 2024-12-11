@@ -39,7 +39,7 @@ if there is a shared tls secret for all ingresses.
 
 {{/*
 Returns the minio URL.
-If `registry.redirect` is set to `true` it will return the external domain name of minio, 
+If `registry.redirect` is set to `true` it will return the external domain name of minio,
 e.g. `https://minio.example.com`, otherwise it will fallback to the internal minio service
 URL, e.g. `http://minio-svc:9000`.
 
@@ -159,10 +159,72 @@ Failing that a serviceAccount will be generated automatically
 
 {{/*
 Create a default fully qualified job name.
-Due to the job only being allowed to run once, we add the chart revision so Helm
-upgrades don't cause errors trying to create the already ran job.
 */}}
 {{- define "registry.migrations.jobname" -}}
 {{- $name := include "registry.fullname" . | trunc 55 | trimSuffix "-" -}}
-{{- printf "%s-migrations-%d" $name .Release.Revision | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-migrations-%s" $name ( include "gitlab.jobNameSuffix" . ) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Optionally create a node affinity rule to optionally deploy registry pods in a specific zone
+*/}}
+{{- define "registry.affinity" -}}
+{{- $affinityOptions := list "hard" "soft" }}
+{{- if or
+  (has (default .Values.global.antiAffinity "") $affinityOptions)
+  (has (default .Values.antiAffinity "") $affinityOptions)
+  (has (default .Values.global.nodeAffinity "") $affinityOptions)
+  (has (default .Values.nodeAffinity "") $affinityOptions)
+}}
+affinity:
+  {{- if eq (default .Values.global.antiAffinity .Values.antiAffinity) "hard" }}
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
+          labelSelector:
+            matchLabels:
+              app: {{ template "name" . }}
+              release: {{ .Release.Name }}
+  {{- else if eq (default .Values.global.antiAffinity .Values.antiAffinity) "soft" }}
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
+            labelSelector:
+              matchLabels:
+                app: {{ template "name" . }}
+                release: {{ .Release.Name }}
+  {{- end -}}
+  {{- if eq (default .Values.global.nodeAffinity .Values.nodeAffinity) "hard" }}
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: {{ default .Values.global.affinity.nodeAffinity.key .Values.affinity.nodeAffinity.key | quote }}
+                operator: In
+                values: {{ default .Values.global.affinity.nodeAffinity.values .Values.affinity.nodeAffinity.values | toYaml | nindent 16 }}
+
+  {{- else if eq (default .Values.global.nodeAffinity .Values.nodeAffinity) "soft" }}
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: {{ default .Values.global.affinity.nodeAffinity.key .Values.affinity.nodeAffinity.key | quote }}
+                  operator: In
+                  values: {{ default .Values.global.affinity.nodeAffinity.values .Values.affinity.nodeAffinity.values | toYaml | nindent 18 }}
+  {{- end -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Render the standard labels for resources related to the registry migration.
+These differ from the standard labels so the migration related Pod's are not
+matched by the registry PDB and Deployment selectors.
+*/}}
+{{- define "registry.migration.standardLabels" -}}
+{{- $labels := (include "gitlab.standardLabels" .) | fromYaml }}
+{{- $_ := set $labels "app" "registry-migrations" }}
+{{- toYaml $labels }}
 {{- end -}}

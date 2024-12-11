@@ -1,21 +1,28 @@
-# Default values for gitlab/gitlab chart
-
 ## NOTICE
+#
 # Due to the scope and complexity of this chart, all possible values are
-# not documented in this file. Extensive documentation for these values
-# and more can be found at https://gitlab.com/gitlab-org/charts/gitlab/
+# not documented in this file. Extensive documentation is available.
+#
+# Please read the docs: https://docs.gitlab.com/charts/
+#
+# Because properties are regularly added, updated, or relocated, it is
+# _strongly suggest_ to not "copy and paste" this YAML. Please provide
+# Helm only those properties you need, and allow the defaults to be
+# provided by the version of this chart at the time of deployment.
 
 ## Advanced Configuration
-# Documentation for advanced configuration can be found under doc/advanced
-# - external PostgreSQL
-# - external Gitaly
-# - external Redis
-# - external NGINX
+## https://docs.gitlab.com/charts/advanced
+#
+# Documentation for advanced configuration, such as
+# - External PostgreSQL
+# - External Gitaly
+# - External Redis
+# - External NGINX
+# - External Object Storage providers
 # - PersistentVolume configuration
-# - external Object Storage providers
 
 ## The global properties are used to configure multiple charts at once.
-## Extended documentation at doc/charts/globals.md
+## https://docs.gitlab.com/charts/charts/globals
 global:
   ## doc/installation/deployment.md#deploy-the-community-edition
   edition: ee
@@ -86,9 +93,9 @@ global:
       key: postgresql-password
       file:
 
-  ## doc/charts/globals.md#configure-redis-settings
+  ## https://docs.gitlab.com/charts/charts/globals#configure-redis-settings
   redis:
-    password:
+    auth:
       enabled: true
       secret: gitlab-redis-password
       key: password
@@ -122,10 +129,10 @@ global:
     #   accessMode: ReadWriteOnce
     #   size: 8Gi
 
-  ## doc/charts/globals.md#configure-appconfig-settings
+  ## https://docs.gitlab.com/charts/charts/globals#configure-appconfig-settings
   ## Rails based portions of this chart share many settings
   appConfig:
-    ## doc/charts/globals.md#omniauth
+    ## https://docs.gitlab.com/charts/charts/globals#omniauth
     omniauth:
       ## OIDC
       enabled: false
@@ -143,16 +150,8 @@ global:
       - secret: gitlab-keycloak-secret
         key: provider
 
-  ## doc/charts/globals.md#configure-gitlab-shell-settings
-  shell:
-    authToken: {}
-      # secret:
-      # key:
-    hostKeys: {}
-      # secret:
-
   ## Rails application secrets
-  ## Secret created according to doc/installation/secrets.md#gitlab-rails-secret
+  ## Secret created according to https://docs.gitlab.com/charts/installation/secrets#gitlab-rails-secret
   ## If allowing shared-secrets generation, this is OPTIONAL.
   railsSecrets: {}
     # secret:
@@ -161,61 +160,10 @@ global:
   rails:
     bootsnap: # Enable / disable Shopify/Bootsnap cache
       enabled: true
+    sessionStore:
+      sessionCookieTokenPrefix: ""
 
-  ## doc/charts/globals.md#configure-registry-settings
-  registry:
-    bucket: registry
-    certificate: {}
-      # secret:
-    httpSecret: {}
-      # secret:
-      # key:
-    # https://docs.docker.com/registry/notifications/#configuration
-    notifications: {}
-      # endpoints:
-      #   - name: FooListener
-      #     url: https://foolistener.com/event
-      #     timeout: 500ms
-      #     threshold: 10
-      #     backoff: 1s
-      #     headers:
-      #       FooBar: ['1', '2']
-      #       Authorization:
-      #         secret: gitlab-registry-authorization-header
-      #       SpecificPassword:
-      #         secret: gitlab-registry-specific-password
-      #         key: password
-      # events: {}
-
-  pages:
-    enabled: false
-    accessControl: false
-    path:
-    host:
-    port:
-    https: # default true
-    externalHttp: []
-    externalHttps: []
-    artifactsServer: true
-    objectStore:
-      enabled: true
-      bucket: gitlab-pages
-      # proxy_download: true
-      connection: {}
-        # secret:
-        # key:
-    apiSecret: {}
-      # secret:
-      # key:
-
-  ## GitLab Runner
-  ## Secret created according to doc/installation/secrets.md#gitlab-runner-secret
-  ## If allowing shared-secrets generation, this is OPTIONAL.
-  runner:
-    registrationToken: {}
-      # secret:
-
-  ## doc/installation/deployment.md#outgoing-email
+  ## https://docs.gitlab.com/charts/charts/globals#outgoing-email
   ## Outgoing email server settings
   smtp:
     enabled: true
@@ -223,7 +171,7 @@ global:
     port: 25
     authentication: ""
 
-  ## doc/installation/deployment.md#outgoing-email
+  ## https://docs.gitlab.com/charts/charts/globals#outgoing-email
   ## Email persona used in email sent by GitLab
   email:
     from: gitlab@{{ .namespace.domain }}
@@ -242,26 +190,13 @@ global:
     # - secret: carootlestaging-secret
     # - secret: carootleprod-secret
 
-  busybox:
-    image:
-      repository: {{ .registry.proxy }}/library/busybox
-      tag: latest
+  ## DEPRECATED
+  # busybox:
+  #   image:
+  #     repository: {{ .registry.proxy }}/library/busybox
+  #     tag: latest
 
 ## End of global
-
-upgradeCheck:
-  enabled: true
-  image: {}
-    # repository:
-    # tag:
-  securityContext:
-    # in alpine/debian/busybox based images, this is `nobody:nogroup`
-    runAsUser: 65534
-    fsGroup: 65534
-  tolerations: []
-  resources:
-    requests:
-      cpu: 50m
 
 nginx-ingress:
   enabled: false

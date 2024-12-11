@@ -11,7 +11,7 @@ image:
 indexer:
   image:
     repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-indexer
-    tag: v0.4.0-d4157
+    tag: v0.8.5-64175
   listen:
     port: 6065
   resources: {}
@@ -23,7 +23,8 @@ indexer:
     secretKey: ''
     gitlabUrl: '' # Internal URL to connect to GitLab
     serviceUrl: '' # URL to reach Zoekt service
-  environment: {}
+  environment:
+    CTAGS_COMMAND: '' # Disable ctags
 webserver:
   image:
     repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-zoekt-webserver
@@ -38,7 +39,8 @@ webserver:
 gateway:
   image:
     repository: nginx
-    tag: latest
+    tag: 1.25.5
+    pullPolicy:  # will default to `image.pullPolicy`
   listen:
     port: 8080
   replicas: 1
@@ -77,6 +79,8 @@ serviceAccount:
 podAnnotations: {}
 
 statefulSetAnnotations: {}
+
+deploymentAnnotations: {}
 
 podSecurityContext:
   fsGroup: 1000

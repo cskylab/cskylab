@@ -38,8 +38,13 @@ spec:
       {{- if .Values.gateway.basicAuth.enabled }}
       initContainers:
         - name: create-htpasswd
-          image: {{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}
+          image: {{ include "gitlab-zoekt.gatewayImage" . }}
+          imagePullPolicy: {{ coalesce .Values.gateway.image.pullPolicy .Values.image.pullPolicy }}
           command: ['sh', '-c', 'printf "$(cat /etc/nginx/basicauth-credentials/gitlab_username):$(openssl passwd -6 $(cat /etc/nginx/basicauth-credentials/gitlab_password))\n" > /etc/nginx/basicauth/.htpasswd']
+          resources:
+            {{- toYaml (merge .Values.gateway.resources .Values.resources) | nindent 12 }}
+          securityContext:
+            {{- toYaml (merge .Values.gateway.securityContext .Values.securityContext) | nindent 12 }}
           volumeMounts:
             - name: basicauth
               mountPath: /etc/nginx/basicauth
@@ -122,7 +127,7 @@ spec:
         - name: zoekt-internal-gateway
           securityContext:
             {{- toYaml .Values.gateway.securityContext | nindent 12 }}
-          image: {{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}
+          image: {{ include "gitlab-zoekt.gatewayImage" . }}
           imagePullPolicy: {{ coalesce .Values.gateway.image.pullPolicy .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.gateway.listen.port }}
@@ -148,6 +153,10 @@ spec:
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
               readOnly: true
+            - name: internal-nginx-var-run
+              mountPath: /var/run
+            - name: internal-nginx-var-cache-nginx
+              mountPath: /var/cache/nginx
             {{- if .Values.gateway.tls.certificate.enabled }}
             - name: gateway-cert
               mountPath: /etc/ssl/tls.crt
@@ -181,6 +190,10 @@ spec:
             items:
               - key: nginx.conf
                 path: nginx.conf
+        - name: internal-nginx-var-run
+          emptyDir: {}
+        - name: internal-nginx-var-cache-nginx
+          emptyDir: {}
         {{- if .Values.gateway.tls.certificate.enabled }}
         - name: gateway-cert
           secret:

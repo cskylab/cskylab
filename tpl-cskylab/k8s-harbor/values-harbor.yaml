@@ -215,7 +215,7 @@ postgresql:
   image:
     registry: docker.io
     repository: bitnami/postgresql
-    tag: 14
+    tag: 16
   auth:
     enablePostgresUser: true
     postgresPassword: "{{ .publishing.password }}"

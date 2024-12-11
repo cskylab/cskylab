@@ -37,7 +37,22 @@ imagePullPolicy: IfNotPresent
 #   - name: "image-pull-secret"
 
 ## Timeout, in seconds, for liveness and readiness probes of a runner pod.
-# probeTimeoutSeconds: 3
+# probeTimeoutSeconds: 4
+
+## Configure the livenessProbe
+livenessProbe: {}
+#   initialDelaySeconds: 60
+#   periodSeconds: 10
+#   successThreshold: 1
+#   failureThreshold: 3
+#   terminationGracePeriodSeconds: 30
+
+## Configure the readinessProbe
+readinessProbe: {}
+#   initialDelaySeconds: 60
+#   periodSeconds: 10
+#   successThreshold: 1
+#   failureThreshold: 3
 
 ## How many runner pods to launch.
 ##
@@ -49,7 +64,7 @@ imagePullPolicy: IfNotPresent
 ## The GitLab Server URL (with protocol) that want to register the runner against
 ## ref: https://docs.gitlab.com/runner/commands/index.html#gitlab-runner-register
 ##
-# gitlabUrl: http://gitlab.your-domain.com/
+# gitlabUrl: https://gitlab.your-domain.com/
 
 ## DEPRECATED: The Registration Token for adding new Runners to the GitLab Server.
 ##
@@ -71,7 +86,12 @@ imagePullPolicy: IfNotPresent
 ## non-existant runners. Un-registering the runner before termination mitigates this issue.
 ## ref: https://docs.gitlab.com/runner/commands/index.html#gitlab-runner-unregister
 ##
-# unregisterRunners: true
+## This property ensures that all the Runners present in the local config.toml are unregistered when the chart is uninstalled
+## - If the token is prefixed with `glrt-` (meaning the runner was created in the UI or API),
+##   the unregisterRunners property deletes the runner manager, not the runner.
+##   The runner manager is identified by the runner and the machine that contains the config.toml.
+## - If the runner was registered with a registration token (deprecated), the runner is deleted.
+unregisterRunners: true
 
 ## When stopping the runner, give it time to wait for its jobs to terminate.
 ##
@@ -101,7 +121,7 @@ shutdown_timeout: 0
 ## Defines in seconds how often to check GitLab for new builds
 ## ref: https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
 ##
-checkInterval: 30
+checkInterval: 3
 
 ## Configure GitLab Runner's logging level. Available values are: debug, info, warn, error, fatal, panic
 ## ref: https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
@@ -117,6 +137,11 @@ checkInterval: 30
 ## ref https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
 ##
 # sentryDsn:
+
+## Configure GitLab Runner's maximum connection age for TLS keepalive connections.
+## ref https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-global-section
+##
+# connectionMaxAge: "15m"
 
 ## A custom bash script that will be executed prior to the invocation of the
 ## gitlab-runner process
@@ -138,13 +163,35 @@ sessionServer:
   # timeout: 1800
   # internalPort: 8093
   # externalPort: 9000
+
+  #In case sessionServer.serviceType is NodePort. If not defined, auto NodePort will be assigned.
+  # nodePort: 30093
+
   # publicIP: ""
   # loadBalancerSourceRanges:
   #   - 1.2.3.4/32
 
+  #Valid values: ClusterIP, Headless, NodePort, LoadBalancer
+  serviceType: LoadBalancer
+
+  # if enabled, sessionServer.publicIP variable should be set to the host e.g. runner1.example.com
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    tls:
+      - secretName: gitlab-runner-session-server
+
 ## For RBAC support:
 rbac:
+  ## Specifies whether a Role and RoleBinding should be created
+  ## If this value is set to `true`, `serviceAccount.create` should also be set to either `true` or `false`
+  ##
   create: false
+  ## Define the generated serviceAccountName when create is set to true
+  ## It defaults to "gitlab-runner.fullname" if not provided
+  ## DEPRECATED: Please use `serviceAccount.name` instead
+  generatedServiceAccountName: ""
 
   ## Define list of rules to be added to the rbac role permissions.
   ## Each rule supports the keys:
@@ -154,23 +201,34 @@ rbac:
   ##
   ## Read more about the recommended rules on the following link
   ##
-  ## ref: https://docs.gitlab.com/runner/executors/kubernetes.html#configure-runner-api-permissions
+  ## ref: https://docs.gitlab.com/runner/executors/kubernetes/index.html#configure-runner-api-permissions
   ##
   rules: []
-  # - resources: ["configmaps", "events", "pods", "pods/attach", "pods/exec", "secrets", "services"]
-  #   verbs: ["get", "list", "watch", "create", "patch", "update", "delete"]
-  # - apiGroups: [""]
-  #   resources: ["pods/exec"]
-  #   verbs: ["create", "patch", "delete"]
-  # - apiGroups: [""]
-  #   resources: ["pods/log"]
-  #   verbs: ["get"]
+    # - resources: ["events"]
+    #   verbs: ["list", "watch"]
+    # - resources: ["namespaces"]
+    #   verbs: ["create", "delete"]
+    # - resources: ["pods"]
+    #   verbs: ["create","delete","get"]
+    # - apiGroups: [""]
+    #   resources: ["pods/attach","pods/exec"]
+    #   verbs: ["get","create","patch","delete"]
+    # - apiGroups: [""]
+    #   resources: ["pods/log"]
+    #   verbs: ["get","list"]
+    # - resources: ["secrets"]
+    #   verbs: ["create","delete","get","update"]
+    # - resources: ["serviceaccounts"]
+    #   verbs: ["get"]
+    # - resources: ["services"]
+    #   verbs: ["create","get"]
 
   ## Run the gitlab-bastion container with the ability to deploy/manage containers of jobs
   ## cluster-wide or only within namespace
   clusterWideAccess: false
 
   ## Use the following Kubernetes Service Account name if RBAC is disabled in this Helm chart (see rbac.create)
+  ## DEPRECATED: Please use `serviceAccount.name` instead
   ##
   # serviceAccountName: default
 
@@ -181,20 +239,49 @@ rbac:
   ##
   ## ref: https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
   ##
-  # serviceAccountAnnotations: {}
+  ## DEPRECATED: Please use `serviceAccount.annotations` instead
+  ##
+  serviceAccountAnnotations: {}
 
   ## Use podSecurity Policy
   ## ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
   podSecurityPolicy:
     enabled: false
     resourceNames:
-    - gitlab-runner
+      - gitlab-runner
 
   ## Specify one or more imagePullSecrets used for pulling the runner image
   ##
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account
   ##
-  # imagePullSecrets: []
+  ## DEPRECATED: Please use `serviceAccount.imagePullSecrets` instead
+  ##
+  imagePullSecrets: []
+
+## Configure ServiceAccount
+##
+serviceAccount:
+  ## Specifies whether a ServiceAccount should be created
+  ##
+  ## TODO: Set default to `false`
+  # create: false
+  ## The name of the ServiceAccount to use.
+  ## If not set and create is `true`, a name is generated using the `gitlab-runner.fullname`` template
+  ##
+  name: ""
+  ## Additional custom annotations for the ServiceAccount, useful for annotations such as eks.amazonaws.com/role-arn.
+  ## Values may refer other values as the _tpl_ function is implicitly applied. Mind the quotes when using this, e.g.
+  ## serviceAccountAnnotations:
+  ##   eks.amazonaws.com/role-arn: "arn:aws:iam::{{ .Values.global.accountId }}:role/{{ .Values.global.iamRoleName }}"
+  ##
+  ## ref: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+  ##
+  annotations: {}
+  ## Specify one or more imagePullSecrets used for pulling the runner image
+  ##
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account
+  ##
+  imagePullSecrets: []
 
 ## Configure integrated Prometheus metrics exporter
 ##
@@ -304,12 +391,12 @@ service:
   ##
   # metrics:
 
-    ## Specify the node port under which the prometheus metrics of the runner are made
-    ## available.
-    ##
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#nodeport
-    ##
-    # nodePort: ""
+  ## Specify the node port under which the prometheus metrics of the runner are made
+  ## available.
+  ##
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#nodeport
+  ##
+  # nodePort: ""
 
   ## Provide a list of additional ports to be exposed by this service
   ##
@@ -501,6 +588,13 @@ topologySpreadConstraints: {}
   #     matchLabels:
   #       foo: bar
 
+## RuntimeClass name for pod assignment
+## ref: https://kubernetes.io/docs/concepts/containers/runtime-class/
+##
+runtimeClassName: ""
+  # Example: Once RuntimeClasses are configured for the cluster, you can specify it.
+  # runtimeClassName: myclass
+
 ## Node labels for pod assignment
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
 ##
@@ -568,7 +662,15 @@ deploymentAnnotations: {}
 deploymentLabels: {}
   # Example:
   # owner.team: <my_cool_team>
-  
+
+## Lifecycle options to be added to deployment
+##
+deploymentLifecycle: {}
+  # Example
+  # preStop:
+  #   exec:
+  #     command: ["/bin/sh", "-c", "echo 'shutting down'"]
+
 ## Set hostname for runner pods
 #hostname: my-gitlab-runner
 
@@ -580,9 +682,12 @@ podAnnotations: {}
 
 ## Labels to be added to manager pod
 ##
+## Supports templating
 podLabels: {}
   # Example:
   # owner.team: <my_cool_team>
+  # owner.team: "{{ .Values.team }}"
+  # tags.{{ .Values.tag }}/env: "{{ .Values.environment }}"
 
 ## HPA support for custom metrics:
 ## This section enables runners to autoscale based on defined custom metrics.
@@ -590,14 +695,14 @@ podLabels: {}
 ## implementing "custom.metrics.k8s.io" using supported third party adapter
 ## Example: https://github.com/directxman12/k8s-prometheus-adapter
 ##
-#hpa: {}
-  # minReplicas: 1
-  # maxReplicas: 10
-  # metrics:
-  # - type: Pods
-  #   pods:
-  #     metricName: gitlab_runner_jobs
-  #     targetAverageValue: 400m
+# hpa: {}
+#   minReplicas: 1
+#   maxReplicas: 10
+#   metrics:
+#   - type: Pods
+#     pods:
+#       metricName: gitlab_runner_jobs
+#       targetAverageValue: 400m
 
 ## Configure priorityClassName for manager pod. See k8s docs for more info on how pod priority works:
 ##  https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/

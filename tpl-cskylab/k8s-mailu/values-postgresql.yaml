@@ -1,0 +1,62 @@
+## @section Global parameters
+## Please, note that this will override the parameters, including dependencies, configured to use the global value
+##
+global:
+  ## @param global.imageRegistry Global Docker image registry
+  ##
+  imageRegistry: "{{ .registry.proxy }}"
+  ## @param global.storageClass Global StorageClass for Persistent Volume(s)
+  ##
+  storageClass: "{{ .namespace.name }}-postgresql"
+  postgresql:
+    ## @param global.postgresql.auth.postgresPassword Password for the "postgres" admin user (overrides `auth.postgresPassword`)
+    ## @param global.postgresql.auth.username Name for a custom user to create (overrides `auth.username`)
+    ## @param global.postgresql.auth.password Password for the custom user to create (overrides `auth.password`)
+    ## @param global.postgresql.auth.database Name for a custom database to create (overrides `auth.database`)
+    ##
+    auth:
+      postgresPassword: "{{ .publishing.password }}"
+      username: "mailu"
+      password: "{{ .publishing.password }}"
+      database: "mailu"
+## @section PostgreSQL common parameters
+##
+
+primary:
+  ## @skip postgresql.primary.extraEnvVars
+  ## Array with extra environment variables, used to create the initial `roundcube` database; DO NOT EDIT; see `global.database` instead
+  extraEnvVars: |
+    - name: ROUNDCUBE_DB_PW
+      value: {{ .publishing.password }}
+    - name: ROUNDCUBE_DB_NAME
+      value: roundcube
+    - name: ROUNDCUBE_DB_USER
+      value: roundcube
+
+  initdb:
+    ## @skip postgresql.primary.initdb.scripts.create_roundcube_database.sh
+    ## DO NOT EDIT Script to create the roundcube database
+    scripts:
+      create_roundcube_database.sh: |
+        #!/bin/bash
+        # set -o errexit
+        # set -o nounset
+        # set -o pipefail
+        info "Running DB initialisation..."
+        info "Creating database ${ROUNDCUBE_DB_NAME}..."
+        echo "CREATE DATABASE \"$ROUNDCUBE_DB_NAME\"" | postgresql_execute "" "postgres" "$POSTGRES_POSTGRES_PASSWORD"
+        info "Creating user ${ROUNDCUBE_DB_USER}"
+        echo "CREATE ROLE \"${ROUNDCUBE_DB_USER}\" WITH LOGIN CREATEDB PASSWORD '${ROUNDCUBE_DB_PW}';" | postgresql_execute "" "postgres" "$POSTGRES_POSTGRES_PASSWORD"
+        info "Granting access to \"${ROUNDCUBE_DB_USER}\" to the database \"${ROUNDCUBE_DB_NAME}\""
+        echo "GRANT ALL PRIVILEGES ON DATABASE \"${ROUNDCUBE_DB_NAME}\" TO \"${ROUNDCUBE_DB_USER}\"\;" | postgresql_execute "" "postgres" "$POSTGRES_POSTGRES_PASSWORD"
+        echo "ALTER DATABASE \"${ROUNDCUBE_DB_NAME}\" OWNER TO \"${ROUNDCUBE_DB_USER}\"\;" | postgresql_execute "" "postgres" "$POSTGRES_POSTGRES_PASSWORD"
+        info "Setting ownership for the 'public' schema database \"${ROUNDCUBE_DB_NAME}\" to \"${ROUNDCUBE_DB_USER}\""
+        echo "ALTER SCHEMA public OWNER TO \"${ROUNDCUBE_DB_USER}\"\;" | postgresql_execute "$ROUNDCUBE_DB_NAME" "postgres" "$POSTGRES_POSTGRES_PASSWORD"
+
+
+## Bitnami PostgreSQL image version
+## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
+## @param image.tag PostgreSQL image tag (immutable tags are recommended)
+##
+image:
+  tag: 14

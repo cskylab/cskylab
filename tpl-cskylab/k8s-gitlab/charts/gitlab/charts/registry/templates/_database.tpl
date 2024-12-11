@@ -1,10 +1,11 @@
 {{/*
-Return database configuration, if enabled.
+Return database configuration, if settings available.
 */}}
 {{- define "registry.database.config" -}}
-{{- if .Values.database.enabled }}
+{{/*Need to use enabled or configure flags for backwards compatibility*/}}
+{{- if or .Values.database.enabled .Values.database.configure }}
 database:
-  enabled: true
+  enabled: {{ .Values.database.enabled }}
   host: {{ default (include "gitlab.psql.host" .) .Values.database.host | quote }}
   port: {{ default (include "gitlab.psql.port" .) .Values.database.port }}
   user: {{ .Values.database.user }}
@@ -41,6 +42,32 @@ database:
     {{- end }}
     {{- if .Values.database.pool.maxidletime }}
     maxidletime: {{ .Values.database.pool.maxidletime }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.database.backgroundMigrations.enabled }}
+  backgroundmigrations:
+    enabled: {{ .Values.database.backgroundMigrations.enabled }}
+    {{- if .Values.database.backgroundMigrations.jobInterval }}
+    jobinterval: {{ .Values.database.backgroundMigrations.jobInterval | quote }}
+    {{- end }}
+    {{- if .Values.database.backgroundMigrations.maxJobRetries }}
+    maxjobretries: {{ .Values.database.backgroundMigrations.maxJobRetries }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.database.loadBalancing.enabled }}
+  loadbalancing:
+    enabled: {{ .Values.database.loadBalancing.enabled }}
+    {{- if .Values.database.loadBalancing.nameserver }}
+    {{-   if .Values.database.loadBalancing.nameserver.host }}
+    nameserver: {{ .Values.database.loadBalancing.nameserver.host | quote }}
+    {{-   end }}
+    {{-   if .Values.database.loadBalancing.nameserver.port }}
+    port: {{ .Values.database.loadBalancing.nameserver.port | int }}
+    {{-   end }}
+    {{- end }}
+    record: {{ .Values.database.loadBalancing.record | required "`database.loadBalancing` requires `record` to be provided." | quote }}
+    {{- if .Values.database.loadBalancing.replicaCheckInterval }}
+    replicacheckinterval: {{ .Values.database.loadBalancing.replicaCheckInterval | quote }}
     {{- end }}
   {{- end }}
 {{- end }}

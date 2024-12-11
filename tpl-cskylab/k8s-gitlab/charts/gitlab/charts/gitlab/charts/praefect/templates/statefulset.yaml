@@ -38,25 +38,7 @@ spec:
         prometheus.io/path: {{ .Values.metrics.path }}
       {{- end }}
     spec:
-      {{- if eq (default .Values.global.antiAffinity .Values.antiAffinity) "hard" }}
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
-              labelSelector:
-                matchLabels:
-                  {{- include "gitlab.selectorLabels" . | nindent 18 }}
-      {{- else if eq (default .Values.global.antiAffinity .Values.antiAffinity) "soft" }}
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: {{ default .Values.global.affinity.podAntiAffinity.topologyKey .Values.affinity.podAntiAffinity.topologyKey | quote }}
-              labelSelector:
-                matchLabels:
-                  {{- include "gitlab.selectorLabels" . | nindent 18 }}
-      {{- end }}
+      {{- include "gitlab.affinity" . | nindent 6 }}
       {{- include "gitlab.nodeSelector" . | nindent 6 }}
       {{- if .Values.tolerations }}
       tolerations:
@@ -70,9 +52,10 @@ spec:
           command: ['sh', '/config/configure']
           image: {{ include "gitlab.configure.image" (dict "root" $ "image" .Values.init.image) | quote }}
           {{- include "gitlab.image.pullPolicy" $initImageCfg | indent 10 }}
+          {{- include "gitlab.init.containerSecurityContext" $ | indent 10 }}
           env:
           {{- include "gitlab.extraEnv" $ | nindent 10 }}
-          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 10 }}
+          {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" .) | nindent 10 }}
           volumeMounts:
           {{- include "gitlab.extraVolumeMounts" $ | nindent 10 }}
           - name: praefect-config
@@ -96,6 +79,7 @@ spec:
       - name: {{ $.Chart.Name }}
         image: "{{ $.Values.image.repository }}:{{ coalesce $.Values.image.tag (include "gitlab.parseAppVersion" (dict "appVersion" $.Chart.AppVersion "prepend" "true")) }}{{ include "gitlab.image.tagSuffix" . }}"
         {{- include "gitlab.image.pullPolicy" $imageCfg | indent 8 }}
+        {{- include "gitlab.containerSecurityContext" $ | indent 8 }}
         ports:
           - containerPort: {{ include "gitlab.praefect.internalPort" $ }}
         {{- if $.Values.global.praefect.tls.enabled }}
@@ -124,7 +108,7 @@ spec:
           value: '{{ .Values.global.praefect.ntpHost }}'
         {{- include "gitlab.tracing.env" . | nindent 8 }}
         {{- include "gitlab.extraEnv" . | nindent 8 }}
-        {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" (dict)) | nindent 8 }}
+        {{- include "gitlab.extraEnvFrom" (dict "root" $ "local" .) | nindent 8 }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         terminationMessagePath: /dev/termination-log

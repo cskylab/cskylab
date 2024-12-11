@@ -9,8 +9,6 @@ metadata:
     {{- include "gitlab.commonLabels" . | nindent 4 }}
 data:
   nginx.conf: |
-    user nginx;
-
     events {
         use epoll;
     }

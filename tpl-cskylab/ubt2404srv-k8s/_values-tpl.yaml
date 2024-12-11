@@ -1,0 +1,53 @@
+#
+#   _values-tpl.yaml
+#
+#   cskygen template default values file
+#
+
+_tplname: ubt2404srv-k8s
+_tpldescription: Ubuntu server 24.04 kubernetes node
+_tplversion: 24-12-11
+
+#
+# Values to override
+#
+
+## Kubernetes version to install
+k8s_version: "1.31.3-1.1"
+k8s_repository: "v1.31"
+
+## Machine related configuration values
+machine:
+  hostname: ubt2404srv-k8s
+  domainname: cskylab.net
+  localadminusername: kos
+  localadminpassword: "NoFear21"
+  timezone: "UTC"
+  networkinterface: enp1s0
+  ipaddress: 192.168.82.9
+  netmask: 24
+  gateway4: 192.168.82.1
+  searchdomainnames:
+    - cskylab.net
+  nameservers:
+    - 192.168.82.1
+  ## Setup directory where configuration files will be injected
+  setupdir: "/etc/csky-setup"
+  systemlocale: "C.UTF-8"
+  systemkeyboard: "us"
+  
+restic:
+  ## Restic password is mandatory to access repository
+  password: 'NoFear21'
+
+  ## Restic repositories can be located in local paths, sftp paths and s3 buckets
+  ## Local path example:
+  # repo: '/srv/restic/mydir'
+  ## S3 example:
+  # repo: 's3:https://backup.cskylab.net/restic/mydir'
+  ## sftp example:
+  repo: 'sftp:kos@hostname.cskylab.net:/media/data/restic/mydir'
+  
+  ## S3 Bucket access and secret keys must be specified for S3 located repositories
+  aws_access: 'restic_rw'
+  aws_secret: 'iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr'

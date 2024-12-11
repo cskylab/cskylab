@@ -94,7 +94,7 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
 # Charts
-helm pull ingress-nginx/ingress-nginx --version 4.10.0 --untar
+helm pull ingress-nginx/ingress-nginx --version 4.11.3 --untar
 
 EOF
 )"

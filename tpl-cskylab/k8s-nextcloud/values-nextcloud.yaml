@@ -105,6 +105,7 @@ nextcloud:
     cskylab.config.php: |-
       <?php
       $CONFIG = array (
+        'trusted_proxies'   => ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'],
         'overwriteprotocol' => 'https',
         'overwrite.cli.url' => 'https://{{ .publishing.url }}',
         'allow_user_to_change_display_name' => false,

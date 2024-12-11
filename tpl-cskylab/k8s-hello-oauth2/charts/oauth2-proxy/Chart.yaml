@@ -1,18 +1,18 @@
 annotations:
   artifacthub.io/changes: |
-    - kind: changed
-      description: Fix link in readme to existingSecret needed fields
+    - kind: added
+      description: allow templates in annotations
       links:
         - name: Github PR
-          url: https://github.com/oauth2-proxy/manifests/pull/193
+          url: https://github.com/oauth2-proxy/manifests/pull/256
 apiVersion: v2
-appVersion: 7.6.0
+appVersion: 7.7.1
 dependencies:
 - alias: redis
   condition: redis.enabled
   name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 19.1.0
+  version: 20.4.0
 description: A reverse proxy that provides authentication with Google, Github or other
   providers
 home: https://oauth2-proxy.github.io/oauth2-proxy/
@@ -24,7 +24,7 @@ keywords:
 - google
 - github
 - redis
-kubeVersion: '>=1.9.0-0'
+kubeVersion: '>=1.16.0-0'
 maintainers:
 - email: cedric@desaintmartin.fr
   name: desaintmartin
@@ -39,4 +39,4 @@ name: oauth2-proxy
 sources:
 - https://github.com/oauth2-proxy/oauth2-proxy
 - https://github.com/oauth2-proxy/manifests
-version: 7.4.1
+version: 7.8.1

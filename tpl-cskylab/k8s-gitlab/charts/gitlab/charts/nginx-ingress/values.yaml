@@ -12,12 +12,17 @@ controller:
   image:
     registry: registry.gitlab.com
     image: gitlab-org/cloud-native/mirror/images/ingress-nginx/controller
-    tag: "v1.3.1"
-    digest: sha256:54f7fe2c6c5a9db9a0ebf1131797109bb7a4d91f56b9b362bde2abd237dd1974
+    tag: "v1.11.2"
+    fallbackTag: "v1.3.1"
+    fallbackDigest: "sha256:54f7fe2c6c5a9db9a0ebf1131797109bb7a4d91f56b9b362bde2abd237dd1974"
+    digest: "sha256:d5f8217feeac4887cb1ed21f27c2674e58be06bd8f5184cacea2a69abaf78dce"
     pullPolicy: IfNotPresent
     # www-data -> uid 101
     runAsUser: 101
-    allowPrivilegeEscalation: true
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    seccompProfile: {}
+    disableFallback: false
 
   # Use an existing PSP instead of creating one
   existingPsp: ""
@@ -109,7 +114,9 @@ controller:
 
   ## Security Context policies for controller pods
   ##
-  podSecurityContext: {}
+  podSecurityContext:
+    seccompProfile:
+      type: "RuntimeDefault"
 
   ## See https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/ for
   ## notes on enabling and using sysctls
@@ -767,7 +774,9 @@ defaultBackend:
   ## See https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/ for
   ## notes on enabling and using sysctls
   ##
-  podSecurityContext: {}
+  podSecurityContext:
+    seccompProfile:
+      type: "RuntimeDefault"
 
   # labels to add to the pod container metadata
   podLabels: {}
