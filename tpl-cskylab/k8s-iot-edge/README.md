@@ -1,14 +1,14 @@
 # Kubernetes IOT Edge<!-- omit in toc -->
 
-## k8s-iot-edge v24-04-20 <!-- omit in toc -->
+## k8s-iot-edge v24-12-11 <!-- omit in toc -->
 
   ![ ](./images/nr-image-1.png)
 
 ## Helm charts:<!-- omit in toc -->
 
-- **k8s-at-home/mosquitto v4.8.2**: appVersion v2.0.18
-- **k8s-at-home/node-red v10.3.2**: appVersion v3.1.8
-- **oauth2-proxy/oauth2-proxy v7.4.1**: appVersion v7.6.0
+- **k8s-at-home/mosquitto v4.8.2**: appVersion v2.0.20
+- **k8s-at-home/node-red v10.3.2**: appVersion v4.0.5
+- **oauth2-proxy/oauth2-proxy v7.8.1**: appVersion v7.7.1
 
 This namespace is intended to deploy an IOT Edge service environment in Kubernetes with the following applications:
 

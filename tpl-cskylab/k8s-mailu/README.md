@@ -4,6 +4,9 @@
 
 This namespace installs the Mailu mail system on kubernetes.
 
+  ![ ](./images/mailu.png)
+
+
 Configuration files are deployed from template {{ ._tpldescription }} version {{ ._tplversion }}.
 
 - [TL;DR](#tldr)
