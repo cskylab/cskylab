@@ -37,4 +37,4 @@ And many more to come...
 
 ---
 
-[cSkyLab.com ™](https://www.cskylab.com/) © 2021-2023 Trantor Advanced Technologies S.A.
+[cSkyLab.com ™](https://www.cskylab.com/) © 2021-2024 Trantor Advanced Technologies S.A.
