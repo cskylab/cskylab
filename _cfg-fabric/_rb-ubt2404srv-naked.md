@@ -1,8 +1,8 @@
-# ubt2204srv-k8s
+# ubt2404srv-naked
 
-This machine runs a Kubernetes node on Ubuntu Server 22.04 LTS.
+This template contains the configuration files needed to run a basic installation of Ubuntu Server 24.04 LTS.
 
-Persistent Volumes on local storage are supported by LVM services.
+It is intended to create configuration files for physical or virtual machines when there is no need to use LVM storage services.
 
 ## Generate configuration files with cskygen
 
@@ -20,8 +20,8 @@ Update env variables with your own values, copy and run the following command:
 echo \
 && export RB_REPO_DIR="/Users/grenes/git/cskylab-github" \
 && export RB_ZONE="cs-mod" \
-&& export RB_MACHINE_NAME="ubt2204srv-k8s" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2204srv-k8s" \
+&& export RB_MACHINE_NAME="ubt2404srv-naked" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2404srv-naked" \
 && echo
 ```
 
@@ -38,12 +38,9 @@ echo \
 # Values to override
 #
 
-## Kubernetes version to install
-k8s_version: "1.29.3-1.1"
-
 ## Machine related configuration values
 machine:
-  hostname: ubt2204srv-k8s
+  hostname: ubt2404srv-naked
   domainname: cskylab.net
   localadminusername: kos
   localadminpassword: "NoFear21"
@@ -61,22 +58,6 @@ machine:
   systemlocale: "C.UTF-8"
   systemkeyboard: "us"
   
-restic:
-  ## Restic password is mandatory to access repository
-  password: 'NoFear21'
-
-  ## Restic repositories can be located in local paths, sftp paths and s3 buckets
-  ## Local path example:
-  # repo: '/srv/restic/mydir'
-  ## S3 example:
-  # repo: 's3:https://backup.cskylab.net/restic/mydir'
-  ## sftp example:
-  repo: 'sftp:kos@hostname.cskylab.net:/media/data/restic/mydir'
-  
-  ## S3 Bucket access and secret keys must be specified for S3 located repositories
-  aws_access: 'restic_rw'
-  aws_secret: 'iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr'
-
 EOF
 )" \
 && echo "${CSKYGEN_TPL_OVERRIDES}" >/tmp/cskygen_tpl_overrides.yaml \

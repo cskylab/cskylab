@@ -1,6 +1,6 @@
-# ubt2204srv-k8s
+# ubt2404srv-k8s
 
-This machine runs a Kubernetes node on Ubuntu Server 22.04 LTS.
+This machine runs a Kubernetes node on Ubuntu Server 24.04 LTS.
 
 Persistent Volumes on local storage are supported by LVM services.
 
@@ -20,8 +20,8 @@ Update env variables with your own values, copy and run the following command:
 echo \
 && export RB_REPO_DIR="/Users/grenes/git/cskylab-github" \
 && export RB_ZONE="cs-mod" \
-&& export RB_MACHINE_NAME="ubt2204srv-k8s" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2204srv-k8s" \
+&& export RB_MACHINE_NAME="ubt2404srv-k8s" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2404srv-k8s" \
 && echo
 ```
 
@@ -39,11 +39,12 @@ echo \
 #
 
 ## Kubernetes version to install
-k8s_version: "1.29.3-1.1"
+k8s_version: "1.31.3-1.1"
+k8s_repository: "v1.31"
 
 ## Machine related configuration values
 machine:
-  hostname: ubt2204srv-k8s
+  hostname: ubt2404srv-k8s
   domainname: cskylab.net
   localadminusername: kos
   localadminpassword: "NoFear21"

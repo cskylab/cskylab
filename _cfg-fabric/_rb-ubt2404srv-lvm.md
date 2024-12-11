@@ -1,8 +1,8 @@
-# ubt2204srv-k8s
+# ubt2404srv-lvm
 
-This machine runs a Kubernetes node on Ubuntu Server 22.04 LTS.
+This template contains the configuration files needed to run a basic installation of Ubuntu Server 24.04 LTS with LVM storage services.
 
-Persistent Volumes on local storage are supported by LVM services.
+It is intended to create configuration files for physical or virtual machines when storage and data protection is needed.
 
 ## Generate configuration files with cskygen
 
@@ -20,8 +20,8 @@ Update env variables with your own values, copy and run the following command:
 echo \
 && export RB_REPO_DIR="/Users/grenes/git/cskylab-github" \
 && export RB_ZONE="cs-mod" \
-&& export RB_MACHINE_NAME="ubt2204srv-k8s" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2204srv-k8s" \
+&& export RB_MACHINE_NAME="ubt2404srv-lvm" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2404srv-lvm" \
 && echo
 ```
 
@@ -38,12 +38,9 @@ echo \
 # Values to override
 #
 
-## Kubernetes version to install
-k8s_version: "1.29.3-1.1"
-
 ## Machine related configuration values
 machine:
-  hostname: ubt2204srv-k8s
+  hostname: ubt2404srv-lvm
   domainname: cskylab.net
   localadminusername: kos
   localadminpassword: "NoFear21"

@@ -1,8 +1,8 @@
-# ubt2204srv-k8s
+# ubt2404srv-mcc
 
-This machine runs a Kubernetes node on Ubuntu Server 22.04 LTS.
+This machine runs a management host (Mission Control Center) on Ubuntu Server 24.04 LTS.
 
-Persistent Volumes on local storage are supported by LVM services.
+It is intended to host VS Code Remote Server and to be accessed with VS Code Remote via ssh.
 
 ## Generate configuration files with cskygen
 
@@ -19,9 +19,9 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="/Users/grenes/git/cskylab-github" \
-&& export RB_ZONE="cs-mod" \
-&& export RB_MACHINE_NAME="ubt2204srv-k8s" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2204srv-k8s" \
+&& export RB_ZONE="cs-sys" \
+&& export RB_MACHINE_NAME="mcc" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2404srv-mcc" \
 && echo
 ```
 
@@ -39,11 +39,15 @@ echo \
 #
 
 ## Kubernetes version to install
-k8s_version: "1.29.3-1.1"
+k8s_version: "1.31.3-1.1"
+k8s_repository: "v1.31"
+
+# Go version
+go_version: "go1.23.4.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:
-  hostname: ubt2204srv-k8s
+  hostname: mcc
   domainname: cskylab.net
   localadminusername: kos
   localadminpassword: "NoFear21"
@@ -60,22 +64,6 @@ machine:
   setupdir: "/etc/csky-setup"
   systemlocale: "C.UTF-8"
   systemkeyboard: "us"
-  
-restic:
-  ## Restic password is mandatory to access repository
-  password: 'NoFear21'
-
-  ## Restic repositories can be located in local paths, sftp paths and s3 buckets
-  ## Local path example:
-  # repo: '/srv/restic/mydir'
-  ## S3 example:
-  # repo: 's3:https://backup.cskylab.net/restic/mydir'
-  ## sftp example:
-  repo: 'sftp:kos@hostname.cskylab.net:/media/data/restic/mydir'
-  
-  ## S3 Bucket access and secret keys must be specified for S3 located repositories
-  aws_access: 'restic_rw'
-  aws_secret: 'iZ6Qpx1WiqmXXoXKxBxhiCMKWCsYOrgZKr'
 
 EOF
 )" \

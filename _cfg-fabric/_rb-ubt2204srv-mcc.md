@@ -39,10 +39,10 @@ echo \
 #
 
 ## Kubernetes version for kubectl
-k8s_version: "1.28.2-00"
+k8s_version: "1.29.3-1.1"
 
 ## Go version
-go_version: "go1.21.4.linux-amd64.tar.gz"
+go_version: "go1.22.2.linux-amd64.tar.gz"
 
 ## Machine related configuration values
 machine:

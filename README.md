@@ -2,7 +2,7 @@
 
 ## Virtual data center in-a-box
 
-**v24-04-20**
+**v24-12-11**
 
 
 [cSkyLab](https://www.cskylab.com/) is a virtual data center model that allows fast application deployment and gives you the choice to scale up your services in any combination of private, public or hybrid cloud.
@@ -31,7 +31,7 @@ To help you to start fast, it bundles "out of the box" many popular open source 
 - IOTStudio: IOT service environment with Mosquitto, Node-red, InfluxDB and Grafana.
 - IOTEdge: IOT Edge service environment with Mosquitto, Node-red, & oauth2-proxy authentication.
 - hello-oauth2: Example of [oauth2-proxy](https://github.com/oauth2-proxy/oauth2-proxy) deployment protecting a simple Hello World application for modeling purposes.
-
+- [Mailu](https://mailu.io/) Mailu mail system on kubernetes.
 
 And many more to come...
 

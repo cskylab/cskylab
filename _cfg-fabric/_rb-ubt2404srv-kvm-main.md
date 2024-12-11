@@ -1,8 +1,8 @@
-# ubt2204srv-k8s
+# ubt2404srv-kvm
 
-This machine runs a Kubernetes node on Ubuntu Server 22.04 LTS.
+This machine runs a KVM host on Ubuntu Server 24.04 LTS.
 
-Persistent Volumes on local storage are supported by LVM services.
+Virtual machines are created on storage supported by LVM services.
 
 ## Generate configuration files with cskygen
 
@@ -19,9 +19,9 @@ Update env variables with your own values, copy and run the following command:
 ```bash
 echo \
 && export RB_REPO_DIR="/Users/grenes/git/cskylab-github" \
-&& export RB_ZONE="cs-mod" \
-&& export RB_MACHINE_NAME="ubt2204srv-k8s" \
-&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2204srv-k8s" \
+&& export RB_ZONE="cs-sys" \
+&& export RB_MACHINE_NAME="kvm-main" \
+&& export RB_TEMPLATE="${RB_REPO_DIR}/tpl-cskylab/ubt2404srv-kvm" \
 && echo
 ```
 
@@ -38,24 +38,21 @@ echo \
 # Values to override
 #
 
-## Kubernetes version to install
-k8s_version: "1.29.3-1.1"
-
 ## Machine related configuration values
 machine:
-  hostname: ubt2204srv-k8s
+  hostname: kvm-main
   domainname: cskylab.net
   localadminusername: kos
   localadminpassword: "NoFear21"
   timezone: "UTC"
-  networkinterface: enp1s0
-  ipaddress: 192.168.82.9
+  # networkinterface: enp1s0
+  ipaddress: 192.168.80.10
   netmask: 24
-  gateway4: 192.168.82.1
+  gateway4: 192.168.80.1
   searchdomainnames:
     - cskylab.net
   nameservers:
-    - 192.168.82.1
+    - 192.168.80.1
   ## Setup directory where configuration files will be injected
   setupdir: "/etc/csky-setup"
   systemlocale: "C.UTF-8"
